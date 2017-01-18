@@ -1,0 +1,8 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "Show Activities",
+      "server": "Server"
+    }
+  }
+}

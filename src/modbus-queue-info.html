@@ -1,0 +1,130 @@
+<!--
+ The BSD 3-Clause License
+
+ Copyright (c) 2016, Klaus Landsdorf (http://bianco-royal.de/)
+ All rights reserved.
+ node-red-contrib-modbus
+
+ Redistribution and use in source and binary forms, with or without modification,
+ are permitted provided that the following conditions are met:
+
+ 1. Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
+
+ 2. Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation and/or
+ other materials provided with the distribution.
+
+ 3. Neither the name of the copyright holder nor the names of its contributors may be
+ used to endorse or promote products derived from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
+-->
+<script type="text/javascript">
+    RED.nodes.registerType('modbus-queue-info', {
+        category: 'modbus',
+        color: '#E9967A',
+        defaults: {
+            name: {value: ""},
+            unitid: {value: ""},
+            lowLowLevel: {value: 25, validate: RED.validators.number()},
+            lowLevel: {value: 75, validate: RED.validators.number()},
+            highLevel: {value: 150, validate: RED.validators.number()},
+            highHighLevel: {value: 300, validate: RED.validators.number()},
+            server: {type: "modbus-client", required:true},
+            errorOnHighLevel: {value: false}
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "modbus.png",
+        paletteLabel: "Modbus-Queue-Info",
+        label: function () {
+            return this.name || "Modbus Queue Info"
+        }
+    })
+</script>
+
+
+<script type="text/x-red" data-template-name="modbus-queue-info">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-unitid"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.unitId"></span></label>
+        <input type="text" id="node-input-unitid" placeholder="1">
+    </div>
+    <hr>
+    <div class="form-row">
+        <label for="node-input-lowLowLevel"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.lowLowLevel"></span></label>
+        <input type="text" id="node-input-lowLowLevel" placeholder="25">
+    </div>
+    <div class="form-row">
+        <label for="node-input-lowLevel"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.lowLevel"></span></label>
+        <input type="text" id="node-input-lowLevel" placeholder="75">
+    </div>
+    <div class="form-row">
+        <label for="node-input-highLevel"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.highLevel"></span></label>
+        <input type="text" id="node-input-highLevel" placeholder="150">
+    </div>
+    <div class="form-row">
+        <label for="node-input-highHighLevel"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.highHighLevel"></span></label>
+        <input type="text" id="node-input-highHighLevel" placeholder="300">
+    </div>
+    <hr>
+    <div class="form-row">
+        <label for="node-input-server"><i class="icon-globe"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
+        <input type="text" id="node-input-server">
+    </div>
+    <hr>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-input-errorOnHighLevel"><i class="fa fa-th"></i> <span
+        data-i18n="modbus-contrib.label.errorOnHighLevel"></span></label>
+        <input type="checkbox" id="node-input-errorOnHighLevel" style="max-width:30px">
+    </div>
+</script>
+
+
+<script type="text/x-red" data-help-name="modbus-queue-info">
+    <p><strong>
+        A queue is set per unit - setup the unit-id to get the right information.
+    </strong></p>
+
+    <p>Modbus TCP/Serial queue information node.</p>
+
+     <p>Unit-Id (0..255 tcp | 1..247 serial)</p>
+
+     <p>Use inject of <pre>msg.resetQueue = true</pre> to
+      reset the queue.</p>
+
+      <p>Reset on high level to connect with the catch node</p>
+      <p><pre>
+        [{"id":"430f76bf.9de2d8","type":"function","z":"b245d3e4.b52de","name":"reset on High",
+        "func":"if(\"high level reached\" === msg.state) {\n    msg.resetQueue = true;\n    return msg;\n}\n",
+        "outputs":1,"noerr":0,"x":410,"y":140,"wires":[["64cca59a.dc295c"]]}]
+      </pre></p>
+
+      <p>Reset on high high level to connect with the catch node</p>
+      <p><pre>
+        [{"id":"fc74491.2ddc9b8","type":"function","z":"b245d3e4.b52de","name":"reset on HighHigh",
+        "func":"if(\"high high level reached\" === msg.state) {\n    msg.resetQueue = true;\n    return msg;\n}\n",
+        "outputs":1,"noerr":0,"x":430,"y":180,"wires":[["64cca59a.dc295c"]]}]
+      </pre></p>
+
+     <p>"Error on high level" with that option the node sends
+     an error if high level is reached and on high high level.</p>
+
+     <p>With reaching the high level there comes a warning
+     and with the high high an error for work with the catch node</p>
+
+     <p>Output: all queue information - use complete msg with debug</p>
+</script>

@@ -1,0 +1,170 @@
+<!--
+ Original Work Copyright 2015 Valmet Automation Inc.
+
+ Licensed under the Apache License, Version 2.0 (the "License")
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ The BSD 3-Clause License
+
+ Copyright (c) 2016, Klaus Landsdorf (http://bianco-royal.de/)
+ All rights reserved.
+ node-red-contrib-modbus
+
+ merged back from
+ Modified work Copyright © 2016, UChicago Argonne, LLC
+ All Rights Reserved
+ node-red-contrib-modbustcp (ANL-SF-16-004)
+ Jason D. Harper, Argonne National Laboratory
+
+ Redistribution and use in source and binary forms, with or without modification,
+ are permitted provided that the following conditions are met:
+
+ 1. Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
+
+ 2. Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation and/or
+ other materials provided with the distribution.
+
+ 3. Neither the name of the copyright holder nor the names of its contributors may be
+ used to endorse or promote products derived from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
+-->
+<script type="text/javascript">
+    RED.nodes.registerType('modbus-read', {
+        category: 'modbus',
+        color: '#E9967A',
+        defaults: {
+            name: {value: ""},
+            showStatusActivities: {value: false},
+            unitid: {value: ""},
+            dataType: {value: "", required: true},
+            adr: {value: "", required: true, validate: RED.validators.number()},
+            quantity: {value: "", required: true, validate: RED.validators.number()},
+            rate: {
+                value: "", required: true, validate: function (v) {
+                    return v > 0
+                }
+            },
+            rateUnit: {
+                value: "", required: true, validate: function (v) {
+                    return "ms" == v || "s" == v || "m" == v || "h" == v
+                }
+            },
+            server: {type: "modbus-client", required:true}
+        },
+        inputs: 0,
+        outputs: 2,
+        icon: "modbus.png",
+        paletteLabel: "Modbus-Read",
+        label: function () {
+            return this.name || "Modbus Read"
+        }
+    })
+</script>
+
+
+<script type="text/x-red" data-template-name="modbus-read">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-unitid"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.unitId"></span></label>
+        <input type="text" id="node-input-unitid">
+    </div>
+    <div class="form-row">
+        <label for="node-input-dataType"><i class="icon-list"></i> <span data-i18n="modbus-contrib.label.functioncode"></span></label>
+        <select id="node-input-dataType">
+            <option value="Coil">FC 1: Read Coil Status</option>
+            <option value="Input">FC 2: Read Input Status</option>
+            <option value="HoldingRegister">FC 3: Read Holding Registers</option>
+            <option value="InputRegister">FC 4: Read Input Registers</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-adr"><i class="icon-home"></i> <span data-i18n="modbus-contrib.label.address"></span></label>
+        <input type="text" id="node-input-adr" placeholder="0:65535">
+    </div>
+    <div class="form-row">
+        <label for="node-input-quantity"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.quantity"></span></label>
+        <input type="text" id="node-input-quantity" placeholder="1-65535">
+    </div>
+    <div class="form-row">
+        <label for="node-input-rate"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.pollrate"></span></label>
+        <input type="number" id="node-input-rate" placeholder="1-65535" style="max-width:120px">
+        <select id="node-input-rateUnit" style="max-width:160px">
+            <option value="ms">millisecond(s)</option>
+            <option value="s">second(s)</option>
+            <option value="m">minute(s)</option>
+            <option value="h">hour(s)</option>
+        </select>
+    </div>
+        <div class="form-row">
+        <label for="node-input-server"><i class="icon-globe"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
+        <input type="text" id="node-input-server">
+    </div>
+    <hr>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
+        data-i18n="modbus-contrib.label.showActivities"></span></label>
+        <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
+    </div>
+</script>
+
+
+<script type="text/x-red" data-help-name="modbus-read">
+    <p><strong>
+        If you have more than 10 nodes on one communication configuration,
+        use the Modbus-Flex-Getter or think about multiple connections to your Modbus device, please!
+        You can do polling with the Modbus-Getter and Modbus-Flex-Getter, too by using an injecting node
+        with an interval.
+    </strong></p>
+
+    <p>Modbus TCP/Serial read node.</p>
+    <p>Connects to a Modbus TCP or serial to read registers/coils values with a given polling rate.</p>
+    <p>
+        <h4>Function codes currently supported include:</h4>
+
+        <ul>
+          <li>FC 1: Read Coil Status</li>
+          <li>FC 2: Read Input Status</li>
+          <li>FC 3: Read Holding Registers</li>
+          <li>FC 4: Read Input Registers</li>
+        </ul>
+        </p>
+     <p>
+         Choose a function code (FC) from the dropdown menu,
+         select the coil/input/register start address (0:65535),
+         and the quantity of coils/inputs/registers to be read from the start address.
+     </p>
+
+     <p>Unit-Id (0..255 tcp | 1..247 serial) - leave empty, otherwise it overrides the default Unit-ID of client
+     config</p>
+
+     <p>
+         Setup a polling rate (greater than zero) and the time unit.
+         Choose or edit the Modbus connection configuration.
+     </p>
+     <p>Output 1: data Array (PDU)</p>
+     <p>Output 2: modbus response</p>
+</script>

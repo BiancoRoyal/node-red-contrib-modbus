@@ -1,0 +1,82 @@
+#demo {
+    text-align: center;
+}
+
+#start {
+    margin-top: 20px;
+    margin-left: 50px;
+}
+
+#diagram {
+    width: 660px;
+    height: 540px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+}
+
+#output {
+    margin-left: 50px;
+    margin-top: 20px;
+    height: 240px;
+    width: 480px;
+}
+
+.start {
+    background: url(./img/broken.png);
+}
+
+.broken-0 {
+    background: url(./img/broken-0.png);
+}
+
+.init-0 {
+    background: url(./img/init-0.png);
+}
+
+.init-1 {
+    background: url(./img/init-1.png);
+}
+
+.init-2 {
+    background: url(./img/init-2.png);
+}
+
+.opened-0 {
+    background: url(./img/opened-0.png);
+}
+
+.opened-1 {
+    background: url(./img/opened-1.png);
+}
+
+.connected-0 {
+    background: url(./img/connected-0.png);
+}
+
+.connected-1 {
+    background: url(./img/connected-1.png);
+}
+
+.closed-0 {
+    background: url(./img/closed-0.png);
+}
+
+.closed-1 {
+    background: url(./img/closed-1.png);
+}
+
+.failed-0 {
+    background: url(./img/failed-0.png);
+}
+
+.failed-1 {
+    background: url(./img/failed-1.png);
+}
+
+
+.preload {
+    position: absolute;
+    left: -1000px;
+    height: 1px;
+}

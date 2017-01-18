@@ -1,0 +1,10 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "Aktivitäten anzeigen",
+      "address": "Adresse",
+      "quantity": "Anzahl",
+      "pollrate": "Poll-Rate"
+    }
+  }
+}

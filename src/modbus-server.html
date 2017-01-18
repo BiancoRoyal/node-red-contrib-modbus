@@ -1,0 +1,110 @@
+<!--
+ The BSD 3-Clause License
+
+ Copyright (c) 2016, Klaus Landsdorf (http://bianco-royal.de/)
+ All rights reserved.
+ node-red-contrib-modbus
+
+ Redistribution and use in source and binary forms, with or without modification,
+ are permitted provided that the following conditions are met:
+
+ 1. Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
+
+ 2. Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation and/or
+ other materials provided with the distribution.
+
+ 3. Neither the name of the copyright holder nor the names of its contributors may be
+ used to endorse or promote products derived from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
+-->
+<script type="text/javascript">
+    RED.nodes.registerType('modbus-server', {
+        category: 'modbus',
+        color: '#E9967A',
+        defaults: {
+            name: {value: ""},
+            logEnabled: {value: false},
+            serverPort: {value: 10502, required: true, validate: RED.validators.number()},
+            responseDelay: {value: 100, required: true, validate: RED.validators.number()},
+            delayUnit: {
+                value: "ms", required: true, validate: function (v) {
+                    return "ms" == v || "s" == v || "m" == v || "h" == v
+                }
+            },
+            coilsBufferSize: {value: 1024, validate: RED.validators.number()},
+            holdingBufferSize: {value: 1024, validate: RED.validators.number()},
+            inputBufferSize: {value: 1024, validate: RED.validators.number()}
+        },
+        inputs: 1,
+        outputs: 3,
+        icon: "modbus.png",
+        paletteLabel: "Modbus-Server",
+        label: function () {
+            return this.name || "Modbus Server"
+        }
+    })
+</script>
+
+
+<script type="text/x-red" data-template-name="modbus-server">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-serverPort"><i class="icon-tag"></i> Port</label>
+        <input type="text" id="node-input-serverPort" placeholder="8888">
+    </div>
+    <div class="form-row">
+        <label for="node-input-responseDelay"><i class="icon-tag"></i> Response Delay</label>
+        <input type="text" id="node-input-responseDelay" placeholder="100" style="max-width:120px">
+        <select id="node-input-delayUnit" style="max-width:160px">
+            <option value="ms">millisecond(s)</option>
+            <option value="s">second(s)</option>
+            <option value="m">minute(s)</option>
+            <option value="h">hour(s)</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-coilsBufferSize"><i class="icon-tag"></i> Coils</label>
+        <input type="text" id="node-input-coilsBufferSize" placeholder="1024">
+    </div>
+    <div class="form-row">
+        <label for="node-input-holdingBufferSize"><i class="icon-tag"></i> Holding</label>
+        <input type="text" id="node-input-holdingBufferSize" placeholder="1024">
+    </div>
+    <div class="form-row">
+        <label for="node-input-inputBufferSize"><i class="icon-tag"></i> Input</label>
+        <input type="text" id="node-input-inputBufferSize" placeholder="1024">
+    </div>
+    <hr>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-input-logEnabled"><i class="fa fa-th"></i> Log active</label>
+        <input type="checkbox" id="node-input-logEnabled" style="max-width:30px">
+    </div>
+</script>
+
+
+<script type="text/x-red" data-help-name="modbus-server">
+    <p>Node to provide a Modbus TCP server based on node-modbus (jsmodbus) for testing.</p>
+
+    <p>On injecting the server sends the Buffers to the separate outputs</p>
+    <p>You can use the Modbus write nodes (FC) to write data to the server buffers.</p>
+    <p>You can use the Modbus read nodes (FC) to read data from the server buffers.</p>
+
+    <p>Output 1: holding Buffer, type, msg</p>
+    <p>Output 2: coils Buffer, type, msg</p>
+    <p>Output 3: input Buffer, type, msg</p>
+</script>

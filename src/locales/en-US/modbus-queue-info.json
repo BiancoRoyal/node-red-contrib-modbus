@@ -1,0 +1,13 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "unitId": "Unit-Id",
+      "lowLowLevel": "Low low level",
+      "lowLevel": "Low level",
+      "highLevel": "High level",
+      "highHighLevel": "High high level",
+      "server": "Server",
+      "errorOnHighLevel": "Error on high level"
+    }
+  }
+}

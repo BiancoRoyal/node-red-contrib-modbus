@@ -1,0 +1,13 @@
+.git
+.idea
+test
+extras
+examples
+node_modules
+.gitignore
+*.iml
+Example.png
+*EXAMPLE.png
+*.conf.js
+*.log
+src

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Statly-Machine Modbus</title>
+    <link rel="stylesheet" href="statemachine.css">
+    <script src="Stately.js"></script>
+</head>
+<body>
+
+<div id="demo">
+    <div id="diagram" class="start"></div>
+    <textarea id="output"></textarea>
+</div>
+
+<img src="img/broken-0.png" class="preload">
+
+<img src="img/opened-0.png" class="preload">
+<img src="img/opened-1.png" class="preload">
+
+<img src="img/init-0.png" class="preload">
+<img src="img/init-1.png" class="preload">
+<img src="img/init-2.png" class="preload">
+
+<img src="img/connected-0.png" class="preload">
+<img src="img/connected-1.png" class="preload">
+
+<img src="img/closed-0.png" class="preload">
+<img src="img/closed-1.png" class="preload">
+
+<img src="img/failed-0.png" class="preload">
+<img src="img/failed-1.png" class="preload">
+
+<script type="text/javascript">
+  var output = document.getElementById('output'),
+    count = 0,
+    log = function () {
+      var message = Array.prototype.slice.apply(arguments);
+      output.value = count++ + ': ' + message.join(', ') + '\n' + output.value;
+    };
+
+  var fsm = Stately.machine({
+      'BROKEN': {
+        '0': 'INIT'
+      },
+      'INIT': {
+        '0': 'OPENED',
+        '1': 'CONNECTED',
+        '2': 'FAILED'
+      },
+      'OPENED': {
+        '0': 'CONNECTED',
+        '1': 'FAILED'
+      },
+      'CONNECTED': {
+        '0': 'CLOSED',
+        '1': 'FAILED'
+      },
+      'CLOSED': {
+        '0': 'FAILED',
+        '1': 'BROKEN'
+      },
+      'FAILED': {
+        '0': 'CLOSED',
+        '1': 'BROKEN'
+      }
+    })
+
+  fsm.bind(function (event, oldState, newState) {
+    var className = oldState.toLowerCase() + '-' + event;
+    log(event, oldState, newState);
+    diagram.className = className;
+  });
+
+
+  function loopsyloop() {
+    setTimeout(loopsyloop, 2000);
+    fsm[Math.floor(Math.random() * 2)]();
+  }
+
+  setTimeout(loopsyloop, 2000);
+
+</script>
+</body>
+</html>

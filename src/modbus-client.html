@@ -1,0 +1,371 @@
+<!--
+ The BSD 3-Clause License
+
+ Copyright (c) 2016, Klaus Landsdorf (http://bianco-royal.de/)
+ All rights reserved.
+ node-red-contrib-modbus
+
+ Redistribution and use in source and binary forms, with or without modification,
+ are permitted provided that the following conditions are met:
+
+ 1. Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
+
+ 2. Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation and/or
+ other materials provided with the distribution.
+
+ 3. Neither the name of the copyright holder nor the names of its contributors may be
+ used to endorse or promote products derived from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
+-->
+<script type="text/javascript">
+  RED.nodes.registerType('modbus-client', {
+    category: 'config',
+    defaults: {
+
+      name: {value: ""},
+      clienttype: {value: "tcp", required: true},
+      bufferCommands: {value: true},
+      stateLogEnabled: {value: false},
+
+      tcpHost: {value: "127.0.0.1", required: true},
+      tcpPort: {value: 502, required: true, validate: RED.validators.number()},
+
+      serialPort: {value: "/dev/ttyUSB", required: true},
+      serialType: {value: "RTU-BUFFERD", required: true},
+      serialBaudrate: {value: 9600, required: true, validate: RED.validators.number()},
+      serialDatabits: {value: 8, required: true, validate: RED.validators.number()},
+      serialStopbits: {value: 1, required: true, validate: RED.validators.number()},
+      serialParity: {value: "none", required: true},
+      serialConnectionDelay: {value: 100},
+
+      unit_id: {value: 1},
+      commandDelay: {value: 1},
+      clientTimeout: {value: 1000},
+      reconnectTimeout: {value: 2000}
+    },
+    label: function () {
+      let node = this
+      if (node.clienttype == "tcp") {
+        return node.name || "modbus-tcp@" + node.tcpHost + ":" + node.tcpPort
+      } else {
+        return node.name || "modbus-serial@" + node.serialPort + ':' + node.serialBaudrate
+      }
+    },
+    oneditprepare: function () {
+
+      let previous = null
+      let node = this
+      node.ports = []
+      let clientTypeSelector = $('#node-config-input-clienttype')
+      let inputsSerial = $("#node-inputs-modbus-serial")
+      let inputsSerialExtras = $("#node-inputs-modbus-serial-extras")
+      let inputsTCP = $("#node-inputs-modbus-tcp")
+
+      clientTypeSelector.on('focus', function () {
+        previous = this.value
+      }).change(function () {
+
+        if (previous == null) {
+          previous = $("#node-config-input-clienttype").val()
+        }
+
+        if (node.unit_id) {
+          node.unit_id = parseInt(node.unit_id)
+        }
+
+        if (node.commandDelay) {
+          node.commandDelay = parseInt(node.commandDelay)
+        }
+
+        if (node.clientTimeout) {
+          node.clientTimeout = parseInt(node.clientTimeout)
+        }
+
+        if (node.reconnectTimeout) {
+          node.reconnectTimeout = parseInt(node.reconnectTimeout)
+        }
+
+        switch (clientTypeSelector.val()) {
+          case 'tcp':
+            inputsSerialExtras.hide()
+            inputsSerial.hide()
+            inputsTCP.show()
+
+            if (node.tcpHost) {
+              node.tcpHost.required = true
+              node.tcpPort.required = true
+            }
+
+            if (node.serialPort) {
+              node.serialPort.required = false
+              if (node.serialType) {
+                node.serialType.required = false
+              }
+              node.serialBaudrate.required = false
+            }
+
+            if (node.serialDatabits) {
+              node.serialDatabits.required = false
+              node.serialStopbits.required = false
+              node.serialParity.required = false
+            }
+            break
+          case 'serial':
+          case 'simpleser':
+            if (clientTypeSelector.val() === 'simpleser') {
+              inputsSerialExtras.hide()
+              node.serialDatabits.value = 8
+              node.serialStopbits.value = 1
+              node.serialParity.value = 'none'
+            } else {
+              inputsSerialExtras.show()
+            }
+
+            inputsSerial.show()
+            inputsTCP.hide()
+
+            if (node.tcpHost) {
+              node.tcpHost.required = false
+              node.tcpPort.required = false
+            }
+
+            if (node.serialPort) {
+              node.serialPort.required = true
+              if (node.serialType) {
+                node.serialType.required = true
+              }
+              node.serialBaudrate.required = true
+            }
+
+            if (node.serialDatabits) {
+              node.serialDatabits.required = true
+              node.serialStopbits.required = true
+              node.serialParity.required = true
+            }
+            break
+          default:
+            break
+        }
+      })
+
+      try {
+        $("#node-config-input-serialPort").autocomplete("destroy")
+      }
+      catch (err) {
+      }
+
+      $("#node-config-lookup-serial").click(function () {
+        $("#node-config-lookup-serial").addClass('disabled')
+
+        $.getJSON('serialports', function (data) {
+          $("#node-config-lookup-serial").removeClass('disabled')
+          node.ports = []
+
+          $.each(data, function (i, port) {
+            node.ports.push(port.comName)
+          })
+
+          $("#node-config-input-serialPort").autocomplete({
+            source: node.ports,
+            minLength: 0,
+            close: function (event, ui) {
+              $("#node-config-input-serialPort").autocomplete("destroy")
+            }
+          }).autocomplete("search", "")
+        })
+      })
+    }
+  })
+</script>
+
+<script type="text/x-red" data-template-name="modbus-client">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-clienttype"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.type"></span></label>
+        <select type="text" id="node-config-input-clienttype" style="width:140px;">
+            <option value="tcp" select>TCP</option>
+            <option value="simpleser">Serial</option>
+            <option value="serial">Serial Expert</option>
+        </select>
+    </div>
+    <hr>
+    <div id="node-inputs-modbus-tcp">
+        <div class="form-row">
+            <label for="node-config-input-tcpHost"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.host"></span></label>
+            <input type="text" id="node-config-input-tcpHost">
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-tcpPort"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.port"></span></label>
+            <input type="text" id="node-config-input-tcpPort">
+        </div>
+    </div>
+    <div id="node-inputs-modbus-serial">
+        <div class="form-row">
+            <label for="node-config-input-serialPort"><i class="fa fa-random"></i> <span data-i18n="modbus-contrib.label.serialport"></span></label>
+            <input type="text" id="node-config-input-serialPort" style="width:60%;" placeholder="/dev/ttyUSB or COM4">
+            <a id="node-config-lookup-serial" class="btn"><i id="node-config-lookup-serial-icon" class="fa fa-search"></i></a>
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-serialType"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.serialType"></span></label>
+            <select type="text" id="node-config-input-serialType" style="width:140px;">
+                <option value="RTU-BUFFERD" select>RTU-BUFFERD</option>
+                <option value="RTU" select>RTU</option>
+                <option value="ASCII">ASCII</option>
+                <option value="TELNET" select>TELNET</option>
+                <option value="C701" select>C701</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-serialBaudrate"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.baudRate"></span></label>
+            <select id="node-config-input-serialBaudrate" style="max-width:140px">
+                <option value="115200">115200</option>
+                <option value="57600">57600</option>
+                <option value="38400">38400</option>
+                <option value="19200">19200</option>
+                <option value="9600">9600</option>
+                <option value="4800">4800</option>
+                <option value="2400">2400</option>
+                <option value="1200">1200</option>
+                <option value="300">300</option>
+                <option value="110">110</option>
+                <option value="75">75</option>
+            </select>
+        </div>
+    </div>
+    <div id="node-inputs-modbus-serial-extras">
+        <div class="form-row">
+            <label for="node-config-input-serialDatabits"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.dataBits"></span></label>
+            <select id="node-config-input-serialDatabits" style="max-width:80px">
+                <option value="8">8</option>
+                <option value="7">7</option>
+                <option value="6">6</option>
+                <option value="5">5</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-serialStopbits"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.stopBits"></span></label>
+            <select id="node-config-input-serialStopbits" style="max-width:80px">
+                <option value="1">1</option>
+                <option value="1.5">1.5</option>
+                <option value="2">2</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-serialParity"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.parity"></span></label>
+            <select id="node-config-input-serialParity" style="max-width:80px">
+                <option value="none">None</option>
+                <option value="even">Even</option>
+                <option value="mark">Mark</option>
+                <option value="odd">Odd</option>
+                <option value="space">Space</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-serialConnectionDelay">
+                <i class="fa fa-random"></i>
+                <span data-i18n="modbus-contrib.label.serialconnectiondelay"></span>
+            </label>
+            <input type="text" id="node-config-input-serialConnectionDelay" style="max-width:80px" placeholder="500">
+        </div>
+	</div>
+	<hr>
+    <div class="form-row">
+        <label for="node-config-input-unit_id"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.unitId"></span></label>
+        <input type="text" id="node-config-input-unit_id" placeholder="1" style="max-width:80px">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-clientTimeout"><i class="icon-time"></i> <span data-i18n="modbus-contrib.label.timeout"></span></label>
+        <input type="text" id="node-config-input-clientTimeout" placeholder="1000" style="max-width:80px">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-reconnectTimeout">
+            <i class="icon-time"></i>
+            <span data-i18n="modbus-contrib.label.reconnectTimeout"></span>
+        </label>
+        <input type="text" id="node-config-input-reconnectTimeout" placeholder="2000" style="max-width:80px">
+    </div>
+    <hr>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-config-input-stateLogEnabled">
+            <i class="fa fa-th"></i>
+            <span data-i18n="modbus-contrib.label.stateLogEnabled"></span>
+        </label>
+        <input type="checkbox" id="node-config-input-stateLogEnabled" style="max-width:30px">
+    </div>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-config-input-bufferCommands"><i class="fa fa-th"></i> <span
+        data-i18n="modbus-contrib.label.queueCommands"></span></label>
+        <input type="checkbox" id="node-config-input-bufferCommands" style="max-width:30px">
+    </div>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-config-input-commandDelay"><i class="icon-time"></i> <span
+        data-i18n="modbus-contrib.label.commandDelay"></span></label>
+        <input type="text" id="node-config-input-commandDelay" placeholder="1" style="max-width:80px">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="modbus-client">
+    <p><strong>
+        If you have many nodes on this communication (see configuration nodes),
+        think about multiple connections to your Modbus device, please!
+        Many devices are able to connecting multiple.
+    </strong></p>
+
+   <p>
+       Add a catch to your flow:
+       <pre>
+            [{"id":"cdd076d5.dab728","type":"catch","z":"b245d3e4.b52de","name":"","scope":null,"x":1020,"y":40,
+            "wires":[["8516d63d.1c29a8"]]},{"id":"8516d63d.1c29a8","type":"debug","z":"b245d3e4.b52de","name":"",
+            "active":true,"console":"false","complete":"true","x":1170,"y":40,"wires":[]}]
+       </pre>
+   </p>
+
+
+    <p>Uses ModbusRTU ('modbus-serial') to read/write by ethernet host:port or TTY register/coil/input addresses.</p>
+    <p>The Stately machine ('stately.js') organizing the states to work with reconnects and a queue of commands.</p>
+    <p>
+        <h3>Basics</h3>
+        <ul>
+            <li>Type (TCP/Serial)</li>
+            <li>Queue commands (true/false) - with true it buffers incoming Modbus commands and send them with
+            delay</li>
+            <li>Queue Work Delay (default 0 ms) - ms interval to delay sending commands from queue (sumOfWaiting=requestsPerCycle*delay)</li>
+            <li>Unit-ID (default 1) - to set one Unit-ID for all nodes without Unit-ID.
+            Set the Unit-ID of the Read/Write/Getter node's to empty for using this ID</li>
+            <li>Timeout (default 1000 ms) - ms for the command timeout on ModbusRTU command</li>
+            <li>Reconnect timeout (default 2000 ms) - time to wait on reconnect before next sending</li>
+        </ul>
+
+        <h3>TCP</h3>
+        <ul>
+            <li>Host - IP address</li>
+            <li>Port (default 502)</li>
+        </ul>
+
+        <h3>Serial</h3>
+        <ul>
+            <li>Serial Port (/dev/tty.usbserial | COM[1..n])</li>
+            <li>Serial Baud rate</li>
+            <li>Serial Databits</li>
+            <li>Serial Stopbits</li>
+            <li>Serial Parity</li>
+            <li>Serial Type</li>
+            <li>Serial Connection delay (default 500 ms) - time to delay first command sending after reconnect</li>
+        </ul>
+    </p>
+</script>

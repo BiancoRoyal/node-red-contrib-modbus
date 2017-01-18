@@ -1,0 +1,126 @@
+<!--
+ The BSD 3-Clause License
+
+ Copyright (c) 2016, Klaus Landsdorf (http://bianco-royal.de/)
+ All rights reserved.
+ node-red-contrib-modbus
+
+ Redistribution and use in source and binary forms, with or without modification,
+ are permitted provided that the following conditions are met:
+
+ 1. Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
+
+ 2. Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation and/or
+ other materials provided with the distribution.
+
+ 3. Neither the name of the copyright holder nor the names of its contributors may be
+ used to endorse or promote products derived from this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
+-->
+<script type="text/javascript">
+    RED.nodes.registerType('modbus-getter', {
+        category: 'modbus',
+        color: '#E9967A',
+        defaults: {
+            name: {value: ""},
+            showStatusActivities: {value: false},
+            unitid: {value: ""},
+            dataType: {value: "", required: true},
+            adr: {value: "", required: true, validate: RED.validators.number()},
+            quantity: {value: "", required: true, validate: RED.validators.number()},
+            server: {type: "modbus-client", required:true}
+        },
+        inputs: 1,
+        outputs: 3,
+        icon: "modbus.png",
+        paletteLabel: "Modbus-Getter",
+        label: function () {
+            return this.name || "Modbus Getter"
+        }
+    })
+</script>
+
+
+<script type="text/x-red" data-template-name="modbus-getter">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-unitid"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.unitId"></span></label>
+        <input type="text" id="node-input-unitid">
+    </div>
+    <div class="form-row">
+        <label for="node-input-dataType"><i class="icon-list"></i> <span data-i18n="modbus-contrib.label.functioncode"></span></label>
+        <select id="node-input-dataType">
+            <option value="Coil">FC 1: Read Coil Status</option>
+            <option value="Input">FC 2: Read Input Status</option>
+            <option value="HoldingRegister">FC 3: Read Holding Registers</option>
+            <option value="InputRegister">FC 4: Read Input Registers</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-adr"><i class="icon-home"></i> <span data-i18n="modbus-contrib.label.address"></span></label>
+        <input type="text" id="node-input-adr" placeholder="0:65535">
+    </div>
+    <div class="form-row">
+        <label for="node-input-quantity"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.quantity"></span></label>
+        <input type="text" id="node-input-quantity" placeholder="1-65535">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="icon-globe"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
+        <input type="text" id="node-input-server">
+    </div>
+    <hr>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
+        data-i18n="modbus-contrib.label.showActivities"></span></label>
+        <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
+    </div>
+</script>
+
+
+<script type="text/x-red" data-help-name="modbus-getter">
+    <p><strong>
+        If you have more than 10 nodes on one communication configuration,
+        use the Modbus-Flex-Getter or think about multiple connections to your Modbus Device, please!
+    </strong></p>
+
+    <p>Modbus TCP/Serial node with triggered read function by input.</p>
+    <p>Connects to a Modbus TCP or serial to read coils/inputs/registers at the rate of the incoming msg.</p>
+    <p>
+        <h4>Function codes currently supported include:</h4>
+
+        <ul>
+          <li>FC 1: Read Coil Status</li>
+          <li>FC 2: Read Input Status</li>
+          <li>FC 3: Read Holding Registers</li>
+          <li>FC 4: Read Input Registers</li>
+        </ul>
+        </p>
+     <p>
+         Choose a function code (FC) from the dropdown menu,
+         select the coil/input/register start address (0:65535),
+         and the quantity of coils/inputs/registers to be read from the start address.
+         Choose or edit the Modbus connection configuration.
+     </p>
+
+     <p>Unit-Id (0..255 tcp | 1..247 serial) - leave empty, otherwise it overrides the default Unit-ID of client
+     config</p>
+
+     <p>Output 1: data Array (PDU)</p>
+     <p>Output 2: modbus response</p>
+     <p>Output 3: input msg</p>
+</script>

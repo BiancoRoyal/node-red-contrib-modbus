@@ -1,0 +1,24 @@
+{
+  "modbus-contrib": {
+    "common": {
+      "label": {
+        "type": "Type",
+        "server": "Server",
+        "timeout": "Timeout",
+        "name": "Name"
+      },
+      "response": {
+      },
+      "getter": {
+      },
+      "read": {
+      },
+      "write": {
+      },
+      "server": {
+      },
+      "client": {
+      }
+    }
+  }
+}

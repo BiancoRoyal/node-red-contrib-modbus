@@ -1,0 +1,12 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "Show Activities",
+      "unitId": "Unit-Id",
+      "functioncode": "FC",
+      "address": "Address",
+      "quantity": "Quantity",
+      "server": "Server"
+    }
+  }
+}

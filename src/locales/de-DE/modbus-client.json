@@ -1,0 +1,23 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "type": "Typ",
+      "queueCommands": "Queue Einträge",
+      "stateLogEnabled": "Log State-Wechsel",
+      "host": "Host",
+      "port": "Port",
+      "serialport": "Com-Port",
+      "serialType": "Verbindungstyp",
+      "serialEndian": "Endian-Typ",
+      "baudRate": "Baud-Rate",
+      "dataBits": "Daten-Bits",
+      "stopBits": "Stop-Bits",
+      "parity": "Parity",
+      "serialconnectiondelay": "Verbindungsverzögerung (ms)",
+      "unitId": "Unit-Id",
+      "commandDelay": "Queue Sendeverzögerung (ms)",
+      "timeout": "Timeout (ms)",
+      "reconnectTimeout": "Reconnect-Timeout (ms)"
+    }
+  }
+}
