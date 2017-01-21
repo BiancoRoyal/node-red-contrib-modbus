@@ -33,6 +33,8 @@ try these options on npm install to build, if you have problems to install
     
 # How to use
 
+see [Wiki][10] pages
+
 use the [Flow example][3] to see how it works ...
 
 see [YouTube Playlist][9]
@@ -60,3 +62,4 @@ contribution in 2016 by [iurly][6]
 [7]:https://github.com/jayharper
 [8]:http://www.modbus.org/
 [9]:http://bit.ly/2jzwjqP
+[10]:https://github.com/biancode/node-red-contrib-modbus/wiki
