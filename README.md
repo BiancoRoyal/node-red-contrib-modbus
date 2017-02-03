@@ -3,7 +3,6 @@
 [![NPM download](https://img.shields.io/npm/dm/node-red-contrib-modbus.svg)](http://www.npm-stats.com/~packages/node-red-contrib-modbus)
 [![NPM version](https://badge.fury.io/js/node-red-contrib-modbus.png)](http://badge.fury.io/js/node-red-contrib-modbus)
 [![Build Status](https://travis-ci.org/biancode/node-red-contrib-modbus.svg?branch=master)](https://travis-ci.org/biancode/node-red-contrib-modbus)
-[![Gratipay](https://img.shields.io/gratipay/biancode.svg)](https://gratipay.com/biancode/)
 
 [![nodemodbus64](images/modbus-icon64.png)](https://www.npmjs.com/package/node-red-contrib-modbus)
 
@@ -46,7 +45,7 @@ see [YouTube Playlist][9]
 
 since April 2016 by [Klaus Landsdorf][4]
 
-# History 
+### History 
 
 * contribution in 2016 by [iurly][6]
 
