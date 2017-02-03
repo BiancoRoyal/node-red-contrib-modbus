@@ -2,8 +2,7 @@
  * Original Work Copyright 2014 IBM Corp.
  * node-red
  *
- * Copyright (c) 2016, Klaus Landsdorf (http://bianco-royal.de/)
- * Copyright 2016-2017 Klaus Landsdorf (http://bianco-royal.de/)
+ * Copyright (c) 2016,2017, Klaus Landsdorf (http://bianco-royal.de/)
  * All rights reserved.
  * node-red-contrib-modbus - The BSD 3-Clause License
  *

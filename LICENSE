@@ -1,15 +1,8 @@
-Copyright 2015 Mika Karaila, http://www.valmet.com/
-Copyright 2015-2016 Valmet Automation Inc.
-node-red-contrib-modbus - Apache 2.0
-
-Copyright (c) 2016, Jason D. Harper, Argonne National Laboratory
-Copyright 2016, UChicago Argonne, LLC
-node-red-contrib-modbustcp (ANL-SF-16-004) - BSD 3-Clause License
-
 The BSD 3-Clause License
 
-Copyright (c) 2016, Klaus Landsdorf (http://bianco-royal.de/)
-Copyright 2016-2017 Klaus Landsdorf (http://bianco-royal.de/)
+Copyright 2016,2017 - Klaus Landsdorf (http://bianco-royal.de/)
+Copyright 2016 - Jason D. Harper, Argonne National Laboratory
+Copyright 2015,2016 - Mika Karaila, Valmet Automation Inc.
 All rights reserved.
 node-red-contrib-modbus
 
