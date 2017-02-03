@@ -46,12 +46,13 @@ see [YouTube Playlist][9]
 
 since April 2016 by [Klaus Landsdorf][4]
 
+# History 
 
-<sub><sub>
-History started in early 2015 by [Mika Karaila][5]
-license changed in 2016 by [Jason D. Harper][7]
-contribution in 2016 by [iurly][6]
-</sub></sub>
+* contribution in 2016 by [iurly][6]
+
+* license changed in 2016 by [Jason D. Harper][7]
+
+* started in early 2015 by [Mika Karaila][5]
 
 [1]:https://nodered.org
 [2]:https://www.npmjs.com/package/modbus-serial
