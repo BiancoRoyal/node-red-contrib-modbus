@@ -13,6 +13,7 @@
  */
 module.exports = function (RED) {
   'use strict'
+  let internalDebugLog = require('debug')('node_red_contrib_modbus')
 
   function ModbusQueueInfo (config) {
     RED.nodes.createNode(this, config)
@@ -30,6 +31,10 @@ module.exports = function (RED) {
     let modbusClient = RED.nodes.getNode(config.server)
 
     node.queueReadInterval = null
+
+    if (RED.settings.verbose) {
+      internalDebugLog.enabled = true
+    }
 
     setNodeStatusTo('waiting')
 
@@ -59,7 +64,7 @@ module.exports = function (RED) {
 
         if (!node.lowLevelReached && items > node.lowLowLevel && items < node.lowLevel) {
           node.lowLevelReached = true
-          node.log({
+          internalDebugLog({
             payload: Date.now(),
             state: 'low level reached',
             unitid: unit,

@@ -15,7 +15,7 @@ var serverNode = require('../src/modbus-server.js')
 var readNode = require('../src/modbus-queue-info.js')
 var helper = require('../src/testing/nodered-helper.js')
 
-describe('Getter node Testing', function () {
+describe('Queue Info node Testing', function () {
   before(function (done) {
     helper.startServer(done)
   })

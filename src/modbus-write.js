@@ -16,6 +16,7 @@
 module.exports = function (RED) {
   'use strict'
   let mbBasics = require('./modbus-basics')
+  let internalDebugLog = require('debug')('node_red_contrib_modbus')
 
   function ModbusWrite (config) {
     RED.nodes.createNode(this, config)
@@ -73,10 +74,6 @@ module.exports = function (RED) {
         return
       }
 
-      if (node.showStatusActivities) {
-        setNodeStatusTo(modbusClient.statlyMachine.getMachineState())
-      }
-
       msg.payload = {
         value: msg.payload,
         unitid: node.unitid,
@@ -84,6 +81,12 @@ module.exports = function (RED) {
         address: node.adr,
         quantity: node.quantity
       }
+
+      if (node.showStatusActivities) {
+        setNodeStatusTo(modbusClient.statlyMachine.getMachineState())
+        verboseLog(JSON.toString(msg))
+      }
+
       modbusClient.emit('writeModbus', msg, node.onModbusWriteDone, node.onModbusWriteError)
     })
 
@@ -119,7 +122,7 @@ module.exports = function (RED) {
 
     function verboseLog (logMessage) {
       if (RED.settings.verbose) {
-        node.log(logMessage)
+        internalDebugLog(logMessage)
       }
     }
 

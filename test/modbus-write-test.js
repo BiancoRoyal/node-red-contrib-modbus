@@ -16,7 +16,7 @@ var serverNode = require('../src/modbus-server.js')
 var writeNode = require('../src/modbus-write.js')
 var helper = require('../src/testing/nodered-helper.js')
 
-describe('Getter node Testing', function () {
+describe('Write node Testing', function () {
   before(function (done) {
     helper.startServer(done)
   })

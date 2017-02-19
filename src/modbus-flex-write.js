@@ -14,6 +14,7 @@
 module.exports = function (RED) {
   'use strict'
   let mbBasics = require('./modbus-basics')
+  let internalDebugLog = require('debug')('node_red_contrib_modbus')
 
   function ModbusFlexWrite (config) {
     RED.nodes.createNode(this, config)
@@ -66,10 +67,6 @@ module.exports = function (RED) {
         return
       }
 
-      if (node.showStatusActivities) {
-        setNodeStatusTo(modbusClient.statlyMachine.getMachineState())
-      }
-
       if (msg.payload) {
         try {
           msg.payload.fc = parseInt(msg.payload.fc)
@@ -102,6 +99,11 @@ module.exports = function (RED) {
           node.error(err, msg)
         }
 
+        if (node.showStatusActivities) {
+          setNodeStatusTo(modbusClient.statlyMachine.getMachineState())
+          verboseLog(JSON.toString(msg))
+        }
+
         modbusClient.emit('writeModbus', msg, node.onModbusWriteDone, node.onModbusWriteError)
       } else {
         node.error('Payload Not Valid', msg)
@@ -125,7 +127,7 @@ module.exports = function (RED) {
 
     function verboseLog (logMessage) {
       if (RED.settings.verbose) {
-        node.log(logMessage)
+        internalDebugLog(logMessage)
       }
     }
 
@@ -135,9 +137,7 @@ module.exports = function (RED) {
 
     function setNodeStatusTo (statusValue) {
       let statusOptions = mbBasics.set_node_status_properties(statusValue, false)
-      if (mbBasics.statusLog) {
-        verboseLog('status options: ' + JSON.stringify(statusOptions))
-      }
+
       node.status({
         fill: statusOptions.fill,
         shape: statusOptions.shape,

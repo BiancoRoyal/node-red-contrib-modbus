@@ -16,6 +16,7 @@
 module.exports = function (RED) {
   'use strict'
   let mbBasics = require('./modbus-basics')
+  let internalDebugLog = require('debug')('node_red_contrib_modbus')
 
   function ModbusRead (config) {
     RED.nodes.createNode(this, config)
@@ -83,10 +84,6 @@ module.exports = function (RED) {
         return
       }
 
-      if (node.showStatusActivities) {
-        setNodeStatusTo(modbusClient.statlyMachine.getMachineState())
-      }
-
       let msg = {
         topic: 'polling',
         from: node.name,
@@ -100,7 +97,9 @@ module.exports = function (RED) {
 
       if (node.showStatusActivities) {
         setNodeStatusTo('polling')
+        verboseLog(JSON.toString(msg))
       }
+
       modbusClient.emit('readModbus', msg, node.onModbusReadDone, node.onModbusReadError)
     }
 
@@ -122,7 +121,9 @@ module.exports = function (RED) {
     node.onModbusReadDone = function (resp, msg) {
       if (node.showStatusActivities) {
         setNodeStatusTo('reading done')
+        verboseLog('reading done -> ' + JSON.stringify(msg))
       }
+
       node.send(buildMessage(resp.data, resp))
     }
 
@@ -140,7 +141,7 @@ module.exports = function (RED) {
 
     function verboseLog (logMessage) {
       if (RED.settings.verbose) {
-        node.log(logMessage)
+        internalDebugLog(logMessage)
       }
     }
 
@@ -154,9 +155,6 @@ module.exports = function (RED) {
       }
 
       let statusOptions = mbBasics.set_node_status_properties(statusValue, node.showStatusActivities)
-      if (mbBasics.statusLog) {
-        verboseLog('status options: ' + JSON.stringify(statusOptions))
-      }
 
       if (statusValue.search('active') !== -1 || statusValue === 'polling') {
         timeoutOccurred = false

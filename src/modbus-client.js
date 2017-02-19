@@ -15,6 +15,7 @@
  */
 module.exports = function (RED) {
   'use strict'
+  let internalDebugLog = require('debug')('node_red_contrib_modbus')
 
   function ModbusClientNode (config) {
     RED.nodes.createNode(this, config)
@@ -218,7 +219,7 @@ module.exports = function (RED) {
 
     function verboseLog (logMessage) {
       if (RED.settings.verbose) {
-        node.log('Client -> ' + logMessage + serverInfo)
+        internalDebugLog('Client -> ' + logMessage + serverInfo)
       }
     }
 

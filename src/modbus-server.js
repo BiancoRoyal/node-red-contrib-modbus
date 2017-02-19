@@ -16,6 +16,7 @@ module.exports = function (RED) {
   let stampit = require('stampit')
   let modbus = require('node-modbus')
   let mbBasics = require('./modbus-basics')
+  let internalDebugLog = require('debug')('node_red_contrib_modbus')
 
   function ModbusServer (config) {
     RED.nodes.createNode(this, config)
@@ -44,7 +45,7 @@ module.exports = function (RED) {
 
     function verboseLog (logMessage) {
       if (RED.settings.verbose) {
-        node.log(logMessage)
+        internalDebugLog(logMessage)
       }
     }
 

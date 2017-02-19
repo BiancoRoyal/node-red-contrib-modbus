@@ -40,6 +40,11 @@ see [YouTube Playlist][9]
 
 ![Flow Example](images/Screenshot02V100.png)
 
+# Debug
+
+Debug will be activated by starting Node-RED with debug mode: 
+
+    DEBUG=node_red_contrib_modbus node-red -v
 
 # Authors
 
