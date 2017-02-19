@@ -19,6 +19,7 @@
 
       tcpHost: {value: "127.0.0.1", required: true},
       tcpPort: {value: 502, required: true, validate: RED.validators.number()},
+      tcpType: {value: "DEFAULT", required: true},
 
       serialPort: {value: "/dev/ttyUSB", required: true},
       serialType: {value: "RTU-BUFFERD", required: true},
@@ -84,6 +85,9 @@
             if (node.tcpHost) {
               node.tcpHost.required = true
               node.tcpPort.required = true
+              if (node.tcpType) {
+                node.tcpType.required = true
+              }
             }
 
             if (node.serialPort) {
@@ -117,6 +121,9 @@
             if (node.tcpHost) {
               node.tcpHost.required = false
               node.tcpPort.required = false
+              if (node.tcpType) {
+                node.tcpType.required = false
+              }
             }
 
             if (node.serialPort) {
@@ -191,6 +198,15 @@
             <label for="node-config-input-tcpPort"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.port"></span></label>
             <input type="text" id="node-config-input-tcpPort">
         </div>
+        <div class="form-row">
+            <label for="node-config-input-tcpType"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label
+            .tcpType"></span></label>
+            <select type="text" id="node-config-input-tcpType" style="width:140px;">
+                <option value="DEFAULT">DEFAULT</option>
+                <option value="TELNET" select>TELNET</option>
+                <option value="C701" select>C701</option>
+            </select>
+        </div>
     </div>
     <div id="node-inputs-modbus-serial">
         <div class="form-row">
@@ -204,8 +220,6 @@
                 <option value="RTU-BUFFERD" select>RTU-BUFFERD</option>
                 <option value="RTU" select>RTU</option>
                 <option value="ASCII">ASCII</option>
-                <option value="TELNET" select>TELNET</option>
-                <option value="C701" select>C701</option>
             </select>
         </div>
         <div class="form-row">

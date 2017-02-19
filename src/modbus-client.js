@@ -15,7 +15,8 @@
  */
 module.exports = function (RED) {
   'use strict'
-  let internalDebugLog = require('debug')('node_red_contrib_modbus')
+  let internalDebugLog = require('debug')('node_red_contrib_modbus:client')
+  let modbusDebugLog = require('debug')('modbus-serial')
 
   function ModbusClientNode (config) {
     RED.nodes.createNode(this, config)
@@ -37,6 +38,7 @@ module.exports = function (RED) {
 
     this.tcpHost = config.tcpHost
     this.tcpPort = parseInt(config.tcpPort) || 502
+    this.tcpType = config.tcpType
 
     this.serialPort = config.serialPort
     this.serialBaudrate = config.serialBaudrate
@@ -316,21 +318,56 @@ module.exports = function (RED) {
           return
         }
 
-        node.client.connectTCP(node.tcpHost, {
-          port: node.tcpPort,
-          autoOpen: true
-        }, function (err) {
-          if (err) {
-            verboseWarn(err)
-            node.statlyMachine.failure()
-          } else {
-            node.client.setID(node.unit_id)
-            node.client.setTimeout(node.clientTimeout)
-            node.statlyMachine.connect()
-            node.client._port.on('close', node.onModbusClose)
-            node.client._port.on('error', node.onModbusError)
-          }
-        })
+        switch (node.tcpType) {
+          case 'C701':
+            verboseLog('C701 port UDP bridge')
+            node.client.connectC701(node.tcpHost, {
+              port: node.tcpPort,
+              autoOpen: true
+            }).then(function (err) {
+              if (err) {
+                verboseWarn(err)
+                node.statlyMachine.failure()
+              } else {
+                node.client.setID(node.unit_id)
+                node.client.setTimeout(node.clientTimeout)
+                node.statlyMachine.connect()
+              }
+            }).catch(node.modbusErrorHandling)
+            break
+          case 'TELNET':
+            verboseLog('Telnet port')
+            node.client.connectTelnet(node.tcpHost, {
+              port: node.tcpPort,
+              autoOpen: true
+            }).then(function (err) {
+              if (err) {
+                verboseWarn(err)
+                node.statlyMachine.failure()
+              } else {
+                node.client.setID(node.unit_id)
+                node.client.setTimeout(node.clientTimeout)
+                node.statlyMachine.connect()
+              }
+            }).catch(node.modbusErrorHandling)
+            break
+          default:
+            verboseLog('TCP port')
+            node.client.connectTCP(node.tcpHost, {
+              port: node.tcpPort,
+              autoOpen: true
+            }).then(function (err) {
+              if (err) {
+                verboseWarn(err)
+                node.statlyMachine.failure()
+              } else {
+                node.client.setID(node.unit_id)
+                node.client.setTimeout(node.clientTimeout)
+                node.statlyMachine.connect()
+                node.client._port.on('close', node.onModbusClose)
+              }
+            }).catch(node.modbusErrorHandling)
+        }
       } else {
         if (!node.checkUnitId(node.unit_id)) {
           node.error('wrong unit-id serial (1..247)', {payload: node.unit_id})
@@ -351,7 +388,7 @@ module.exports = function (RED) {
               stopBits: parseInt(node.serialStopbits),
               parity: node.serialParity,
               autoOpen: false
-            }, function (err) {
+            }).then(function (err) {
               if (err) {
                 verboseWarn(err)
                 node.statlyMachine.failure()
@@ -359,7 +396,7 @@ module.exports = function (RED) {
                 node.statlyMachine.openserial()
                 setTimeout(node.openSerialClient, parseInt(node.serialConnectionDelay))
               }
-            })
+            }).catch(node.modbusErrorHandling)
             break
           case 'RTU':
             verboseLog('RTU port serial')
@@ -369,7 +406,7 @@ module.exports = function (RED) {
               stopBits: parseInt(node.serialStopbits),
               parity: node.serialParity,
               autoOpen: false
-            }, function (err) {
+            }).then(function (err) {
               if (err) {
                 verboseWarn(err)
                 node.statlyMachine.failure()
@@ -377,43 +414,7 @@ module.exports = function (RED) {
                 node.statlyMachine.openserial()
                 setTimeout(node.openSerialClient, parseInt(node.serialConnectionDelay))
               }
-            })
-            break
-          case 'C701':
-            verboseLog('C701 port serial')
-            node.client.connectC701(node.serialPort, {
-              baudRate: parseInt(node.serialBaudrate),
-              dataBits: parseInt(node.serialDatabits),
-              stopBits: parseInt(node.serialStopbits),
-              parity: node.serialParity,
-              autoOpen: false
-            }, function (err) {
-              if (err) {
-                verboseWarn(err)
-                node.statlyMachine.failure()
-              } else {
-                node.statlyMachine.openserial()
-                setTimeout(node.openSerialClient, parseInt(node.serialConnectionDelay))
-              }
-            })
-            break
-          case 'TELNET':
-            verboseLog('Telnet port serial')
-            node.client.connectTelnet(node.serialPort, {
-              baudRate: parseInt(node.serialBaudrate),
-              dataBits: parseInt(node.serialDatabits),
-              stopBits: parseInt(node.serialStopbits),
-              parity: node.serialParity,
-              autoOpen: false
-            }, function (err) {
-              if (err) {
-                verboseWarn(err)
-                node.statlyMachine.failure()
-              } else {
-                node.statlyMachine.openserial()
-                setTimeout(node.openSerialClient, parseInt(node.serialConnectionDelay))
-              }
-            })
+            }).catch(node.modbusErrorHandling)
             break
           default:
             verboseLog('RTU buffered port serial')
@@ -423,7 +424,7 @@ module.exports = function (RED) {
               stopBits: parseInt(node.serialStopbits),
               parity: node.serialParity,
               autoOpen: false
-            }, function (err) {
+            }).then(function (err) {
               if (err) {
                 verboseWarn(err)
                 node.statlyMachine.failure()
@@ -431,37 +432,41 @@ module.exports = function (RED) {
                 node.statlyMachine.openserial()
                 setTimeout(node.openSerialClient, parseInt(node.serialConnectionDelay))
               }
-            })
+            }).catch(node.modbusErrorHandling)
             break
         }
       }
+    }
+
+    node.modbusErrorHandling = function (err) {
+      modbusDebugLog(JSON.stringify(err))
+      modbusDebugLog(err.message)
+      if (err.code === 'ECONNRESET') {
+        node.statlyMachine.failure()
+      }
+      node.error(err, {payload: serverInfo})
     }
 
     node.openSerialClient = function () {
       // some delay for windows
       if (node.statlyMachine.getMachineState() === 'OPENED') {
         verboseLog('time to open Unit ' + node.unit_id)
+        modbusDebugLog('modbus connection opened')
         node.client.setID(node.unit_id)
         node.client.setTimeout(parseInt(node.clientTimeout))
         node.client._port.on('close', node.onModbusClose)
-        node.client._port.on('error', node.onModbusError)
         node.statlyMachine.connect()
       } else {
         verboseLog('wrong state on connect serial ' + node.statlyMachine.getMachineState())
+        modbusDebugLog('modbus connection not opened state is %s', node.statlyMachine.getMachineState())
         node.statlyMachine.failure()
       }
     }
 
     node.onModbusClose = function () {
       verboseWarn('modbus closed port')
+      modbusDebugLog('modbus closed port')
       node.statlyMachine.close()
-    }
-
-    node.onModbusError = function (err) {
-      if (err.code === 'ECONNRESET') {
-        node.statlyMachine.failure()
-      }
-      node.error(err, {payload: serverInfo})
     }
 
     node.getQueueNumber = function (msg) {
@@ -558,6 +563,7 @@ module.exports = function (RED) {
           }).catch(function (err) {
             node.activateSending(msg)
             cberr(err, msg)
+            node.modbusErrorHandling(err)
           })
           break
         case 2: // FC: 2
@@ -567,6 +573,7 @@ module.exports = function (RED) {
           }).catch(function (err) {
             node.activateSending(msg)
             cberr(err, msg)
+            node.modbusErrorHandling(err)
           })
           break
         case 3: // FC: 3
@@ -576,6 +583,7 @@ module.exports = function (RED) {
           }).catch(function (err) {
             node.activateSending(msg)
             cberr(err, msg)
+            node.modbusErrorHandling(err)
           })
           break
         case 4: // FC: 4
@@ -585,11 +593,13 @@ module.exports = function (RED) {
           }).catch(function (err) {
             node.activateSending(msg)
             cberr(err, msg)
+            node.modbusErrorHandling(err)
           })
           break
         default:
           node.activateSending(msg)
           cberr('Function Code Unknown', msg)
+          modbusDebugLog('Function Code Unknown %s', JSON.stringify(msg))
           break
       }
     }
@@ -651,6 +661,7 @@ module.exports = function (RED) {
             }).catch(function (err) {
               node.activateSending(msg)
               cberr(err, msg)
+              node.modbusErrorHandling(err)
             })
           }
           break
@@ -661,6 +672,7 @@ module.exports = function (RED) {
           }).catch(function (err) {
             node.activateSending(msg)
             cberr(err, msg)
+            node.modbusErrorHandling(err)
           })
           break
         case 16: // FC: 16
@@ -675,6 +687,7 @@ module.exports = function (RED) {
             }).catch(function (err) {
               node.activateSending(msg)
               cberr(err, msg)
+              node.modbusErrorHandling(err)
             })
           }
           break
@@ -685,11 +698,13 @@ module.exports = function (RED) {
           }).catch(function (err) {
             node.activateSending(msg)
             cberr(err, msg)
+            node.modbusErrorHandling(err)
           })
           break
         default:
           node.activateSending(msg)
           cberr('Function Code Unknown', msg)
+          modbusDebugLog('Function Code Unknown %s', JSON.stringify(msg))
           break
       }
     }

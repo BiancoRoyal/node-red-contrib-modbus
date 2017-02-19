@@ -150,7 +150,7 @@ module.exports = function (RED) {
 
       if (err) {
         node.error(err, msg)
-        switch (err) {
+        switch (err.message) {
           case 'Timed out':
             setNodeStatusTo('timeout')
             working = true

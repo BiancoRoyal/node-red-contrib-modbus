@@ -6,6 +6,7 @@
       "stateLogEnabled": "Log State-Wechsel",
       "host": "Host",
       "port": "Port",
+      "tcpType": "Verbindungstyp",
       "serialport": "Com-Port",
       "serialType": "Verbindungstyp",
       "serialEndian": "Endian-Typ",
