@@ -352,6 +352,22 @@ module.exports = function (RED) {
               }
             }).catch(node.modbusErrorHandling)
             break
+          case 'TPC-RTU-BUFFERED':
+            verboseLog('TCP RTU buffered port')
+            node.client.connectTcpRTUBuffered(node.tcpHost, {
+              port: node.tcpPort,
+              autoOpen: true
+            }).then(function (err) {
+              if (err) {
+                verboseWarn(err)
+                node.statlyMachine.failure()
+              } else {
+                node.client.setID(node.unit_id)
+                node.client.setTimeout(node.clientTimeout)
+                node.statlyMachine.connect()
+              }
+            }).catch(node.modbusErrorHandling)
+            break
           default:
             verboseLog('TCP port')
             node.client.connectTCP(node.tcpHost, {
@@ -445,7 +461,6 @@ module.exports = function (RED) {
       if (networkErrors.includes(err.errno)) {
         node.statlyMachine.failure()
       }
-      node.error(err, {payload: serverInfo})
     }
 
     node.openSerialClient = function () {
