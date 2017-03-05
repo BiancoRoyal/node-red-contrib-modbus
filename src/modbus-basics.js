@@ -86,6 +86,12 @@ module.exports.set_node_status_properties = function (statusValue, showActivitie
       shapeValue = 'dot'
       break
 
+    case 'not ready to read':
+    case 'not ready to write':
+      fillValue = 'yellow'
+      shapeValue = 'ring'
+      break
+
     case 'connected':
       fillValue = 'green'
       shapeValue = 'ring'

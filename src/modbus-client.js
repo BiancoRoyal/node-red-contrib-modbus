@@ -17,6 +17,7 @@ module.exports = function (RED) {
   'use strict'
   let internalDebugLog = require('debug')('node_red_contrib_modbus:client')
   let modbusDebugLog = require('debug')('modbus-serial')
+  let networkErrors = ['ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNRESET', 'ECONNREFUSED']
 
   function ModbusClientNode (config) {
     RED.nodes.createNode(this, config)
@@ -441,7 +442,7 @@ module.exports = function (RED) {
     node.modbusErrorHandling = function (err) {
       modbusDebugLog(JSON.stringify(err))
       modbusDebugLog(err.message)
-      if (err.code === 'ECONNRESET') {
+      if (networkErrors.includes(err.errno)) {
         node.statlyMachine.failure()
       }
       node.error(err, {payload: serverInfo})

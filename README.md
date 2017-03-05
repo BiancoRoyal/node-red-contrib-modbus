@@ -11,9 +11,9 @@ node-red-contrib-modbus
 
 [Node-RED][1] contribution package for [Modbus][8]
 
-Based on [modbus-serial][2] with TCP and Serial RTU, RTU buffered, C701, Telnet, ASCII
+Based on [modbus-serial][2] with TCP, C701, Telnet, Serial, RTU buffered, and ASCII
 
-* stress tested with Node-RED v0.15.2/v0.16.1 and Node.js (4.7/6.9 LTS)
+* stress tested with Node-RED v0.16.2 and Node.js (4.7/6.9 LTS)
 * works with queueing per unit and round robin scheduling
 
 # Install
@@ -45,6 +45,8 @@ see [YouTube Playlist][9]
 Debug will be activated by starting Node-RED with debug mode: 
 
     DEBUG=node_red_contrib_modbus node-red -v
+
+see [Wiki][10] pages to get more options in detail
 
 # Authors
 

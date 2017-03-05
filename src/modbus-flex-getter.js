@@ -144,10 +144,13 @@ module.exports = function (RED) {
       let working = false
 
       if (err) {
-        node.error(err, msg)
         switch (err.message) {
           case 'Timed out':
             setNodeStatusTo('timeout')
+            working = true
+            break
+          case 'FSM Not Ready To Read':
+            setNodeStatusTo('not ready to read')
             working = true
             break
           case 'Port Not Open':
@@ -157,6 +160,7 @@ module.exports = function (RED) {
             break
           default:
             setNodeStatusTo('error: ' + JSON.stringify(err))
+            node.error(err, msg)
         }
       }
       return working
