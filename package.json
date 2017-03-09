@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-modbus",
-  "version": "1.0.9",
+  "version": "1.0.9-alpha",
   "description": "The all in one Modbus TCP and Serial contribution package for Node-RED.",
   "dependencies": {
     "debug": "2.6.1",
@@ -37,7 +37,7 @@
     "node-modbus"
   ],
   "engines": {
-    "node": ">=4.7.0"
+    "node": ">=6.9"
   },
   "repository": {
     "type": "git",
