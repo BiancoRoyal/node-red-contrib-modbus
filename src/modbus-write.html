@@ -14,6 +14,7 @@
         defaults: {
             name: {value: ""},
             showStatusActivities: {value: false},
+            showErrors: {value: false},
             unitid: {value: ""},
             dataType: {value: "", required: true},
             adr: {value: "", required: true, validate: RED.validators.number()},
@@ -94,6 +95,11 @@
         <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
         data-i18n="modbus-contrib.label.showActivities"></span></label>
         <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
+    </div>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
+        data-i18n="modbus-contrib.label.showErrors"></span></label>
+        <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
     </div>
 </script>
 

@@ -57,8 +57,7 @@ module.exports = function (RED) {
 
         let items = modbusClient.bufferCommandList.get(unit).length
 
-        if (!items ||
-          !node.lowLowLevelReached && items < node.lowLowLevel) {
+        if (!items || (!node.lowLowLevelReached && items < node.lowLowLevel)) {
           node.resetStates()
         }
 

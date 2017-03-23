@@ -43,7 +43,6 @@ module.exports = function (RED) {
       let shapeValue = 'dot'
 
       switch (statusValue) {
-
         case 'initialized':
           fillValue = 'green'
           shapeValue = 'ring'

@@ -70,7 +70,6 @@ module.exports.set_node_status_properties = function (statusValue, showActivitie
   let shapeValue = 'ring'
 
   switch (statusValue) {
-
     case 'connecting':
       fillValue = 'yellow'
       shapeValue = 'ring'

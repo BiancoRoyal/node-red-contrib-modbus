@@ -31,6 +31,7 @@ module.exports = function (RED) {
     this.rate = config.rate
     this.rateUnit = config.rateUnit
     this.showStatusActivities = config.showStatusActivities
+    this.showErrors = config.showErrors
     this.connection = null
 
     let node = this
@@ -61,7 +62,9 @@ module.exports = function (RED) {
         clearInterval(timerID) // clear Timer from events
       }
       timerID = null
-      node.warn(failureMsg)
+      if (node.showErrors) {
+        node.warn(failureMsg)
+      }
     }
 
     node.onModbusClose = function () {
@@ -197,7 +200,9 @@ module.exports = function (RED) {
             break
           default:
             setNodeStatusTo('error: ' + JSON.stringify(err))
-            node.error(err, msg)
+            if (node.showErrors) {
+              node.error(err, msg)
+            }
         }
       }
       return working

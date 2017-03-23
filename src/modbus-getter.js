@@ -27,6 +27,7 @@ module.exports = function (RED) {
     this.quantity = config.quantity
 
     this.showStatusActivities = config.showStatusActivities
+    this.showErrors = config.showErrors
     this.connection = null
 
     let node = this
@@ -48,7 +49,9 @@ module.exports = function (RED) {
 
     node.onModbusError = function (failureMsg) {
       setNodeStatusTo('failure')
-      node.warn(failureMsg)
+      if (node.showErrors) {
+        node.warn(failureMsg)
+      }
     }
 
     node.onModbusClose = function () {
@@ -156,7 +159,9 @@ module.exports = function (RED) {
             break
           default:
             setNodeStatusTo('error: ' + JSON.stringify(err))
-            node.error(err, msg)
+            if (node.showErrors) {
+              node.error(err, msg)
+            }
         }
       }
       return working

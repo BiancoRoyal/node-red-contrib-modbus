@@ -58,7 +58,6 @@ module.exports = function (RED) {
       let shapeValue = 'dot'
 
       switch (statusValue) {
-
         case 'initialized':
           fillValue = 'green'
           shapeValue = 'ring'
@@ -138,7 +137,9 @@ module.exports = function (RED) {
 
     node.on('close', function () {
       setNodeStatusTo('closed')
-      node.server.close()
+      if (node.server.close) {
+        node.server.close()
+      }
       node.server = null
     })
   }
