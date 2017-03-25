@@ -393,7 +393,7 @@ module.exports = function (RED) {
     node.modbusErrorHandling = function (err) {
       coreModbusClient.modbusDebugLog(JSON.stringify(err))
       coreModbusClient.modbusDebugLog(err.message)
-      if (coreModbusClient.includes(err.errno)) {
+      if (coreModbusClient.networkErrors.includes(err.errno)) {
         node.statlyMachine.failure()
       }
     }
