@@ -80,7 +80,7 @@ gulp.task('web', function () {
 
 gulp.task('nodejs', function (cb) {
   pump([
-    gulp.src('src/*.js'),
+    gulp.src('src/**/*.js'),
     gulp.dest('modbus')
   ],
     cb

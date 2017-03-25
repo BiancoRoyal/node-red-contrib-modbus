@@ -137,9 +137,7 @@ module.exports = function (RED) {
 
     node.on('close', function () {
       setNodeStatusTo('closed')
-      if (node.server.close) {
-        node.server.close()
-      }
+      node.server.close()
       node.server = null
     })
   }

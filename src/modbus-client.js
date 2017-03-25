@@ -15,18 +15,13 @@
  */
 module.exports = function (RED) {
   'use strict'
-  let internalDebugLog = require('debug')('node_red_contrib_modbus:client')
-  let modbusDebugLog = require('debug')('modbus-serial')
-  let networkErrors = ['ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNRESET', 'ENETRESET',
-    'ECONNABORTED', 'ECONNREFUSED', 'ENETUNREACH', 'ENOTCONN',
-    'ESHUTDOWN', 'EHOSTDOWN', 'ENETDOWN', 'EWOULDBLOCK', 'EAGAIN']
+  let coreModbusClient = require('./core/modbus-client-core')
 
   function ModbusClientNode (config) {
     RED.nodes.createNode(this, config)
 
     // create an empty modbus client
     let ModbusRTU = require('modbus-serial')
-    let Stately = require('stately.js')
 
     const unlimitedListeners = 0
     const minCommandDelayMilliseconds = 1
@@ -62,6 +57,8 @@ module.exports = function (RED) {
     node.bufferCommandList = new Map()
     node.sendAllowed = new Map()
     node.unitSendingAllowed = []
+    node.messageAllowedStates = coreModbusClient.messagesAllowedStates
+    node.statlyMachine = coreModbusClient.createStatelyMachine()
 
     node.initQueue = function () {
       node.bufferCommandList.clear()
@@ -179,35 +176,6 @@ module.exports = function (RED) {
       return queueIsEmpty
     }
 
-    node.statlyMachine = Stately.machine({
-      'BROKEN': {'init': 'INIT', 'stop': 'STOPED'},
-      'INIT': {'openserial': 'OPENED', 'connect': 'CONNECTED', 'failure': 'FAILED'},
-      'OPENED': {'connect': 'CONNECTED', 'failure': 'FAILED'},
-      'CONNECTED': {'close': 'CLOSED', 'activate': 'ACTIVATED', 'failure': 'FAILED'},
-      'ACTIVATED': {
-        'close': 'CLOSED',
-        'read': 'READING',
-        'write': 'WRITING',
-        'queue': 'QUEUEING',
-        'failure': 'FAILED'
-      },
-      'QUEUEING': {
-        'activate': 'ACTIVATED',
-        'read': 'READING',
-        'write': 'WRITING',
-        'empty': 'EMPTY',
-        'failure': 'FAILED'
-      },
-      'EMPTY': {'queue': 'QUEUEING', 'failure': 'FAILED'},
-      'READING': {'activate': 'ACTIVATED', 'failure': 'FAILED'},
-      'WRITING': {'activate': 'ACTIVATED', 'failure': 'FAILED'},
-      'CLOSED': {'failure': 'FAILED', 'break': 'BROKEN'},
-      'FAILED': {'close': 'CLOSED', 'break': 'BROKEN', 'stop': 'STOPED'},
-      'STOPED': {'queue': 'STOPED', 'activate': 'STOPED'}
-    })
-
-    node.messageAllowedStates = ['ACTIVATED', 'QUEUEING', 'EMPTY']
-
     let serverInfo = ''
     if (node.clienttype === 'tcp') {
       serverInfo = ' TCP@' + node.tcpHost + ':' + node.tcpPort
@@ -224,7 +192,7 @@ module.exports = function (RED) {
 
     function verboseLog (logMessage) {
       if (RED.settings.verbose) {
-        internalDebugLog('Client -> ' + logMessage + serverInfo)
+        coreModbusClient.debugLog('Client -> ' + logMessage + serverInfo)
       }
     }
 
@@ -243,6 +211,7 @@ module.exports = function (RED) {
     node.statlyMachine.onINIT = function (event, oldState, newState) {
       node.initQueue()
       setTimeout(node.connectClient, node.reconnectTimeout)
+      verboseWarn('reconnect in ' + node.reconnectTimeout + ' ms')
       verboseLog('event: ' + event + ' old: ' + oldState + ' new: ' + newState)
       node.emit('mbinit')
     }
@@ -327,65 +296,33 @@ module.exports = function (RED) {
             node.client.connectC701(node.tcpHost, {
               port: node.tcpPort,
               autoOpen: true
-            }).then(function (err) {
-              if (err) {
-                verboseWarn(err)
-                node.statlyMachine.failure()
-              } else {
-                node.client.setID(node.unit_id)
-                node.client.setTimeout(node.clientTimeout)
-                node.statlyMachine.connect()
-              }
-            }).catch(node.modbusErrorHandling)
+            }).then(node.setTCPConnectionOptions)
+              .then(node.setTCPConnected)
+              .catch(node.modbusErrorHandling)
             break
           case 'TELNET':
             verboseLog('Telnet port')
             node.client.connectTelnet(node.tcpHost, {
               port: node.tcpPort,
               autoOpen: true
-            }).then(function (err) {
-              if (err) {
-                verboseWarn(err)
-                node.statlyMachine.failure()
-              } else {
-                node.client.setID(node.unit_id)
-                node.client.setTimeout(node.clientTimeout)
-                node.statlyMachine.connect()
-              }
-            }).catch(node.modbusErrorHandling)
+            }).then(node.setTCPConnectionOptions)
+              .catch(node.modbusErrorHandling)
             break
           case 'TPC-RTU-BUFFERED':
             verboseLog('TCP RTU buffered port')
             node.client.connectTcpRTUBuffered(node.tcpHost, {
               port: node.tcpPort,
               autoOpen: true
-            }).then(function (err) {
-              if (err) {
-                verboseWarn(err)
-                node.statlyMachine.failure()
-              } else {
-                node.client.setID(node.unit_id)
-                node.client.setTimeout(node.clientTimeout)
-                node.statlyMachine.connect()
-              }
-            }).catch(node.modbusErrorHandling)
+            }).then(node.setTCPConnectionOptions)
+              .catch(node.modbusErrorHandling)
             break
           default:
             verboseLog('TCP port')
             node.client.connectTCP(node.tcpHost, {
               port: node.tcpPort,
               autoOpen: true
-            }).then(function (err) {
-              if (err) {
-                verboseWarn(err)
-                node.statlyMachine.failure()
-              } else {
-                node.client.setID(node.unit_id)
-                node.client.setTimeout(node.clientTimeout)
-                node.statlyMachine.connect()
-                node.client._port.on('close', node.onModbusClose)
-              }
-            }).catch(node.modbusErrorHandling)
+            }).then(node.setTCPConnectionOptions)
+              .catch(node.modbusErrorHandling)
         }
       } else {
         if (!node.checkUnitId(node.unit_id)) {
@@ -407,15 +344,8 @@ module.exports = function (RED) {
               stopBits: parseInt(node.serialStopbits),
               parity: node.serialParity,
               autoOpen: false
-            }).then(function (err) {
-              if (err) {
-                verboseWarn(err)
-                node.statlyMachine.failure()
-              } else {
-                node.statlyMachine.openserial()
-                setTimeout(node.openSerialClient, parseInt(node.serialConnectionDelay))
-              }
-            }).catch(node.modbusErrorHandling)
+            }).then(node.setSerialConnectionOptions)
+              .catch(node.modbusErrorHandling)
             break
           case 'RTU':
             verboseLog('RTU port serial')
@@ -425,15 +355,8 @@ module.exports = function (RED) {
               stopBits: parseInt(node.serialStopbits),
               parity: node.serialParity,
               autoOpen: false
-            }).then(function (err) {
-              if (err) {
-                verboseWarn(err)
-                node.statlyMachine.failure()
-              } else {
-                node.statlyMachine.openserial()
-                setTimeout(node.openSerialClient, parseInt(node.serialConnectionDelay))
-              }
-            }).catch(node.modbusErrorHandling)
+            }).then(node.setSerialConnectionOptions)
+              .catch(node.modbusErrorHandling)
             break
           default:
             verboseLog('RTU buffered port serial')
@@ -443,24 +366,32 @@ module.exports = function (RED) {
               stopBits: parseInt(node.serialStopbits),
               parity: node.serialParity,
               autoOpen: false
-            }).then(function (err) {
-              if (err) {
-                verboseWarn(err)
-                node.statlyMachine.failure()
-              } else {
-                node.statlyMachine.openserial()
-                setTimeout(node.openSerialClient, parseInt(node.serialConnectionDelay))
-              }
-            }).catch(node.modbusErrorHandling)
+            }).then(node.setSerialConnectionOptions)
+              .catch(node.modbusErrorHandling)
             break
         }
       }
     }
 
+    node.setTCPConnectionOptions = function () {
+      node.client.setID(node.unit_id)
+      node.client.setTimeout(node.clientTimeout)
+      node.statlyMachine.connect()
+    }
+
+    node.setTCPConnected = function () {
+      coreModbusClient.modbusDebugLog('modbus tcp connected on ' + node.tcpHost)
+    }
+
+    node.setSerialConnectionOptions = function () {
+      node.statlyMachine.openserial()
+      setTimeout(node.openSerialClient, parseInt(node.serialConnectionDelay))
+    }
+
     node.modbusErrorHandling = function (err) {
-      modbusDebugLog(JSON.stringify(err))
-      modbusDebugLog(err.message)
-      if (networkErrors.includes(err.errno)) {
+      coreModbusClient.modbusDebugLog(JSON.stringify(err))
+      coreModbusClient.modbusDebugLog(err.message)
+      if (coreModbusClient.coreModbusClient.includes(err.errno)) {
         node.statlyMachine.failure()
       }
     }
@@ -469,21 +400,21 @@ module.exports = function (RED) {
       // some delay for windows
       if (node.statlyMachine.getMachineState() === 'OPENED') {
         verboseLog('time to open Unit ' + node.unit_id)
-        modbusDebugLog('modbus connection opened')
+        coreModbusClient.modbusDebugLog('modbus connection opened')
         node.client.setID(node.unit_id)
         node.client.setTimeout(parseInt(node.clientTimeout))
         node.client._port.on('close', node.onModbusClose)
         node.statlyMachine.connect()
       } else {
         verboseLog('wrong state on connect serial ' + node.statlyMachine.getMachineState())
-        modbusDebugLog('modbus connection not opened state is %s', node.statlyMachine.getMachineState())
+        coreModbusClient.modbusDebugLog('modbus connection not opened state is %s', node.statlyMachine.getMachineState())
         node.statlyMachine.failure()
       }
     }
 
     node.onModbusClose = function () {
       verboseWarn('modbus closed port')
-      modbusDebugLog('modbus closed port')
+      coreModbusClient.modbusDebugLog('modbus closed port')
       node.statlyMachine.close()
     }
 
@@ -617,7 +548,7 @@ module.exports = function (RED) {
         default:
           node.activateSending(msg)
           cberr('Function Code Unknown', msg)
-          modbusDebugLog('Function Code Unknown %s', JSON.stringify(msg))
+          coreModbusClient.modbusDebugLog('Function Code Unknown %s', JSON.stringify(msg))
           break
       }
     }
@@ -722,7 +653,7 @@ module.exports = function (RED) {
         default:
           node.activateSending(msg)
           cberr('Function Code Unknown', msg)
-          modbusDebugLog('Function Code Unknown %s', JSON.stringify(msg))
+          coreModbusClient.modbusDebugLog('Function Code Unknown %s', JSON.stringify(msg))
           break
       }
     }
@@ -750,10 +681,11 @@ module.exports = function (RED) {
 
     node.on('close', function (done) {
       node.statlyMachine.failure().stop()
+      node.statlyMachine = null
       verboseLog('close node')
       if (node.client) {
         node.client.close(function () {
-          verboseLog('connection closed state: ' + node.statlyMachine.getMachineState())
+          verboseLog('connection closed')
           done()
         }).catch(function (err) {
           verboseLog(err)
