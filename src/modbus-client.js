@@ -58,6 +58,8 @@ module.exports = function (RED) {
     node.sendAllowed = new Map()
     node.unitSendingAllowed = []
     node.messageAllowedStates = coreModbusClient.messagesAllowedStates
+
+    node.statlyMachine = null
     node.statlyMachine = coreModbusClient.createStatelyMachine()
 
     node.initQueue = function () {
@@ -391,7 +393,7 @@ module.exports = function (RED) {
     node.modbusErrorHandling = function (err) {
       coreModbusClient.modbusDebugLog(JSON.stringify(err))
       coreModbusClient.modbusDebugLog(err.message)
-      if (coreModbusClient.coreModbusClient.includes(err.errno)) {
+      if (coreModbusClient.includes(err.errno)) {
         node.statlyMachine.failure()
       }
     }
@@ -681,7 +683,6 @@ module.exports = function (RED) {
 
     node.on('close', function (done) {
       node.statlyMachine.failure().stop()
-      node.statlyMachine = null
       verboseLog('close node')
       if (node.client) {
         node.client.close(function () {
