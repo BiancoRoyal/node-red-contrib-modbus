@@ -1,10 +1,10 @@
 {
   "name": "node-red-contrib-modbus",
-  "version": "1.0.9-theta",
+  "version": "1.0.9-kappa",
   "description": "The all in one Modbus TCP and Serial contribution package for Node-RED.",
   "dependencies": {
     "debug": "2.6.3",
-    "modbus-serial": "5.2.4",
+    "modbus-serial": "5.2.6",
     "node-modbus": "3.2.6",
     "serialport": "4.0.7",
     "stampit": "2.1.2",
