@@ -30,6 +30,16 @@ try these options on npm install to build, if you have problems to install
 
     --unsafe-perm --build-from-source
     
+# Update/Upgrade
+
+To update the dependencies or the whole package, you have just to install again.
+To get a special version please set the version with @M.M.F:
+
+    npm install node-red-contrib-modbus@1.0.16
+or
+
+    npm install -g node-red-contrib-modbus@1.0.16
+    
 # How to use
 
 see [Wiki][10] pages
