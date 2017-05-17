@@ -127,7 +127,7 @@ module.exports = function (RED) {
         verboseLog('reading done -> ' + JSON.stringify(msg))
       }
 
-      node.send(buildMessage(resp.data, resp))
+      node.send(buildMessage(resp.data, resp, msg))
     }
 
     node.onModbusReadError = function (err, msg) {
@@ -148,8 +148,8 @@ module.exports = function (RED) {
       }
     }
 
-    function buildMessage (values, response) {
-      return [{payload: values}, {payload: response}]
+    function buildMessage (values, response, msg) {
+      return [{payload: values, responseBuffer: response, input: msg}, {payload: response, values: values, input: msg}]
     }
 
     function setNodeStatusTo (statusValue) {

@@ -117,7 +117,7 @@ module.exports = function (RED) {
       if (node.showStatusActivities) {
         setNodeStatusTo('writing done')
       }
-      node.send(buildMessage(msg.payload, resp))
+      node.send(buildMessage(msg.payload, resp, msg))
     }
 
     node.onModbusWriteError = function (err, msg) {
@@ -134,8 +134,8 @@ module.exports = function (RED) {
       }
     }
 
-    function buildMessage (values, response) {
-      return [{payload: values}, {payload: response}]
+    function buildMessage (values, response, msg) {
+      return [{payload: values, responseBuffer: response, input: msg}, {payload: response, values: values, input: msg}]
     }
 
     function setNodeStatusTo (statusValue) {

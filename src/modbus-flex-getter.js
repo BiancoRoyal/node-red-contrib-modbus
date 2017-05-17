@@ -126,11 +126,7 @@ module.exports = function (RED) {
     }
 
     function buildMessage (values, response, msg) {
-      if (msg.payload) {
-        msg.payload.values = values
-        msg.payload.response = response
-      }
-      return [msg, {payload: response}]
+      return [{payload: values, responseBuffer: response, input: msg}, {payload: response, values: values, input: msg}]
     }
 
     function setNodeStatusTo (statusValue) {
