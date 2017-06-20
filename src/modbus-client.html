@@ -1,31 +1,9 @@
 <!--
- The BSD 3-Clause License
-
- Copyright (c) 2016, Klaus Landsdorf (http://bianco-royal.de/)
+ Copyright 2016,2017 - Klaus Landsdorf (http://bianco-royal.de/)
+ Copyright 2016 - Jason D. Harper, Argonne National Laboratory
+ Copyright 2015,2016 - Mika Karaila, Valmet Automation Inc.
  All rights reserved.
  node-red-contrib-modbus
-
- Redistribution and use in source and binary forms, with or without modification,
- are permitted provided that the following conditions are met:
-
- 1. Redistributions of source code must retain the above copyright notice,
- this list of conditions and the following disclaimer.
-
- 2. Redistributions in binary form must reproduce the above copyright notice,
- this list of conditions and the following disclaimer in the documentation and/or
- other materials provided with the distribution.
-
- 3. Neither the name of the copyright holder nor the names of its contributors may be
- used to endorse or promote products derived from this software without specific prior written permission.
-
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
- INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
- OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES
- LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
 -->
@@ -41,6 +19,7 @@
 
       tcpHost: {value: "127.0.0.1", required: true},
       tcpPort: {value: 502, required: true, validate: RED.validators.number()},
+      tcpType: {value: "DEFAULT", required: true},
 
       serialPort: {value: "/dev/ttyUSB", required: true},
       serialType: {value: "RTU-BUFFERD", required: true},
@@ -106,6 +85,9 @@
             if (node.tcpHost) {
               node.tcpHost.required = true
               node.tcpPort.required = true
+              if (node.tcpType) {
+                node.tcpType.required = true
+              }
             }
 
             if (node.serialPort) {
@@ -139,6 +121,9 @@
             if (node.tcpHost) {
               node.tcpHost.required = false
               node.tcpPort.required = false
+              if (node.tcpType) {
+                node.tcpType.required = false
+              }
             }
 
             if (node.serialPort) {
@@ -213,6 +198,16 @@
             <label for="node-config-input-tcpPort"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.port"></span></label>
             <input type="text" id="node-config-input-tcpPort">
         </div>
+        <div class="form-row">
+            <label for="node-config-input-tcpType"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label
+            .tcpType"></span></label>
+            <select type="text" id="node-config-input-tcpType" style="width:140px;">
+                <option value="DEFAULT" select>DEFAULT</option>
+                <option value="TPC-RTU-BUFFERED">RTU-BUFFERED</option>
+                <option value="TELNET">TELNET</option>
+                <option value="C701">C701</option>
+            </select>
+        </div>
     </div>
     <div id="node-inputs-modbus-serial">
         <div class="form-row">
@@ -224,10 +219,8 @@
             <label for="node-config-input-serialType"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.serialType"></span></label>
             <select type="text" id="node-config-input-serialType" style="width:140px;">
                 <option value="RTU-BUFFERD" select>RTU-BUFFERD</option>
-                <option value="RTU" select>RTU</option>
+                <option value="RTU">RTU</option>
                 <option value="ASCII">ASCII</option>
-                <option value="TELNET" select>TELNET</option>
-                <option value="C701" select>C701</option>
             </select>
         </div>
         <div class="form-row">

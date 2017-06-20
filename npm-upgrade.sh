@@ -2,6 +2,6 @@
 
 npm outdated
 
-ncu -u --upgradeAll
+ncu -u --upgradeAll --packageFile package.json
 
 npm install

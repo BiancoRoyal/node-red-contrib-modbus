@@ -3,6 +3,7 @@
     "label": {
       "unitId": "Unit-Id",
       "showActivities": "Show Activities",
+      "showErrors": "Show Errors",
       "functioncode": "FC",
       "address": "Address",
       "quantity": "Quantity"

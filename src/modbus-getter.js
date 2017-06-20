@@ -1,31 +1,7 @@
 /**
- The BSD 3-Clause License
-
- Copyright (c) 2016, Klaus Landsdorf (http://bianco-royal.de/)
+ Copyright (c) 2016,2017, Klaus Landsdorf (http://bianco-royal.de/)
  All rights reserved.
- node-red-contrib-modbus
-
- Redistribution and use in source and binary forms, with or without modification,
- are permitted provided that the following conditions are met:
-
- 1. Redistributions of source code must retain the above copyright notice,
- this list of conditions and the following disclaimer.
-
- 2. Redistributions in binary form must reproduce the above copyright notice,
- this list of conditions and the following disclaimer in the documentation and/or
- other materials provided with the distribution.
-
- 3. Neither the name of the copyright holder nor the names of its contributors may be
- used to endorse or promote products derived from this software without specific prior written permission.
-
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
- INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
- OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES
- LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ node-red-contrib-modbus - The BSD 3-Clause License
 
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  */
@@ -38,6 +14,7 @@
 module.exports = function (RED) {
   'use strict'
   let mbBasics = require('./modbus-basics')
+  let internalDebugLog = require('debug')('node_red_contrib_modbus')
 
   function ModbusGetter (config) {
     RED.nodes.createNode(this, config)
@@ -50,6 +27,7 @@ module.exports = function (RED) {
     this.quantity = config.quantity
 
     this.showStatusActivities = config.showStatusActivities
+    this.showErrors = config.showErrors
     this.connection = null
 
     let node = this
@@ -71,7 +49,9 @@ module.exports = function (RED) {
 
     node.onModbusError = function (failureMsg) {
       setNodeStatusTo('failure')
-      node.warn(failureMsg)
+      if (node.showErrors) {
+        node.warn(failureMsg)
+      }
     }
 
     node.onModbusClose = function () {
@@ -89,10 +69,6 @@ module.exports = function (RED) {
         return
       }
 
-      if (node.showStatusActivities) {
-        setNodeStatusTo(modbusClient.statlyMachine.getMachineState())
-      }
-
       if (msg.payload) {
         msg = {
           topic: node.id,
@@ -103,6 +79,12 @@ module.exports = function (RED) {
             quantity: node.quantity
           }
         }
+
+        if (node.showStatusActivities) {
+          setNodeStatusTo(modbusClient.statlyMachine.getMachineState())
+          verboseLog(JSON.toString(msg))
+        }
+
         modbusClient.emit('readModbus', msg, node.onModbusReadDone, node.onModbusReadError)
       }
     })
@@ -139,19 +121,17 @@ module.exports = function (RED) {
 
     function verboseLog (logMessage) {
       if (RED.settings.verbose) {
-        node.log(logMessage)
+        internalDebugLog(logMessage)
       }
     }
 
     function buildMessage (values, response, msg) {
-      return [{payload: values}, {payload: response}, msg]
+      return [{payload: values, responseBuffer: response, input: msg}, {payload: response, values: values, input: msg}]
     }
 
     function setNodeStatusTo (statusValue) {
       let statusOptions = mbBasics.set_node_status_properties(statusValue, node.showStatusActivities)
-      if (mbBasics.statusLog) {
-        verboseLog('status options: ' + JSON.stringify(statusOptions))
-      }
+
       node.status({
         fill: statusOptions.fill,
         shape: statusOptions.shape,
@@ -163,10 +143,13 @@ module.exports = function (RED) {
       let working = false
 
       if (err) {
-        node.error(err, msg)
-        switch (err) {
+        switch (err.message) {
           case 'Timed out':
             setNodeStatusTo('timeout')
+            working = true
+            break
+          case 'FSM Not Ready To Read':
+            setNodeStatusTo('not ready to read')
             working = true
             break
           case 'Port Not Open':
@@ -176,6 +159,9 @@ module.exports = function (RED) {
             break
           default:
             setNodeStatusTo('error: ' + JSON.stringify(err))
+            if (node.showErrors) {
+              node.error(err, msg)
+            }
         }
       }
       return working

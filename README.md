@@ -3,7 +3,6 @@
 [![NPM download](https://img.shields.io/npm/dm/node-red-contrib-modbus.svg)](http://www.npm-stats.com/~packages/node-red-contrib-modbus)
 [![NPM version](https://badge.fury.io/js/node-red-contrib-modbus.png)](http://badge.fury.io/js/node-red-contrib-modbus)
 [![Build Status](https://travis-ci.org/biancode/node-red-contrib-modbus.svg?branch=master)](https://travis-ci.org/biancode/node-red-contrib-modbus)
-[![Gratipay](https://img.shields.io/gratipay/biancode.svg)](https://gratipay.com/biancode/)
 
 [![nodemodbus64](images/modbus-icon64.png)](https://www.npmjs.com/package/node-red-contrib-modbus)
 
@@ -12,9 +11,9 @@ node-red-contrib-modbus
 
 [Node-RED][1] contribution package for [Modbus][8]
 
-Based on [modbus-serial][2] with TCP and Serial RTU, RTU buffered, C701, Telnet, ASCII
+Based on [modbus-serial][2] with TCP, C701, Telnet, Serial, RTU buffered, and ASCII
 
-* stress tested with Node-RED v0.15.2/v0.16.1 and Node.js (4.7/6.9 LTS)
+* stress tested with Node-RED v0.16.2 and Node.js (4.7/6.9 LTS)
 * works with queueing per unit and round robin scheduling
 
 # Install
@@ -31,6 +30,16 @@ try these options on npm install to build, if you have problems to install
 
     --unsafe-perm --build-from-source
     
+# Update/Upgrade
+
+To update the dependencies or the whole package, you have just to install again.
+To get a special version please set the version with @M.M.F:
+
+    npm install node-red-contrib-modbus@1.0.16
+or
+
+    npm install -g node-red-contrib-modbus@1.0.16
+    
 # How to use
 
 see [Wiki][10] pages
@@ -41,17 +50,25 @@ see [YouTube Playlist][9]
 
 ![Flow Example](images/Screenshot02V100.png)
 
+# Debug
+
+Debug will be activated by starting Node-RED with debug mode: 
+
+    DEBUG=node_red_contrib_modbus node-red -v
+
+see [Wiki][10] pages to get more options in detail
 
 # Authors
 
 since April 2016 by [Klaus Landsdorf][4]
 
+### History 
 
-<sub><sub>
-History started in early 2015 by [Mika Karaila][5]
-license changed in 2016 by [Jason D. Harper][7]
-contribution in 2016 by [iurly][6]
-</sub></sub>
+* contribution in 2016 by [iurly][6]
+
+* license changed in 2016 by [Jason D. Harper][7]
+
+* started in early 2015 by [Mika Karaila][5]
 
 [1]:https://nodered.org
 [2]:https://www.npmjs.com/package/modbus-serial

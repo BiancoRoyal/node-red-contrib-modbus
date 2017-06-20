@@ -3,8 +3,9 @@
  * node-red
  *
  * Copyright (c) 2016, Klaus Landsdorf (http://bianco-royal.de/)
+ * Copyright 2016-2017 Klaus Landsdorf (http://bianco-royal.de/)
  * All rights reserved.
- * node-red-contrib-modbus
+ * node-red-contrib-modbus - The BSD 3-Clause License
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
