@@ -65,20 +65,18 @@ module.exports = function (RED) {
         return
       }
 
-      if (msg.payload) {
-        try {
-          msg.payload.port = parseInt(msg.payload.port)
-        } catch (err) {
-          node.error(err, msg)
-        }
-
+      if (msg && msg.payload) {
         if (node.showStatusActivities) {
           setNodeStatusTo(modbusClient.statlyMachine.getMachineState())
           verboseLog(JSON.toString(msg))
         }
 
         if (msg.payload.connectorType) {
+          internalDebugLog('dynamicReconnect: ' + JSON.stringify(msg.payload))
+          msg.payload.emptyQueue = node.emptyQueue
           modbusClient.emit('dynamicReconnect', msg)
+        } else {
+          node.error('Payload Not Valid - Connector Type', msg)
         }
       } else {
         node.error('Payload Not Valid', msg)

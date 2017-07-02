@@ -2,7 +2,7 @@
   "modbus-contrib": {
     "label": {
       "emptyQueue": "Empty Queue",
-      "maxReconnectsPerMinute": "Max. Reconnects/Minute",
+      "maxReconnectsPerMinute": "Max./Minute",
       "showActivities": "Show Activities",
       "showErrors": "Show Errors",
       "server": "Server"

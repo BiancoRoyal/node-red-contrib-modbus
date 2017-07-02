@@ -34,20 +34,20 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-maxReconnectsPerMinute"><i class="icon-tag"></i>
-        <span data-i18n="node-red:common.label.maxReconnectsPerMinute"></span></label>
-        <input type="text" id="node-input-maxReconnectsPerMinute" placeholder="4">
-    </div>
-    <div class="form-row">
         <label for="node-input-server"><i class="icon-globe"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
         <input type="text" id="node-input-server">
     </div>
-    <hr>
+    <!-- <hr>
+    <div class="form-row">
+        <label for="node-input-maxReconnectsPerMinute"><i class="icon-tag"></i>
+        <span data-i18n="modbus-contrib.label.maxReconnectsPerMinute"></span></label>
+        <input type="text" id="node-input-maxReconnectsPerMinute" placeholder="4">
+    </div>
     <div class="form-row">
         <label style="min-width:160px" for="node-input-emptyQueue"><i class="fa fa-th"></i> <span
         data-i18n="modbus-contrib.label.emptyQueue"></span></label>
         <input type="checkbox" id="node-input-emptyQueue" style="max-width:30px">
-    </div>
+    </div> -->
     <hr>
     <div class="form-row">
         <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
@@ -78,7 +78,7 @@
             <li>msg.payload.tcpHost || node.tcpHost
             <li>msg.payload.tcpPort || node.tcpPort
             <li>msg.payload.tcpType || node.tcpType
-            <li>msg.payload.unit_id || node.unit_id
+            <li>msg.payload.unitId || node.unit_id
             <li>msg.payload.commandDelay || node.commandDelay
             <li>msg.payload.clientTimeout || node.clientTimeout
             <li>msg.payload.reconnectTimeout| || node.reconnectTimeout
@@ -96,7 +96,7 @@
           <li>msg.payload.serialParity || node.serialParity
           <li>msg.payload.serialType || node.serialType
           <li>msg.payload.serialConnectionDelay || node.serialConnectionDelay
-          <li>msg.payload.unit_id || node.unit_id
+          <li>msg.payload.unitId || node.unit_id
           <li>msg.payload.commandDelay || node.commandDelay
           <li>msg.payload.clientTimeout || node.clientTimeout
           <li>msg.payload.reconnectTimeout || node.reconnectTimeout
@@ -109,7 +109,7 @@
         msg.payload = {
         'connectorType': 'TCP',
         'tcpHost': '127.0.0.1',
-        'unitid': 2 }
+        'unitId': 2 }
         return msg
      </code>
 
@@ -118,7 +118,7 @@
         'connectorType': 'TCP',
         'tcpHost': '127.0.0.1',
         'tcpPort': '10502'
-        'unitid': 2 }
+        'unitId': 2 }
         return msg
      </code>
 
@@ -128,7 +128,7 @@
         'connectorType': 'SERIAL',
         'serialPort': '/dev/USB02',
         'serialBaudrate': '9600'
-        'unitid': 2 }
+        'unitId': 2 }
         return msg
      </code>
 </script>

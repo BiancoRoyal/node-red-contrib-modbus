@@ -58,6 +58,7 @@ module.exports = function (RED) {
     node.sendAllowed = new Map()
     node.unitSendingAllowed = []
     node.messageAllowedStates = coreModbusClient.messagesAllowedStates
+    node.serverInfo = ''
 
     node.statlyMachine = null
     node.statlyMachine = coreModbusClient.createStatelyMachine()
@@ -178,23 +179,24 @@ module.exports = function (RED) {
       return queueIsEmpty
     }
 
-    let serverInfo = ''
-    if (node.clienttype === 'tcp') {
-      serverInfo = ' TCP@' + node.tcpHost + ':' + node.tcpPort
-    } else {
-      serverInfo = ' Serial@' + node.serialPort + ':' + node.serialBaudrate + 'bit/s'
+    node.updateServerinfo = function () {
+      if (node.clienttype === 'tcp') {
+        node.serverInfo = ' TCP@' + node.tcpHost + ':' + node.tcpPort
+      } else {
+        node.serverInfo = ' Serial@' + node.serialPort + ':' + node.serialBaudrate + 'bit/s'
+      }
+      node.serverInfo += ' default Unit-Id: ' + node.unit_id
     }
-    serverInfo += ' default Unit-Id: ' + node.unit_id
 
     function verboseWarn (logMessage) {
       if (RED.settings.verbose) {
-        node.warn('Client -> ' + logMessage + serverInfo)
+        node.warn('Client -> ' + logMessage + node.serverInfo)
       }
     }
 
     function verboseLog (logMessage) {
       if (RED.settings.verbose) {
-        coreModbusClient.internalDebug('Client -> ' + logMessage + serverInfo)
+        coreModbusClient.internalDebug('Client -> ' + logMessage + node.serverInfo)
       }
     }
 
@@ -211,6 +213,7 @@ module.exports = function (RED) {
     }
 
     node.statlyMachine.onINIT = function (event, oldState, newState) {
+      node.updateServerinfo()
       node.initQueue()
       setTimeout(node.connectClient, node.reconnectTimeout)
       verboseWarn('reconnect in ' + node.reconnectTimeout + ' ms')
@@ -382,7 +385,7 @@ module.exports = function (RED) {
     }
 
     node.setTCPConnected = function () {
-      coreModbusClient.modbusDebugLog('modbus tcp connected on ' + node.tcpHost)
+      coreModbusClient.modbusSerialDebug('modbus tcp connected on ' + node.tcpHost)
     }
 
     node.setSerialConnectionOptions = function () {
@@ -391,8 +394,8 @@ module.exports = function (RED) {
     }
 
     node.modbusErrorHandling = function (err) {
-      coreModbusClient.modbusDebugLog(JSON.stringify(err))
-      coreModbusClient.modbusDebugLog(err.message)
+      coreModbusClient.modbusSerialDebug(JSON.stringify(err))
+      coreModbusClient.modbusSerialDebug(err.message)
       if (coreModbusClient.networkErrors.includes(err.errno)) {
         node.statlyMachine.failure()
       }
@@ -402,21 +405,21 @@ module.exports = function (RED) {
       // some delay for windows
       if (node.statlyMachine.getMachineState() === 'OPENED') {
         verboseLog('time to open Unit ' + node.unit_id)
-        coreModbusClient.modbusDebugLog('modbus connection opened')
+        coreModbusClient.modbusSerialDebug('modbus connection opened')
         node.client.setID(node.unit_id)
         node.client.setTimeout(parseInt(node.clientTimeout))
         node.client._port.on('close', node.onModbusClose)
         node.statlyMachine.connect()
       } else {
         verboseLog('wrong state on connect serial ' + node.statlyMachine.getMachineState())
-        coreModbusClient.modbusDebugLog('modbus connection not opened state is %s', node.statlyMachine.getMachineState())
+        coreModbusClient.modbusSerialDebug('modbus connection not opened state is %s', node.statlyMachine.getMachineState())
         node.statlyMachine.failure()
       }
     }
 
     node.onModbusClose = function () {
       verboseWarn('modbus closed port')
-      coreModbusClient.modbusDebugLog('modbus closed port')
+      coreModbusClient.modbusSerialDebug('modbus closed port')
       node.statlyMachine.close()
     }
 
@@ -550,7 +553,7 @@ module.exports = function (RED) {
         default:
           node.activateSending(msg)
           cberr('Function Code Unknown', msg)
-          coreModbusClient.modbusDebugLog('Function Code Unknown %s', JSON.stringify(msg))
+          coreModbusClient.modbusSerialDebug('Function Code Unknown %s', JSON.stringify(msg))
           break
       }
     }
@@ -655,7 +658,7 @@ module.exports = function (RED) {
         default:
           node.activateSending(msg)
           cberr('Function Code Unknown', msg)
-          coreModbusClient.modbusDebugLog('Function Code Unknown %s', JSON.stringify(msg))
+          coreModbusClient.modbusSerialDebug('Function Code Unknown %s', JSON.stringify(msg))
           break
       }
     }
@@ -686,30 +689,56 @@ module.exports = function (RED) {
         throw new Error('Message Payload not Valid')
       }
 
+      coreModbusClient.internalDebug('Dynamic Reconnect Parameters ' + JSON.stringify(msg.payload))
+
       switch (msg.payload.connectorType) {
         case 'TCP':
-          node.tcpHost = msg.payload.tcpHost | node.tcpHost
-          node.tcpPort = msg.payload.tcpPort | node.tcpPort
-          node.tcpType = msg.payload.tcpType | node.tcpType
+          node.tcpHost = msg.payload.tcpHost || node.tcpHost
+          node.tcpPort = msg.payload.tcpPort || node.tcpPort
+          node.tcpType = msg.payload.tcpType || node.tcpType
+
+          coreModbusClient.internalDebug('New Connection Data ' + node.tcpHost + ' ' + node.tcpPort + ' ' + node.tcpType)
           break
         case 'SERIAL':
-          node.serialPort = parseInt(msg.payload.serialPort) | node.serialPort
-          node.serialBaudrate = parseInt(msg.payload.serialBaudrate) | node.serialBaudrate
-          node.serialDatabits = msg.payload.serialDatabits | node.serialDatabits
-          node.serialStopbits = msg.payload.serialStopbits | node.serialStopbits
-          node.serialParity = msg.payload.serialParity | node.serialParity
-          node.serialType = msg.payload.serialType | node.serialType
-          node.serialConnectionDelay = parseInt(msg.payload.serialConnectionDelay) || node.serialConnectionDelay
+          if (msg.payload.serialPort) {
+            node.serialPort = parseInt(msg.payload.serialPort) || node.serialPort
+          }
+
+          if (msg.payload.serialBaudrate) {
+            node.serialBaudrate = parseInt(msg.payload.serialBaudrate) || node.serialBaudrate
+          }
+
+          node.serialDatabits = msg.payload.serialDatabits || node.serialDatabits
+          node.serialStopbits = msg.payload.serialStopbits || node.serialStopbits
+          node.serialParity = msg.payload.serialParity || node.serialParity
+          node.serialType = msg.payload.serialType || node.serialType
+
+          if (msg.payload.serialConnectionDelay) {
+            node.serialConnectionDelay = parseInt(msg.payload.serialConnectionDelay) || node.serialConnectionDelay
+          }
+          coreModbusClient.internalDebug('New Connection Data ' + node.serialPort + ' ' + node.serialBaudrate + ' ' + node.serialType)
           break
         default:
           coreModbusClient.internalDebug('Unknown Dynamic Reconnect Type ' + msg.payload.connectorType)
       }
 
-      node.unit_id = parseInt(msg.payload.unit_id) || node.unit_id
-      node.commandDelay = parseInt(msg.payload.commandDelay) || node.commandDelay
-      node.clientTimeout = parseInt(msg.payload.clientTimeout) || node.clientTimeout
-      node.reconnectTimeout = parseInt(msg.payload.reconnectTimeout) || node.reconnectTimeout
+      if (msg.payload.unitId) {
+        node.unit_id = parseInt(msg.payload.unitId) || node.unit_id
+      }
 
+      if (msg.payload.commandDelay) {
+        node.commandDelay = parseInt(msg.payload.commandDelay) || node.commandDelay
+      }
+
+      if (msg.payload.clientTimeout) {
+        node.clientTimeout = parseInt(msg.payload.clientTimeout) || node.clientTimeout
+      }
+
+      if (msg.payload.reconnectTimeout) {
+        node.reconnectTimeout = parseInt(msg.payload.reconnectTimeout) || node.reconnectTimeout
+      }
+
+      coreModbusClient.internalDebug('Dynamic Reconnect Starts')
       node.statlyMachine.failure().close()
     })
 
