@@ -10,8 +10,8 @@
 
 'use strict'
 
-var nodeUnderTest = require('../src/modbus-client.js')
-var helper = require('../src/testing/nodered-helper.js')
+var nodeUnderTest = require('../../src/modbus-client.js')
+var helper = require('../helper.js')
 
 describe('Client node Testing', function () {
   before(function (done) {

@@ -10,12 +10,12 @@
 
 'use strict'
 
-var clientNode = require('../src/modbus-client.js')
-var serverNode = require('../src/modbus-server.js')
-var getterNode = require('../src/modbus-flex-getter.js')
-var helper = require('../src/testing/nodered-helper.js')
+var clientNode = require('../../src/modbus-client.js')
+var serverNode = require('../../src/modbus-server.js')
+var getterNode = require('../../src/modbus-getter.js')
+var helper = require('../helper.js')
 
-describe('Flex Getter node Testing', function () {
+describe('Getter node Testing', function () {
   before(function (done) {
     helper.startServer(done)
   })
@@ -28,8 +28,11 @@ describe('Flex Getter node Testing', function () {
     it('simple Node should be loaded', function (done) {
       helper.load([clientNode, serverNode, getterNode], [{
         id: '322daf89.be8dd',
-        type: 'modbus-flex-getter',
-        name: 'modbusFlexGetter',
+        type: 'modbus-getter',
+        name: 'modbusGetter',
+        dataType: 'Coil',
+        adr: 0,
+        quantity: 1,
         server: 'ce5293f4.1e1ac',
         wires: [[], [], []]
       }, {
@@ -61,8 +64,8 @@ describe('Flex Getter node Testing', function () {
         var modbusClient = helper.getNode('ce5293f4.1e1ac')
         modbusClient.should.have.property('name', 'modbusClient')
 
-        var modbusFlexGetter = helper.getNode('322daf89.be8dd')
-        modbusFlexGetter.should.have.property('name', 'modbusFlexGetter')
+        var modbusGetter = helper.getNode('322daf89.be8dd')
+        modbusGetter.should.have.property('name', 'modbusGetter')
 
         done()
       }, function () {
@@ -73,7 +76,7 @@ describe('Flex Getter node Testing', function () {
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      helper.request().post('/modbus-flex-getter/invalid').expect(404).end(done)
+      helper.request().post('/modbus-getter/invalid').expect(404).end(done)
     })
   })
 })

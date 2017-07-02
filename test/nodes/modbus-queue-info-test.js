@@ -10,12 +10,12 @@
 
 'use strict'
 
-var clientNode = require('../src/modbus-client.js')
-var serverNode = require('../src/modbus-server.js')
-var getterNode = require('../src/modbus-getter.js')
-var helper = require('../src/testing/nodered-helper.js')
+var clientNode = require('../../src/modbus-client.js')
+var serverNode = require('../../src/modbus-server.js')
+var readNode = require('../../src/modbus-queue-info.js')
+var helper = require('../helper.js')
 
-describe('Getter node Testing', function () {
+describe('Queue Info node Testing', function () {
   before(function (done) {
     helper.startServer(done)
   })
@@ -26,18 +26,10 @@ describe('Getter node Testing', function () {
 
   describe('Node', function () {
     it('simple Node should be loaded', function (done) {
-      helper.load([clientNode, serverNode, getterNode], [{
-        id: '322daf89.be8dd',
-        type: 'modbus-getter',
-        name: 'modbusGetter',
-        dataType: 'Coil',
-        adr: 0,
-        quantity: 1,
-        server: 'ce5293f4.1e1ac',
-        wires: [[], [], []]
-      }, {
-        id: '996023fe.ea04b',
+      helper.load([clientNode, serverNode, readNode], [{
+        id: 'e54529b9.952ea8',
         type: 'modbus-server',
+        z: '5dcb7dec.f36a24',
         name: 'modbusServer',
         logEnabled: false,
         serverPort: 11502,
@@ -46,10 +38,23 @@ describe('Getter node Testing', function () {
         coilsBufferSize: 1024,
         holdingBufferSize: 1024,
         inputBufferSize: 1024,
+        x: 260,
+        y: 200,
         wires: []
       }, {
-        id: 'ce5293f4.1e1ac',
+        id: 'b9cf4e9c.4d53a',
+        type: 'modbus-queue-info',
+        z: '5dcb7dec.f36a24',
+        name: 'modbusQueueInfo',
+        unitid: 1,
+        server: 'dc764ad7.580238',
+        x: 340,
+        y: 260,
+        wires: [[], []]
+      }, {
+        id: 'dc764ad7.580238',
         type: 'modbus-client',
+        z: '5dcb7dec.f36a24',
         name: 'modbusClient',
         clienttype: 'tcp',
         tcpHost: '127.0.0.1',
@@ -58,14 +63,14 @@ describe('Getter node Testing', function () {
         clientTimeout: 5000,
         reconnectTimeout: 5000
       }], function () {
-        var modbusServer = helper.getNode('996023fe.ea04b')
+        var modbusServer = helper.getNode('e54529b9.952ea8')
         modbusServer.should.have.property('name', 'modbusServer')
 
-        var modbusClient = helper.getNode('ce5293f4.1e1ac')
+        var modbusClient = helper.getNode('dc764ad7.580238')
         modbusClient.should.have.property('name', 'modbusClient')
 
-        var modbusGetter = helper.getNode('322daf89.be8dd')
-        modbusGetter.should.have.property('name', 'modbusGetter')
+        var modbusQueueInfo = helper.getNode('b9cf4e9c.4d53a')
+        modbusQueueInfo.should.have.property('name', 'modbusQueueInfo')
 
         done()
       }, function () {
@@ -76,7 +81,7 @@ describe('Getter node Testing', function () {
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      helper.request().post('/modbus-getter/invalid').expect(404).end(done)
+      helper.request().post('/modbus-read/invalid').expect(404).end(done)
     })
   })
 })

@@ -1,0 +1,11 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "emptyQueue": "Empty Queue",
+      "maxReconnectsPerMinute": "Max. Reconnects/Minute",
+      "showActivities": "Show Activities",
+      "showErrors": "Show Errors",
+      "server": "Server"
+    }
+  }
+}

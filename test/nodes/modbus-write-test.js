@@ -10,12 +10,13 @@
 
 'use strict'
 
-var clientNode = require('../src/modbus-client.js')
-var serverNode = require('../src/modbus-server.js')
-var readNode = require('../src/modbus-queue-info.js')
-var helper = require('../src/testing/nodered-helper.js')
+var injectNode = require('node-red/nodes/core/core/20-inject.js')
+var clientNode = require('../../src/modbus-client.js')
+var serverNode = require('../../src/modbus-server.js')
+var writeNode = require('../../src/modbus-write.js')
+var helper = require('../helper.js')
 
-describe('Queue Info node Testing', function () {
+describe('Write node Testing', function () {
   before(function (done) {
     helper.startServer(done)
   })
@@ -26,7 +27,7 @@ describe('Queue Info node Testing', function () {
 
   describe('Node', function () {
     it('simple Node should be loaded', function (done) {
-      helper.load([clientNode, serverNode, readNode], [{
+      helper.load([injectNode, clientNode, serverNode, writeNode], [{
         id: 'e54529b9.952ea8',
         type: 'modbus-server',
         z: '5dcb7dec.f36a24',
@@ -42,15 +43,31 @@ describe('Queue Info node Testing', function () {
         y: 200,
         wires: []
       }, {
-        id: 'b9cf4e9c.4d53a',
-        type: 'modbus-queue-info',
+        id: '8ad2951c.2df708',
+        type: 'modbus-write',
         z: '5dcb7dec.f36a24',
-        name: 'modbusQueueInfo',
-        unitid: 1,
+        name: 'modbusWrite',
+        dataType: 'HoldingRegister',
+        adr: '0',
+        quantity: '1',
         server: 'dc764ad7.580238',
-        x: 340,
+        x: 400,
         y: 260,
         wires: [[], []]
+      }, {
+        id: '67dded7e.025904',
+        type: 'inject',
+        z: '5dcb7dec.f36a24',
+        name: 'injectTrue',
+        topic: '',
+        payload: true,
+        payloadType: 'bool',
+        repeat: '',
+        crontab: '',
+        once: false,
+        x: 250,
+        y: 260,
+        wires: [['8ad2951c.2df708']]
       }, {
         id: 'dc764ad7.580238',
         type: 'modbus-client',
@@ -63,14 +80,17 @@ describe('Queue Info node Testing', function () {
         clientTimeout: 5000,
         reconnectTimeout: 5000
       }], function () {
+        var inject = helper.getNode('67dded7e.025904')
+        inject.should.have.property('name', 'injectTrue')
+
         var modbusServer = helper.getNode('e54529b9.952ea8')
         modbusServer.should.have.property('name', 'modbusServer')
 
         var modbusClient = helper.getNode('dc764ad7.580238')
         modbusClient.should.have.property('name', 'modbusClient')
 
-        var modbusQueueInfo = helper.getNode('b9cf4e9c.4d53a')
-        modbusQueueInfo.should.have.property('name', 'modbusQueueInfo')
+        var modbusWrite = helper.getNode('8ad2951c.2df708')
+        modbusWrite.should.have.property('name', 'modbusWrite')
 
         done()
       }, function () {
@@ -81,7 +101,7 @@ describe('Queue Info node Testing', function () {
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      helper.request().post('/modbus-read/invalid').expect(404).end(done)
+      helper.request().post('/modbus-write/invalid').expect(404).end(done)
     })
   })
 })

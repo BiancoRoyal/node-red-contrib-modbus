@@ -11,10 +11,11 @@
 'use strict'
 
 var injectNode = require('node-red/nodes/core/core/20-inject.js')
-var clientNode = require('../src//modbus-client.js')
-var serverNode = require('../src/modbus-server.js')
-var writeNode = require('../src/modbus-flex-write.js')
-var helper = require('../src/testing/nodered-helper.js')
+var clientNode = require('../../src//modbus-client.js')
+var serverNode = require('../../src/modbus-server.js')
+var writeNode  = require('../../src/modbus-flex-write.js')
+
+var helper = require('../helper.js')
 
 describe('Flex Write node Testing', function () {
   before(function (done) {

@@ -3,11 +3,11 @@
   "version": "1.1.0",
   "description": "The all in one Modbus TCP and Serial contribution package for Node-RED.",
   "dependencies": {
-    "debug": "2.6.6",
-    "modbus-serial": "<5.3",
+    "debug": "2.6.8",
+    "modbus-serial": "<5.4",
     "node-modbus": "3.2.6",
     "serialport": "4.0.7",
-    "stampit": "2.1.2",
+    "stampit": "3.1.3",
     "stately.js": "1.3.0"
   },
   "keywords": [
@@ -53,7 +53,8 @@
       "Modbus-Write": "modbus/modbus-write.js",
       "Modbus-Flex-Write": "modbus/modbus-flex-write.js",
       "Modbus-Server": "modbus/modbus-server.js",
-      "Modbus-Queue-Info": "modbus/modbus-queue-info.js"
+      "Modbus-Queue-Info": "modbus/modbus-queue-info.js",
+      "Modbus-Flex-Connector": "modbus/modbus-flex-connector.js"
     }
   },
   "author": "Klaus Landsdorf",
@@ -69,31 +70,33 @@
   "scripts": {
     "test": "standard --fix && mocha test/*",
     "build": "standard --fix && gulp publish",
-    "prepublish": "npm run build && npm test"
+    "prepublish": "npm run build && npm test",
+    "release": "standard-version"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
-    "eslint": "^3.18.0",
-    "eslint-config-standard": "^7.1.0",
-    "eslint-config-standard-jsx": "^3.3.0",
-    "eslint-plugin-mocha": "^4.9.0",
+    "chai": "^4.0.2",
+    "eslint": "^4.1.1",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-config-standard-jsx": "^4.0.2",
+    "eslint-plugin-mocha": "^4.11.0",
     "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-react": "^6.10.3",
-    "eslint-plugin-standard": "^2.1.1",
+    "eslint-plugin-react": "^7.1.0",
+    "eslint-plugin-standard": "^3.0.1",
     "gulp": "^3.9.1",
     "gulp-clean": "^0.3.2",
     "gulp-htmlmin": "^3.0.0",
     "gulp-jsdoc3": "^1.0.1",
-    "gulp-uglify": "^2.1.2",
+    "gulp-uglify": "^3.0.0",
     "jasmine-node": "^1.14.5",
-    "js-beautify": "^1.6.12",
-    "mocha": "^3.2.0",
-    "nock": "^9.0.9",
-    "node-red": "^0.14.6",
+    "js-beautify": "^1.6.14",
+    "mocha": "^3.4.2",
+    "nock": "^9.0.13",
+    "node-red": "^0.17.2",
     "pump": "^1.0.2",
     "should": "^11.2.1",
-    "sinon": "^2.1.0",
-    "standard": "^9.0.2",
+    "sinon": "^2.3.6",
+    "standard": "^10.0.2",
+    "standard-version": "^4.2.0",
     "supertest": "^3.0.0",
     "when": "^3.7.8"
   },

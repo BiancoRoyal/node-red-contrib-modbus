@@ -10,8 +10,8 @@
 
 'use strict'
 
-var serverNode = require('../src/modbus-server.js')
-var helper = require('../src/testing/nodered-helper.js')
+var serverNode = require('../../src/modbus-server.js')
+var helper = require('../helper.js')
 
 describe('Server node Testing', function () {
   before(function (done) {

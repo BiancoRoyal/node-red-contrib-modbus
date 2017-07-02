@@ -194,7 +194,7 @@ module.exports = function (RED) {
 
     function verboseLog (logMessage) {
       if (RED.settings.verbose) {
-        coreModbusClient.debugLog('Client -> ' + logMessage + serverInfo)
+        coreModbusClient.internalDebug('Client -> ' + logMessage + serverInfo)
       }
     }
 
@@ -678,6 +678,38 @@ module.exports = function (RED) {
     node.statlyMachine.init()
 
     node.on('reconnect', function () {
+      node.statlyMachine.failure().close()
+    })
+
+    node.on('dynamicReconnect', function (msg) {
+      if (!msg || !msg.payload) {
+        throw new Error('Message Payload not Valid')
+      }
+
+      switch (msg.payload.connectorType) {
+        case 'TCP':
+          node.tcpHost = msg.payload.tcpHost | node.tcpHost
+          node.tcpPort = msg.payload.tcpPort | node.tcpPort
+          node.tcpType = msg.payload.tcpType | node.tcpType
+          break
+        case 'SERIAL':
+          node.serialPort = parseInt(msg.payload.serialPort) | node.serialPort
+          node.serialBaudrate = parseInt(msg.payload.serialBaudrate) | node.serialBaudrate
+          node.serialDatabits = msg.payload.serialDatabits | node.serialDatabits
+          node.serialStopbits = msg.payload.serialStopbits | node.serialStopbits
+          node.serialParity = msg.payload.serialParity | node.serialParity
+          node.serialType = msg.payload.serialType | node.serialType
+          node.serialConnectionDelay = parseInt(msg.payload.serialConnectionDelay) || node.serialConnectionDelay
+          break
+        default:
+          coreModbusClient.internalDebug('Unknown Dynamic Reconnect Type ' + msg.payload.connectorType)
+      }
+
+      node.unit_id = parseInt(msg.payload.unit_id) || node.unit_id
+      node.commandDelay = parseInt(msg.payload.commandDelay) || node.commandDelay
+      node.clientTimeout = parseInt(msg.payload.clientTimeout) || node.clientTimeout
+      node.reconnectTimeout = parseInt(msg.payload.reconnectTimeout) || node.reconnectTimeout
+
       node.statlyMachine.failure().close()
     })
 
