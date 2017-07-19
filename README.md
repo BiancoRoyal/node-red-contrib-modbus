@@ -9,9 +9,10 @@
 node-red-contrib-modbus 
 ========================
 
+#### The all in one Modbus TCP and Serial contribution package for Node-RED.
+
 [Node-RED][1] contribution package for [Modbus][8]
 
-## [Support via Kickstarter][12]
 ## [Support for the project straight away!][11]
 
 Based on [modbus-serial][2] with TCP, C701, Telnet, Serial, RTU buffered, and ASCII
@@ -84,4 +85,3 @@ since April 2016 by [Klaus Landsdorf][4]
 [9]:http://bit.ly/2jzwjqP
 [10]:https://github.com/biancode/node-red-contrib-modbus/wiki
 [11]:https://bianco-royal.cloud/supporter/
-[12]:https://www.kickstarter.com/projects/biancode/node-red-iiot-opc-ua-package
