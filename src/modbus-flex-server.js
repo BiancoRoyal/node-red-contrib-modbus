@@ -19,7 +19,6 @@ module.exports = function (RED) {
 
   function ModbusFlexServer (config) {
     RED.nodes.createNode(this, config)
-    let bufferFactor = 8
     const {VM, VMScript} = require('vm2')
 
     this.name = config.name
@@ -38,10 +37,11 @@ module.exports = function (RED) {
     this.funcSetCoil = new VMScript(config.funcSetCoil).compile()
     this.funcSetRegister = new VMScript(config.funcSetRegister).compile()
 
-    this.coilsBufferSize = parseInt(config.coilsBufferSize * bufferFactor)
-    this.registersBufferSize = parseInt(config.registersBufferSize * bufferFactor)
-
     let node = this
+    node.bufferFactor = 8
+
+    node.coilsBufferSize = parseInt(config.coilsBufferSize * node.bufferFactor)
+    node.registersBufferSize = parseInt(config.registersBufferSize * node.bufferFactor)
 
     node.coils = Buffer.alloc(node.coilsBufferSize, 0)
     node.registers = Buffer.alloc(node.registersBufferSize, 0)
@@ -152,8 +152,8 @@ module.exports = function (RED) {
     node.on('input', function (msg) {
       verboseLog('Input:' + msg)
 
-      node.send(buildMessage(msg, node.registers.slice((node.splitAddress + 1) * bufferFactor),
-        node.coils, node.registers.slice(0, node.splitAddress * bufferFactor)))
+      node.send(buildMessage(msg, node.registers.slice((node.splitAddress + 1) * node.bufferFactor),
+        node.coils, node.registers.slice(0, node.splitAddress * node.bufferFactor)))
     })
 
     function buildMessage (msg, modbusHolding, modbusCoils, modbusInput) {
