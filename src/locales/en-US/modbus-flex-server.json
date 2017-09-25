@@ -1,0 +1,24 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "Show Activities",
+      "showErrors": "Show Errors",
+      "port": "Port",
+      "responseDelay": "Response Delay",
+      "coils": "Coils",
+      "registers": "Registers",
+      "minAddress": "Min. Address",
+      "splitAddress": "Split-Address",
+      "unitId": "Unit-Id",
+      "logEnabled": "Logging"
+    },
+    "tabs-label": {
+      "settings": "Settings",
+      "getCoil": "Get Coil",
+      "getInput": "Get Input",
+      "getHolding": "Get Holding",
+      "setCoil": "Set Coil",
+      "setRegister": "Set Register"
+    }
+  }
+}

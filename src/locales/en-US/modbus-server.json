@@ -1,0 +1,14 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "Show Activities",
+      "showErrors": "Show Errors",
+      "port": "Port",
+      "responseDelay": "Response Delay",
+      "coils": "Coils",
+      "holdings": "Holdings",
+      "inputs": "Inputs",
+      "logEnabled": "Logging"
+    }
+  }
+}

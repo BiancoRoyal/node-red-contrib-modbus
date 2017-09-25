@@ -1,0 +1,9 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "Show Activities",
+      "showErrors": "Show Errors",
+      "registerShowMax": "Register Max."
+    }
+  }
+}

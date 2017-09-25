@@ -14,12 +14,13 @@
 module.exports = function (RED) {
   'use strict'
   let stampit = require('stampit')
-  let modbus = require('node-modbus')
+  let modbus = require('jsmodbus')
   let mbBasics = require('./modbus-basics')
   let internalDebugLog = require('debug')('node_red_contrib_modbus')
 
   function ModbusServer (config) {
     RED.nodes.createNode(this, config)
+    let bufferFactor = 8
 
     this.name = config.name
     this.logEnabled = config.logEnabled
@@ -27,9 +28,9 @@ module.exports = function (RED) {
     this.responseDelay = parseInt(config.responseDelay)
     this.delayUnit = config.delayUnit
 
-    this.coilsBufferSize = parseInt(config.coilsBufferSize)
-    this.holdingBufferSize = parseInt(config.holdingBufferSize)
-    this.inputBufferSize = parseInt(config.inputBufferSize)
+    this.coilsBufferSize = parseInt(config.coilsBufferSize * bufferFactor)
+    this.holdingBufferSize = parseInt(config.holdingBufferSize * bufferFactor)
+    this.inputBufferSize = parseInt(config.inputBufferSize * bufferFactor)
 
     let node = this
 
