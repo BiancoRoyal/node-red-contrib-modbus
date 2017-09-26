@@ -39,7 +39,7 @@
     "node-modbus"
   ],
   "engines": {
-    "node": "4.x || 6.x"
+    "node": "6.x"
   },
   "repository": {
     "type": "git",
