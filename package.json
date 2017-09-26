@@ -1,11 +1,11 @@
 {
   "name": "node-red-contrib-modbus",
-  "version": "2.0.1-alpha.1",
+  "version": "2.0.1-beta.0",
   "private": true,
   "description": "The all in one Modbus TCP and Serial contribution package for Node-RED.",
   "dependencies": {
-    "debug": "3.0.1",
-    "jsmodbus": "2.1.2",
+    "debug": "3.1.0",
+    "node-modbus": "4.0.1",
     "modbus-serial": "6.0.0",
     "serialport": "5.0.0",
     "stampit": "2.1.2",
@@ -39,7 +39,7 @@
     "node-modbus"
   ],
   "engines": {
-    "node": "6.x"
+    "node": "6.x || 8.x"
   },
   "repository": {
     "type": "git",
