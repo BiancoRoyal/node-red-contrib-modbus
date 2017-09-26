@@ -21,7 +21,8 @@ gulp.task('default', function () {
 
 gulp.task('docs', ['doc', 'docIcons', 'docImages', 'docExamples'])
 gulp.task('build', ['web', 'nodejs'])
-gulp.task('publish', ['build', 'icons', 'images', 'examples', 'locale', 'docs'])
+// gulp.task('publish', ['build', 'icons', 'images', 'examples', 'locale', 'docs'])
+gulp.task('publish', ['build', 'icons', 'images', 'examples', 'locale'])
 
 gulp.task('clean', function () {
   return gulp.src('modbus')

@@ -17,8 +17,10 @@ node-red-contrib-modbus
 
 Based on [modbus-serial][2] with TCP, C701, Telnet, Serial, RTU buffered, and ASCII
 
-* stress tested with Node-RED v0.17.5 and Node.js (4.8/6.11 LTS)
+* stress tested with Node-RED v0.17.5 and Node.js v6 LTS
 * works with queueing per unit and round robin scheduling
+* Node.JS 4.x is supported in v1.x
+* prepared for the next LTS of Node.js v8.x
 
 # Install
 
