@@ -30,7 +30,7 @@ module.exports = function (RED) {
 
     function verboseLog (logMessage) {
       if (RED.settings.verbose) {
-        internalDebugLog(logMessage)
+        internalDebugLog((typeof logMessage === 'string') ? logMessage : JSON.stringify(logMessage))
       }
     }
 

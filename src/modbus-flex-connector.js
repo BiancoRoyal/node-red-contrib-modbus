@@ -68,7 +68,7 @@ module.exports = function (RED) {
       if (msg && msg.payload) {
         if (node.showStatusActivities) {
           setNodeStatusTo(modbusClient.statlyMachine.getMachineState())
-          verboseLog(JSON.toString(msg))
+          verboseLog(msg)
         }
 
         if (msg.payload.connectorType) {
@@ -99,7 +99,7 @@ module.exports = function (RED) {
 
     function verboseLog (logMessage) {
       if (RED.settings.verbose) {
-        internalDebugLog(logMessage)
+        internalDebugLog((typeof logMessage === 'string') ? logMessage : JSON.stringify(logMessage))
       }
     }
 
@@ -117,6 +117,8 @@ module.exports = function (RED) {
       let working = false
 
       if (err) {
+        internalDebugLog(err.message)
+
         switch (err.message) {
           case 'Timed out':
             setNodeStatusTo('timeout')

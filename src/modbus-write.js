@@ -87,7 +87,7 @@ module.exports = function (RED) {
 
       if (node.showStatusActivities) {
         setNodeStatusTo(modbusClient.statlyMachine.getMachineState())
-        verboseLog(JSON.toString(msg))
+        verboseLog(msg)
       }
 
       modbusClient.emit('writeModbus', msg, node.onModbusWriteDone, node.onModbusWriteError)
@@ -125,7 +125,7 @@ module.exports = function (RED) {
 
     function verboseLog (logMessage) {
       if (RED.settings.verbose) {
-        internalDebugLog(logMessage)
+        internalDebugLog((typeof logMessage === 'string') ? logMessage : JSON.stringify(logMessage))
       }
     }
 
@@ -134,7 +134,7 @@ module.exports = function (RED) {
     }
 
     function setNodeStatusTo (statusValue) {
-      let statusOptions = mbBasics.set_node_status_properties(statusValue, false)
+      let statusOptions = mbBasics.set_node_status_properties(statusValue, node.showStatusActivities)
       if (mbBasics.statusLog) {
         verboseLog('status options: ' + JSON.stringify(statusOptions))
       }
@@ -149,6 +149,8 @@ module.exports = function (RED) {
       let working = false
 
       if (err) {
+        internalDebugLog(err.message)
+
         switch (err.message) {
           case 'Timed out':
             setNodeStatusTo('timeout')

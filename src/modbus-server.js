@@ -20,6 +20,7 @@ module.exports = function (RED) {
 
   function ModbusServer (config) {
     RED.nodes.createNode(this, config)
+    let bufferFactor = 8
 
     this.name = config.name
     this.logEnabled = config.logEnabled
@@ -27,9 +28,9 @@ module.exports = function (RED) {
     this.responseDelay = parseInt(config.responseDelay)
     this.delayUnit = config.delayUnit
 
-    this.coilsBufferSize = parseInt(config.coilsBufferSize)
-    this.holdingBufferSize = parseInt(config.holdingBufferSize)
-    this.inputBufferSize = parseInt(config.inputBufferSize)
+    this.coilsBufferSize = parseInt(config.coilsBufferSize * bufferFactor)
+    this.holdingBufferSize = parseInt(config.holdingBufferSize * bufferFactor)
+    this.inputBufferSize = parseInt(config.inputBufferSize * bufferFactor)
 
     let node = this
 
@@ -45,7 +46,7 @@ module.exports = function (RED) {
 
     function verboseLog (logMessage) {
       if (RED.settings.verbose) {
-        internalDebugLog(logMessage)
+        internalDebugLog((typeof logMessage === 'string') ? logMessage : JSON.stringify(logMessage))
       }
     }
 

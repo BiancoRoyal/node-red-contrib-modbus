@@ -19,9 +19,9 @@
                     return "ms" == v || "s" == v || "m" == v || "h" == v
                 }
             },
-            coilsBufferSize: {value: 1024, validate: RED.validators.number()},
-            holdingBufferSize: {value: 1024, validate: RED.validators.number()},
-            inputBufferSize: {value: 1024, validate: RED.validators.number()}
+            coilsBufferSize: {value: 10000, validate: RED.validators.number()},
+            holdingBufferSize: {value: 10000, validate: RED.validators.number()},
+            inputBufferSize: {value: 10000, validate: RED.validators.number()}
         },
         inputs: 1,
         outputs: 3,
