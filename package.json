@@ -72,8 +72,9 @@
   "homepage": "https://biancode.github.io/node-red-contrib-modbus/",
   "scripts": {
     "test": "standard --fix && mocha test/*",
-    "build": "standard --fix && gulp publish",
-    "prepublish": "npm run build && npm test",
+    "build": "standard --fix && gulp clean && gulp publish",
+    "prepublish": "standard --fix && npm run build && npm test",
+    "ci-publish": "ci-publish",
     "release": "standard-version"
   },
   "devDependencies": {

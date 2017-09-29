@@ -13,7 +13,7 @@
  */
 module.exports = function (RED) {
   'use strict'
-  let internalDebugLog = require('debug')('node_red_contrib_modbus')
+  let internalDebugLog = require('debug')('contribModbus:queue')
 
   function ModbusQueueInfo (config) {
     RED.nodes.createNode(this, config)

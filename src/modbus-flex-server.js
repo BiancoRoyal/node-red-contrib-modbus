@@ -15,7 +15,7 @@ module.exports = function (RED) {
   'use strict'
   let ModbusRTU = require('modbus-serial')
   let mbBasics = require('./modbus-basics')
-  let internalDebugLog = require('debug')('node_red_contrib_modbus')
+  let internalDebugLog = require('debug')('contribModbus:flex:server')
 
   function ModbusFlexServer (config) {
     RED.nodes.createNode(this, config)

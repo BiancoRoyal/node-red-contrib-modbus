@@ -16,7 +16,7 @@
 module.exports = function (RED) {
   'use strict'
   let mbBasics = require('./modbus-basics')
-  let internalDebugLog = require('debug')('node_red_contrib_modbus')
+  let internalDebugLog = require('debug')('contribModbus:read')
 
   function ModbusRead (config) {
     RED.nodes.createNode(this, config)
@@ -183,6 +183,8 @@ module.exports = function (RED) {
       let working = false
 
       if (err) {
+        internalDebugLog(err.message)
+
         switch (err.message) {
           case 'Timed out':
             timeoutOccurred = true

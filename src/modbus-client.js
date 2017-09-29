@@ -469,7 +469,7 @@ module.exports = function (RED) {
       let state = node.statlyMachine.getMachineState()
 
       if (node.messageAllowedStates.indexOf(state) === -1) {
-        cberr('FSM Not Ready To Read', msg)
+        cberr(new Error('FSM Not Ready To Read'), msg)
         return
       }
 
@@ -562,7 +562,7 @@ module.exports = function (RED) {
       let state = node.statlyMachine.getMachineState()
 
       if (node.messageAllowedStates.indexOf(state) === -1) {
-        cberr('FSM Not Ready To Write', msg)
+        cberr(new Error('FSM Not Ready To Write'), msg)
         return
       }
 

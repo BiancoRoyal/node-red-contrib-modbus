@@ -291,6 +291,12 @@
 <script type="text/x-red" data-help-name="modbus-flex-server">
     <p>Node to provide a flexible Modbus TCP server based on modbus-serial for testing.</p>
 
+    <p>
+        The modbus-serial package allows to configure/inject code to handle modbus requests.
+        With that you can build you personal Modbus server.
+        The function frame is fix - just the body of functions is flexible.
+    </p>
+
     <p>On injecting the server sends the Buffers to the separate outputs</p>
     <p>You can use the Modbus write nodes (FC) to write data to the server buffers.</p>
     <p>You can use the Modbus read nodes (FC) to read data from the server buffers.</p>

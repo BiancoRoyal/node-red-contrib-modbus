@@ -19,7 +19,7 @@ Based on [modbus-serial][2] with TCP, C701, Telnet, Serial, RTU buffered, and AS
 
 * stress tested with Node-RED v0.17.5 and Node.js v6 LTS
 * works with queueing per unit and round robin scheduling
-* Node.JS 4.x is supported in v1.x
+* Node.JS 4.x is supported with v1.x
 * prepared for the next LTS of Node.js v8.x
 
 # Install
@@ -60,7 +60,25 @@ see [YouTube Playlist][9]
 
 Debug will be activated by starting Node-RED with debug mode: 
 
-    DEBUG=node_red_contrib_modbus node-red -v
+    DEBUG=contribModbus* node-red -v
+
+    or
+
+    DEBUG=contribModbus:{option},contribModbus:{option},...
+
+## Options
+
+ * core
+    * core:client
+ * read
+ * write
+ * server
+ * response
+ * flex
+    * flex:getter
+    * flex:write
+    * flex:connector
+    * flex:server
 
 see [Wiki][10] pages to get more options in detail
 
