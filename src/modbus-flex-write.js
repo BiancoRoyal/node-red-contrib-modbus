@@ -104,7 +104,7 @@ module.exports = function (RED) {
 
         if (node.showStatusActivities) {
           setNodeStatusTo(modbusClient.statlyMachine.getMachineState())
-          verboseLog(JSON.toString(msg))
+          verboseLog(msg)
         }
 
         modbusClient.emit('writeModbus', msg, node.onModbusWriteDone, node.onModbusWriteError)
@@ -130,7 +130,7 @@ module.exports = function (RED) {
 
     function verboseLog (logMessage) {
       if (RED.settings.verbose) {
-        internalDebugLog(logMessage)
+        internalDebugLog((typeof logMessage === 'string') ? logMessage : JSON.stringify(logMessage))
       }
     }
 

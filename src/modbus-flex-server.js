@@ -58,7 +58,7 @@ module.exports = function (RED) {
 
     function verboseLog (logMessage) {
       if (RED.settings.verbose) {
-        internalDebugLog(logMessage)
+        internalDebugLog((typeof logMessage === 'string') ? logMessage : JSON.stringify(logMessage))
       }
     }
 
@@ -125,7 +125,7 @@ module.exports = function (RED) {
           node.server.on('socketError', function (err) {
             verboseWarn(err)
             setNodeStatusTo('error')
-            internalDebugLog(err)
+            internalDebugLog(err.message)
 
             node.server.close(function () {
               verboseLog('closed modbus flex server by socket error and restart now')

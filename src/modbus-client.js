@@ -275,7 +275,7 @@ module.exports = function (RED) {
             verboseLog('connection closed')
           })
         } catch (err) {
-          verboseLog(err)
+          verboseLog(err.message)
         }
       }
       node.client = null
@@ -750,7 +750,7 @@ module.exports = function (RED) {
           verboseLog('connection closed')
           done()
         }).catch(function (err) {
-          verboseLog(err)
+          verboseLog(err.message)
           done()
         })
       } else {
