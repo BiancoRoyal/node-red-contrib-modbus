@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.0.1-beta.1"></a>
+## [2.0.1-beta.1](https://github.com/biancode/node-red-contrib-modbus/compare/v1.0.16...v2.0.1-beta.1) (2017-09-29)
+
+
+
 <a name="2.0.1-beta.0"></a>
 ## [2.0.1-beta.0](https://github.com/biancode/node-red-contrib-modbus/compare/v2.0.1-alpha.1...v2.0.1-beta.0) (2017-09-26)
 
