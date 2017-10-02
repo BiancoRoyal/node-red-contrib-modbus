@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file. See [standa
 <a name="2.0.1-beta.4"></a>
 ## [2.0.1-beta.4](https://github.com/biancode/node-red-contrib-modbus/compare/v2.0.1-beta.3...v2.0.1-beta.4) (2017-10-02)
 
-
+* breaking change for the queue info node to work without the Node-RED catch node
+* new Modbus Flex Server ( flexible server of modbus-serial )
+* upgrade to serialport 5.x
+* upgrade to node-modbus 4.x
+* upgrade to debug 3.x
+* using vm2 sandboxes
+* locales updates
 
 <a name="2.0.1-beta.3"></a>
 ## [2.0.1-beta.3](https://github.com/biancode/node-red-contrib-modbus/compare/v2.0.1-beta.2...v2.0.1-beta.3) (2017-10-02)
