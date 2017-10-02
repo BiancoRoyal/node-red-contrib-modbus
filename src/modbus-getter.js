@@ -160,7 +160,7 @@ module.exports = function (RED) {
             working = true
             break
           default:
-            setNodeStatusTo('error: ' + JSON.stringify(err))
+            setNodeStatusTo('error ' + err.message)
             if (node.showErrors) {
               node.error(err, msg)
             }

@@ -290,7 +290,7 @@ module.exports = function (RED) {
 
       if (node.clienttype === 'tcp') {
         if (!node.checkUnitId(node.unit_id)) {
-          node.error('wrong unit-id (0..255)', {payload: node.unit_id})
+          node.error(new Error('wrong unit-id (0..255)'), {payload: node.unit_id})
           node.statlyMachine.failure()
           return
         }
@@ -331,7 +331,7 @@ module.exports = function (RED) {
         }
       } else {
         if (!node.checkUnitId(node.unit_id)) {
-          node.error('wrong unit-id serial (1..247)', {payload: node.unit_id})
+          node.error(new Error('wrong unit-id serial (1..247)'), {payload: node.unit_id})
           node.statlyMachine.failure()
           return
         }
@@ -552,7 +552,7 @@ module.exports = function (RED) {
           break
         default:
           node.activateSending(msg)
-          cberr('Function Code Unknown', msg)
+          cberr(new Error('Function Code Unknown'), msg)
           coreModbusClient.modbusSerialDebug('Function Code Unknown %s', JSON.stringify(msg))
           break
       }
@@ -606,8 +606,8 @@ module.exports = function (RED) {
         case 15: // FC: 15
           if (parseInt(msg.payload.value.length) !== parseInt(msg.payload.quantity)) {
             node.activateSending(msg)
-            cberr('Quantity should be less or equal to coil payload array length: ' +
-              msg.payload.value.length + ' Addr: ' + msg.payload.address + ' Q: ' + msg.payload.quantity, msg)
+            cberr(new Error('Quantity should be less or equal to coil payload array length: ' +
+              msg.payload.value.length + ' Addr: ' + msg.payload.address + ' Q: ' + msg.payload.quantity), msg)
           } else {
             node.client.writeCoils(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
               node.activateSending(msg)
@@ -632,8 +632,8 @@ module.exports = function (RED) {
         case 16: // FC: 16
           if (parseInt(msg.payload.value.length) !== parseInt(msg.payload.quantity)) {
             node.activateSending(msg)
-            cberr('Quantity should be less or equal to register payload array length: ' +
-              msg.payload.value.length + ' Addr: ' + msg.payload.address + ' Q: ' + msg.payload.quantity, msg)
+            cberr(new Error('Quantity should be less or equal to register payload array length: ' +
+              msg.payload.value.length + ' Addr: ' + msg.payload.address + ' Q: ' + msg.payload.quantity), msg)
           } else {
             node.client.writeRegisters(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
               node.activateSending(msg)
@@ -657,7 +657,7 @@ module.exports = function (RED) {
           break
         default:
           node.activateSending(msg)
-          cberr('Function Code Unknown', msg)
+          cberr(new Error('Function Code Unknown'), msg)
           coreModbusClient.modbusSerialDebug('Function Code Unknown %s', JSON.stringify(msg))
           break
       }

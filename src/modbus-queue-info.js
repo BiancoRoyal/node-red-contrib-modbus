@@ -75,7 +75,7 @@ module.exports = function (RED) {
           node.highLevelReached = true
 
           if (node.errorOnHighLevel) {
-            node.error('Queue High Level Reached', {
+            node.error(new Error('Queue High Level Reached'), {
               payload: Date.now(),
               state: 'high level reached',
               unitid: unit,
@@ -95,7 +95,7 @@ module.exports = function (RED) {
 
         if (!node.highHighLevelReached && items > node.highLevel && items > node.highHighLevel) {
           node.highHighLevelReached = true
-          node.error('Queue High High Level Reached', {
+          node.error(new Error('Queue High High Level Reached'), {
             payload: Date.now(),
             state: 'high high level reached',
             unitid: unit,
