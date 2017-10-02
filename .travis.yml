@@ -1,8 +1,7 @@
 language: node_js
 node_js:
-    - 7
-    - 6.9.4
-    - 6.9.2
+    - 6
+    - 8
 before_script:
   - npm install -g gulp
   - npm install

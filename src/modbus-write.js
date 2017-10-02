@@ -16,7 +16,7 @@
 module.exports = function (RED) {
   'use strict'
   let mbBasics = require('./modbus-basics')
-  let internalDebugLog = require('debug')('node_red_contrib_modbus')
+  let internalDebugLog = require('debug')('contribModbus:write')
 
   function ModbusWrite (config) {
     RED.nodes.createNode(this, config)
@@ -69,7 +69,7 @@ module.exports = function (RED) {
 
       if (msg.payload == null) {
         setNodeStatusTo('payload error')
-        node.error('invalid msg.payload', msg)
+        node.error(new Error('Invalid msg.payload'), msg)
         return
       }
 
@@ -166,7 +166,7 @@ module.exports = function (RED) {
             working = true
             break
           default:
-            setNodeStatusTo('error: ' + JSON.stringify(err))
+            setNodeStatusTo('error ' + err.message)
             if (node.showErrors) {
               node.error(err, msg)
             }

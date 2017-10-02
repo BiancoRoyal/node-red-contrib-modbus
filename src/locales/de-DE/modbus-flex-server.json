@@ -1,0 +1,11 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "Aktivitäten anzeigen",
+      "showErrors": "Fehler anzeigen",
+      "responseDelay": "Antwortverzögerung",
+      "coils": "Coils",
+      "registers": "Register"
+    }
+  }
+}

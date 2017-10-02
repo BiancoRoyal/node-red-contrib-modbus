@@ -17,8 +17,10 @@ node-red-contrib-modbus
 
 Based on [modbus-serial][2] with TCP, C701, Telnet, Serial, RTU buffered, and ASCII
 
-* stress tested with Node-RED v0.16.2 and Node.js (4.7/6.9 LTS)
+* stress tested with Node-RED v0.17.5 and Node.js v6 LTS
 * works with queueing per unit and round robin scheduling
+* Node.JS 4.x is supported with v1.x
+* prepared for the next LTS of Node.js v8.x
 
 # Install
 
@@ -39,10 +41,11 @@ try these options on npm install to build, if you have problems to install
 To update the dependencies or the whole package, you have just to install again.
 To get a special version please set the version with @M.M.F:
 
-    npm install node-red-contrib-modbus@1.0.16
-or
+    npm install node-red-contrib-modbus@1.3.0
 
-    npm install -g node-red-contrib-modbus@1.0.16
+or global by
+
+    npm install -g node-red-contrib-modbus@1.3.0
     
 # How to use
 
@@ -58,7 +61,26 @@ see [YouTube Playlist][9]
 
 Debug will be activated by starting Node-RED with debug mode: 
 
-    DEBUG=node_red_contrib_modbus node-red -v
+    DEBUG=contribModbus*,modbus-serial node-red -v
+
+    or
+
+    DEBUG=contribModbus:{option},contribModbus:{option},...
+
+## Options
+
+ * core
+    * core:client
+ * read
+ * write
+ * server
+ * response
+ * flex
+    * flex:getter
+    * flex:write
+    * flex:connector
+    * flex:server
+ * modbus-serial
 
 see [Wiki][10] pages to get more options in detail
 

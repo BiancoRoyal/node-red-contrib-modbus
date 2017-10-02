@@ -14,7 +14,7 @@
 module.exports = function (RED) {
   'use strict'
   let mbBasics = require('./modbus-basics')
-  let internalDebugLog = require('debug')('node_red_contrib_modbus')
+  let internalDebugLog = require('debug')('contribModbus:flex:connector')
 
   function ModbusFlexConnector (config) {
     RED.nodes.createNode(this, config)
@@ -76,10 +76,10 @@ module.exports = function (RED) {
           msg.payload.emptyQueue = node.emptyQueue
           modbusClient.emit('dynamicReconnect', msg)
         } else {
-          node.error('Payload Not Valid - Connector Type', msg)
+          node.error(new Error('Payload Not Valid - Connector Type'), msg)
         }
       } else {
-        node.error('Payload Not Valid', msg)
+        node.error(new Error('Payload Not Valid'), msg)
       }
     })
 
@@ -134,7 +134,7 @@ module.exports = function (RED) {
             working = true
             break
           default:
-            setNodeStatusTo('error: ' + JSON.stringify(err))
+            setNodeStatusTo('error ' + err.message)
             if (node.showErrors) {
               node.error(err, msg)
             }

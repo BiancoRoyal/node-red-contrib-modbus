@@ -14,7 +14,7 @@
 module.exports = function (RED) {
   'use strict'
   let mbBasics = require('./modbus-basics')
-  let internalDebugLog = require('debug')('node_red_contrib_modbus')
+  let internalDebugLog = require('debug')('contribModbus:flex:write')
 
   function ModbusFlexWrite (config) {
     RED.nodes.createNode(this, config)
@@ -109,7 +109,7 @@ module.exports = function (RED) {
 
         modbusClient.emit('writeModbus', msg, node.onModbusWriteDone, node.onModbusWriteError)
       } else {
-        node.error('Payload Not Valid', msg)
+        node.error(new Error('Payload Not Valid'), msg)
       }
     })
 
@@ -169,7 +169,7 @@ module.exports = function (RED) {
             working = true
             break
           default:
-            setNodeStatusTo('error: ' + JSON.stringify(err))
+            setNodeStatusTo('error ' + err.message)
             if (node.showErrors) {
               node.error(err, msg)
             }

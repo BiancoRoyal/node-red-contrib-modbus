@@ -36,15 +36,15 @@
 
 <script type="text/x-red" data-template-name="modbus-server">
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-serverPort"><i class="icon-tag"></i> Port</label>
+        <label for="node-input-serverPort"><i class="icon-tag"></i> <span data-i18n="modbus-contrib.label.port"></span></label>
         <input type="text" id="node-input-serverPort" placeholder="8888">
     </div>
     <div class="form-row">
-        <label for="node-input-responseDelay"><i class="icon-tag"></i> Response Delay</label>
+        <label for="node-input-responseDelay"><i class="icon-tag"></i> <span data-i18n="modbus-contrib.label.responseDelay"></span></label>
         <input type="text" id="node-input-responseDelay" placeholder="100" style="max-width:120px">
         <select id="node-input-delayUnit" style="max-width:160px">
             <option value="ms">millisecond(s)</option>
@@ -54,20 +54,20 @@
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-coilsBufferSize"><i class="icon-tag"></i> Coils</label>
+        <label for="node-input-coilsBufferSize"><i class="icon-tag"></i> <span data-i18n="modbus-contrib.label.coils"></span></label>
         <input type="text" id="node-input-coilsBufferSize" placeholder="1024">
     </div>
     <div class="form-row">
-        <label for="node-input-holdingBufferSize"><i class="icon-tag"></i> Holding</label>
+        <label for="node-input-holdingBufferSize"><i class="icon-tag"></i> <span data-i18n="modbus-contrib.label.holdings"></span></label>
         <input type="text" id="node-input-holdingBufferSize" placeholder="1024">
     </div>
     <div class="form-row">
-        <label for="node-input-inputBufferSize"><i class="icon-tag"></i> Input</label>
+        <label for="node-input-inputBufferSize"><i class="icon-tag"></i> <span data-i18n="modbus-contrib.label.inputs"></span></label>
         <input type="text" id="node-input-inputBufferSize" placeholder="1024">
     </div>
     <hr>
     <div class="form-row">
-        <label style="min-width:160px" for="node-input-logEnabled"><i class="fa fa-th"></i> Log active</label>
+        <label style="min-width:160px" for="node-input-logEnabled"><i class="fa fa-th"></i> <span data-i18n="modbus-contrib.label.logEnabled"></span></label>
         <input type="checkbox" id="node-input-logEnabled" style="max-width:30px">
     </div>
 </script>

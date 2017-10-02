@@ -8,7 +8,7 @@
 'use strict'
 
 var de = de || {biancoroyal: {modbus: {core: {client: {}}}}} // eslint-disable-line no-use-before-define
-de.biancoroyal.modbus.core.client.internalDebug = de.biancoroyal.modbus.core.client.internalDebug || require('debug')('node_red_contrib_modbus:client') // eslint-disable-line no-use-before-define
+de.biancoroyal.modbus.core.client.internalDebug = de.biancoroyal.modbus.core.client.internalDebug || require('debug')('contribModbus:core:client') // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.core.client.modbusSerialDebug = de.biancoroyal.modbus.core.client.modbusSerialDebug || require('debug')('modbus-serial') // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.core.client.Stately = de.biancoroyal.modbus.core.client.Stately || require('stately.js') // eslint-disable-line no-use-before-define
 

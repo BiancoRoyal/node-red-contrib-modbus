@@ -17,7 +17,7 @@ module.exports = function (RED) {
   'use strict'
   let util = require('util')
   let mbBasics = require('./modbus-basics')
-  let internalDebugLog = require('debug')('node_red_contrib_modbus')
+  let internalDebugLog = require('debug')('contribModbus:response')
 
   function ModbusResponse (config) {
     RED.nodes.createNode(this, config)

@@ -13,7 +13,7 @@
  */
 module.exports = function (RED) {
   'use strict'
-  let internalDebugLog = require('debug')('node_red_contrib_modbus')
+  let internalDebugLog = require('debug')('contribModbus:queue')
 
   function ModbusQueueInfo (config) {
     RED.nodes.createNode(this, config)
@@ -63,46 +63,48 @@ module.exports = function (RED) {
 
         if (!node.lowLevelReached && items > node.lowLowLevel && items < node.lowLevel) {
           node.lowLevelReached = true
-          internalDebugLog({
+          let msg = {
             payload: Date.now(),
             state: 'low level reached',
             unitid: unit,
             items: items
-          })
+          }
+
+          internalDebugLog(msg)
+          node.send(msg)
         }
 
         if (!node.highLevelReached && items > node.lowLevel && items > node.highLevel) {
           node.highLevelReached = true
+          let msg = {
+            payload: Date.now(),
+            state: 'high level reached',
+            unitid: unit,
+            highLevel: node.highLevel,
+            items: items
+          }
 
           if (node.errorOnHighLevel) {
-            node.error('Queue High Level Reached', {
-              payload: Date.now(),
-              state: 'high level reached',
-              unitid: unit,
-              highLevel: node.highLevel,
-              items: items
-            })
+            node.error(new Error('Queue High Level Reached'), msg)
           } else {
-            node.warn({
-              payload: Date.now(),
-              state: 'high level reached',
-              unitid: unit,
-              highLevel: node.highLevel,
-              items: items
-            })
+            node.warn(msg)
           }
+
+          node.send(msg)
         }
 
         if (!node.highHighLevelReached && items > node.highLevel && items > node.highHighLevel) {
           node.highHighLevelReached = true
-          node.error('Queue High High Level Reached', {
+          let msg = {
             payload: Date.now(),
             state: 'high high level reached',
             unitid: unit,
             highLevel: node.highLevel,
             highHighLevel: node.highHighLevel,
             items: items
-          })
+          }
+          node.error(new Error('Queue High High Level Reached'), msg)
+          node.send(msg)
         }
 
         let fillColor = 'blue'
@@ -171,9 +173,19 @@ module.exports = function (RED) {
           shape: 'ring',
           text: 'active empty unit queue'
         })
-      }
 
-      node.send(msg)
+        let result = {
+          payload: Date.now(),
+          state: 'queue reset done',
+          unitid: msg.unitid,
+          lowlowLevel: node.lowlowLevel,
+          lowLevel: node.lowLevel,
+          highLevel: node.highLevel,
+          highHighLevel: node.highHighLevel
+        }
+
+        node.send(result)
+      }
     })
 
     node.on('close', function () {

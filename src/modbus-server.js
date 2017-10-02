@@ -16,7 +16,7 @@ module.exports = function (RED) {
   let stampit = require('stampit')
   let modbus = require('node-modbus')
   let mbBasics = require('./modbus-basics')
-  let internalDebugLog = require('debug')('node_red_contrib_modbus')
+  let internalDebugLog = require('debug')('contribModbus:server')
 
   function ModbusServer (config) {
     RED.nodes.createNode(this, config)
