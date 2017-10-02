@@ -6,7 +6,8 @@
       "showErrors": "Show Errors",
       "functioncode": "FC",
       "address": "Address",
-      "quantity": "Quantity"
+      "quantity": "Quantity",
+      "simpleNegatives": "Negative UInt"
     }
   }
 }

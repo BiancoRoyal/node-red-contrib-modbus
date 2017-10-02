@@ -41,10 +41,11 @@ try these options on npm install to build, if you have problems to install
 To update the dependencies or the whole package, you have just to install again.
 To get a special version please set the version with @M.M.F:
 
-    npm install node-red-contrib-modbus@1.2.2
-or
+    npm install node-red-contrib-modbus@1.3.0
 
-    npm install -g node-red-contrib-modbus@1.2.2
+or global by
+
+    npm install -g node-red-contrib-modbus@1.3.0
     
 # How to use
 
@@ -60,7 +61,7 @@ see [YouTube Playlist][9]
 
 Debug will be activated by starting Node-RED with debug mode: 
 
-    DEBUG=contribModbus* node-red -v
+    DEBUG=contribModbus*,modbus-serial node-red -v
 
     or
 
@@ -79,6 +80,7 @@ Debug will be activated by starting Node-RED with debug mode:
     * flex:write
     * flex:connector
     * flex:server
+ * modbus-serial
 
 see [Wiki][10] pages to get more options in detail
 
