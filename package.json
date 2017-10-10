@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-modbus",
-  "version": "2.0.1",
+  "version": "2.1.1-alpha.0",
   "private": false,
   "description": "The all in one Modbus TCP and Serial contribution package for Node-RED.",
   "dependencies": {
