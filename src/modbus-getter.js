@@ -73,6 +73,7 @@ module.exports = function (RED) {
 
       if (msg.payload) {
         node.bufferMessageList.set(msg._msgid, msg)
+        internalDebugLog('Add Message ' + msg._msgid)
 
         msg = {
           topic: msg.topic || node.id,
@@ -135,6 +136,9 @@ module.exports = function (RED) {
       let origMsg = node.bufferMessageList.get(msg._msgid) || {}
       if (origMsg._msgid) {
         node.bufferMessageList.delete(origMsg._msgid)
+        internalDebugLog('Remove Message ' + msg._msgid)
+      } else {
+        internalDebugLog('Message Not Found ' + msg._msgid)
       }
 
       origMsg.payload = values

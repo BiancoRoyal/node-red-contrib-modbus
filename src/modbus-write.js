@@ -78,15 +78,12 @@ module.exports = function (RED) {
         return
       }
 
-      node.bufferMessageList.set(msg._msgid, msg)
-
       if (msg.payload.value && msg.payload.value.indexOf(',') > -1) {
         msg.payload.value = JSON.parse(msg.payload.value)
       }
 
-      if (msg.payload && msg.payload.indexOf(',') > -1) {
-        msg.payload = JSON.parse(msg.payload)
-      }
+      node.bufferMessageList.set(msg._msgid, msg)
+      internalDebugLog('Add Message ' + msg._msgid)
 
       msg = {
         payload: {
@@ -147,6 +144,9 @@ module.exports = function (RED) {
       let origMsg = node.bufferMessageList.get(msg._msgid) || {}
       if (origMsg._msgid) {
         node.bufferMessageList.delete(origMsg._msgid)
+        internalDebugLog('Remove Message ' + msg._msgid)
+      } else {
+        internalDebugLog('Message Not Found ' + msg._msgid)
       }
 
       origMsg.payload = values
