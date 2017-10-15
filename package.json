@@ -73,7 +73,6 @@
   "scripts": {
     "test": "standard --fix && mocha test/* --reporter dot",
     "build": "standard --fix && gulp clean && gulp publish",
-    "preinstall": "standard --fix && npm run build && npm test",
     "prepublishOnly": "standard --fix && npm run build && npm test",
     "ci-publish": "ci-publish",
     "release": "standard-version"
