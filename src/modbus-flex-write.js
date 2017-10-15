@@ -103,6 +103,14 @@ module.exports = function (RED) {
 
           node.bufferMessageList.set(msg._msgid, msg)
 
+          if (msg.payload.value && msg.payload.value.indexOf(',') > -1) {
+            msg.payload.value = JSON.parse(msg.payload.value)
+          }
+
+          if (msg.value && msg.value.indexOf(',') > -1) {
+            msg.value = JSON.parse(msg.value)
+          }
+
           msg = {
             topic: msg.topic || node.id,
             payload: {
