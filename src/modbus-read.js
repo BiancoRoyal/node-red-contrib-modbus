@@ -22,6 +22,7 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config)
 
     this.name = config.name
+    this.topic = config.topic
     this.unitid = config.unitid
 
     this.dataType = config.dataType
@@ -88,7 +89,7 @@ module.exports = function (RED) {
       }
 
       let msg = {
-        topic: 'polling',
+        topic: node.topic || 'polling',
         from: node.name,
         payload: {
           unitid: node.unitid,

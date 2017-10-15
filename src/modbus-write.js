@@ -32,6 +32,7 @@ module.exports = function (RED) {
 
     let node = this
     let modbusClient = RED.nodes.getNode(config.server)
+    node.bufferMessageList = new Map()
 
     setNodeStatusTo('waiting')
 
@@ -77,12 +78,17 @@ module.exports = function (RED) {
         return
       }
 
-      msg.payload = {
-        value: msg.payload,
-        unitid: node.unitid,
-        fc: node.functionCodeModbus(node.dataType),
-        address: node.adr,
-        quantity: node.quantity
+      node.bufferMessageList.set(msg._msgid, msg)
+
+      msg = {
+        payload: {
+          value: msg.payload.value || msg.payload,
+          unitid: node.unitid,
+          fc: node.functionCodeModbus(node.dataType),
+          address: node.adr,
+          quantity: node.quantity
+        },
+        _msgid: msg._msgid
       }
 
       if (node.showStatusActivities) {
@@ -130,7 +136,16 @@ module.exports = function (RED) {
     }
 
     function buildMessage (values, response, msg) {
-      return [{payload: values, responseBuffer: response, input: msg}, {payload: response, values: values, input: msg}]
+      let origMsg = node.bufferMessageList.get(msg._msgid) || {}
+      if (origMsg._msgid) {
+        node.bufferMessageList.delete(origMsg._msgid)
+      }
+
+      origMsg.payload = values
+      origMsg.responseBuffer = response
+      origMsg.input = msg
+
+      return [origMsg, {payload: response, values: values, input: msg}]
     }
 
     function setNodeStatusTo (statusValue) {

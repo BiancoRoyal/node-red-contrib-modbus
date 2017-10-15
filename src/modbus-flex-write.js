@@ -25,6 +25,7 @@ module.exports = function (RED) {
 
     let node = this
     let modbusClient = RED.nodes.getNode(config.server)
+    node.bufferMessageList = new Map()
 
     setNodeStatusTo('waiting')
 
@@ -73,30 +74,45 @@ module.exports = function (RED) {
       if (msg.payload) {
         try {
           msg.payload.fc = parseInt(msg.payload.fc)
+          msg.payload.unitid = parseInt(msg.payload.unitid)
           msg.payload.address = parseInt(msg.payload.address)
           msg.payload.quantity = parseInt(msg.payload.quantity)
 
           if (!(Number.isInteger(msg.payload.fc) &&
-            (msg.payload.fc === 5 ||
-            msg.payload.fc === 6 ||
-            msg.payload.fc === 15 ||
-            msg.payload.fc === 16))) {
+              (msg.payload.fc === 5 ||
+                msg.payload.fc === 6 ||
+                msg.payload.fc === 15 ||
+                msg.payload.fc === 16))) {
             node.error('FC Not Valid', msg)
             return
           }
 
           if (!(Number.isInteger(msg.payload.address) &&
-            msg.payload.address >= 0 &&
-            msg.payload.address <= 65535)) {
+              msg.payload.address >= 0 &&
+              msg.payload.address <= 65535)) {
             node.error('Address Not Valid', msg)
             return
           }
 
           if (!(Number.isInteger(msg.payload.quantity) &&
-            msg.payload.quantity >= 1 &&
-            msg.payload.quantity <= 65535)) {
+              msg.payload.quantity >= 1 &&
+              msg.payload.quantity <= 65535)) {
             node.error('Quantity Not Valid', msg)
             return
+          }
+
+          node.bufferMessageList.set(msg._msgid, msg)
+
+          msg = {
+            topic: msg.topic || node.id,
+            payload: {
+              value: msg.payload.value || msg.value,
+              unitid: msg.payload.unitid,
+              fc: msg.payload.fc,
+              address: msg.payload.address,
+              quantity: msg.payload.quantity
+            },
+            _msgid: msg._msgid
           }
         } catch (err) {
           node.error(err, msg)
@@ -135,7 +151,16 @@ module.exports = function (RED) {
     }
 
     function buildMessage (values, response, msg) {
-      return [{payload: values, responseBuffer: response, input: msg}, {payload: response, values: values, input: msg}]
+      let origMsg = node.bufferMessageList.get(msg._msgid) || {}
+      if (origMsg._msgid) {
+        node.bufferMessageList.delete(origMsg._msgid)
+      }
+
+      origMsg.payload = values
+      origMsg.responseBuffer = response
+      origMsg.input = msg
+
+      return [origMsg, {payload: response, values: values, input: msg}]
     }
 
     function setNodeStatusTo (statusValue) {

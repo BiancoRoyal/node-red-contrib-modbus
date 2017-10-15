@@ -26,6 +26,7 @@ module.exports = function (RED) {
 
     let node = this
     let modbusClient = RED.nodes.getNode(config.server)
+    node.bufferMessageList = new Map()
 
     setNodeStatusTo('waiting')
 
@@ -65,9 +66,10 @@ module.exports = function (RED) {
 
       if (msg.payload) {
         try {
-          msg.payload.fc = parseInt(msg.payload.fc)
-          msg.payload.address = parseInt(msg.payload.address)
-          msg.payload.quantity = parseInt(msg.payload.quantity)
+          msg.payload.fc = parseInt(msg.payload.fc) || 3
+          msg.payload.unitid = parseInt(msg.payload.unitid)
+          msg.payload.address = parseInt(msg.payload.address) || 0
+          msg.payload.quantity = parseInt(msg.payload.quantity) || 1
 
           if (!(Number.isInteger(msg.payload.fc) &&
             msg.payload.fc >= 1 &&
@@ -88,6 +90,20 @@ module.exports = function (RED) {
             msg.payload.quantity <= 65535)) {
             node.error('Quantity Not Valid', msg)
             return
+          }
+
+          node.bufferMessageList.set(msg._msgid, msg)
+
+          msg = {
+            topic: msg.topic || node.id,
+            payload: {
+              value: msg.payload.value || msg.value,
+              unitid: msg.payload.unitid,
+              fc: msg.payload.fc,
+              address: msg.payload.address,
+              quantity: msg.payload.quantity
+            },
+            _msgid: msg._msgid
           }
         } catch (err) {
           node.error(err, msg)
@@ -126,7 +142,16 @@ module.exports = function (RED) {
     }
 
     function buildMessage (values, response, msg) {
-      return [{payload: values, responseBuffer: response, input: msg}, {payload: response, values: values, input: msg}]
+      let origMsg = node.bufferMessageList.get(msg._msgid) || {}
+      if (origMsg._msgid) {
+        node.bufferMessageList.delete(origMsg._msgid)
+      }
+
+      origMsg.payload = values
+      origMsg.responseBuffer = response
+      origMsg.input = msg
+
+      return [origMsg, {payload: response, values: values, input: msg}]
     }
 
     function setNodeStatusTo (statusValue) {

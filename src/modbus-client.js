@@ -122,7 +122,7 @@ module.exports = function (RED) {
             queueLog(JSON.stringify({
               type: 'serial sending and wait',
               unitid: serialUnit,
-              commandData: command,
+              // commandData: command,
               queueLength: node.bufferCommandList.get(serialUnit).length,
               sendAllowedForNext: node.sendAllowed.get(serialUnit),
               delay: node.commandDelay
@@ -394,8 +394,11 @@ module.exports = function (RED) {
     }
 
     node.modbusErrorHandling = function (err) {
-      coreModbusClient.modbusSerialDebug(JSON.stringify(err))
-      coreModbusClient.modbusSerialDebug(err.message)
+      if (err.message) {
+        coreModbusClient.modbusSerialDebug('modbusErrorHandling:' + err.message)
+      } else {
+        coreModbusClient.modbusSerialDebug('modbusErrorHandling:' + JSON.stringify(err))
+      }
       if (coreModbusClient.networkErrors.includes(err.errno)) {
         node.statlyMachine.failure()
       }
@@ -440,7 +443,7 @@ module.exports = function (RED) {
         msg.queueUnit = unit
         queueLog(JSON.stringify({
           info: 'push to Queue by Unit-Id',
-          msg: msg,
+          message: msg.payload,
           unit: unit
         }))
 
@@ -453,7 +456,7 @@ module.exports = function (RED) {
         msg.queueUnit = node.unit_id
         queueLog(JSON.stringify({
           info: 'push to Queue by default Unit-Id',
-          msg: msg,
+          message: msg.payload,
           unit: node.unit_id
         }))
 
@@ -480,7 +483,7 @@ module.exports = function (RED) {
 
         queueLog(JSON.stringify({
           info: 'queue read msg',
-          msg: msg,
+          message: msg.payload,
           state: state,
           queueLength: node.bufferCommandList.get(msg.queueUnit).length
         }))
@@ -503,7 +506,7 @@ module.exports = function (RED) {
 
       queueLog(JSON.stringify({
         info: 'read msg',
-        msg: msg,
+        message: msg.payload,
         unitid: msg.queueUnitId,
         timeout: node.client.getTimeout(),
         state: node.statlyMachine.getMachineState()
@@ -553,7 +556,7 @@ module.exports = function (RED) {
         default:
           node.activateSending(msg)
           cberr(new Error('Function Code Unknown'), msg)
-          coreModbusClient.modbusSerialDebug('Function Code Unknown %s', JSON.stringify(msg))
+          coreModbusClient.modbusSerialDebug('Function Code Unknown %s', msg.payload.fc)
           break
       }
     }
@@ -573,7 +576,7 @@ module.exports = function (RED) {
 
         queueLog(JSON.stringify({
           info: 'queue write msg',
-          msg: msg,
+          message: msg.payload,
           state: state,
           queueLength: node.bufferCommandList.get(msg.queueUnit).length
         }))
@@ -596,7 +599,7 @@ module.exports = function (RED) {
 
       queueLog(JSON.stringify({
         info: 'write msg',
-        msg: msg,
+        message: msg.payload,
         unitid: msg.queueUnitId,
         timeout: node.client.getTimeout(),
         state: node.statlyMachine.getMachineState()
@@ -658,7 +661,7 @@ module.exports = function (RED) {
         default:
           node.activateSending(msg)
           cberr(new Error('Function Code Unknown'), msg)
-          coreModbusClient.modbusSerialDebug('Function Code Unknown %s', JSON.stringify(msg))
+          coreModbusClient.modbusSerialDebug('Function Code Unknown %s', msg.payload.fc)
           break
       }
     }
@@ -669,7 +672,7 @@ module.exports = function (RED) {
 
         queueLog(JSON.stringify({
           info: 'queue response activate sending',
-          msg: msg,
+          message: msg.payload,
           queueLength: node.bufferCommandList.length
         }))
       }
