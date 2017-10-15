@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-modbus",
-  "version": "2.1.1-alpha.0",
+  "version": "2.1.1",
   "private": false,
   "description": "The all in one Modbus TCP and Serial contribution package for Node-RED.",
   "dependencies": {
@@ -73,7 +73,8 @@
   "scripts": {
     "test": "standard --fix && mocha test/* --reporter dot",
     "build": "standard --fix && gulp clean && gulp publish",
-    "prepublish": "standard --fix && npm run build && npm test",
+    "preinstall": "standard --fix && npm run build && npm test",
+    "prepublishOnly": "standard --fix && npm run build && npm test",
     "ci-publish": "ci-publish",
     "release": "standard-version"
   },
