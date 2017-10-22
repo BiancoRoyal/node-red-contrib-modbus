@@ -2,6 +2,7 @@
  Copyright 2016,2017 - Klaus Landsdorf (http://bianco-royal.de/)
  Copyright 2016 - Jason D. Harper, Argonne National Laboratory
  Copyright 2015,2016 - Mika Karaila, Valmet Automation Inc.
+ Copyright 2013, 2016 IBM Corp. (node-red)
  All rights reserved.
  node-red-contrib-modbus
 
@@ -30,6 +31,8 @@
                     return "ms" == v || "s" == v || "m" == v || "h" == v
                 }
             },
+            delayOnStart: {value: false},
+            startDelayTime: {value: ''},
             server: {type: "modbus-client", required:true}
         },
         inputs: 0,
@@ -37,11 +40,62 @@
         icon: "modbus.png",
         paletteLabel: "Modbus-Read",
         label: function () {
-            return this.name || "Modbus Read"
+            let nodeLabel = this.name || "Modbus Read"
+            if (this.once) {
+                nodeLabel += ' ¹'
+            }
+            return nodeLabel
+        },
+        oneditprepare: function () {
+            if (this.delayOnStart) {
+              $('#node-delay').show()
+            }
+            else {
+              $('#node-delay').hide()
+              $('#node-input-delayOnStart').prop('checked', false)
+            }
+
+            $('#node-input-delayOnStart').change(function () {
+                if ($(this).is(':checked')) {
+                  $('#node-delay').show()
+                } else {
+                  $('#node-delay').hide()
+                }
+            })
+        },
+        button: {
+            onclick: function () {
+              let label = (this.name || 'modbus-read').replace(/&/g, '&amp').replace(/</g, '&lt').replace(/>/g, '&gt')
+              let node = this
+
+              $.ajax({
+                url: 'modbus/read/inject/' + node.id,
+                type: 'POST',
+                success: function (resp) {
+                  RED.notify(node._('modbusinject.success', {label: label}), 'success')
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                  if (jqXHR.status === 404) {
+                    RED.notify(node._('common.notification.error', {message: node._('common.notification.errors.not-deployed')}), 'error')
+                  } else if (jqXHR.status === 500) {
+                    RED.notify(node._('common.notification.error', {message: node._('modbusinject.errors.failed')}), 'error')
+                  } else if (jqXHR.status === 0) {
+                    RED.notify(node._('common.notification.error', {message: node._('common.notification.errors.no-response')}), 'error')
+                  } else {
+                    RED.notify(node._('common.notification.error', {
+                      message: node._('common.notification.errors.unexpected', {
+                        status: jqXHR.status,
+                        message: textStatus
+                      })
+                    }), 'error')
+                  }
+                }
+              })
+            }
         }
+
     })
 </script>
-
 
 <script type="text/x-red" data-template-name="modbus-read">
     <div class="form-row">
@@ -83,7 +137,16 @@
             <option value="h">hour(s)</option>
         </select>
     </div>
-        <div class="form-row">
+    <div class="form-row" id="node-delayonstart">
+        <label for="node-input-delayOnStart" style="width:140px">
+        <i class="fa fa-power-off"></i> <span data-i18n="modbus-contrib.label.delayOnStart"></span></label>
+        <input type="checkbox" id="node-input-delayOnStart" style="width:40px">
+    </div>
+    <div class="form-row" id="node-delay">
+        <label for="node-input-startDelayTime"><i class="fa fa-clock-o"></i> <span data-i18n="modbus-contrib.label.startDelayTime"></span></label>
+        <input type="text" id="node-input-startDelayTime" placeholder="10" style="width:80px">
+    </div>
+    <div class="form-row">
         <label for="node-input-server"><i class="icon-globe"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
         <input type="text" id="node-input-server">
     </div>

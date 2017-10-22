@@ -14,15 +14,15 @@ var pump = require('pump')
 var htmlmin = require('gulp-htmlmin')
 const jsdoc = require('gulp-jsdoc3')
 const clean = require('gulp-clean')
+const sequence = require('gulp-sequence')
 
 gulp.task('default', function () {
   // place code for your default task here
 })
 
-gulp.task('docs', ['doc', 'docIcons', 'docImages', 'docExamples'])
-gulp.task('build', ['web', 'nodejs'])
-// gulp.task('publish', ['build', 'icons', 'images', 'examples', 'locale', 'docs'])
-gulp.task('publish', ['build', 'icons', 'images', 'examples', 'locale'])
+gulp.task('docs', sequence('doc', 'docIcons', 'docImages', 'docExamples'))
+gulp.task('build', sequence('clean', 'web', 'nodejs', 'locale'))
+gulp.task('publish', sequence('build', 'icons', 'images', 'examples'))
 
 gulp.task('clean', function () {
   return gulp.src('modbus')

@@ -72,7 +72,7 @@
   "homepage": "https://biancode.github.io/node-red-contrib-modbus/",
   "scripts": {
     "test": "standard --fix && mocha test/* --reporter dot",
-    "build": "standard --fix && gulp clean && gulp publish",
+    "build": "standard --fix && gulp publish",
     "prepublishOnly": "standard --fix && npm run build && npm test",
     "ci-publish": "ci-publish",
     "release": "standard-version"
@@ -90,6 +90,7 @@
     "gulp-clean": "^0.3.2",
     "gulp-htmlmin": "^3.0.0",
     "gulp-jsdoc3": "^1.0.1",
+    "gulp-sequence": "^0.4.6",
     "gulp-uglify": "^3.0.0",
     "jasmine-node": "^1.14.5",
     "js-beautify": "^1.7.3",

@@ -8,7 +8,9 @@
       "address": "Address",
       "quantity": "Quantity",
       "pollrate": "Poll Rate",
-      "server": "Server"
+      "server": "Server",
+      "delayOnStart": "Delay on start",
+      "startDelayTime": "Delay Time"
     }
   }
 }

@@ -2,6 +2,7 @@
  Copyright 2016,2017 - Klaus Landsdorf (http://bianco-royal.de/)
  Copyright 2016 - Jason D. Harper, Argonne National Laboratory
  Copyright 2015,2016 - Mika Karaila, Valmet Automation Inc.
+ Copyright 2013, 2016 IBM Corp. (node-red)
  All rights reserved.
  node-red-contrib-modbus
 
@@ -31,14 +32,20 @@ module.exports = function (RED) {
 
     this.rate = config.rate
     this.rateUnit = config.rateUnit
+
+    this.delayOnStart = config.delayOnStart
+    this.startDelayTime = parseInt(config.startDelayTime) || 10
+
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
     this.connection = null
 
     let node = this
     let modbusClient = RED.nodes.getNode(config.server)
+    let delayTimerID = null
     let timerID = null
     let timeoutOccurred = false
+    node.INPUT_TIMEOUT_MILLISECONDS = 1000
 
     setNodeStatusTo('waiting')
 
@@ -47,10 +54,19 @@ module.exports = function (RED) {
     }
 
     node.onModbusConnect = function () {
+      if (!delayTimerID) {
+        delayTimerID = setTimeout(node.startIntervalReading, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)
+      } else {
+        clearTimeout(delayTimerID)
+        delayTimerID = setTimeout(node.startIntervalReading, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)
+      }
+      setNodeStatusTo('connected')
+    }
+
+    node.startIntervalReading = function () {
       if (!timerID) {
         timerID = setInterval(node.modbusPollingRead, mbBasics.calc_rateByUnit(node.rate, node.rateUnit))
       }
-      setNodeStatusTo('connected')
     }
 
     node.onModbusActive = function () {
@@ -213,4 +229,20 @@ module.exports = function (RED) {
   }
 
   RED.nodes.registerType('modbus-read', ModbusRead)
+
+  RED.httpAdmin.post('/modbus/read/inject/:id', RED.auth.needsPermission('modbus.inject.write'), function (req, res) {
+    let node = RED.nodes.getNode(req.params.id)
+
+    if (node) {
+      try {
+        node.modbusPollingRead()
+        res.sendStatus(200)
+      } catch (err) {
+        res.sendStatus(500)
+        node.error(RED._('modbusinject.failed', {error: err.toString()}))
+      }
+    } else {
+      res.sendStatus(404)
+    }
+  })
 }
