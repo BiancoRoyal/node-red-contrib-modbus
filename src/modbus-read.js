@@ -54,12 +54,20 @@ module.exports = function (RED) {
     }
 
     node.onModbusConnect = function () {
-      if (!delayTimerID) {
-        delayTimerID = setTimeout(node.startIntervalReading, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)
+      if (node.delayOnStart) {
+        if (!delayTimerID) {
+          delayTimerID = setTimeout(node.startIntervalReading, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)
+        } else {
+          clearTimeout(delayTimerID)
+          delayTimerID = setTimeout(node.startIntervalReading, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)
+        }
       } else {
-        clearTimeout(delayTimerID)
-        delayTimerID = setTimeout(node.startIntervalReading, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)
+        if (delayTimerID) {
+          clearTimeout(delayTimerID)
+        }
+        node.startIntervalReading()
       }
+
       setNodeStatusTo('connected')
     }
 

@@ -40,7 +40,7 @@
     "upload": false,
     "swaggerDoc": "",
     "x": 190,
-    "y": 300,
+    "y": 340,
     "wires": [
       [
         "6fd20edd.9d64a"
@@ -78,7 +78,7 @@
     "showErrors": false,
     "server": "7e257e6c.0c55",
     "x": 430,
-    "y": 300,
+    "y": 340,
     "wires": [
       [
         "6190d094.4b69d",
@@ -95,8 +95,8 @@
     "z": "934a0213.59b38",
     "name": "",
     "registerShowMax": 20,
-    "x": 680,
-    "y": 280,
+    "x": 670,
+    "y": 330,
     "wires": []
   },
   {
@@ -107,8 +107,8 @@
     "active": true,
     "console": "false",
     "complete": "true",
-    "x": 770,
-    "y": 240,
+    "x": 750,
+    "y": 290,
     "wires": []
   },
   {
@@ -159,8 +159,8 @@
     "name": "",
     "statusCode": "",
     "headers": {},
-    "x": 640,
-    "y": 240,
+    "x": 630,
+    "y": 290,
     "wires": []
   },
   {
@@ -212,7 +212,7 @@
     "showErrors": false,
     "server": "7e257e6c.0c55",
     "x": 420,
-    "y": 490,
+    "y": 530,
     "wires": [
       [
         "8e948598.d4e568"
@@ -235,7 +235,7 @@
     "quantity": "1",
     "server": "7e257e6c.0c55",
     "x": 410,
-    "y": 400,
+    "y": 440,
     "wires": [
       [
         "26dccb4e.a20d54"
@@ -255,7 +255,7 @@
     "upload": false,
     "swaggerDoc": "",
     "x": 180,
-    "y": 400,
+    "y": 440,
     "wires": [
       [
         "82fbb199.0ffde"
@@ -270,7 +270,7 @@
     "statusCode": "",
     "headers": {},
     "x": 640,
-    "y": 360,
+    "y": 400,
     "wires": []
   },
   {
@@ -280,7 +280,7 @@
     "name": "",
     "registerShowMax": 20,
     "x": 680,
-    "y": 400,
+    "y": 440,
     "wires": []
   },
   {
@@ -293,7 +293,7 @@
     "upload": false,
     "swaggerDoc": "",
     "x": 190,
-    "y": 490,
+    "y": 530,
     "wires": [
       [
         "a5d36532.8f2178"
@@ -308,7 +308,7 @@
     "statusCode": "",
     "headers": {},
     "x": 640,
-    "y": 450,
+    "y": 490,
     "wires": []
   },
   {
@@ -318,7 +318,7 @@
     "name": "",
     "registerShowMax": 20,
     "x": 680,
-    "y": 490,
+    "y": 530,
     "wires": []
   },
   {
@@ -341,7 +341,7 @@
     "upload": false,
     "swaggerDoc": "",
     "x": 220,
-    "y": 580,
+    "y": 620,
     "wires": [
       [
         "18b385b6.4daf0a"
@@ -357,7 +357,7 @@
     "console": "false",
     "complete": "true",
     "x": 590,
-    "y": 580,
+    "y": 620,
     "wires": []
   },
   {
@@ -369,7 +369,7 @@
     "outputs": 1,
     "noerr": 0,
     "x": 450,
-    "y": 580,
+    "y": 620,
     "wires": [
       [
         "1fafc9da.7e6216",
@@ -385,7 +385,7 @@
     "statusCode": "",
     "headers": {},
     "x": 590,
-    "y": 620,
+    "y": 660,
     "wires": []
   },
   {
@@ -406,9 +406,9 @@
     "serialStopbits": "1",
     "serialParity": "none",
     "serialConnectionDelay": "100",
-    "unit_id": "1",
-    "commandDelay": "1",
-    "clientTimeout": "1000",
-    "reconnectTimeout": "2000"
+    "unit_id": 1,
+    "commandDelay": 1,
+    "clientTimeout": 1000,
+    "reconnectTimeout": 2000
   }
 ]
