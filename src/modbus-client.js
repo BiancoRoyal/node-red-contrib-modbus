@@ -556,7 +556,7 @@ module.exports = function (RED) {
         default:
           node.activateSending(msg)
           cberr(new Error('Function Code Unknown'), msg)
-          coreModbusClient.modbusSerialDebug('Function Code Unknown %s', msg.payload.fc)
+          coreModbusClient.internalDebug('Function Code Unknown %s', msg.payload.fc)
           break
       }
     }
@@ -661,7 +661,7 @@ module.exports = function (RED) {
         default:
           node.activateSending(msg)
           cberr(new Error('Function Code Unknown'), msg)
-          coreModbusClient.modbusSerialDebug('Function Code Unknown %s', msg.payload.fc)
+          coreModbusClient.internalDebug('Function Code Unknown %s', msg.payload.fc)
           break
       }
     }
