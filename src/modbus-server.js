@@ -85,16 +85,17 @@ module.exports = function (RED) {
       modbusLogLevel = 'debug'
     }
 
-    let ModbusServer = stampit().refs({
-      'logLabel': 'ModbusServer',
-      'logLevel': modbusLogLevel,
-      'logEnabled': node.logEnabled,
-      'port': node.serverPort,
-      'responseDelay': mbBasics.calc_rateByUnit(node.responseDelay, node.delayUnit),
-      'coils': Buffer.alloc(node.coilsBufferSize, 0),
-      'holding': Buffer.alloc(node.holdingBufferSize, 0),
-      'input': Buffer.alloc(node.inputBufferSize, 0)
-    })
+    try {
+      let ModbusServer = stampit().refs({
+        'logLabel': 'ModbusServer',
+        'logLevel': modbusLogLevel,
+        'logEnabled': node.logEnabled,
+        'port': node.serverPort,
+        'responseDelay': mbBasics.calc_rateByUnit(node.responseDelay, node.delayUnit),
+        'coils': Buffer.alloc(node.coilsBufferSize, 0),
+        'holding': Buffer.alloc(node.holdingBufferSize, 0),
+        'input': Buffer.alloc(node.inputBufferSize, 0)
+      })
       .compose(modbus.server.tcp.complete)
       .init(function () {
         let init = function () {
@@ -105,9 +106,8 @@ module.exports = function (RED) {
         init()
       })
 
-    verboseLog('starting modbus server')
+      verboseLog('starting modbus server')
 
-    try {
       node.server = ModbusServer()
     } catch (err) {
       verboseWarn(err)
@@ -143,5 +143,9 @@ module.exports = function (RED) {
     })
   }
 
-  RED.nodes.registerType('modbus-server', ModbusServer)
+  try {
+    RED.nodes.registerType('modbus-server', ModbusServer)
+  } catch (err) {
+    console.log(err.message)
+  }
 }

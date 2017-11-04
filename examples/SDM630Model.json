@@ -1,0 +1,315 @@
+[
+  {
+    "id": "f5ce9336.3dec9",
+    "type": "tab",
+    "label": "SDM630 Modbus Gateway",
+    "disabled": false,
+    "info": ""
+  },
+  {
+    "id": "945954b4.e1eda8",
+    "type": "modbus-read",
+    "z": "f5ce9336.3dec9",
+    "name": "",
+    "topic": "",
+    "showStatusActivities": false,
+    "showErrors": true,
+    "unitid": "",
+    "dataType": "InputRegister",
+    "adr": "0",
+    "quantity": "50",
+    "rate": "1",
+    "rateUnit": "m",
+    "delayOnStart": false,
+    "startDelayTime": "",
+    "server": "9684f49f.5fc448",
+    "x": 120,
+    "y": 120,
+    "wires": [
+      [
+        "43dd262d.ade258"
+      ],
+      [
+        "d1c9c52f.038b08",
+        "60c8dd2e.540c54"
+      ]
+    ]
+  },
+  {
+    "id": "d1c9c52f.038b08",
+    "type": "modbus-response",
+    "z": "f5ce9336.3dec9",
+    "name": "",
+    "registerShowMax": "1",
+    "x": 340,
+    "y": 70,
+    "wires": []
+  },
+  {
+    "id": "60c8dd2e.540c54",
+    "type": "function",
+    "z": "f5ce9336.3dec9",
+    "name": "extract buffer data",
+    "func": "let voltageL1 = msg.payload.buffer.readFloatBE(0,4) // 1,2\nlet voltageL2 = msg.payload.buffer.readFloatBE(4,4) // 3,4\nlet voltageL3 = msg.payload.buffer.readFloatBE(8,4) // 5,6\n\nlet powerL1 = msg.payload.buffer.readFloatBE(12,4) // 7,8\nlet powerL2 = msg.payload.buffer.readFloatBE(16,4) // 9,10\nlet powerL3 = msg.payload.buffer.readFloatBE(20,4) // 11,12\n\nlet demandL1 = msg.payload.buffer.readFloatBE(24,4) // 13,14\nlet demandL2 = msg.payload.buffer.readFloatBE(28,4) // 15,16\nlet demandL3 = msg.payload.buffer.readFloatBE(32,4) // 17,18\n\nlet voltageAVG = msg.payload.buffer.readFloatBE(84,8) // 43-46\nlet powerAVG = msg.payload.buffer.readFloatBE(92,4) // 47,48\n\nreturn [\n    {\n        payload: {\n            L1: {\n                voltage: voltageL1,\n                power: powerL1,\n                demand: demandL1\n            },\n            L2: {\n                voltage: voltageL2,\n                power: powerL2,\n                demand: demandL2\n            },\n            L3: {\n                voltage: voltageL3,\n                power: powerL3,\n                demand: demandL3\n            },\n            voltageAVG: voltageAVG,\n            powerAVG: powerAVG,            \n        }\n    }\n];",
+    "outputs": "1",
+    "noerr": 0,
+    "x": 340,
+    "y": 130,
+    "wires": [
+      [
+        "f7065126.1c997"
+      ]
+    ]
+  },
+  {
+    "id": "a3a18ac9.1440c8",
+    "type": "modbus-read",
+    "z": "f5ce9336.3dec9",
+    "name": "",
+    "topic": "",
+    "showStatusActivities": false,
+    "showErrors": true,
+    "unitid": "",
+    "dataType": "InputRegister",
+    "adr": "48",
+    "quantity": "8",
+    "rate": "1",
+    "rateUnit": "m",
+    "delayOnStart": false,
+    "startDelayTime": "",
+    "server": "9684f49f.5fc448",
+    "x": 120,
+    "y": 220,
+    "wires": [
+      [
+        "43dd262d.ade258"
+      ],
+      [
+        "2fc429df.156666",
+        "658a841c.d9099c"
+      ]
+    ]
+  },
+  {
+    "id": "2fc429df.156666",
+    "type": "function",
+    "z": "f5ce9336.3dec9",
+    "name": "extract buffer data",
+    "func": "let powerSum = msg.payload.buffer.readFloatBE(0,8)\nlet demandSum = msg.payload.buffer.readFloatBE(8,8)\n\nreturn [\n    {\n        payload: {\n            powerSum: powerSum,\n            demandSum: demandSum\n        }\n    }\n];",
+    "outputs": "1",
+    "noerr": 0,
+    "x": 340,
+    "y": 240,
+    "wires": [
+      [
+        "f7065126.1c997"
+      ]
+    ]
+  },
+  {
+    "id": "3611a18d.ed45ae",
+    "type": "modbus-read",
+    "z": "f5ce9336.3dec9",
+    "name": "",
+    "topic": "",
+    "showStatusActivities": false,
+    "showErrors": true,
+    "unitid": "",
+    "dataType": "InputRegister",
+    "adr": "70",
+    "quantity": "42",
+    "rate": "1",
+    "rateUnit": "m",
+    "delayOnStart": false,
+    "startDelayTime": "",
+    "server": "9684f49f.5fc448",
+    "x": 120,
+    "y": 340,
+    "wires": [
+      [
+        "43dd262d.ade258"
+      ],
+      [
+        "3b266ef0.56e5c2",
+        "15e3aec4.b52251"
+      ]
+    ]
+  },
+  {
+    "id": "3b266ef0.56e5c2",
+    "type": "function",
+    "z": "f5ce9336.3dec9",
+    "name": "extract buffer data",
+    "func": "let frequency = msg.payload.buffer.readFloatBE(0,4) // 71,72\n\nlet ampHourSinceLastReset = msg.payload.buffer.readFloatBE(24,4) // 83,84\nlet totalSystemPowerDemand = msg.payload.buffer.readFloatBE(28,4) // 85,86\nlet maxTotalSystemPowerDemand = msg.payload.buffer.readFloatBE(32,4) // 87,88\n\nreturn { \n    payload: {\n       frequency: frequency,\n       ampHourSinceLastReset: ampHourSinceLastReset,\n       ampHourSinceLastResetKilo: ampHourSinceLastReset / 1000.0,\n       totalSystemPowerDemand: totalSystemPowerDemand,\n       totalSystemPowerDemandKilo: totalSystemPowerDemand / 1000.0,\n       maxTotalSystemPowerDemand: maxTotalSystemPowerDemand,\n       maxTotalSystemPowerDemandKilo: maxTotalSystemPowerDemand / 1000.0\n    }\n}",
+    "outputs": "1",
+    "noerr": 0,
+    "x": 340,
+    "y": 360,
+    "wires": [
+      [
+        "f7065126.1c997"
+      ]
+    ]
+  },
+  {
+    "id": "658a841c.d9099c",
+    "type": "modbus-response",
+    "z": "f5ce9336.3dec9",
+    "name": "",
+    "registerShowMax": "1",
+    "x": 340,
+    "y": 180,
+    "wires": []
+  },
+  {
+    "id": "15e3aec4.b52251",
+    "type": "modbus-response",
+    "z": "f5ce9336.3dec9",
+    "name": "",
+    "registerShowMax": "1",
+    "x": 340,
+    "y": 300,
+    "wires": []
+  },
+  {
+    "id": "f7065126.1c997",
+    "type": "link out",
+    "z": "f5ce9336.3dec9",
+    "name": "",
+    "links": [
+      "ad2661ec.7b23a",
+      "44054254.88aa5c",
+      "a1e17a46.c55d48"
+    ],
+    "x": 525,
+    "y": 240,
+    "wires": []
+  },
+  {
+    "id": "43dd262d.ade258",
+    "type": "debug",
+    "z": "f5ce9336.3dec9",
+    "name": "",
+    "active": false,
+    "console": "false",
+    "complete": "true",
+    "x": 300,
+    "y": 420,
+    "wires": []
+  },
+  {
+    "id": "922e5107.4012a",
+    "type": "catch",
+    "z": "f5ce9336.3dec9",
+    "name": "",
+    "scope": null,
+    "x": 110,
+    "y": 580,
+    "wires": [
+      [
+        "32d860db.4669e",
+        "4ad6595e.23ad38",
+        "88fd8a95.9f1df8"
+      ]
+    ]
+  },
+  {
+    "id": "32d860db.4669e",
+    "type": "debug",
+    "z": "f5ce9336.3dec9",
+    "name": "",
+    "active": true,
+    "console": "false",
+    "complete": "true",
+    "x": 290,
+    "y": 620,
+    "wires": []
+  },
+  {
+    "id": "61c34ed.acd4fb",
+    "type": "modbus-queue-info",
+    "z": "f5ce9336.3dec9",
+    "name": "",
+    "unitid": "",
+    "lowLowLevel": 25,
+    "lowLevel": 75,
+    "highLevel": 150,
+    "highHighLevel": 300,
+    "server": "9684f49f.5fc448",
+    "errorOnHighLevel": false,
+    "x": 570,
+    "y": 550,
+    "wires": [
+      [
+        "665225d7.b6d1dc"
+      ]
+    ]
+  },
+  {
+    "id": "4ad6595e.23ad38",
+    "type": "function",
+    "z": "f5ce9336.3dec9",
+    "name": "reset on High",
+    "func": "if(\"high level reached\" === msg.state) {\n    msg.resetQueue = true;\n}\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 320,
+    "y": 540,
+    "wires": [
+      [
+        "61c34ed.acd4fb"
+      ]
+    ]
+  },
+  {
+    "id": "88fd8a95.9f1df8",
+    "type": "function",
+    "z": "f5ce9336.3dec9",
+    "name": "reset on HighHigh",
+    "func": "if(\"high high level reached\" === msg.state) {\n    msg.resetQueue = true;\n}\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 330,
+    "y": 580,
+    "wires": [
+      [
+        "61c34ed.acd4fb"
+      ]
+    ]
+  },
+  {
+    "id": "665225d7.b6d1dc",
+    "type": "debug",
+    "z": "f5ce9336.3dec9",
+    "name": "",
+    "active": true,
+    "console": "false",
+    "complete": "false",
+    "x": 780,
+    "y": 550,
+    "wires": []
+  },
+  {
+    "id": "9684f49f.5fc448",
+    "type": "modbus-client",
+    "z": "f5ce9336.3dec9",
+    "name": "SDM630 Modbus Gateway",
+    "clienttype": "tcp",
+    "bufferCommands": true,
+    "stateLogEnabled": true,
+    "tcpHost": "192.168.178.16",
+    "tcpPort": "502",
+    "tcpType": "DEFAULT",
+    "serialPort": "/dev/ttyUSB",
+    "serialType": "RTU-BUFFERD",
+    "serialBaudrate": "9600",
+    "serialDatabits": "8",
+    "serialStopbits": "1",
+    "serialParity": "none",
+    "serialConnectionDelay": "100",
+    "unit_id": 1,
+    "commandDelay": 1,
+    "clientTimeout": 1000,
+    "reconnectTimeout": 2000
+  }
+]

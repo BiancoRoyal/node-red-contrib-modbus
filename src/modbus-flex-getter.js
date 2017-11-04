@@ -155,7 +155,12 @@ module.exports = function (RED) {
       origMsg.responseBuffer = response
       origMsg.input = msg
 
-      return [origMsg, {payload: response, values: values, input: msg}]
+      let rawMsg = origMsg
+      rawMsg.payload = response
+      rawMsg.values = values
+      delete rawMsg['responseBuffer']
+
+      return [origMsg, rawMsg]
     }
 
     function setNodeStatusTo (statusValue) {
