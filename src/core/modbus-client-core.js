@@ -14,7 +14,7 @@ de.biancoroyal.modbus.core.client.Stately = de.biancoroyal.modbus.core.client.St
 
 de.biancoroyal.modbus.core.client.networkErrors = ['ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNRESET', 'ENETRESET',
   'ECONNABORTED', 'ECONNREFUSED', 'ENETUNREACH', 'ENOTCONN',
-  'ESHUTDOWN', 'EHOSTDOWN', 'ENETDOWN', 'EWOULDBLOCK', 'EAGAIN']
+  'ESHUTDOWN', 'EHOSTDOWN', 'ENETDOWN', 'EWOULDBLOCK', 'EAGAIN', 'EHOSTUNREACH']
 
 de.biancoroyal.modbus.core.client.createStatelyMachine = function () {
   return new de.biancoroyal.modbus.core.client.Stately({
