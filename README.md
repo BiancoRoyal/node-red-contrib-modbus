@@ -13,7 +13,7 @@ node-red-contrib-modbus
 
 [Node-RED][1] contribution package for [Modbus][8]
 
-## [Support for the project straight away!][11]
+## [Become a backer of the project straight away!][11]
 
 Based on [modbus-serial][2] with TCP, C701, Telnet, Serial, RTU buffered, and ASCII
 
