@@ -14,6 +14,7 @@
 module.exports = function (RED) {
   'use strict'
   let mbBasics = require('./modbus-basics')
+  let mbCore = require('./core/modbus-core')
   let internalDebugLog = require('debug')('contribModbus:flex:getter')
 
   function ModbusFlexGetter (config) {
@@ -66,6 +67,10 @@ module.exports = function (RED) {
 
       if (msg.payload) {
         try {
+          msg.payload.messageId = mbCore.getObjectId()
+          node.bufferMessageList.set(msg.payload.messageId, msg)
+          internalDebugLog('Add Message ' + msg.payload.messageId)
+
           msg.payload.fc = parseInt(msg.payload.fc) || 3
           msg.payload.unitid = parseInt(msg.payload.unitid)
           msg.payload.address = parseInt(msg.payload.address) || 0
@@ -92,9 +97,6 @@ module.exports = function (RED) {
             return
           }
 
-          node.bufferMessageList.set(msg._msgid, msg)
-          internalDebugLog('Add Message ' + msg._msgid)
-
           msg = {
             topic: msg.topic || node.id,
             payload: {
@@ -102,10 +104,13 @@ module.exports = function (RED) {
               unitid: msg.payload.unitid,
               fc: msg.payload.fc,
               address: msg.payload.address,
-              quantity: msg.payload.quantity
+              quantity: msg.payload.quantity,
+              messageId: msg.payload.messageId
             },
             _msgid: msg._msgid
           }
+
+          modbusClient.emit('readModbus', msg, node.onModbusReadDone, node.onModbusReadError)
         } catch (err) {
           node.error(err, msg)
         }
@@ -114,8 +119,6 @@ module.exports = function (RED) {
           setNodeStatusTo(modbusClient.statlyMachine.getMachineState())
           verboseLog(msg)
         }
-
-        modbusClient.emit('readModbus', msg, node.onModbusReadDone, node.onModbusReadError)
       } else {
         node.error('Payload Not Valid', msg)
       }
@@ -143,12 +146,12 @@ module.exports = function (RED) {
     }
 
     function buildMessage (values, response, msg) {
-      let origMsg = node.bufferMessageList.get(msg._msgid) || {}
-      if (origMsg._msgid) {
-        node.bufferMessageList.delete(origMsg._msgid)
-        internalDebugLog('Remove Message ' + msg._msgid)
+      let origMsg = node.bufferMessageList.get(msg.payload.messageId) || {}
+      if (origMsg.payload.messageId) {
+        node.bufferMessageList.delete(origMsg.payload.messageId)
+        internalDebugLog('Remove Message ' + msg.payload.messageId)
       } else {
-        internalDebugLog('Message Not Found ' + msg._msgid)
+        internalDebugLog('Message Not Found ' + msg.payload.messageId)
       }
 
       origMsg.payload = values

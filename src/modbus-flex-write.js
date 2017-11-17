@@ -14,6 +14,7 @@
 module.exports = function (RED) {
   'use strict'
   let mbBasics = require('./modbus-basics')
+  let mbCore = require('./core/modbus-core')
   let internalDebugLog = require('debug')('contribModbus:flex:write')
 
   function ModbusFlexWrite (config) {
@@ -73,6 +74,10 @@ module.exports = function (RED) {
 
       if (msg.payload) {
         try {
+          msg.payload.messageId = mbCore.getObjectId()
+          node.bufferMessageList.set(msg.payload.messageId, msg)
+          internalDebugLog('Add Message ' + msg.payload.messageId)
+
           msg.payload.fc = parseInt(msg.payload.fc)
           msg.payload.unitid = parseInt(msg.payload.unitid)
           msg.payload.address = parseInt(msg.payload.address)
@@ -109,9 +114,6 @@ module.exports = function (RED) {
             msg.value = JSON.parse(msg.value)
           }
 
-          node.bufferMessageList.set(msg._msgid, msg)
-          internalDebugLog('Add Message ' + msg._msgid)
-
           msg = {
             topic: msg.topic || node.id,
             payload: {
@@ -119,22 +121,23 @@ module.exports = function (RED) {
               unitid: msg.payload.unitid,
               fc: msg.payload.fc,
               address: msg.payload.address,
-              quantity: msg.payload.quantity
+              quantity: msg.payload.quantity,
+              messageId: msg.payload.messageId
             },
             _msgid: msg._msgid
           }
+
+          modbusClient.emit('writeModbus', msg, node.onModbusWriteDone, node.onModbusWriteError)
         } catch (err) {
           node.error(err, msg)
         }
-
-        if (node.showStatusActivities) {
-          setNodeStatusTo(modbusClient.statlyMachine.getMachineState())
-          verboseLog(msg)
-        }
-
-        modbusClient.emit('writeModbus', msg, node.onModbusWriteDone, node.onModbusWriteError)
       } else {
         node.error(new Error('Payload Not Valid'), msg)
+      }
+
+      if (node.showStatusActivities) {
+        setNodeStatusTo(modbusClient.statlyMachine.getMachineState())
+        verboseLog(msg)
       }
     })
 
@@ -160,12 +163,12 @@ module.exports = function (RED) {
     }
 
     function buildMessage (values, response, msg) {
-      let origMsg = node.bufferMessageList.get(msg._msgid) || {}
-      if (origMsg._msgid) {
-        node.bufferMessageList.delete(origMsg._msgid)
-        internalDebugLog('Remove Message ' + msg._msgid)
+      let origMsg = node.bufferMessageList.get(msg.payload.messageId) || {}
+      if (origMsg.payload.messageId) {
+        node.bufferMessageList.delete(origMsg.payload.messageId)
+        internalDebugLog('Remove Message ' + msg.payload.messageId)
       } else {
-        internalDebugLog('Message Not Found ' + msg._msgid)
+        internalDebugLog('Message Not Found ' + msg.payload.messageId)
       }
 
       origMsg.payload = values

@@ -14,6 +14,7 @@
 module.exports = function (RED) {
   'use strict'
   let mbBasics = require('./modbus-basics')
+  let mbCore = require('./core/modbus-core')
   let internalDebugLog = require('debug')('contribModbus:getter')
 
   function ModbusGetter (config) {
@@ -72,8 +73,9 @@ module.exports = function (RED) {
       }
 
       if (msg.payload) {
-        node.bufferMessageList.set(msg._msgid, msg)
-        internalDebugLog('Add Message ' + msg._msgid)
+        msg.payload.messageId = mbCore.getObjectId()
+        node.bufferMessageList.set(msg.payload.messageId, msg)
+        internalDebugLog('Add Message ' + msg.payload.messageId)
 
         msg = {
           topic: msg.topic || node.id,
@@ -82,17 +84,18 @@ module.exports = function (RED) {
             unitid: node.unitid,
             fc: node.functionCodeModbus(node.dataType),
             address: node.adr,
-            quantity: node.quantity
+            quantity: node.quantity,
+            messageId: msg.payload.messageId
           },
           _msgid: msg._msgid
         }
+
+        modbusClient.emit('readModbus', msg, node.onModbusReadDone, node.onModbusReadError)
 
         if (node.showStatusActivities) {
           setNodeStatusTo(modbusClient.statlyMachine.getMachineState())
           verboseLog(msg)
         }
-
-        modbusClient.emit('readModbus', msg, node.onModbusReadDone, node.onModbusReadError)
       }
     })
 
@@ -133,12 +136,12 @@ module.exports = function (RED) {
     }
 
     function buildMessage (values, response, msg) {
-      let origMsg = node.bufferMessageList.get(msg._msgid) || {}
-      if (origMsg._msgid) {
-        node.bufferMessageList.delete(origMsg._msgid)
-        internalDebugLog('Remove Message ' + msg._msgid)
+      let origMsg = node.bufferMessageList.get(msg.payload.messageId) || {}
+      if (origMsg.payload.messageId) {
+        node.bufferMessageList.delete(origMsg.payload.messageId)
+        internalDebugLog('Remove Message ' + msg.payload.messageId)
       } else {
-        internalDebugLog('Message Not Found ' + msg._msgid)
+        internalDebugLog('Message Not Found ' + msg.payload.messageId)
       }
 
       origMsg.payload = values

@@ -16,6 +16,7 @@
 module.exports = function (RED) {
   'use strict'
   let mbBasics = require('./modbus-basics')
+  let mbCore = require('./core/modbus-core')
   let internalDebugLog = require('debug')('contribModbus:write')
 
   function ModbusWrite (config) {
@@ -82,7 +83,8 @@ module.exports = function (RED) {
         msg.payload.value = JSON.parse(msg.payload.value)
       }
 
-      node.bufferMessageList.set(msg._msgid, msg)
+      msg.payload.messageId = mbCore.getObjectId()
+      node.bufferMessageList.set(msg.payload.messageId, msg)
       internalDebugLog('Add Message ' + msg._msgid)
 
       msg = {
@@ -91,17 +93,18 @@ module.exports = function (RED) {
           unitid: node.unitid,
           fc: node.functionCodeModbus(node.dataType),
           address: node.adr,
-          quantity: node.quantity
+          quantity: node.quantity,
+          messageId: msg.payload.messageId
         },
         _msgid: msg._msgid
       }
+
+      modbusClient.emit('writeModbus', msg, node.onModbusWriteDone, node.onModbusWriteError)
 
       if (node.showStatusActivities) {
         setNodeStatusTo(modbusClient.statlyMachine.getMachineState())
         verboseLog(msg)
       }
-
-      modbusClient.emit('writeModbus', msg, node.onModbusWriteDone, node.onModbusWriteError)
     })
 
     node.functionCodeModbus = function (dataType) {
@@ -141,12 +144,12 @@ module.exports = function (RED) {
     }
 
     function buildMessage (values, response, msg) {
-      let origMsg = node.bufferMessageList.get(msg._msgid) || {}
-      if (origMsg._msgid) {
-        node.bufferMessageList.delete(origMsg._msgid)
-        internalDebugLog('Remove Message ' + msg._msgid)
+      let origMsg = node.bufferMessageList.get(msg.payload.messageId) || {}
+      if (origMsg.payload.messageId) {
+        node.bufferMessageList.delete(origMsg.payload.messageId)
+        internalDebugLog('Remove Message ' + msg.payload.messageId)
       } else {
-        internalDebugLog('Message Not Found ' + msg._msgid)
+        internalDebugLog('Message Not Found ' + msg.payload.messageId)
       }
 
       origMsg.payload = values

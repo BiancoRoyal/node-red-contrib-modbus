@@ -4,6 +4,7 @@
   "private": false,
   "description": "The all in one Modbus TCP and Serial contribution package for Node-RED.",
   "dependencies": {
+    "bson": "1.0.4",
     "debug": "3.1.0",
     "modbus-serial": "7.0.1",
     "node-modbus": "4.0.1",
