@@ -83,9 +83,9 @@ module.exports = function (RED) {
         msg.payload.value = JSON.parse(msg.payload.value)
       }
 
-      msg.payload.messageId = mbCore.getObjectId()
-      node.bufferMessageList.set(msg.payload.messageId, msg)
-      internalDebugLog('Add Message ' + msg._msgid)
+      msg.messageId = mbCore.getObjectId()
+      node.bufferMessageList.set(msg.messageId, msg)
+      internalDebugLog('Add Message ' + msg.messageId)
 
       msg = {
         payload: {
@@ -94,7 +94,7 @@ module.exports = function (RED) {
           fc: node.functionCodeModbus(node.dataType),
           address: node.adr,
           quantity: node.quantity,
-          messageId: msg.payload.messageId
+          messageId: msg.messageId
         },
         _msgid: msg._msgid
       }

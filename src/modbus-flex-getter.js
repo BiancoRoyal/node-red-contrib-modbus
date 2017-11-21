@@ -67,9 +67,9 @@ module.exports = function (RED) {
 
       if (msg.payload) {
         try {
-          msg.payload.messageId = mbCore.getObjectId()
-          node.bufferMessageList.set(msg.payload.messageId, msg)
-          internalDebugLog('Add Message ' + msg.payload.messageId)
+          msg.messageId = mbCore.getObjectId()
+          node.bufferMessageList.set(msg.messageId, msg)
+          internalDebugLog('Add Message ' + msg.messageId)
 
           msg.payload.fc = parseInt(msg.payload.fc) || 3
           msg.payload.unitid = parseInt(msg.payload.unitid)
@@ -105,7 +105,7 @@ module.exports = function (RED) {
               fc: msg.payload.fc,
               address: msg.payload.address,
               quantity: msg.payload.quantity,
-              messageId: msg.payload.messageId
+              messageId: msg.messageId
             },
             _msgid: msg._msgid
           }

@@ -73,9 +73,9 @@ module.exports = function (RED) {
       }
 
       if (msg.payload) {
-        msg.payload.messageId = mbCore.getObjectId()
-        node.bufferMessageList.set(msg.payload.messageId, msg)
-        internalDebugLog('Add Message ' + msg.payload.messageId)
+        msg.messageId = mbCore.getObjectId()
+        node.bufferMessageList.set(msg.messageId, msg)
+        internalDebugLog('Add Message ' + msg.messageId)
 
         msg = {
           topic: msg.topic || node.id,
@@ -85,7 +85,7 @@ module.exports = function (RED) {
             fc: node.functionCodeModbus(node.dataType),
             address: node.adr,
             quantity: node.quantity,
-            messageId: msg.payload.messageId
+            messageId: msg.messageId
           },
           _msgid: msg._msgid
         }

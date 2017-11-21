@@ -17,6 +17,7 @@
 module.exports = function (RED) {
   'use strict'
   let mbBasics = require('./modbus-basics')
+  let mbCore = require('./core/modbus-core')
   let internalDebugLog = require('debug')('contribModbus:read')
 
   function ModbusRead (config) {
@@ -119,7 +120,8 @@ module.exports = function (RED) {
           unitid: node.unitid,
           fc: node.functionCodeModbus(node.dataType),
           address: node.adr,
-          quantity: node.quantity
+          quantity: node.quantity,
+          messageId: mbCore.getObjectId()
         }
       }
 
