@@ -67,6 +67,10 @@ module.exports = function (RED) {
 
       if (msg.payload) {
         try {
+          if (typeof msg.payload === 'string') {
+            msg.payload = JSON.parse(msg.payload)
+          }
+
           msg.messageId = mbCore.getObjectId()
           node.bufferMessageList.set(msg.messageId, msg)
           internalDebugLog('Add Message ' + msg.messageId)

@@ -74,9 +74,9 @@ module.exports = function (RED) {
 
       if (msg.payload) {
         try {
-          msg.messageId = mbCore.getObjectId()
-          node.bufferMessageList.set(msg.messageId, msg)
-          internalDebugLog('Add Message ' + msg.messageId)
+          if (typeof msg.payload === 'string') {
+            msg.payload = JSON.parse(msg.payload)
+          }
 
           msg.payload.fc = parseInt(msg.payload.fc)
           msg.payload.unitid = parseInt(msg.payload.unitid)
@@ -106,13 +106,20 @@ module.exports = function (RED) {
             return
           }
 
-          if (msg.payload.value && msg.payload.value.indexOf(',') > -1) {
-            msg.payload.value = JSON.parse(msg.payload.value)
+          /* HTTP requests for boolean and multiple data string [1,2,3,4,5] */
+          if (typeof msg.payload.value === 'string') {
+            if (msg.payload.value === 'true' || msg.payload.value === 'false') {
+              msg.payload.value = (msg.payload.value === 'true')
+            } else {
+              if (msg.payload.value.indexOf(',') > -1) {
+                msg.payload.value = JSON.parse(msg.payload.value)
+              }
+            }
           }
 
-          if (msg.value && msg.value.indexOf(',') > -1) {
-            msg.value = JSON.parse(msg.value)
-          }
+          msg.messageId = mbCore.getObjectId()
+          node.bufferMessageList.set(msg.messageId, msg)
+          internalDebugLog('Add Message ' + msg.messageId)
 
           msg = {
             topic: msg.topic || node.id,

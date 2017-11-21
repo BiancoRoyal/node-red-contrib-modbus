@@ -79,8 +79,15 @@ module.exports = function (RED) {
         return
       }
 
-      if (msg.payload.value && msg.payload.value.indexOf(',') > -1) {
-        msg.payload.value = JSON.parse(msg.payload.value)
+      /* HTTP requests for boolean and multiple data string [1,2,3,4,5] */
+      if (typeof msg.payload.value === 'string') {
+        if (msg.payload.value === 'true' || msg.payload.value === 'false') {
+          msg.payload.value = (msg.payload.value === 'true')
+        } else {
+          if (msg.payload.value.indexOf(',') > -1) {
+            msg.payload.value = JSON.parse(msg.payload.value)
+          }
+        }
       }
 
       msg.messageId = mbCore.getObjectId()
