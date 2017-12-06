@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-modbus",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "private": false,
   "description": "The all in one Modbus TCP and Serial contribution package for Node-RED.",
   "dependencies": {
@@ -79,6 +79,8 @@
     "release": "standard-version"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
     "chai": "^4.1.2",
     "eslint": "^4.10.0",
     "eslint-config-standard": "^10.2.1",
@@ -88,10 +90,12 @@
     "eslint-plugin-react": "^7.4.0",
     "eslint-plugin-standard": "^3.0.1",
     "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.0",
     "gulp-clean": "^0.3.2",
     "gulp-htmlmin": "^3.0.0",
     "gulp-jsdoc3": "^1.0.1",
     "gulp-sequence": "^0.4.6",
+    "gulp-sourcemaps": "^2.6.1",
     "gulp-uglify": "^3.0.0",
     "jasmine-node": "^1.14.5",
     "js-beautify": "^1.7.4",
@@ -104,6 +108,8 @@
     "standard": "^10.0.3",
     "standard-version": "^4.2.0",
     "supertest": "^3.0.0",
+    "uglify-js": "^3.2.1",
+    "uglify-js-harmony": "^2.7.7",
     "when": "^3.7.8"
   },
   "directories": {
