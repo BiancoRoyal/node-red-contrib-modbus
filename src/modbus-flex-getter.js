@@ -136,7 +136,7 @@ module.exports = function (RED) {
     }
 
     node.onModbusReadError = function (err, msg) {
-      setModbusError(err, msg)
+      setModbusError(err, mbCore.getOriginalMessage(node.bufferMessageList, msg) || msg)
     }
 
     node.on('close', function () {
@@ -150,14 +150,7 @@ module.exports = function (RED) {
     }
 
     function buildMessage (values, response, msg) {
-      let origMsg = node.bufferMessageList.get(msg.payload.messageId) || {}
-      if (origMsg.payload.messageId) {
-        node.bufferMessageList.delete(origMsg.payload.messageId)
-        internalDebugLog('Remove Message ' + msg.payload.messageId)
-      } else {
-        internalDebugLog('Message Not Found ' + msg.payload.messageId)
-      }
-
+      let origMsg = mbCore.getOriginalMessage(node.bufferMessageList, msg) || msg
       origMsg.payload = values
       origMsg.responseBuffer = response
       origMsg.input = msg
