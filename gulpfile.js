@@ -87,8 +87,7 @@ gulp.task('web', function () {
 })
 
 gulp.task('nodejs', function (cb) {
-  pump([
-      gulp.src('src/**/*.js')
+  pump([gulp.src('src/**/*.js')
         .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(babel({presets: ['es2015']}))
         .pipe(uglify())

@@ -1,5 +1,8 @@
 ![Node-RED Modbus](http://b.repl.ca/v1/Node--RED-Modbus-green.png)
 [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+![ES_Sourdce_Version](http://b.repl.ca/v1/JS_Source-ES6-yellow.png)
+![ES_Deploy_Version](http://b.repl.ca/v1/JS_Deploy-ES2015-yellow.png)
+![NodeJS_Version](http://b.repl.ca/v1/NodeJS-8.x-green.png)
 [![NPM download](https://img.shields.io/npm/dm/node-red-contrib-modbus.svg)](http://www.npm-stats.com/~packages/node-red-contrib-modbus)
 [![NPM version](https://badge.fury.io/js/node-red-contrib-modbus.png)](https://www.npmjs.com/package/node-red-contrib-modbus)
 [![Build Status](https://travis-ci.org/biancode/node-red-contrib-modbus.svg?branch=master)](https://travis-ci.org/biancode/node-red-contrib-modbus)
@@ -17,10 +20,9 @@ node-red-contrib-modbus
 
 Based on [modbus-serial][2] with TCP, C701, Telnet, Serial, RTU buffered, and ASCII
 
-* stress tested with Node-RED v0.17.5 and Node.js v6 LTS
+* stress tested with Node-RED v0.17.5 and Node.js v6.x and v8.x LTS
 * works with queueing per unit and round robin scheduling
 * Node.JS 4.x is supported with v1.x
-* prepared for the next LTS of Node.js v8.x
 
 # Install
 
@@ -36,7 +38,7 @@ try these options on npm install to build, if you have problems to install
 
     --unsafe-perm --build-from-source
     
-# Update/Upgrade
+# Update/Upgrade/Downgrade
 
 To update the dependencies or the whole package, you have just to install again.
 To get a special version please set the version with @M.M.F:
