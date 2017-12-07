@@ -80,7 +80,7 @@ module.exports = function (RED) {
       }
 
       /* HTTP requests for boolean and multiple data string [1,2,3,4,5] */
-      if (typeof msg.payload.value === 'string') {
+      if (msg.payload.hasOwnProperty('value') && typeof msg.payload.value === 'string') {
         if (msg.payload.value === 'true' || msg.payload.value === 'false') {
           msg.payload.value = (msg.payload.value === 'true')
         } else {
