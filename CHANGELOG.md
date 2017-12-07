@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.4.1"></a>
+## [2.4.1](https://github.com/biancode/node-red-contrib-modbus/compare/v2.4.0...v2.4.1) (2017-12-07)
+
+
+
 <a name="2.4.0"></a>
 # [2.4.0](https://github.com/biancode/node-red-contrib-modbus/compare/v2.3.2...v2.4.0) (2017-12-06)
 
