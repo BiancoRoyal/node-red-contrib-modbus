@@ -40,24 +40,26 @@ de.biancoroyal.modbus.io.core.buildInputAddressMapping = function (registerName,
   let addressType = mapping.valueAddress.substring(0, 3)
 
   switch (type) {
-    case 'w':
-    case 'i':
+    case 'w': // word
+    case 'u': // unsigned integer
       addressStart = Number(mapping.valueAddress.split(addressType)[1])
       addressOffset = 1
       bits = 16
       break
-    case 'd':
-    case 'r':
+    case 'd': // double
+    case 'r': // real
+    case 'f': // float
+    case 'i': // integer
       addressStart = Number(mapping.valueAddress.split(addressType)[1])
       addressOffset = 2
       bits = 32
       break
-    case 'l':
+    case 'l': // long
       addressStart = Number(mapping.valueAddress.split(addressType)[1])
       addressOffset = 4
       bits = 64
       break
-    case 'b':
+    case 'b': // bit - boolean
       if (registerType === 'X') {
         bitAddress = mapping.valueAddress.split('%IX')[1].split('.')
         addressStart = Math.floor(Number(bitAddress[0]) / 2)
@@ -83,7 +85,7 @@ de.biancoroyal.modbus.io.core.buildInputAddressMapping = function (registerName,
     }
   }
 
-  return {'name': mapping.name, 'type': type, 'mapping': mapping, 'error': 'does not match in input mapping'}
+  return {'name': mapping.name, 'type': type, 'mapping': mapping, 'error': 'variable name does not match input mapping'}
 }
 
 de.biancoroyal.modbus.io.core.buildOutputAddressMapping = function (registerName, mapping, type) {
@@ -97,24 +99,26 @@ de.biancoroyal.modbus.io.core.buildOutputAddressMapping = function (registerName
   let addressType = mapping.valueAddress.substring(0, 3)
 
   switch (type) {
-    case 'w':
-    case 'i':
+    case 'w': // word
+    case 'u': // unsigned integer
       addressStart = Number(mapping.valueAddress.split(addressType)[1])
       addressOffset = 1
       bits = 16
       break
-    case 'd':
-    case 'r':
+    case 'd': // double
+    case 'r': // real
+    case 'f': // float
+    case 'i': // integer
       addressStart = Number(mapping.valueAddress.split(addressType)[1])
       addressOffset = 2
       bits = 32
       break
-    case 'l':
+    case 'l': // long
       addressStart = Number(mapping.valueAddress.split(addressType)[1])
       addressOffset = 4
       bits = 64
       break
-    case 'b':
+    case 'b': // bit - boolean
       if (registerType === 'X') {
         bitAddress = mapping.valueAddress.split('%QX')[1].split('.')
         addressStart = Math.floor(Number(bitAddress[0]) / 2)
@@ -140,7 +144,7 @@ de.biancoroyal.modbus.io.core.buildOutputAddressMapping = function (registerName
     }
   }
 
-  return {'name': mapping.name, 'type': type, 'mapping': mapping, 'error': 'does not match in output mapping'}
+  return {'name': mapping.name, 'type': type, 'mapping': mapping, 'error': 'variable name does not match output mapping'}
 }
 
 de.biancoroyal.modbus.io.core.insertValues = function (namedValues, register) {
