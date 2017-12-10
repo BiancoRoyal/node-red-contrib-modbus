@@ -10,7 +10,9 @@
       "pollrate": "Poll Rate",
       "server": "Server",
       "delayOnStart": "Delay on start",
-      "startDelayTime": "Delay Time"
+      "startDelayTime": "Delay Time",
+      "useIOFile": "Using IO-File",
+      "ioFile": "IO-File"
     }
   }
 }

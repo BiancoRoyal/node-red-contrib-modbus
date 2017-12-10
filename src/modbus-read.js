@@ -18,6 +18,7 @@ module.exports = function (RED) {
   'use strict'
   let mbBasics = require('./modbus-basics')
   let mbCore = require('./core/modbus-core')
+  let mbIOCore = require('./core/modbus-io-core')
   let internalDebugLog = require('debug')('contribModbus:read')
 
   function ModbusRead (config) {
@@ -40,6 +41,9 @@ module.exports = function (RED) {
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
     this.connection = null
+
+    this.useIOFile = config.useIOFile
+    this.ioFile = RED.nodes.getNode(config.ioFile)
 
     let node = this
     let modbusClient = RED.nodes.getNode(config.server)
@@ -154,7 +158,7 @@ module.exports = function (RED) {
         verboseLog('reading done -> ' + JSON.stringify(msg))
       }
 
-      node.send(buildMessage(resp.data, resp, msg))
+      sendMessage(resp.data, resp, msg)
     }
 
     node.onModbusReadError = function (err, msg) {
@@ -175,8 +179,21 @@ module.exports = function (RED) {
       }
     }
 
-    function buildMessage (values, response, msg) {
-      return [{payload: values, responseBuffer: response, input: msg}, {payload: response, values: values, input: msg}]
+    function sendMessage (values, response, msg) {
+      if (!node.useIOFile) {
+        node.send([{payload: values, responseBuffer: response, input: msg}, {
+          payload: response, values: values, input: msg }])
+      } else {
+        mbIOCore.readIOConfigFile(node.ioFile).then(function (configData) {
+          let namedValues = mbIOCore.nameValuesFromIOFile(msg, configData, values)
+          node.send([{payload: values, responseBuffer: response, input: msg, configData: configData, namedValues: namedValues},
+            {payload: response, values: values, input: msg, configData: configData, namedValues: namedValues}])
+        }).catch(function (err) {
+          node.error(err, msg)
+          node.send([{payload: values, responseBuffer: response, input: msg, configData: err},
+            {payload: response, values: values, input: msg, configData: err}])
+        })
+      }
     }
 
     function setNodeStatusTo (statusValue) {

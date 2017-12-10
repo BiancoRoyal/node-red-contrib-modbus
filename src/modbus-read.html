@@ -33,7 +33,9 @@
             },
             delayOnStart: {value: false},
             startDelayTime: {value: ''},
-            server: {type: "modbus-client", required:true}
+            server: {type: "modbus-client", required: true},
+            useIOFile: {value: false},
+            ioFile: {value: "", type: "modbus-io-config", required: false}
         },
         inputs: 0,
         outputs: 2,
@@ -47,6 +49,18 @@
             return nodeLabel
         },
         oneditprepare: function () {
+
+          let useIOFileCheckbox = $("#node-input-useIOFile")
+          let modbusiofileRow = $("#modbusiofile-row")
+
+          useIOFileCheckbox.change(function () {
+              if ($(this).is(":checked")) {
+                modbusiofileRow.show();
+              } else {
+                modbusiofileRow.hide();
+              }
+            });
+
             if (this.delayOnStart) {
               $('#node-delay').show()
             }
@@ -160,6 +174,17 @@
         <label style="min-width:160px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
         data-i18n="modbus-contrib.label.showErrors"></span></label>
         <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
+    </div>
+    <hr>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-input-useIOFile"><i class="fa fa-file-code-o"></i> <span
+        data-i18n="modbus-contrib.label.useIOFile"></span></label>
+        <input type="checkbox" id="node-input-useIOFile" style="max-width:30px">
+    </div>
+    <div id="modbusiofile-row">
+        <div class="form-row">
+        <label for="node-input-ioFile"><i class="icon-file"></i> <span data-i18n="modbus-contrib.label.ioFile"></span></label>
+        <input type="text" id="node-input-ioFile">
     </div>
 </script>
 

@@ -6,6 +6,7 @@
   "dependencies": {
     "bson": "1.0.4",
     "debug": "3.1.0",
+    "line-by-line": "^0.1.5",
     "modbus-serial": "7.0.1",
     "node-modbus": "4.0.1",
     "serialport": "6.0.4",
@@ -42,7 +43,8 @@
       "Modbus-Server": "modbus/modbus-server.js",
       "Modbus-Flex-Server": "modbus/modbus-flex-server.js",
       "Modbus-Queue-Info": "modbus/modbus-queue-info.js",
-      "Modbus-Flex-Connector": "modbus/modbus-flex-connector.js"
+      "Modbus-Flex-Connector": "modbus/modbus-flex-connector.js",
+      "Modbus-IO-Config": "modbus/modbus-io-config.js"
     }
   },
   "author": "Klaus Landsdorf",
