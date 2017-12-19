@@ -20,7 +20,7 @@ de.biancoroyal.modbus.core.getOriginalMessage = function (messageList, msg) {
 
   if (origMsg && origMsg.messageId) {
     messageList.delete(origMsg.messageId)
-    de.biancoroyal.modbus.core.internalDebug('Remove Message In:' + origMsg.messageId + ' Out:' + msg.payload.messageId)
+    de.biancoroyal.modbus.core.internalDebug('Remove Message In:<' + origMsg.messageId + '> Out:<' + msg.payload.messageId + '>')
   } else {
     de.biancoroyal.modbus.core.internalDebug('Message Not Found ' + msg.payload.messageId)
   }
