@@ -18,9 +18,9 @@ de.biancoroyal.modbus.core.getObjectId = function () {
 de.biancoroyal.modbus.core.getOriginalMessage = function (messageList, msg) {
   let origMsg = messageList.get(msg.payload.messageId) || undefined
 
-  if (origMsg && origMsg.payload.messageId) {
-    messageList.delete(origMsg.payload.messageId)
-    de.biancoroyal.modbus.core.internalDebug('Remove Message ' + msg.payload.messageId)
+  if (origMsg && origMsg.messageId) {
+    messageList.delete(origMsg.messageId)
+    de.biancoroyal.modbus.core.internalDebug('Remove Message In:<' + origMsg.messageId + '> Out:<' + msg.payload.messageId + '>')
   } else {
     de.biancoroyal.modbus.core.internalDebug('Message Not Found ' + msg.payload.messageId)
   }
