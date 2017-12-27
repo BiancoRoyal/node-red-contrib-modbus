@@ -19,7 +19,7 @@ module.exports = function (RED) {
     this.format = config.format
 
     let node = this
-
+    node.lastUpdatedAt = null
     let lineReader = new coreIO.LineByLineReader(node.path)
     coreIO.internalDebug('Read IO File ' + node.path)
     node.configData = []

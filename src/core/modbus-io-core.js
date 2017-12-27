@@ -13,20 +13,20 @@ de.biancoroyal.modbus.io.core.internalDebug = de.biancoroyal.modbus.io.core.inte
 de.biancoroyal.modbus.io.core.LineByLineReader = de.biancoroyal.modbus.io.core.LineByLineReader || require('line-by-line') // eslint-disable-line no-use-before-define
 
 de.biancoroyal.modbus.io.core.nameValuesFromIOFile = function (msg, configData, values) {
-  let namedValues = []
+  let valueNames = []
   let ioCore = de.biancoroyal.modbus.io.core
 
   configData.forEach(function (mapping) {
     if (mapping.valueAddress.startsWith('%I')) {
-      namedValues.push(ioCore.buildInputAddressMapping('MB-INPUTS', mapping, mapping.name.substring(0, 1)))
+      valueNames.push(ioCore.buildInputAddressMapping('MB-INPUTS', mapping, mapping.name.substring(0, 1)))
     }
 
     if (mapping.valueAddress.startsWith('%Q')) {
-      namedValues.push(ioCore.buildOutputAddressMapping('MB-OUTPUTS', mapping, mapping.name.substring(0, 1)))
+      valueNames.push(ioCore.buildOutputAddressMapping('MB-OUTPUTS', mapping, mapping.name.substring(0, 1)))
     }
   })
 
-  return ioCore.insertValues(namedValues, values)
+  return ioCore.insertValues(valueNames, values)
 }
 
 de.biancoroyal.modbus.io.core.buildInputAddressMapping = function (registerName, mapping, type) {
@@ -177,22 +177,16 @@ de.biancoroyal.modbus.io.core.insertValues = function (namedValues, register) {
   return namedValues
 }
 
+de.biancoroyal.modbus.io.core.filterValueNames = function (valueNames, adr, quantity) {
+  return valueNames.filter((valueName) => {
+    return valueName.addressStart >= adr && valueName.addressStart <= adr + quantity
+  })
+}
+
 de.biancoroyal.modbus.io.core.isRegisterSizeWrong = function (register, start, bits) {
   let sizeDivisor = (bits === 1) ? 16 : 1
   let startRegister = start / sizeDivisor
   return (register.length < startRegister)
-}
-
-de.biancoroyal.modbus.io.core.readIOConfigFile = function (configIOFile) {
-  return new Promise(
-    function (resolve, reject) {
-      if (configIOFile.lastUpdatedAt) {
-        resolve(configIOFile.configData)
-      } else {
-        reject(new Error('Config File Data Are Not Ready To Use'))
-      }
-    }
-  )
 }
 
 module.exports = de.biancoroyal.modbus.io.core

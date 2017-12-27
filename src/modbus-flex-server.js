@@ -142,7 +142,7 @@ module.exports = function (RED) {
         verboseLog('modbus flex server started')
         setNodeStatusTo('active')
       } else {
-        verboseWarn("modbus flex server isn't ready")
+        verboseWarn('modbus flex server isn\'t ready')
         setNodeStatusTo('error')
       }
     }

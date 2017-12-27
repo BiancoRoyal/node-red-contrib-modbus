@@ -8,55 +8,55 @@
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
 -->
 <script type="text/javascript">
-    RED.nodes.registerType('modbus-write', {
-        category: 'modbus',
-        color: '#E9967A',
-        defaults: {
-            name: {value: ""},
-            showStatusActivities: {value: false},
-            showErrors: {value: false},
-            unitid: {value: ""},
-            dataType: {value: "", required: true},
-            adr: {value: "", required: true, validate: RED.validators.number()},
-            quantity: {value: "", required: true, validate: RED.validators.number()},
-            server: {type: "modbus-client", required:true}
-        },
-        inputs: 1,
-        outputs: 2,
-        icon: "modbus.png",
-        align: 'right',
-        paletteLabel: "Modbus-Write",
-        label: function () {
-            return this.name || "Modbus Write"
-        },
-        oneditprepare: function () {
-          let previous = null
-          let node = this
-          let fcDataTypeSelector = $('#node-input-dataType')
-          let quantitySelector = $('#node-input-quantity')
-          let modbusWriteQuantityRow = $('#modbus-write-quantity')
+  RED.nodes.registerType('modbus-write', {
+    category: 'modbus',
+    color: '#E9967A',
+    defaults: {
+      name: {value: ''},
+      showStatusActivities: {value: false},
+      showErrors: {value: false},
+      unitid: {value: ''},
+      dataType: {value: '', required: true},
+      adr: {value: '', required: true, validate: RED.validators.number()},
+      quantity: {value: '', required: true, validate: RED.validators.number()},
+      server: {type: 'modbus-client', required: true}
+    },
+    inputs: 1,
+    outputs: 2,
+    icon: 'modbus.png',
+    align: 'right',
+    paletteLabel: 'Modbus-Write',
+    label: function () {
+      return this.name || 'Modbus Write'
+    },
+    oneditprepare: function () {
+      let previous = null
+      let node = this
+      let fcDataTypeSelector = $('#node-input-dataType')
+      let quantitySelector = $('#node-input-quantity')
+      let modbusWriteQuantityRow = $('#modbus-write-quantity')
 
-          fcDataTypeSelector.on('focus', function () {
-            previous = this.value
-          }).change(function () {
-            if (previous == null) {
-              previous = fcDataTypeSelector.val()
-            }
-
-            switch (fcDataTypeSelector.val()) {
-              case 'Coil':
-              case 'HoldingRegister':
-                node.quantity.required = false
-                quantitySelector.val(1)
-                modbusWriteQuantityRow.hide()
-                break;
-              default:
-                node.quantity.required = true
-                modbusWriteQuantityRow.show()
-            }
-          })
+      fcDataTypeSelector.on('focus', function () {
+        previous = this.value
+      }).change(function () {
+        if (previous == null) {
+          previous = fcDataTypeSelector.val()
         }
-    })
+
+        switch (fcDataTypeSelector.val()) {
+          case 'Coil':
+          case 'HoldingRegister':
+            node.quantity.required = false
+            quantitySelector.val(1)
+            modbusWriteQuantityRow.hide()
+            break
+          default:
+            node.quantity.required = true
+            modbusWriteQuantityRow.show()
+        }
+      })
+    }
+  })
 </script>
 
 
@@ -101,6 +101,7 @@
         data-i18n="modbus-contrib.label.showErrors"></span></label>
         <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
     </div>
+
 </script>
 
 
@@ -140,4 +141,5 @@
 
      <p>Output 1: all given data, modbus response Buffer, input message</p>
      <p>Output 2: modbus response Buffer, all given data, input message</p>
+
 </script>

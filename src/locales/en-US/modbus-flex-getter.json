@@ -3,7 +3,9 @@
     "label": {
       "showActivities": "Show Activities",
       "showErrors": "Show Errors",
-      "server": "Server"
+      "server": "Server",
+      "useIOFile": "Using IO-File",
+      "ioFile": "IO-File"
     }
   }
 }

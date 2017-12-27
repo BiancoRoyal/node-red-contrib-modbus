@@ -9,106 +9,105 @@
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
 -->
 <script type="text/javascript">
-    RED.nodes.registerType('modbus-read', {
-        category: 'modbus',
-        color: '#E9967A',
-        defaults: {
-            name: {value: ""},
-            topic: {value: ""},
-            showStatusActivities: {value: false},
-            showErrors: {value: false},
-            unitid: {value: ""},
-            dataType: {value: "", required: true},
-            adr: {value: "", required: true, validate: RED.validators.number()},
-            quantity: {value: "", required: true, validate: RED.validators.number()},
-            rate: {
-                value: "", required: true, validate: function (v) {
-                    return v > 0
-                }
-            },
-            rateUnit: {
-                value: "", required: true, validate: function (v) {
-                    return "ms" == v || "s" == v || "m" == v || "h" == v
-                }
-            },
-            delayOnStart: {value: false},
-            startDelayTime: {value: ''},
-            server: {type: "modbus-client", required: true},
-            useIOFile: {value: false},
-            ioFile: {value: "", type: "modbus-io-config", required: false}
-        },
-        inputs: 0,
-        outputs: 2,
-        icon: "modbus.png",
-        paletteLabel: "Modbus-Read",
-        label: function () {
-            let nodeLabel = this.name || "Modbus Read"
-            if (this.once) {
-                nodeLabel += ' ¹'
-            }
-            return nodeLabel
-        },
-        oneditprepare: function () {
-
-          let useIOFileCheckbox = $("#node-input-useIOFile")
-          let modbusiofileRow = $("#modbusiofile-row")
-
-          useIOFileCheckbox.change(function () {
-              if ($(this).is(":checked")) {
-                modbusiofileRow.show();
-              } else {
-                modbusiofileRow.hide();
-              }
-            });
-
-            if (this.delayOnStart) {
-              $('#node-delay').show()
-            }
-            else {
-              $('#node-delay').hide()
-              $('#node-input-delayOnStart').prop('checked', false)
-            }
-
-            $('#node-input-delayOnStart').change(function () {
-                if ($(this).is(':checked')) {
-                  $('#node-delay').show()
-                } else {
-                  $('#node-delay').hide()
-                }
-            })
-        },
-        button: {
-            onclick: function () {
-              let label = (this.name || 'modbus-read').replace(/&/g, '&amp').replace(/</g, '&lt').replace(/>/g, '&gt')
-              let node = this
-
-              $.ajax({
-                url: 'modbus/read/inject/' + node.id,
-                type: 'POST',
-                success: function (resp) {
-                  RED.notify(node._('modbusinject.success', {label: label}), 'success')
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                  if (jqXHR.status === 404) {
-                    RED.notify(node._('common.notification.error', {message: node._('common.notification.errors.not-deployed')}), 'error')
-                  } else if (jqXHR.status === 500) {
-                    RED.notify(node._('common.notification.error', {message: node._('modbusinject.errors.failed')}), 'error')
-                  } else if (jqXHR.status === 0) {
-                    RED.notify(node._('common.notification.error', {message: node._('common.notification.errors.no-response')}), 'error')
-                  } else {
-                    RED.notify(node._('common.notification.error', {
-                      message: node._('common.notification.errors.unexpected', {
-                        status: jqXHR.status,
-                        message: textStatus
-                      })
-                    }), 'error')
-                  }
-                }
-              })
-            }
+  RED.nodes.registerType('modbus-read', {
+    category: 'modbus',
+    color: '#E9967A',
+    defaults: {
+      name: {value: ''},
+      topic: {value: ''},
+      showStatusActivities: {value: false},
+      showErrors: {value: false},
+      unitid: {value: ''},
+      dataType: {value: '', required: true},
+      adr: {value: '', required: true, validate: RED.validators.number()},
+      quantity: {value: '', required: true, validate: RED.validators.number()},
+      rate: {
+        value: '', required: true, validate: function (v) {
+          return v > 0
         }
+      },
+      rateUnit: {
+        value: '', required: true, validate: function (v) {
+          return 'ms' == v || 's' == v || 'm' == v || 'h' == v
+        }
+      },
+      delayOnStart: {value: false},
+      startDelayTime: {value: ''},
+      server: {type: 'modbus-client', required: true},
+      useIOFile: {value: false},
+      ioFile: {value: '', type: 'modbus-io-config', required: false}
+    },
+    inputs: 0,
+    outputs: 2,
+    icon: 'modbus.png',
+    paletteLabel: 'Modbus-Read',
+    label: function () {
+      let nodeLabel = this.name || 'Modbus Read'
+      if (this.once) {
+        nodeLabel += ' ¹'
+      }
+      return nodeLabel
+    },
+    oneditprepare: function () {
 
-    })
+      let useIOFileCheckbox = $('#node-input-useIOFile')
+      let modbusiofileRow = $('#modbusiofile-row')
+
+      useIOFileCheckbox.change(function () {
+        if ($(this).is(':checked')) {
+          modbusiofileRow.show()
+        } else {
+          modbusiofileRow.hide()
+        }
+      })
+
+      if (this.delayOnStart) {
+        $('#node-delay').show()
+      }
+      else {
+        $('#node-delay').hide()
+        $('#node-input-delayOnStart').prop('checked', false)
+      }
+
+      $('#node-input-delayOnStart').change(function () {
+        if ($(this).is(':checked')) {
+          $('#node-delay').show()
+        } else {
+          $('#node-delay').hide()
+        }
+      })
+    },
+    button: {
+      onclick: function () {
+        let label = (this.name || 'modbus-read').replace(/&/g, '&amp').replace(/</g, '&lt').replace(/>/g, '&gt')
+        let node = this
+
+        $.ajax({
+          url: 'modbus/read/inject/' + node.id,
+          type: 'POST',
+          success: function (resp) {
+            RED.notify(node._('modbusinject.success', {label: label}), 'success')
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status === 404) {
+              RED.notify(node._('common.notification.error', {message: node._('common.notification.errors.not-deployed')}), 'error')
+            } else if (jqXHR.status === 500) {
+              RED.notify(node._('common.notification.error', {message: node._('modbusinject.errors.failed')}), 'error')
+            } else if (jqXHR.status === 0) {
+              RED.notify(node._('common.notification.error', {message: node._('common.notification.errors.no-response')}), 'error')
+            } else {
+              RED.notify(node._('common.notification.error', {
+                message: node._('common.notification.errors.unexpected', {
+                  status: jqXHR.status,
+                  message: textStatus
+                })
+              }), 'error')
+            }
+          }
+        })
+      }
+    }
+  })
 </script>
 
 <script type="text/x-red" data-template-name="modbus-read">

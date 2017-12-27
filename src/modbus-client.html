@@ -12,21 +12,21 @@
     category: 'config',
     defaults: {
 
-      name: {value: ""},
-      clienttype: {value: "tcp", required: true},
+      name: {value: ''},
+      clienttype: {value: 'tcp', required: true},
       bufferCommands: {value: true},
       stateLogEnabled: {value: false},
 
-      tcpHost: {value: "127.0.0.1", required: true},
+      tcpHost: {value: '127.0.0.1', required: true},
       tcpPort: {value: 502, required: true, validate: RED.validators.number()},
-      tcpType: {value: "DEFAULT", required: true},
+      tcpType: {value: 'DEFAULT', required: true},
 
-      serialPort: {value: "/dev/ttyUSB", required: true},
-      serialType: {value: "RTU-BUFFERD", required: true},
+      serialPort: {value: '/dev/ttyUSB', required: true},
+      serialType: {value: 'RTU-BUFFERD', required: true},
       serialBaudrate: {value: 9600, required: true, validate: RED.validators.number()},
       serialDatabits: {value: 8, required: true, validate: RED.validators.number()},
       serialStopbits: {value: 1, required: true, validate: RED.validators.number()},
-      serialParity: {value: "none", required: true},
+      serialParity: {value: 'none', required: true},
       serialConnectionDelay: {value: 100},
 
       unit_id: {value: 1},
@@ -36,10 +36,10 @@
     },
     label: function () {
       let node = this
-      if (node.clienttype == "tcp") {
-        return node.name || "modbus-tcp@" + node.tcpHost + ":" + node.tcpPort
+      if (node.clienttype == 'tcp') {
+        return node.name || 'modbus-tcp@' + node.tcpHost + ':' + node.tcpPort
       } else {
-        return node.name || "modbus-serial@" + node.serialPort + ':' + node.serialBaudrate
+        return node.name || 'modbus-serial@' + node.serialPort + ':' + node.serialBaudrate
       }
     },
     oneditprepare: function () {
@@ -48,16 +48,16 @@
       let node = this
       node.ports = []
       let clientTypeSelector = $('#node-config-input-clienttype')
-      let inputsSerial = $("#node-inputs-modbus-serial")
-      let inputsSerialExtras = $("#node-inputs-modbus-serial-extras")
-      let inputsTCP = $("#node-inputs-modbus-tcp")
+      let inputsSerial = $('#node-inputs-modbus-serial')
+      let inputsSerialExtras = $('#node-inputs-modbus-serial-extras')
+      let inputsTCP = $('#node-inputs-modbus-tcp')
 
       clientTypeSelector.on('focus', function () {
         previous = this.value
       }).change(function () {
 
         if (previous == null) {
-          previous = $("#node-config-input-clienttype").val()
+          previous = $('#node-config-input-clienttype').val()
         }
 
         if (node.unit_id) {
@@ -146,29 +146,29 @@
       })
 
       try {
-        $("#node-config-input-serialPort").autocomplete("destroy")
+        $('#node-config-input-serialPort').autocomplete('destroy')
       }
       catch (err) {
       }
 
-      $("#node-config-lookup-serial").click(function () {
-        $("#node-config-lookup-serial").addClass('disabled')
+      $('#node-config-lookup-serial').click(function () {
+        $('#node-config-lookup-serial').addClass('disabled')
 
         $.getJSON('/modbus/serial/ports', function (data) {
-          $("#node-config-lookup-serial").removeClass('disabled')
+          $('#node-config-lookup-serial').removeClass('disabled')
           node.ports = []
 
           $.each(data, function (i, port) {
             node.ports.push(port.comName)
           })
 
-          $("#node-config-input-serialPort").autocomplete({
+          $('#node-config-input-serialPort').autocomplete({
             source: node.ports,
             minLength: 0,
             close: function (event, ui) {
-              $("#node-config-input-serialPort").autocomplete("destroy")
+              $('#node-config-input-serialPort').autocomplete('destroy')
             }
-          }).autocomplete("search", "")
+          }).autocomplete('search', '')
         })
       })
     }
@@ -309,6 +309,7 @@
         data-i18n="modbus-contrib.label.commandDelay"></span></label>
         <input type="text" id="node-config-input-commandDelay" placeholder="1" style="max-width:80px">
     </div>
+
 </script>
 
 <script type="text/x-red" data-help-name="modbus-client">
@@ -360,4 +361,5 @@
             <li>Serial Connection delay (default 500 ms) - time to delay first command sending after reconnect</li>
         </ul>
     </p>
+
 </script>

@@ -7,7 +7,9 @@
       "functioncode": "FC",
       "address": "Address",
       "quantity": "Quantity",
-      "server": "Server"
+      "server": "Server",
+      "useIOFile": "Using IO-File",
+      "ioFile": "IO-File"
     }
   }
 }

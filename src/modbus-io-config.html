@@ -8,22 +8,22 @@
 -->
 
 <script type="text/javascript">
-    RED.nodes.registerType('modbus-io-config', {
-        category: 'config',
-        color: '#E9967A',
-        defaults: {
-            name: {value: ''},
-            path: {value: '', required: true},
-            format: {value: "utf8"}
-        },
-        label: function () {
-            return "IO:" + this.name + "@" + this.path;
-        },
-        oneditprepare: function () {
-        },
-        oneditsave: function () {
-        }
-    });
+  RED.nodes.registerType('modbus-io-config', {
+    category: 'config',
+    color: '#E9967A',
+    defaults: {
+      name: {value: ''},
+      path: {value: '', required: true},
+      format: {value: 'utf8'}
+    },
+    label: function () {
+      return 'IO:' + this.name + '@' + this.path
+    },
+    oneditprepare: function () {
+    },
+    oneditsave: function () {
+    }
+  })
 </script>
 
 
@@ -44,6 +44,7 @@
             <option value="" data-i18n="modbus-contrib.label.buffer"></option>
         </select>
     </div>
+
 </script>
 
 
@@ -69,4 +70,5 @@
         "filename":"/Users/Shared/modbus/slaveDevice.json","appendNewline":true,"createDir":false,"overwriteFile":"delete","x":480,"y":280,"wires":[]}]
         </pre>
     </div>
+
 </script>

@@ -15,6 +15,7 @@ module.exports = function (RED) {
   'use strict'
   let mbBasics = require('./modbus-basics')
   let mbCore = require('./core/modbus-core')
+  let mbIOCore = require('./core/modbus-io-core')
   let internalDebugLog = require('debug')('contribModbus:flex:getter')
 
   function ModbusFlexGetter (config) {
@@ -24,6 +25,9 @@ module.exports = function (RED) {
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
     this.connection = null
+
+    this.useIOFile = config.useIOFile
+    this.ioFile = RED.nodes.getNode(config.ioFile)
 
     let node = this
     let modbusClient = RED.nodes.getNode(config.server)
@@ -81,22 +85,22 @@ module.exports = function (RED) {
           msg.payload.quantity = parseInt(msg.payload.quantity) || 1
 
           if (!(Number.isInteger(msg.payload.fc) &&
-            msg.payload.fc >= 1 &&
-            msg.payload.fc <= 4)) {
+              msg.payload.fc >= 1 &&
+              msg.payload.fc <= 4)) {
             node.error('FC Not Valid', msg)
             return
           }
 
           if (!(Number.isInteger(msg.payload.address) &&
-            msg.payload.address >= 0 &&
-            msg.payload.address <= 65535)) {
+              msg.payload.address >= 0 &&
+              msg.payload.address <= 65535)) {
             node.error('Address Not Valid', msg)
             return
           }
 
           if (!(Number.isInteger(msg.payload.quantity) &&
-            msg.payload.quantity >= 1 &&
-            msg.payload.quantity <= 65535)) {
+              msg.payload.quantity >= 1 &&
+              msg.payload.quantity <= 65535)) {
             node.error('Quantity Not Valid', msg)
             return
           }
@@ -160,7 +164,13 @@ module.exports = function (RED) {
       rawMsg.values = values
       delete rawMsg['responseBuffer']
 
-      return [origMsg, rawMsg]
+      if (node.useIOFile && node.ioFile.lastUpdatedAt) {
+        origMsg.valueNames = mbIOCore.filterValueNames(mbIOCore.nameValuesFromIOFile(msg, node.ioFile.configData, values), node.adr, node.quantity)
+        rawMsg.valueNames = origMsg.valueNames
+        return [origMsg, rawMsg]
+      } else {
+        return [origMsg, rawMsg]
+      }
     }
 
     function setNodeStatusTo (statusValue) {

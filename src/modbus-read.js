@@ -180,19 +180,34 @@ module.exports = function (RED) {
     }
 
     function sendMessage (values, response, msg) {
-      if (!node.useIOFile) {
-        node.send([{payload: values, responseBuffer: response, input: msg}, {
-          payload: response, values: values, input: msg }])
+      if (node.useIOFile && node.ioFile.lastUpdatedAt) {
+        let valueNames = mbIOCore.filterValueNames(mbIOCore.nameValuesFromIOFile(msg, node.ioFile.configData, values), node.adr, node.quantity)
+        node.send([
+          {
+            payload: values,
+            responseBuffer: response,
+            input: msg,
+            valueNames: valueNames
+          },
+          {
+            payload: response,
+            values: values,
+            input: msg,
+            valueNames: valueNames
+          }])
       } else {
-        mbIOCore.readIOConfigFile(node.ioFile).then(function (configData) {
-          let namedValues = mbIOCore.nameValuesFromIOFile(msg, configData, values)
-          node.send([{payload: values, responseBuffer: response, input: msg, configData: configData, namedValues: namedValues},
-            {payload: response, values: values, input: msg, configData: configData, namedValues: namedValues}])
-        }).catch(function (err) {
-          node.error(err, msg)
-          node.send([{payload: values, responseBuffer: response, input: msg, configData: err},
-            {payload: response, values: values, input: msg, configData: err}])
-        })
+        node.send([
+          {
+            payload: values,
+            responseBuffer: response,
+            input: msg
+          },
+          {
+            payload: response,
+            values: values,
+            input: msg
+          }
+        ])
       }
     }
 

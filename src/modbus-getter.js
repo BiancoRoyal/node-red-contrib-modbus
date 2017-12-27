@@ -15,6 +15,7 @@ module.exports = function (RED) {
   'use strict'
   let mbBasics = require('./modbus-basics')
   let mbCore = require('./core/modbus-core')
+  let mbIOCore = require('./core/modbus-io-core')
   let internalDebugLog = require('debug')('contribModbus:getter')
 
   function ModbusGetter (config) {
@@ -31,6 +32,9 @@ module.exports = function (RED) {
     this.showErrors = config.showErrors
     this.msgThruput = config.msgThruput
     this.connection = null
+
+    this.useIOFile = config.useIOFile
+    this.ioFile = RED.nodes.getNode(config.ioFile)
 
     let node = this
     let modbusClient = RED.nodes.getNode(config.server)
@@ -146,7 +150,13 @@ module.exports = function (RED) {
       rawMsg.values = values
       delete rawMsg['responseBuffer']
 
-      return [origMsg, rawMsg]
+      if (node.useIOFile && node.ioFile.lastUpdatedAt) {
+        origMsg.valueNames = mbIOCore.filterValueNames(mbIOCore.nameValuesFromIOFile(msg, node.ioFile.configData, values), node.adr, node.quantity)
+        rawMsg.valueNames = origMsg.valueNames
+        return [origMsg, rawMsg]
+      } else {
+        return [origMsg, rawMsg]
+      }
     }
 
     function setNodeStatusTo (statusValue) {

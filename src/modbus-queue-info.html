@@ -6,27 +6,27 @@
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
 -->
 <script type="text/javascript">
-    RED.nodes.registerType('modbus-queue-info', {
-        category: 'modbus',
-        color: '#E9967A',
-        defaults: {
-            name: {value: ""},
-            unitid: {value: ""},
-            lowLowLevel: {value: 25, validate: RED.validators.number()},
-            lowLevel: {value: 75, validate: RED.validators.number()},
-            highLevel: {value: 150, validate: RED.validators.number()},
-            highHighLevel: {value: 300, validate: RED.validators.number()},
-            server: {type: "modbus-client", required:true},
-            errorOnHighLevel: {value: false}
-        },
-        inputs: 1,
-        outputs: 1,
-        icon: "modbus.png",
-        paletteLabel: "Modbus-Queue-Info",
-        label: function () {
-            return this.name || "Modbus Queue Info"
-        }
-    })
+  RED.nodes.registerType('modbus-queue-info', {
+    category: 'modbus',
+    color: '#E9967A',
+    defaults: {
+      name: {value: ''},
+      unitid: {value: ''},
+      lowLowLevel: {value: 25, validate: RED.validators.number()},
+      lowLevel: {value: 75, validate: RED.validators.number()},
+      highLevel: {value: 150, validate: RED.validators.number()},
+      highHighLevel: {value: 300, validate: RED.validators.number()},
+      server: {type: 'modbus-client', required: true},
+      errorOnHighLevel: {value: false}
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: 'modbus.png',
+    paletteLabel: 'Modbus-Queue-Info',
+    label: function () {
+      return this.name || 'Modbus Queue Info'
+    }
+  })
 </script>
 
 
@@ -67,6 +67,7 @@
         data-i18n="modbus-contrib.label.errorOnHighLevel"></span></label>
         <input type="checkbox" id="node-input-errorOnHighLevel" style="max-width:30px">
     </div>
+
 </script>
 
 
@@ -103,4 +104,5 @@
      and with the high high an error for work with the catch node</p>
 
      <p>Output: all queue information - use complete msg with debug</p>
+
 </script>

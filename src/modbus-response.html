@@ -8,21 +8,21 @@
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
 -->
 <script type="text/javascript">
-    RED.nodes.registerType('modbus-response', {
-        category: 'modbus',
-        color: '#E9967A',
-        defaults: {
-            name: {value: ""},
-            registerShowMax: {value: 20, validate: RED.validators.number()}
-        },
-        inputs: 1,
-        outputs: 0,
-        icon: "modbus.png",
-        paletteLabel: "Modbus-Response",
-        label: function () {
-            return this.name || "Modbus Response"
-        }
-    })
+  RED.nodes.registerType('modbus-response', {
+    category: 'modbus',
+    color: '#E9967A',
+    defaults: {
+      name: {value: ''},
+      registerShowMax: {value: 20, validate: RED.validators.number()}
+    },
+    inputs: 1,
+    outputs: 0,
+    icon: 'modbus.png',
+    paletteLabel: 'Modbus-Response',
+    label: function () {
+      return this.name || 'Modbus Response'
+    }
+  })
 </script>
 
 
@@ -35,6 +35,7 @@
         <label for="node-input-registerShowMax"><i class="fa fa-th"></i> <span data-i18n="modbus-contrib.label.registerShowMax"></span></label>
         <input type="text" id="node-input-registerShowMax" placeholder="register to show max.">
     </div>
+
 </script>
 
 
@@ -43,4 +44,5 @@
     <p>Show-Max-Register is the border from where the node only shows, how many data are in response array.</p>
     <p>That node is just to get some information and it is not necessary to work with Modbus Read/Write/Getter nodes.</p>
     <p>If the Modbus Read/Write/Getter sends data very quick, don't use this node to much, please.</p>
+
 </script>

@@ -6,27 +6,42 @@
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
 -->
 <script type="text/javascript">
-    RED.nodes.registerType('modbus-getter', {
-        category: 'modbus',
-        color: '#E9967A',
-        defaults: {
-            name: {value: ""},
-            showStatusActivities: {value: false},
-            showErrors: {value: false},
-            unitid: {value: ""},
-            dataType: {value: "", required: true},
-            adr: {value: "", required: true, validate: RED.validators.number()},
-            quantity: {value: "", required: true, validate: RED.validators.number()},
-            server: {type: "modbus-client", required:true}
-        },
-        inputs: 1,
-        outputs: 2,
-        icon: "modbus.png",
-        paletteLabel: "Modbus-Getter",
-        label: function () {
-            return this.name || "Modbus Getter"
+  RED.nodes.registerType('modbus-getter', {
+    category: 'modbus',
+    color: '#E9967A',
+    defaults: {
+      name: {value: ''},
+      showStatusActivities: {value: false},
+      showErrors: {value: false},
+      unitid: {value: ''},
+      dataType: {value: '', required: true},
+      adr: {value: '', required: true, validate: RED.validators.number()},
+      quantity: {value: '', required: true, validate: RED.validators.number()},
+      server: {type: 'modbus-client', required: true},
+      useIOFile: {value: false},
+      ioFile: {value: '', type: 'modbus-io-config', required: false}
+    },
+    inputs: 1,
+    outputs: 2,
+    icon: 'modbus.png',
+    paletteLabel: 'Modbus-Getter',
+    label: function () {
+      return this.name || 'Modbus Getter'
+    },
+    oneditprepare: function () {
+
+      let useIOFileCheckbox = $('#node-input-useIOFile')
+      let modbusiofileRow = $('#modbusiofile-row')
+
+      useIOFileCheckbox.change(function () {
+        if ($(this).is(':checked')) {
+          modbusiofileRow.show()
+        } else {
+          modbusiofileRow.hide()
         }
-    })
+      })
+    }
+  })
 </script>
 
 
@@ -70,6 +85,17 @@
         <label style="min-width:160px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
         data-i18n="modbus-contrib.label.showErrors"></span></label>
         <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
+    </div>
+    <hr>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-input-useIOFile"><i class="fa fa-file-code-o"></i> <span
+        data-i18n="modbus-contrib.label.useIOFile"></span></label>
+        <input type="checkbox" id="node-input-useIOFile" style="max-width:30px">
+    </div>
+    <div id="modbusiofile-row">
+        <div class="form-row">
+        <label for="node-input-ioFile"><i class="icon-file"></i> <span data-i18n="modbus-contrib.label.ioFile"></span></label>
+        <input type="text" id="node-input-ioFile">
     </div>
 </script>
 
