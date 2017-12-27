@@ -165,7 +165,7 @@ module.exports = function (RED) {
       delete rawMsg['responseBuffer']
 
       if (node.useIOFile && node.ioFile.lastUpdatedAt) {
-        origMsg.valueNames = mbIOCore.filterValueNames(mbIOCore.nameValuesFromIOFile(msg, node.ioFile.configData, values), node.adr, node.quantity)
+        origMsg.valueNames = mbIOCore.filterValueNames(mbIOCore.nameValuesFromIOFile(msg, node.ioFile, values), node.adr, node.quantity)
         rawMsg.valueNames = origMsg.valueNames
         return [origMsg, rawMsg]
       } else {

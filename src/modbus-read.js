@@ -181,7 +181,7 @@ module.exports = function (RED) {
 
     function sendMessage (values, response, msg) {
       if (node.useIOFile && node.ioFile.lastUpdatedAt) {
-        let valueNames = mbIOCore.filterValueNames(mbIOCore.nameValuesFromIOFile(msg, node.ioFile.configData, values), node.adr, node.quantity)
+        let valueNames = mbIOCore.filterValueNames(mbIOCore.nameValuesFromIOFile(msg, node.ioFile, values), node.adr, node.quantity)
         node.send([
           {
             payload: values,

@@ -12,24 +12,26 @@ var de = de || {biancoroyal: {modbus: {io: {core: {}}}}} // eslint-disable-line 
 de.biancoroyal.modbus.io.core.internalDebug = de.biancoroyal.modbus.io.core.internalDebug || require('debug')('contribModbus:io:core') // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.io.core.LineByLineReader = de.biancoroyal.modbus.io.core.LineByLineReader || require('line-by-line') // eslint-disable-line no-use-before-define
 
-de.biancoroyal.modbus.io.core.nameValuesFromIOFile = function (msg, configData, values) {
+de.biancoroyal.modbus.io.core.nameValuesFromIOFile = function (msg, ioFileConfig, values) {
   let valueNames = []
   let ioCore = de.biancoroyal.modbus.io.core
 
-  configData.forEach(function (mapping) {
-    if (mapping.valueAddress.startsWith('%I')) {
-      valueNames.push(ioCore.buildInputAddressMapping('MB-INPUTS', mapping, mapping.name.substring(0, 1)))
-    }
+  if (ioFileConfig.configData) {
+    ioFileConfig.configData.forEach(function (mapping) {
+      if (mapping.valueAddress.startsWith('%I')) {
+        valueNames.push(ioCore.buildInputAddressMapping('MB-INPUTS', mapping, mapping.name.substring(0, 1), ioFileConfig.addressOffset))
+      }
 
-    if (mapping.valueAddress.startsWith('%Q')) {
-      valueNames.push(ioCore.buildOutputAddressMapping('MB-OUTPUTS', mapping, mapping.name.substring(0, 1)))
-    }
-  })
+      if (mapping.valueAddress.startsWith('%Q')) {
+        valueNames.push(ioCore.buildOutputAddressMapping('MB-OUTPUTS', mapping, mapping.name.substring(0, 1), ioFileConfig.addressOffset))
+      }
+    })
+  }
 
   return ioCore.insertValues(valueNames, values)
 }
 
-de.biancoroyal.modbus.io.core.buildInputAddressMapping = function (registerName, mapping, type) {
+de.biancoroyal.modbus.io.core.buildInputAddressMapping = function (registerName, mapping, type, offset) {
   let addressStart = 0
   let coilStart = 0
   let addressOffset = 0
@@ -78,6 +80,7 @@ de.biancoroyal.modbus.io.core.buildInputAddressMapping = function (registerName,
       'name': mapping.name,
       'addressStart': addressStart,
       'addressOffset': addressOffset,
+      'addressOffsetIO': Number(offset) || 0,
       'coilStart': coilStart,
       'bitAddress': bitAddress,
       'bits': bits,
@@ -88,7 +91,7 @@ de.biancoroyal.modbus.io.core.buildInputAddressMapping = function (registerName,
   return {'name': mapping.name, 'type': type, 'mapping': mapping, 'error': 'variable name does not match input mapping'}
 }
 
-de.biancoroyal.modbus.io.core.buildOutputAddressMapping = function (registerName, mapping, type) {
+de.biancoroyal.modbus.io.core.buildOutputAddressMapping = function (registerName, mapping, type, offset) {
   let addressStart = 0
   let coilStart = 0
   let addressOffset = 0
@@ -137,6 +140,7 @@ de.biancoroyal.modbus.io.core.buildOutputAddressMapping = function (registerName
       'name': mapping.name,
       'addressStart': addressStart,
       'addressOffset': addressOffset,
+      'addressOffsetIO': Number(offset) || 0,
       'coilStart': coilStart,
       'bitAddress': bitAddress,
       'bits': bits,
@@ -179,7 +183,9 @@ de.biancoroyal.modbus.io.core.insertValues = function (namedValues, register) {
 
 de.biancoroyal.modbus.io.core.filterValueNames = function (valueNames, adr, quantity) {
   return valueNames.filter((valueName) => {
-    return valueName.addressStart >= adr && valueName.addressStart <= adr + quantity
+    let address = valueName.addressStart - valueName.addressOffsetIO
+    // this.internalDebug('address filter address:' + address + ' start:' + valueName.addressStart + ' offset:' + valueName.addressOffsetIO)
+    return address >= adr && address <= adr + quantity
   })
 }
 

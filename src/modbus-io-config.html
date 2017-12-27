@@ -14,10 +14,11 @@
     defaults: {
       name: {value: ''},
       path: {value: '', required: true},
-      format: {value: 'utf8'}
+      format: {value: 'utf8'},
+      addressOffset: {value: 0}
     },
     label: function () {
-      return 'IO:' + this.name + '@' + this.path
+      return this.name || 'IO:' + this.name + '@' + this.path
     },
     oneditprepare: function () {
     },
@@ -44,7 +45,10 @@
             <option value="" data-i18n="modbus-contrib.label.buffer"></option>
         </select>
     </div>
-
+    <div class="form-row">
+        <label for="node-config-input-addressOffset"><i class="icon-file"></i> <span data-i18n="modbus-contrib.label.addressOffset"></span></label>
+        <input type="text" id="node-config-input-addressOffset" placeholder="0">
+    </div>
 </script>
 
 

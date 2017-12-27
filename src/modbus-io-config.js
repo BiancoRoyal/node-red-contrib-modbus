@@ -17,6 +17,7 @@ module.exports = function (RED) {
     this.name = config.name
     this.path = config.path
     this.format = config.format
+    this.addressOffset = config.addressOffset
 
     let node = this
     node.lastUpdatedAt = null
