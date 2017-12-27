@@ -8,7 +8,8 @@
  */
 module.exports = function (RED) {
   'use strict'
-  // const fs = require('fs-extra')
+  const coreIO = require('./core/modbus-io-core')
+  const fs = require('fs-extra')
 
   function ModbusIOConfigNode (config) {
     RED.nodes.createNode(this, config)
@@ -17,7 +18,57 @@ module.exports = function (RED) {
     this.path = config.path
     this.format = config.format
 
-    // let node = this
+    let node = this
+
+    let lineReader = new coreIO.LineByLineReader(node.path)
+    coreIO.internalDebug('Read IO File ' + node.path)
+    node.configData = []
+
+    lineReader.on('error', function (err) {
+      coreIO.internalDebug(err.message)
+    })
+
+    lineReader.on('line', function (line) {
+      if (line) {
+        node.configData.push(JSON.parse(line))
+      }
+    })
+
+    lineReader.on('end', function () {
+      node.lastUpdatedAt = Date.now()
+      coreIO.internalDebug('Read IO Done From File ' + node.path)
+    })
+
+    coreIO.internalDebug('Loading IO File Started For ' + node.path)
+
+    fs.watchFile(node.path, (curr, prev) => {
+      coreIO.internalDebug(`the current mtime is: ${curr.mtime}`)
+      coreIO.internalDebug(`the previous mtime was: ${prev.mtime}`)
+
+      if (curr.mtime !== prev.mtime) {
+        coreIO.internalDebug('Reload IO File ' + node.path)
+        node.configData = []
+        delete node.lastUpdatedAt
+
+        let lineReader = new coreIO.LineByLineReader(node.path)
+        lineReader.on('error', function (err) {
+          coreIO.internalDebug(err.message)
+        })
+
+        lineReader.on('line', function (line) {
+          if (line) {
+            node.configData.push(JSON.parse(line))
+          }
+        })
+
+        lineReader.on('end', function () {
+          node.lastUpdatedAt = Date.now()
+          coreIO.internalDebug('Reload IO Done From File ' + node.path)
+        })
+
+        coreIO.internalDebug('Reloading IO File Started For ' + node.path)
+      }
+    })
   }
 
   RED.nodes.registerType('modbus-io-config', ModbusIOConfigNode)

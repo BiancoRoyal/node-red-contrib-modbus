@@ -186,22 +186,11 @@ de.biancoroyal.modbus.io.core.isRegisterSizeWrong = function (register, start, b
 de.biancoroyal.modbus.io.core.readIOConfigFile = function (configIOFile) {
   return new Promise(
     function (resolve, reject) {
-      let lineReader = new de.biancoroyal.modbus.io.core.LineByLineReader(configIOFile.path)
-      let configData = []
-
-      lineReader.on('error', function (err) {
-        reject(err)
-      })
-
-      lineReader.on('line', function (line) {
-        if (line) {
-          configData.push(JSON.parse(line))
-        }
-      })
-
-      lineReader.on('end', function () {
-        resolve(configData)
-      })
+      if (configIOFile.lastUpdatedAt) {
+        resolve(configIOFile.configData)
+      } else {
+        reject(new Error('Config File Data Are Not Ready To Use'))
+      }
     }
   )
 }
