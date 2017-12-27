@@ -9,9 +9,9 @@
 module.exports = function (RED) {
   'use strict'
   const coreIO = require('./core/modbus-io-core')
-  const fs = require('fs-extra')
 
   function ModbusIOConfigNode (config) {
+    const fs = require('fs-extra')
     RED.nodes.createNode(this, config)
 
     this.name = config.name
@@ -41,7 +41,7 @@ module.exports = function (RED) {
 
     coreIO.internalDebug('Loading IO File Started For ' + node.path)
 
-    fs.watchFile(node.path, (curr, prev) => {
+    node.watcher = fs.watchFile(node.path, (curr, prev) => {
       coreIO.internalDebug(`the current mtime is: ${curr.mtime}`)
       coreIO.internalDebug(`the previous mtime was: ${prev.mtime}`)
 
@@ -68,6 +68,12 @@ module.exports = function (RED) {
 
         coreIO.internalDebug('Reloading IO File Started For ' + node.path)
       }
+    })
+
+    node.on('close', function (done) {
+      fs.unwatchFile(node.path)
+      node.watcher.close()
+      done()
     })
   }
 
