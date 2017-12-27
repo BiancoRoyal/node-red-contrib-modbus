@@ -764,7 +764,7 @@ module.exports = function (RED) {
 
   RED.nodes.registerType('modbus-client', ModbusClientNode)
 
-  RED.httpAdmin.get('/serialports', RED.auth.needsPermission('serial.read'), function (req, res) {
+  RED.httpAdmin.get('/modbus/serial/ports', RED.auth.needsPermission('serial.read'), function (req, res) {
     let SerialPort = require('serialport')
     SerialPort.list(function (err, ports) {
       if (err) console.log(err)
