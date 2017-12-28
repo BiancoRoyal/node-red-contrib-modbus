@@ -226,7 +226,7 @@ module.exports = function (RED) {
         return
       }
 
-      let statusOptions = mbBasics.set_node_status_properties(statusValue, node.showStatusActivities)
+      let statusOptions = mbBasics.setNodeStatusProperties(statusValue, node.showStatusActivities)
 
       if (statusValue.search('active') !== -1 || statusValue === 'polling') {
         timeoutOccurred = false

@@ -186,32 +186,35 @@ de.biancoroyal.modbus.io.core.insertValues = function (valueNames, register) {
   let index = 0
   for (index in valueNames) {
     let item = valueNames[index]
+
     if (!item || !item.hasOwnProperty('addressStart')) {
       ioCore.internalDebug('Item Not Valid To Insert Value ' + JSON.stringify(item))
       continue
     }
 
-    if (de.biancoroyal.modbus.io.core.isRegisterSizeWrong(register, item.addressStart - item.addressOffsetIO, Number(item.bits))) {
+    let registerAddress = item.addressStart - item.addressOffsetIO
+
+    if (registerAddress < 0 || de.biancoroyal.modbus.io.core.isRegisterSizeWrong(register, registerAddress, Number(item.bits))) {
       ioCore.internalDebug('Insert Value Register Reached At Address-Start:' + item.addressStart + ' Bits:' + Number(item.bits))
       break
     }
 
     switch (Number(item.bits)) {
       case 1:
-        item.value = !!((register[item.addressStart - item.addressOffsetIO] & Math.pow(2, item.bitAddress[1])))
+        item.value = !!((register[registerAddress] & Math.pow(2, item.bitAddress[1])))
         break
       case 16:
-        item.value = register[item.addressStart - item.addressOffsetIO]
+        item.value = register[registerAddress]
         break
       case 32:
-        item.value = register[item.addressStart - item.addressOffsetIO + 1] << 16 |
-          register[item.addressStart - item.addressOffsetIO]
+        item.value = register[registerAddress + 1] << 16 |
+          register[registerAddress]
         break
       case 64:
-        item.value = register[item.addressStart - item.addressOffsetIO + 3] << 48 |
-          register[item.addressStart - item.addressOffsetIO + 2] << 32 |
-          register[item.addressStart - item.addressOffsetIO + 1] << 16 |
-          register[item.addressStart - item.addressOffsetIO]
+        item.value = register[registerAddress + 3] << 48 |
+          register[registerAddress + 2] << 32 |
+          register[registerAddress + 1] << 16 |
+          register[registerAddress]
         break
       default:
         item.value = null
@@ -223,6 +226,14 @@ de.biancoroyal.modbus.io.core.insertValues = function (valueNames, register) {
 }
 
 de.biancoroyal.modbus.io.core.getValueFromBufferByDataType = function (item, bufferOffset, responseBuffer) {
+  let ioCore = de.biancoroyal.modbus.io.core
+
+  if (bufferOffset < 0 || bufferOffset > responseBuffer.length / 2) {
+    ioCore.internalDebug('Wrong Buffer Access Parameter Type:' + item.dataType + 'Length:' + responseBuffer.length + ' Address-Buffer-Offset:' + bufferOffset)
+    ioCore.internalDebug(JSON.stringify(item))
+    return item
+  }
+
   switch (item.dataType) {
     case 'Boolean':
     case 'Word':
@@ -256,7 +267,7 @@ de.biancoroyal.modbus.io.core.getValueFromBufferByDataType = function (item, buf
           item.value = responseBuffer.readIntBE(bufferOffset, 8)
           break
         default:
-          item.value = responseBuffer.readIntBE(bufferOffset)
+          item.value = responseBuffer.readInt16BE(bufferOffset)
       }
       break
     case 'Real':
@@ -305,14 +316,20 @@ de.biancoroyal.modbus.io.core.convertValuesByType = function (valueNames, regist
       continue
     }
 
-    if (de.biancoroyal.modbus.io.core.isRegisterSizeWrong(register, item.addressStart - item.addressOffsetIO, Number(item.bits))) {
+    let registerAddress = item.addressStart - item.addressOffsetIO
+
+    if (registerAddress < 0 || de.biancoroyal.modbus.io.core.isRegisterSizeWrong(register, registerAddress, Number(item.bits))) {
       ioCore.internalDebug('Insert Value Register Reached At Address-Start:' + item.addressStart + ' Bits:' + Number(item.bits))
       break
     }
 
     if (responseBuffer.buffer instanceof Buffer) {
-      bufferOffset = (item.addressStart - item.addressOffsetIO) * sixteenBitBufferLength
-      item = ioCore.getValueFromBufferByDataType(item, bufferOffset, responseBuffer.buffer)
+      bufferOffset = (registerAddress) * sixteenBitBufferLength
+      try {
+        item = ioCore.getValueFromBufferByDataType(item, bufferOffset, responseBuffer.buffer)
+      } catch (err) {
+        ioCore.internalDebug(err.message)
+      }
     } else {
       ioCore.internalDebug('Response Buffer Is Not A Buffer ' + JSON.stringify(responseBuffer))
       break
@@ -322,10 +339,15 @@ de.biancoroyal.modbus.io.core.convertValuesByType = function (valueNames, regist
   return valueNames
 }
 
-de.biancoroyal.modbus.io.core.filterValueNames = function (valueNames, adr, quantity) {
+de.biancoroyal.modbus.io.core.filterValueNames = function (valueNames, fc, adr, quantity) {
+  let functionType = 'input'
+
+  if (fc.includes('Input')) {
+    functionType = 'output'
+  }
+
   return valueNames.filter((valueName) => {
-    let address = valueName.addressStart - valueName.addressOffsetIO
-    return address >= adr && address <= adr + quantity
+    return valueName.addressStartIO >= adr && valueName.addressStartIO <= adr + quantity && valueName.type === functionType
   })
 }
 

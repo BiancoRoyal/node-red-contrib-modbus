@@ -146,13 +146,13 @@ module.exports = function (RED) {
       origMsg.responseBuffer = response
       origMsg.input = msg
 
-      let rawMsg = origMsg
+      let rawMsg = Object.assign({}, origMsg)
       rawMsg.payload = response
       rawMsg.values = values
       delete rawMsg['responseBuffer']
 
       if (node.useIOFile && node.ioFile.lastUpdatedAt) {
-        let valueNames = mbIOCore.filterValueNames(mbIOCore.nameValuesFromIOFile(msg, node.ioFile, values, response), node.adr, node.quantity)
+        let valueNames = mbIOCore.filterValueNames(mbIOCore.nameValuesFromIOFile(msg, node.ioFile, values, response), node.dataType, node.adr, node.quantity)
 
         if (node.useIOForPayload) {
           origMsg.payload = valueNames
@@ -170,7 +170,7 @@ module.exports = function (RED) {
     }
 
     function setNodeStatusTo (statusValue) {
-      let statusOptions = mbBasics.set_node_status_properties(statusValue, node.showStatusActivities)
+      let statusOptions = mbBasics.setNodeStatusProperties(statusValue, node.showStatusActivities)
 
       node.status({
         fill: statusOptions.fill,
