@@ -35,6 +35,7 @@ module.exports = function (RED) {
 
     this.useIOFile = config.useIOFile
     this.ioFile = RED.nodes.getNode(config.ioFile)
+    this.useIOForPayload = config.useIOForPayload
 
     let node = this
     let modbusClient = RED.nodes.getNode(config.server)
@@ -151,8 +152,17 @@ module.exports = function (RED) {
       delete rawMsg['responseBuffer']
 
       if (node.useIOFile && node.ioFile.lastUpdatedAt) {
-        origMsg.valueNames = mbIOCore.filterValueNames(mbIOCore.nameValuesFromIOFile(msg, node.ioFile, values), node.adr, node.quantity)
-        rawMsg.valueNames = origMsg.valueNames
+        let valueNames = mbIOCore.filterValueNames(mbIOCore.nameValuesFromIOFile(msg, node.ioFile, values, response), node.adr, node.quantity)
+
+        if (node.useIOForPayload) {
+          origMsg.payload = valueNames
+          origMsg.values = values
+        } else {
+          origMsg.payload = values
+          origMsg.valueNames = valueNames
+        }
+
+        rawMsg.valueNames = valueNames
         return [origMsg, rawMsg]
       } else {
         return [origMsg, rawMsg]

@@ -44,6 +44,7 @@ module.exports = function (RED) {
 
     this.useIOFile = config.useIOFile
     this.ioFile = RED.nodes.getNode(config.ioFile)
+    this.useIOForPayload = config.useIOForPayload
 
     let node = this
     let modbusClient = RED.nodes.getNode(config.server)
@@ -181,14 +182,23 @@ module.exports = function (RED) {
 
     function sendMessage (values, response, msg) {
       if (node.useIOFile && node.ioFile.lastUpdatedAt) {
-        let valueNames = mbIOCore.filterValueNames(mbIOCore.nameValuesFromIOFile(msg, node.ioFile, values), node.adr, node.quantity)
+        let valueNames = mbIOCore.filterValueNames(mbIOCore.nameValuesFromIOFile(msg, node.ioFile, values, response), node.adr, node.quantity)
+
+        let origMsg = {
+          responseBuffer: response,
+          input: msg
+        }
+
+        if (node.useIOForPayload) {
+          origMsg.payload = valueNames
+          origMsg.values = values
+        } else {
+          origMsg.payload = values
+          origMsg.valueNames = valueNames
+        }
+
         node.send([
-          {
-            payload: values,
-            responseBuffer: response,
-            input: msg,
-            valueNames: valueNames
-          },
+          origMsg,
           {
             payload: response,
             values: values,
