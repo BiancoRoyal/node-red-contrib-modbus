@@ -236,22 +236,15 @@ de.biancoroyal.modbus.io.core.getValueFromBufferByDataType = function (item, buf
 
   switch (item.dataType) {
     case 'Boolean':
-    case 'Word':
-      item.value = responseBuffer.readIntBE(bufferOffset, 2) // 16Bit
+      item.value = responseBuffer.readInt16BE(bufferOffset) && Math.pow(item.bitAddress, 2) // Bit state
       break
-    case 'Unsigned Integer':
+    case 'Word':
       switch (item.bits) {
         case '8':
-          item.value = responseBuffer.readUInt8(bufferOffset)
-          break
-        case '32':
-          item.value = responseBuffer.readUInt32BE(bufferOffset)
-          break
-        case '64':
-          item.value = responseBuffer.readUIntBE(bufferOffset, 8)
+          item.value = responseBuffer.readInt8(bufferOffset)
           break
         default:
-          item.value = responseBuffer.readUInt16BE(bufferOffset)
+          item.value = responseBuffer.readInt16BE(bufferOffset) // DWord
       }
       break
     case 'Integer':
@@ -296,7 +289,20 @@ de.biancoroyal.modbus.io.core.getValueFromBufferByDataType = function (item, buf
       }
       break
     default:
-      item.convertedValue = false
+      switch (item.bits) {
+        case '8':
+          item.value = responseBuffer.readUInt8(bufferOffset)
+          break
+        case '32':
+          item.value = responseBuffer.readUInt32BE(bufferOffset)
+          break
+        case '64':
+          item.value = responseBuffer.readUIntBE(bufferOffset, 8)
+          break
+        default:
+          item.value = responseBuffer.readUInt16BE(bufferOffset)
+          item.convertedValue = false
+      }
       break
   }
 
@@ -347,14 +353,20 @@ de.biancoroyal.modbus.io.core.filterValueNames = function (valueNames, fc, adr, 
   }
 
   return valueNames.filter((valueName) => {
-    return valueName.addressStartIO >= adr && valueName.addressStartIO <= adr + quantity && valueName.type === functionType
+    return valueName.addressStartIO >= adr && valueName.addressStartIO <= (adr + quantity - 1) && valueName.type === functionType
   })
 }
 
 de.biancoroyal.modbus.io.core.isRegisterSizeWrong = function (register, start, bits) {
-  let sizeDivisor = (bits === 1) ? 16 : 1
-  let startRegister = start / sizeDivisor
-  return (register.length < startRegister)
+  let sizeDivisor = bits || 1
+  let startRegister = start
+  let endRegister = start
+
+  if (sizeDivisor > 8) {
+    startRegister = start
+    endRegister = start + (sizeDivisor / 8)
+  }
+  return (startRegister >= 0 && register.length >= startRegister && endRegister <= register.length)
 }
 
 module.exports = de.biancoroyal.modbus.io.core
