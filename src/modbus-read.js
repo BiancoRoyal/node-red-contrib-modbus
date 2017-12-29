@@ -30,7 +30,7 @@ module.exports = function (RED) {
 
     this.dataType = config.dataType
     this.adr = config.adr
-    this.quantity = config.quantity
+    this.quantity = config.quantity || 1
 
     this.rate = config.rate
     this.rateUnit = config.rateUnit
@@ -167,7 +167,8 @@ module.exports = function (RED) {
 
     function sendMessage (values, response, msg) {
       if (node.useIOFile && node.ioFile.lastUpdatedAt) {
-        let allValueNames = mbIOCore.nameValuesFromIOFile(msg, node.ioFile, values, response)
+        mbIOCore.internalDebug('node.adr:' + node.adr + ' node.quantity:' + node.quantity)
+        let allValueNames = mbIOCore.nameValuesFromIOFile(msg, node.ioFile, values, response, node.adr)
         let valueNames = mbIOCore.filterValueNames(allValueNames, mbCore.functionCodeModbus(node.dataType), node.adr, node.quantity)
 
         let origMsg = {

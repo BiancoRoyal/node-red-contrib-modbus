@@ -38,6 +38,7 @@ module.exports = function (RED) {
     lineReader.on('end', function () {
       node.lastUpdatedAt = Date.now()
       coreIO.internalDebug('Read IO Done From File ' + node.path)
+      node.warn({ payload: coreIO.allValueNamesFromIOFile(node), name: 'Modbus Value Names From IO File', path: node.path })
     })
 
     coreIO.internalDebug('Loading IO File Started For ' + node.path)
@@ -65,6 +66,7 @@ module.exports = function (RED) {
         lineReader.on('end', function () {
           node.lastUpdatedAt = Date.now()
           coreIO.internalDebug('Reload IO Done From File ' + node.path)
+          node.warn({ payload: coreIO.allValueNamesFromIOFile(node), name: 'Modbus Value Names From IO File', path: node.path })
         })
 
         coreIO.internalDebug('Reloading IO File Started For ' + node.path)

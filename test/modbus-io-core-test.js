@@ -60,9 +60,45 @@ describe('Modbus IO Suite', function () {
       assert.equal(false, ioCore.isRegisterSizeWrong([1,2,3,4,5,6,7,8,9,10],0,80))
     })
 
+    it('filter named value Output FC2 with offset', function () {
+      let value = {"register":"MB-OUTPUTS","name":"iTraceDummy","addressStart":30101,"addressOffset":2, "addressOffsetIO":30001,
+        "addressStartIO":100, "registerAddress": 0, "coilStart":0,"bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":1010}
+      let names = [
+        {"register":"MB-OUTPUTS","name":"iCountDummy","addressStart":2,"addressOffset":2,"addressOffsetIO":0,
+          "addressStartIO":2, "coilStart":0,"bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":0},
+        {"register":"MB-OUTPUTS","name":"iAddDummy","addressStart":6,"addressOffset":2,"addressOffsetIO":0,
+          "addressStartIO":4,"coilStart":0,"bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":1000},
+        {"register":"MB-OUTPUTS","name":"iTraceDummy2","addressStart":8,"addressOffset":2,"addressOffsetIO":0,
+          "addressStartIO":6,"coilStart":0, "bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":1000}
+      ]
+      names.push(value)
+
+      let filterdNames = ioCore.filterValueNames(names, 2, 100, 2)
+
+      assert.equal(true, filterdNames.includes(value) && filterdNames.length === 1)
+    })
+
+    it('filter named value Output FC2 with to big offset', function () {
+      let value = {"register":"MB-OUTPUTS","name":"iTraceDummy","addressStart":30201,"addressOffset":2, "addressOffsetIO":30001,
+        "addressStartIO":200, "registerAddress": 0, "coilStart":0,"bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":1010}
+      let names = [
+        {"register":"MB-OUTPUTS","name":"iCountDummy","addressStart":2,"addressOffset":2,"addressOffsetIO":0,
+          "addressStartIO":2, "coilStart":0,"bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":0},
+        {"register":"MB-OUTPUTS","name":"iAddDummy","addressStart":6,"addressOffset":2,"addressOffsetIO":0,
+          "addressStartIO":4,"coilStart":0,"bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":1000},
+        {"register":"MB-OUTPUTS","name":"iTraceDummy2","addressStart":8,"addressOffset":2,"addressOffsetIO":0,
+          "addressStartIO":6,"coilStart":0, "bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":1000}
+      ]
+      names.push(value)
+
+      let filterdNames = ioCore.filterValueNames(names, 2, 100, 2)
+
+      assert.equal(false, filterdNames.includes(value) && filterdNames.length === 1)
+    })
+
     it('filter named value Output FC2', function () {
       let value = {"register":"MB-OUTPUTS","name":"iTraceDummy","addressStart":0,"addressOffset":2, "addressOffsetIO":0,
-        "addressStartIO":0,"coilStart":0,"bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":1010}
+        "addressStartIO":0,"registerAddress": 0,"coilStart":0,"bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":1010}
       let names = [
         {"register":"MB-OUTPUTS","name":"iCountDummy","addressStart":2,"addressOffset":2,"addressOffsetIO":0,
           "addressStartIO":2, "coilStart":0,"bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":0},
@@ -80,7 +116,7 @@ describe('Modbus IO Suite', function () {
 
     it('filter named value Output FC4', function () {
       let value = {"register":"MB-OUTPUTS","name":"iTraceDummy","addressStart":0,"addressOffset":2, "addressOffsetIO":0,
-        "addressStartIO":0,"coilStart":0,"bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":1010}
+        "addressStartIO":0,"registerAddress": 0,"coilStart":0,"bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":1010}
       let names = [
         {"register":"MB-OUTPUTS","name":"iCountDummy","addressStart":2,"addressOffset":2,"addressOffsetIO":0,
           "addressStartIO":2, "coilStart":0,"bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":0},
@@ -94,6 +130,24 @@ describe('Modbus IO Suite', function () {
       let filterdNames = ioCore.filterValueNames(names, 4, 0, 2)
 
       assert.equal(true, filterdNames.includes(value) && filterdNames.length === 1)
+    })
+
+    it('filter named value Output FC4 in wrong scope of register address', function () {
+      let value = {"register":"MB-OUTPUTS","name":"iTraceDummy","addressStart":0,"addressOffset":2, "addressOffsetIO":0,
+        "addressStartIO":0,"registerAddress": -100,"coilStart":0,"bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":1010}
+      let names = [
+        {"register":"MB-OUTPUTS","name":"iCountDummy","addressStart":2,"addressOffset":2,"addressOffsetIO":0,
+          "addressStartIO":2, "coilStart":0,"bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":0},
+        {"register":"MB-OUTPUTS","name":"iAddDummy","addressStart":6,"addressOffset":2,"addressOffsetIO":0,
+          "addressStartIO":4,"coilStart":0,"bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":1000},
+        {"register":"MB-OUTPUTS","name":"iTraceDummy2","addressStart":8,"addressOffset":2,"addressOffsetIO":0,
+          "addressStartIO":6,"coilStart":0, "bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":1000}
+      ]
+      names.push(value)
+
+      let filterdNames = ioCore.filterValueNames(names, 4, 0, 2)
+
+      assert.equal(false, filterdNames.includes(value) && filterdNames.length === 1)
     })
 
     it('get value from Buffer by data type Double', function () {
