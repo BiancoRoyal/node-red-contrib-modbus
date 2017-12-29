@@ -87,7 +87,7 @@ module.exports = function (RED) {
           payload: {
             value: msg.payload.value || msg.payload,
             unitid: node.unitid,
-            fc: node.functionCodeModbus(node.dataType),
+            fc: mbCore.functionCodeModbus(node.dataType),
             address: node.adr,
             quantity: node.quantity,
             messageId: msg.messageId
@@ -103,21 +103,6 @@ module.exports = function (RED) {
         }
       }
     })
-
-    node.functionCodeModbus = function (dataType) {
-      switch (dataType) {
-        case 'Coil':
-          return 1
-        case 'Input':
-          return 2
-        case 'HoldingRegister':
-          return 3
-        case 'InputRegister':
-          return 4
-        default:
-          return dataType
-      }
-    }
 
     node.onModbusReadDone = function (resp, msg) {
       if (node.showStatusActivities) {
@@ -152,8 +137,8 @@ module.exports = function (RED) {
       delete rawMsg['responseBuffer']
 
       if (node.useIOFile && node.ioFile.lastUpdatedAt) {
-        let valueNames = mbIOCore.filterValueNames(mbIOCore.nameValuesFromIOFile(msg, node.ioFile, values, response),
-          node.functionCodeModbus(node.dataType), node.adr, node.quantity)
+        let allValueNames = mbIOCore.nameValuesFromIOFile(msg, node.ioFile, values, response)
+        let valueNames = mbIOCore.filterValueNames(allValueNames, mbCore.functionCodeModbus(node.dataType), node.adr, node.quantity)
 
         if (node.useIOForPayload) {
           origMsg.payload = valueNames

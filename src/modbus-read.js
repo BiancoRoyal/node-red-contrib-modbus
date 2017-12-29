@@ -123,7 +123,7 @@ module.exports = function (RED) {
         from: node.name,
         payload: {
           unitid: node.unitid,
-          fc: node.functionCodeModbus(node.dataType),
+          fc: mbCore.functionCodeModbus(node.dataType),
           address: node.adr,
           quantity: node.quantity,
           messageId: mbCore.getObjectId()
@@ -136,21 +136,6 @@ module.exports = function (RED) {
       }
 
       modbusClient.emit('readModbus', msg, node.onModbusReadDone, node.onModbusReadError)
-    }
-
-    node.functionCodeModbus = function (dataType) {
-      switch (dataType) {
-        case 'Coil':
-          return 1
-        case 'Input':
-          return 2
-        case 'HoldingRegister':
-          return 3
-        case 'InputRegister':
-          return 4
-        default:
-          return dataType
-      }
     }
 
     node.onModbusReadDone = function (resp, msg) {
@@ -182,7 +167,8 @@ module.exports = function (RED) {
 
     function sendMessage (values, response, msg) {
       if (node.useIOFile && node.ioFile.lastUpdatedAt) {
-        let valueNames = mbIOCore.filterValueNames(mbIOCore.nameValuesFromIOFile(msg, node.ioFile, values, response), node.adr, node.quantity)
+        let allValueNames = mbIOCore.nameValuesFromIOFile(msg, node.ioFile, values, response)
+        let valueNames = mbIOCore.filterValueNames(allValueNames, mbCore.functionCodeModbus(node.dataType), node.adr, node.quantity)
 
         let origMsg = {
           responseBuffer: response,

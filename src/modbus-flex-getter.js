@@ -166,8 +166,8 @@ module.exports = function (RED) {
       delete rawMsg['responseBuffer']
 
       if (node.useIOFile && node.ioFile.lastUpdatedAt) {
-        let valueNames = mbIOCore.filterValueNames(mbIOCore.nameValuesFromIOFile(msg, node.ioFile, values, response),
-          parseInt(msg.payload.fc) || 3,
+        let allValueNames = mbIOCore.nameValuesFromIOFile(msg, node.ioFile, values, response)
+        let valueNames = mbIOCore.filterValueNames(allValueNames, parseInt(msg.payload.fc) || 3,
           parseInt(msg.payload.address) || 0,
           parseInt(msg.payload.quantity) || 1)
 
