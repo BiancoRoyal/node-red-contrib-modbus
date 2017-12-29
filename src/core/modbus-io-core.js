@@ -60,7 +60,7 @@ de.biancoroyal.modbus.io.core.buildInputAddressMapping = function (registerName,
   let coilStart = 0
   let addressOffset = 0
   let bits = 0
-  let bitAddress = ''
+  let bitAddress = null
 
   let registerType = mapping.valueAddress.substring(2, 3)
   let addressType = mapping.valueAddress.substring(0, 3)
@@ -72,18 +72,32 @@ de.biancoroyal.modbus.io.core.buildInputAddressMapping = function (registerName,
       addressOffset = 1
       bits = 16
       break
-    case 'd': // double
+    case 'i': // integer
+      addressStart = Number(mapping.valueAddress.split(addressType)[1])
+
+      if (registerType === 'W') {
+        addressOffset = 1
+        bits = 16
+      } else {
+        addressOffset = 2
+        bits = 32
+      }
+      break
     case 'r': // real
     case 'f': // float
-    case 'i': // integer
       addressStart = Number(mapping.valueAddress.split(addressType)[1])
       addressOffset = 2
       bits = 32
       break
-    case 'l': // long
+    case 'd': // double
       addressStart = Number(mapping.valueAddress.split(addressType)[1])
       addressOffset = 4
       bits = 64
+      break
+    case 'l': // long
+      addressStart = Number(mapping.valueAddress.split(addressType)[1])
+      addressOffset = 5
+      bits = 80
       break
     case 'b': // bit - boolean
       if (registerType === 'X') {
@@ -108,6 +122,7 @@ de.biancoroyal.modbus.io.core.buildInputAddressMapping = function (registerName,
       'addressStartIO': addressStart - (Number(offset) || 0),
       'coilStart': coilStart,
       'bitAddress': bitAddress,
+      'Bit': (bitAddress) ? (Number(bitAddress[0]) * 8) + Number(bitAddress[1]) : 0,
       'bits': bits,
       'dataType': ioCore.getDataTypeFromFirstCharType(type),
       'type': 'input'
@@ -123,7 +138,7 @@ de.biancoroyal.modbus.io.core.buildOutputAddressMapping = function (registerName
   let coilStart = 0
   let addressOffset = 0
   let bits = 0
-  let bitAddress = 'none'
+  let bitAddress = null
 
   let registerType = mapping.valueAddress.substring(2, 3)
   let addressType = mapping.valueAddress.substring(0, 3)
@@ -135,18 +150,32 @@ de.biancoroyal.modbus.io.core.buildOutputAddressMapping = function (registerName
       addressOffset = 1
       bits = 16
       break
-    case 'd': // double
+    case 'i': // integer
+      addressStart = Number(mapping.valueAddress.split(addressType)[1])
+
+      if (registerType === 'W') {
+        addressOffset = 1
+        bits = 16
+      } else {
+        addressOffset = 2
+        bits = 32
+      }
+      break
     case 'r': // real
     case 'f': // float
-    case 'i': // integer
       addressStart = Number(mapping.valueAddress.split(addressType)[1])
       addressOffset = 2
       bits = 32
       break
-    case 'l': // long
+    case 'd': // double
       addressStart = Number(mapping.valueAddress.split(addressType)[1])
       addressOffset = 4
       bits = 64
+      break
+    case 'l': // long
+      addressStart = Number(mapping.valueAddress.split(addressType)[1])
+      addressOffset = 5
+      bits = 80
       break
     case 'b': // bit - boolean
       if (registerType === 'X') {
@@ -171,6 +200,7 @@ de.biancoroyal.modbus.io.core.buildOutputAddressMapping = function (registerName
       'addressStartIO': addressStart - (Number(offset) || 0),
       'coilStart': coilStart,
       'bitAddress': bitAddress,
+      'Bit': (bitAddress) ? (Number(bitAddress[0]) * 8) + Number(bitAddress[1]) : 0,
       'bits': bits,
       'dataType': ioCore.getDataTypeFromFirstCharType(type),
       'type': 'output'
@@ -201,7 +231,7 @@ de.biancoroyal.modbus.io.core.insertValues = function (valueNames, register) {
 
     switch (Number(item.bits)) {
       case 1:
-        item.value = !!((register[registerAddress] & Math.pow(2, item.bitAddress[1])))
+        item.value = !!((register[registerAddress] & Math.pow(item.bitAddress[1], 2)))
         break
       case 16:
         item.value = register[registerAddress]
@@ -212,6 +242,13 @@ de.biancoroyal.modbus.io.core.insertValues = function (valueNames, register) {
         break
       case 64:
         item.value = register[registerAddress + 3] << 48 |
+          register[registerAddress + 2] << 32 |
+          register[registerAddress + 1] << 16 |
+          register[registerAddress]
+        break
+      case 80:
+        item.value = register[registerAddress + 4] << 64 |
+          register[registerAddress + 3] << 48 |
           register[registerAddress + 2] << 32 |
           register[registerAddress + 1] << 16 |
           register[registerAddress]
@@ -227,16 +264,18 @@ de.biancoroyal.modbus.io.core.insertValues = function (valueNames, register) {
 
 de.biancoroyal.modbus.io.core.getValueFromBufferByDataType = function (item, bufferOffset, responseBuffer) {
   let ioCore = de.biancoroyal.modbus.io.core
+  let registerLength = responseBuffer.length / 2
 
-  if (bufferOffset < 0 || bufferOffset > responseBuffer.length / 2) {
-    ioCore.internalDebug('Wrong Buffer Access Parameter Type:' + item.dataType + 'Length:' + responseBuffer.length + ' Address-Buffer-Offset:' + bufferOffset)
+  if (bufferOffset < 0 || bufferOffset > responseBuffer.length) {
+    ioCore.internalDebug('Wrong Buffer Access Parameter Type:' + item.dataType + ' Register-Length: ' + registerLength +
+      ' Buffer-Length:' + responseBuffer.length + ' Address-Buffer-Offset:' + bufferOffset)
     ioCore.internalDebug(JSON.stringify(item))
     return item
   }
 
   switch (item.dataType) {
     case 'Boolean':
-      item.value = responseBuffer.readInt16BE(bufferOffset) && Math.pow(item.bitAddress, 2) // Bit state
+      item.value = !!(responseBuffer.readUInt16BE(bufferOffset) & Math.pow(item.bitAddress[1], 2))
       break
     case 'Word':
       switch (item.bits) {
@@ -245,10 +284,10 @@ de.biancoroyal.modbus.io.core.getValueFromBufferByDataType = function (item, buf
           break
         default:
           item.value = responseBuffer.readInt16BE(bufferOffset) // DWord
+          item.convertedValue = false
       }
       break
     case 'Integer':
-    case 'Long':
       switch (item.bits) {
         case '8':
           item.value = responseBuffer.readInt8(bufferOffset)
@@ -265,28 +304,13 @@ de.biancoroyal.modbus.io.core.getValueFromBufferByDataType = function (item, buf
       break
     case 'Real':
     case 'Float':
-      switch (item.bits) {
-        case '32':
-          item.value = responseBuffer.readFloatBE(bufferOffset, 4)
-          break
-        case '64':
-          item.value = responseBuffer.readFloatBE(bufferOffset, 8)
-          break
-        default:
-          item.value = responseBuffer.readFloatBE(bufferOffset, 2) // 16Bit
-      }
+      item.value = responseBuffer.readFloatBE(bufferOffset, 4)
       break
     case 'Double':
-      switch (item.bits) {
-        case '64':
-          item.value = responseBuffer.readDoubleBE(bufferOffset, 8)
-          break
-        case '128':
-          item.value = responseBuffer.readDoubleBE(bufferOffset, 16)
-          break
-        default:
-          item.value = responseBuffer.readDoubleBE(bufferOffset, 4) // 32Bit
-      }
+      item.value = responseBuffer.readDoubleBE(bufferOffset, 8)
+      break
+    case 'Long':
+      item.value = responseBuffer.readDoubleBE(bufferOffset, 10)
       break
     default:
       switch (item.bits) {
@@ -317,20 +341,19 @@ de.biancoroyal.modbus.io.core.convertValuesByType = function (valueNames, regist
   let index = 0
   for (index in valueNames) {
     let item = valueNames[index]
+
     if (!item || !item.hasOwnProperty('dataType')) {
       ioCore.internalDebug('Item Not Valid To Convert ' + JSON.stringify(item))
       continue
     }
 
-    let registerAddress = item.addressStart - item.addressOffsetIO
-
-    if (registerAddress < 0 || de.biancoroyal.modbus.io.core.isRegisterSizeWrong(register, registerAddress, Number(item.bits))) {
-      ioCore.internalDebug('Insert Value Register Reached At Address-Start:' + item.addressStart + ' Bits:' + Number(item.bits))
+    if (item.addressStartIO < 0 || de.biancoroyal.modbus.io.core.isRegisterSizeWrong(register, item.addressStartIO, Number(item.bits))) {
+      ioCore.internalDebug('Insert Value Register Reached At Address-Start-IO:' + item.addressStartIO + ' Bits:' + Number(item.bits))
       break
     }
 
     if (responseBuffer.buffer instanceof Buffer) {
-      bufferOffset = (registerAddress) * sixteenBitBufferLength
+      bufferOffset = (item.addressStartIO) * sixteenBitBufferLength
       try {
         item = ioCore.getValueFromBufferByDataType(item, bufferOffset, responseBuffer.buffer)
       } catch (err) {
@@ -348,7 +371,7 @@ de.biancoroyal.modbus.io.core.convertValuesByType = function (valueNames, regist
 de.biancoroyal.modbus.io.core.filterValueNames = function (valueNames, fc, adr, quantity) {
   let functionType = 'input'
 
-  if (fc.includes('Input')) {
+  if (fc === 2 || fc === 4) {
     functionType = 'output'
   }
 
@@ -358,15 +381,20 @@ de.biancoroyal.modbus.io.core.filterValueNames = function (valueNames, fc, adr, 
 }
 
 de.biancoroyal.modbus.io.core.isRegisterSizeWrong = function (register, start, bits) {
-  let sizeDivisor = bits || 1
+  let ioCore = de.biancoroyal.modbus.io.core
+  let sizeDivisor = bits || 16
   let startRegister = start
   let endRegister = start
 
-  if (sizeDivisor > 8) {
-    startRegister = start
-    endRegister = start + (sizeDivisor / 8)
+  if (sizeDivisor < 16) {
+    endRegister = start
+  } else {
+    endRegister = start + (sizeDivisor / 16) - 1
   }
-  return (startRegister >= 0 && register.length >= startRegister && endRegister <= register.length)
+
+  ioCore.internalDebug('startRegister:' + startRegister + ' endRegister:' + endRegister + ' register.length:' + register.length)
+
+  return (startRegister < 0 || register.length < startRegister || endRegister > register.length)
 }
 
 module.exports = de.biancoroyal.modbus.io.core

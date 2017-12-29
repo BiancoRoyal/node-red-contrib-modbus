@@ -17,19 +17,23 @@ describe('Modbus IO Suite', function () {
 
   describe('when using core io', function () {
     it('register size check false', function () {
-      assert.equal(false, ioCore.isRegisterSizeWrong([],10,16))
+      assert.equal(true, ioCore.isRegisterSizeWrong([],10,16))
     })
 
     it('register size check 1Bit', function () {
-      assert.equal(true, ioCore.isRegisterSizeWrong([1,2,3,4],4))
+      assert.equal(false, ioCore.isRegisterSizeWrong([1,2,3,4],2,1))
     })
 
     it('register size check 8Bit', function () {
-      assert.equal(true, ioCore.isRegisterSizeWrong([1,2,3,4],2,8))
+      assert.equal(false, ioCore.isRegisterSizeWrong([1,2,3,4],2,8))
     })
 
     it('register size check 16Bit', function () {
-      assert.equal(true, ioCore.isRegisterSizeWrong([1,2,3,4],2,16))
+      assert.equal(false, ioCore.isRegisterSizeWrong([1,2,3,4],2,16))
+    })
+
+    it('register size check 16Bit', function () {
+      assert.equal(false, ioCore.isRegisterSizeWrong([1,2,3,4],3,16))
     })
 
     it('register size check 32Bit', function () {
@@ -37,18 +41,26 @@ describe('Modbus IO Suite', function () {
     })
 
     it('register size check 32Bit', function () {
-      assert.equal(true, ioCore.isRegisterSizeWrong([1,2,3,4],0,32))
+      assert.equal(false, ioCore.isRegisterSizeWrong([1,2,3,4],0,32))
     })
 
     it('register size check 64Bit', function () {
-      assert.equal(false, ioCore.isRegisterSizeWrong([1,2,3,4],2,64))
+      assert.equal(true, ioCore.isRegisterSizeWrong([1,2,3,4],2,64))
     })
 
     it('register size check 64Bit', function () {
-      assert.equal(true, ioCore.isRegisterSizeWrong([1,2,3,4,5,6,7,8],0,64))
+      assert.equal(false, ioCore.isRegisterSizeWrong([1,2,3,4,5,6,7,8],0,64))
     })
 
-    it('filter named value Output', function () {
+    it('register size check 64Bit with wrong offset', function () {
+      assert.equal(true, ioCore.isRegisterSizeWrong([1,2,3,4,5,6,7,8],6,64))
+    })
+
+    it('register size check 80Bit', function () {
+      assert.equal(false, ioCore.isRegisterSizeWrong([1,2,3,4,5,6,7,8,9,10],0,80))
+    })
+
+    it('filter named value Output FC2', function () {
       let value = {"register":"MB-OUTPUTS","name":"iTraceDummy","addressStart":0,"addressOffset":2, "addressOffsetIO":0,
         "addressStartIO":0,"coilStart":0,"bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":1010}
       let names = [
@@ -61,7 +73,25 @@ describe('Modbus IO Suite', function () {
         ]
       names.push(value)
 
-      let filterdNames = ioCore.filterValueNames(names, 'Input', 0, 2)
+      let filterdNames = ioCore.filterValueNames(names, 2, 0, 2)
+
+      assert.equal(true, filterdNames.includes(value) && filterdNames.length === 1)
+    })
+
+    it('filter named value Output FC4', function () {
+      let value = {"register":"MB-OUTPUTS","name":"iTraceDummy","addressStart":0,"addressOffset":2, "addressOffsetIO":0,
+        "addressStartIO":0,"coilStart":0,"bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":1010}
+      let names = [
+        {"register":"MB-OUTPUTS","name":"iCountDummy","addressStart":2,"addressOffset":2,"addressOffsetIO":0,
+          "addressStartIO":2, "coilStart":0,"bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":0},
+        {"register":"MB-OUTPUTS","name":"iAddDummy","addressStart":6,"addressOffset":2,"addressOffsetIO":0,
+          "addressStartIO":4,"coilStart":0,"bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":1000},
+        {"register":"MB-OUTPUTS","name":"iTraceDummy2","addressStart":8,"addressOffset":2,"addressOffsetIO":0,
+          "addressStartIO":6,"coilStart":0, "bitAddress":"none","bits":32,"dataType":"Integer","type":"output","value":1000}
+      ]
+      names.push(value)
+
+      let filterdNames = ioCore.filterValueNames(names, 4, 0, 2)
 
       assert.equal(true, filterdNames.includes(value) && filterdNames.length === 1)
     })
