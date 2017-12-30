@@ -23,6 +23,10 @@ module.exports = function (RED) {
     this.filter = config.filter
     this.registers = config.registers || 0
 
+    this.filterResponseBuffer = config.filterResponseBuffer
+    this.filterValues = config.filterValues
+    this.filterInput = config.filterInput
+
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
 
@@ -41,6 +45,18 @@ module.exports = function (RED) {
       msg.payload = msg.payload.filter((item) => {
         return item.name === node.filter
       })
+
+      if (node.filterResponseBuffer) {
+        delete msg.responseBuffer
+      }
+
+      if (node.filterValues) {
+        delete msg.values
+      }
+
+      if (node.filterInput) {
+        delete msg.input
+      }
 
       return msg
     }

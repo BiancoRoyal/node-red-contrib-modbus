@@ -14,6 +14,9 @@
       filter: {value: ''},
       registers: {value: 0},
       ioFile: {value: '', type: 'modbus-io-config', required: true},
+      filterResponseBuffer: {value: true},
+      filterValues: {value: true},
+      filterInput: {value: true},
       showStatusActivities: {value: false},
       showErrors: {value: false}
     },
@@ -73,6 +76,22 @@
     <div class="form-row">
         <label for="node-input-ioFile"><i class="icon-file"></i> <span data-i18n="modbus-contrib.label.ioFile"></span></label>
         <input type="text" id="node-input-ioFile">
+    </div>
+    <hr>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-input-filterResponseBuffer"><i class="fa fa-filter"></i> <span
+        data-i18n="modbus-contrib.label.filterResponseBuffer"></span></label>
+        <input type="checkbox" id="node-input-filterResponseBuffer" style="max-width:30px">
+    </div>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-input-filterValues"><i class="fa fa-filter"></i> <span
+        data-i18n="modbus-contrib.label.filterValues"></span></label>
+        <input type="checkbox" id="node-input-filterValues" style="max-width:30px">
+    </div>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-input-filterInput"><i class="fa fa-filter"></i> <span
+        data-i18n="modbus-contrib.label.filterInput"></span></label>
+        <input type="checkbox" id="node-input-filterInput" style="max-width:30px">
     </div>
     <hr>
     <div class="form-row">

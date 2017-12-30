@@ -3,6 +3,9 @@
     "label": {
       "filter": "Filter",
       "registers": "Registers",
+      "filterResponseBuffer": "Filter Response Buffer",
+      "filterValues": "Filter Values",
+      "filterInput": "Filter Input",
       "showActivities": "Show Activities",
       "showErrors": "Show Errors",
       "useIOFile": "Using IO-File",
