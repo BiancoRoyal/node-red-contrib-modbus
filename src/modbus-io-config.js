@@ -39,6 +39,7 @@ module.exports = function (RED) {
       node.lastUpdatedAt = Date.now()
       coreIO.internalDebug('Read IO Done From File ' + node.path)
       node.warn({ payload: coreIO.allValueNamesFromIOFile(node), name: 'Modbus Value Names From IO File', path: node.path })
+      node.emit('updatedConfig', node.configData)
     })
 
     coreIO.internalDebug('Loading IO File Started For ' + node.path)
@@ -67,6 +68,7 @@ module.exports = function (RED) {
           node.lastUpdatedAt = Date.now()
           coreIO.internalDebug('Reload IO Done From File ' + node.path)
           node.warn({ payload: coreIO.allValueNamesFromIOFile(node), name: 'Modbus Value Names From IO File', path: node.path })
+          node.emit('updatedConfig', node.configData)
         })
 
         coreIO.internalDebug('Reloading IO File Started For ' + node.path)

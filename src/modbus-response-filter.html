@@ -1,0 +1,95 @@
+<!--
+ Copyright (c) 2017, Klaus Landsdorf (http://bianco-royal.de/)
+ All rights reserved.
+ node-red-contrib-modbus - The BSD 3-Clause License
+
+ @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
+-->
+<script type="text/javascript">
+  RED.nodes.registerType('modbus-response-filter', {
+    category: 'modbus',
+    color: '#E9967A',
+    defaults: {
+      name: {value: ''},
+      filter: {value: ''},
+      registers: {value: 0},
+      ioFile: {value: '', type: 'modbus-io-config', required: true},
+      showStatusActivities: {value: false},
+      showErrors: {value: false}
+    },
+    inputs: 1,
+    outputs: 2,
+    align: "right",
+    icon: 'modbus.png',
+    paletteLabel: 'Modbus-Response-Filter',
+    label: function () {
+      return this.name || this.filter || 'Modbus Response Filter'
+    },
+    oneditprepare: function () {
+      let node = this
+
+      let lookupButton = $('#node-filter-lookup-button')
+      let lookupField = $('#node-input-filter')
+
+      lookupButton.click(function () {
+        lookupButton.addClass('disabled')
+
+        $.getJSON('/modbus/iofile/valuenames', function (configData) {
+          lookupButton.removeClass('disabled')
+          node.configData = []
+
+          $.each(configData, function (i, entry) {
+            node.configData.push(entry.name)
+          })
+
+          lookupField.autocomplete({
+            source: node.configData,
+            minLength: 0,
+            close: function (event, ui) {
+              lookupField.autocomplete('destroy')
+            }
+          }).autocomplete('search', '')
+        })
+      })
+    }
+  })
+</script>
+
+
+<script type="text/x-red" data-template-name="modbus-response-filter">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-filter"><i class="fa fa-filter"></i> <span data-i18n="modbus-contrib.label.filter"></span></label>
+        <input type="text" id="node-input-filter" style="width:60%;" placeholder="">
+        <a id="node-filter-lookup-button" class="btn"><i id="node-filter-lookup-button-icon" class="fa fa-search"></i></a>
+    </div>
+    <div class="form-row">
+        <label for="node-input-registers"><i class="fa fa-filter"></i> <span data-i18n="modbus-contrib.label.registers"></span></label>
+        <input type="text" id="node-input-registers" placeholder="0">
+    </div>
+    <div class="form-row">
+        <label for="node-input-ioFile"><i class="icon-file"></i> <span data-i18n="modbus-contrib.label.ioFile"></span></label>
+        <input type="text" id="node-input-ioFile">
+    </div>
+    <hr>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
+        data-i18n="modbus-contrib.label.showActivities"></span></label>
+        <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
+    </div>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
+        data-i18n="modbus-contrib.label.showErrors"></span></label>
+        <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
+    </div>
+</script>
+
+
+<script type="text/x-red" data-help-name="modbus-response-filter">
+    <p>
+        Modbus Response Filter
+    </p>
+</script>

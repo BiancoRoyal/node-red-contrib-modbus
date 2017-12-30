@@ -11,6 +11,7 @@
     color: '#E9967A',
     defaults: {
       name: {value: ''},
+      topic: {value: ''},
       unitid: {value: ''},
       lowLowLevel: {value: 25, validate: RED.validators.number()},
       lowLevel: {value: 75, validate: RED.validators.number()},
@@ -21,6 +22,7 @@
     },
     inputs: 1,
     outputs: 1,
+    align: "right",
     icon: 'modbus.png',
     paletteLabel: 'Modbus-Queue-Info',
     label: function () {
@@ -34,6 +36,10 @@
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-topic"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.topic"></span></label>
+        <input type="text" id="node-input-topic" placeholder="Topic">
     </div>
     <div class="form-row">
         <label for="node-input-unitid"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.unitId"></span></label>

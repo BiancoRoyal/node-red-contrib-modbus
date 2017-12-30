@@ -128,6 +128,7 @@ module.exports = function (RED) {
     function buildMessage (values, response, msg) {
       let origMsg = mbCore.getOriginalMessage(node.bufferMessageList, msg) || msg
       origMsg.payload = values
+      origMsg.topic = msg.topic
       origMsg.responseBuffer = response
       origMsg.input = msg
 

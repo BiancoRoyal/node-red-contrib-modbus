@@ -172,6 +172,7 @@ module.exports = function (RED) {
         let valueNames = mbIOCore.filterValueNames(allValueNames, mbCore.functionCodeModbus(node.dataType), node.adr, node.quantity)
 
         let origMsg = {
+          topic: msg.topic,
           responseBuffer: response,
           input: msg
         }

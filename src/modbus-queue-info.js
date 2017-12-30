@@ -19,6 +19,7 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config)
 
     this.name = config.name
+    this.topic = config.topic
     this.unitid = parseInt(config.unitid)
     this.lowLowLevel = parseInt(config.lowLowLevel)
     this.lowLevel = parseInt(config.lowLevel)
@@ -65,6 +66,7 @@ module.exports = function (RED) {
           node.lowLevelReached = true
           let msg = {
             payload: Date.now(),
+            topic: node.topic,
             state: 'low level reached',
             unitid: unit,
             items: items
@@ -78,6 +80,7 @@ module.exports = function (RED) {
           node.highLevelReached = true
           let msg = {
             payload: Date.now(),
+            topic: node.topic,
             state: 'high level reached',
             unitid: unit,
             highLevel: node.highLevel,
@@ -97,6 +100,7 @@ module.exports = function (RED) {
           node.highHighLevelReached = true
           let msg = {
             payload: Date.now(),
+            topic: node.topic,
             state: 'high high level reached',
             unitid: unit,
             highLevel: node.highLevel,

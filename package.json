@@ -44,7 +44,8 @@
       "Modbus-Flex-Server": "modbus/modbus-flex-server.js",
       "Modbus-Queue-Info": "modbus/modbus-queue-info.js",
       "Modbus-Flex-Connector": "modbus/modbus-flex-connector.js",
-      "Modbus-IO-Config": "modbus/modbus-io-config.js"
+      "Modbus-IO-Config": "modbus/modbus-io-config.js",
+      "Modbus-Response-Filter": "modbus/modbus-response-filter.js"
     }
   },
   "author": "Klaus Landsdorf",
