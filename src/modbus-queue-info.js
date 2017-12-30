@@ -69,6 +69,7 @@ module.exports = function (RED) {
             topic: node.topic,
             state: 'low level reached',
             unitid: unit,
+            modbusClientName: modbusClient.name,
             items: items
           }
 
@@ -83,6 +84,7 @@ module.exports = function (RED) {
             topic: node.topic,
             state: 'high level reached',
             unitid: unit,
+            modbusClientName: modbusClient.name,
             highLevel: node.highLevel,
             items: items
           }
@@ -103,6 +105,7 @@ module.exports = function (RED) {
             topic: node.topic,
             state: 'high high level reached',
             unitid: unit,
+            modbusClientName: modbusClient.name,
             highLevel: node.highLevel,
             highHighLevel: node.highHighLevel,
             items: items
@@ -182,6 +185,7 @@ module.exports = function (RED) {
           payload: Date.now(),
           state: 'queue reset done',
           unitid: msg.unitid,
+          modbusClientName: modbusClient.name,
           lowlowLevel: node.lowlowLevel,
           lowLevel: node.lowLevel,
           highLevel: node.highLevel,
