@@ -65,7 +65,7 @@ module.exports.calc_rateByUnit = function (rate, rateUnit) {
  * @param showActivities
  * @returns {{fill: string, shape: string, status: *}}
  */
-module.exports.set_node_status_properties = function (statusValue, showActivities) {
+module.exports.setNodeStatusProperties = function (statusValue, showActivities) {
   let fillValue = 'yellow'
   let shapeValue = 'ring'
 

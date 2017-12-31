@@ -1,15 +1,15 @@
 [
   {
-    "id": "934a0213.59b38",
+    "id": "278c3ffc.fa40d8",
     "type": "tab",
     "label": "Modbus HTTP",
     "disabled": false,
     "info": ""
   },
   {
-    "id": "84ee0e0b.ed5c9",
+    "id": "f4e4d112.5e3708",
     "type": "modbus-getter",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "showStatusActivities": false,
     "showErrors": false,
@@ -17,23 +17,26 @@
     "dataType": "HoldingRegister",
     "adr": "0",
     "quantity": "4",
-    "server": "7e257e6c.0c55",
+    "server": "228160dd.0bd268",
+    "useIOFile": false,
+    "ioFile": "",
+    "useIOForPayload": false,
     "x": 410,
     "y": 190,
     "wires": [
       [
-        "52cb7240.5c223c",
-        "95a8b25.2972b5"
+        "18f09288.c552b5",
+        "b3bee6f8.64944"
       ],
       [
-        "1f9d545f.1fd4fc"
+        "f61cd2bb.db0808"
       ]
     ]
   },
   {
-    "id": "44d50ac8.4bea94",
+    "id": "867bcf5a.728988",
     "type": "http in",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "url": "/modbus/flex/read",
     "method": "get",
@@ -43,14 +46,14 @@
     "y": 340,
     "wires": [
       [
-        "6fd20edd.9d64a"
+        "a06133ba.054e9"
       ]
     ]
   },
   {
-    "id": "52cb7240.5c223c",
+    "id": "18f09288.c552b5",
     "type": "debug",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "active": true,
     "console": "false",
@@ -60,9 +63,9 @@
     "wires": []
   },
   {
-    "id": "1f9d545f.1fd4fc",
+    "id": "f61cd2bb.db0808",
     "type": "modbus-response",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "registerShowMax": 20,
     "x": 680,
@@ -70,29 +73,29 @@
     "wires": []
   },
   {
-    "id": "6fd20edd.9d64a",
+    "id": "a06133ba.054e9",
     "type": "modbus-flex-getter",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "showStatusActivities": false,
     "showErrors": false,
-    "server": "7e257e6c.0c55",
+    "server": "228160dd.0bd268",
     "x": 430,
     "y": 340,
     "wires": [
       [
-        "6190d094.4b69d",
-        "90057f47.6116a"
+        "4c623588.f2d704",
+        "ad5c1f3d.c60f"
       ],
       [
-        "2ab12c2e.248074"
+        "d42d9e3.9a23ae"
       ]
     ]
   },
   {
-    "id": "2ab12c2e.248074",
+    "id": "d42d9e3.9a23ae",
     "type": "modbus-response",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "registerShowMax": 20,
     "x": 670,
@@ -100,9 +103,9 @@
     "wires": []
   },
   {
-    "id": "6190d094.4b69d",
+    "id": "4c623588.f2d704",
     "type": "debug",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "active": true,
     "console": "false",
@@ -112,26 +115,26 @@
     "wires": []
   },
   {
-    "id": "ff16b6ed.33d458",
+    "id": "33c8f5aa.a03022",
     "type": "catch",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "scope": null,
     "x": 650,
     "y": 80,
     "wires": [
       [
-        "13def922.564957"
+        "df84382d.4327b8"
       ]
     ]
   },
   {
-    "id": "bd6165cf.5556f8",
+    "id": "ad380629.c0b74",
     "type": "modbus-flex-server",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "logEnabled": false,
-    "serverPort": "10502",
+    "serverPort": "18502",
     "responseDelay": 100,
     "unitId": 1,
     "delayUnit": "ms",
@@ -153,9 +156,9 @@
     ]
   },
   {
-    "id": "90057f47.6116a",
+    "id": "ad5c1f3d.c60f",
     "type": "http response",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "statusCode": "",
     "headers": {},
@@ -164,9 +167,9 @@
     "wires": []
   },
   {
-    "id": "3e76ce1b.ecce22",
+    "id": "f566f9bf.dbec68",
     "type": "http in",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "url": "/modbus/read",
     "method": "get",
@@ -176,14 +179,14 @@
     "y": 190,
     "wires": [
       [
-        "84ee0e0b.ed5c9"
+        "f4e4d112.5e3708"
       ]
     ]
   },
   {
-    "id": "95a8b25.2972b5",
+    "id": "b3bee6f8.64944",
     "type": "http response",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "statusCode": "",
     "headers": {},
@@ -192,9 +195,9 @@
     "wires": []
   },
   {
-    "id": "13def922.564957",
+    "id": "df84382d.4327b8",
     "type": "debug",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "active": true,
     "console": "false",
@@ -204,28 +207,28 @@
     "wires": []
   },
   {
-    "id": "a5d36532.8f2178",
+    "id": "af9361fe.87ea18",
     "type": "modbus-flex-write",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "showStatusActivities": false,
     "showErrors": false,
-    "server": "7e257e6c.0c55",
+    "server": "228160dd.0bd268",
     "x": 420,
     "y": 530,
     "wires": [
       [
-        "8e948598.d4e568"
+        "3540312d.5017c6"
       ],
       [
-        "1e6cd079.e072b"
+        "b0288009.f96ae8"
       ]
     ]
   },
   {
-    "id": "82fbb199.0ffde",
+    "id": "fdbc5e3e.e35fb8",
     "type": "modbus-write",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "showStatusActivities": false,
     "showErrors": false,
@@ -233,22 +236,22 @@
     "dataType": "HoldingRegister",
     "adr": "0",
     "quantity": "1",
-    "server": "7e257e6c.0c55",
+    "server": "228160dd.0bd268",
     "x": 410,
     "y": 440,
     "wires": [
       [
-        "26dccb4e.a20d54"
+        "b33411ba.b3b498"
       ],
       [
-        "8281dfc5.214a5"
+        "75fa26b3.414c"
       ]
     ]
   },
   {
-    "id": "837d3e77.7e547",
+    "id": "4f9b6223.e98aa4",
     "type": "http in",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "url": "/modbus/write",
     "method": "get",
@@ -258,14 +261,14 @@
     "y": 440,
     "wires": [
       [
-        "82fbb199.0ffde"
+        "fdbc5e3e.e35fb8"
       ]
     ]
   },
   {
-    "id": "26dccb4e.a20d54",
+    "id": "b33411ba.b3b498",
     "type": "http response",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "statusCode": "",
     "headers": {},
@@ -274,9 +277,9 @@
     "wires": []
   },
   {
-    "id": "8281dfc5.214a5",
+    "id": "75fa26b3.414c",
     "type": "modbus-response",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "registerShowMax": 20,
     "x": 680,
@@ -284,9 +287,9 @@
     "wires": []
   },
   {
-    "id": "eb0c0441.6acc08",
+    "id": "1e4aafb.8f1855",
     "type": "http in",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "url": "/modbus/flex/write",
     "method": "get",
@@ -296,14 +299,14 @@
     "y": 530,
     "wires": [
       [
-        "a5d36532.8f2178"
+        "af9361fe.87ea18"
       ]
     ]
   },
   {
-    "id": "8e948598.d4e568",
+    "id": "3540312d.5017c6",
     "type": "http response",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "statusCode": "",
     "headers": {},
@@ -312,9 +315,9 @@
     "wires": []
   },
   {
-    "id": "1e6cd079.e072b",
+    "id": "b0288009.f96ae8",
     "type": "modbus-response",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "registerShowMax": 20,
     "x": 680,
@@ -322,9 +325,9 @@
     "wires": []
   },
   {
-    "id": "c0a27f1a.38377",
+    "id": "69788b37.05c614",
     "type": "comment",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "HTTP request GET working examples",
     "info": "## Read\n\n### Flex Read\n\nhttp://localhost:1880/modbus/flex/read?value=0&unitid=1&fc=3&address=0&quantity=1\n\nhttp://localhost:1880/modbus/flex/read?value=0&unitid=1&fc=4&address=0&quantity=1\n\nhttp://localhost:1880/modbus/flex/read?value=0&unitid=1&fc=3&address=0&quantity=5\n\nhttp://localhost:1880/modbus/flex/read?value=0&unitid=1&fc=4&address=0&quantity=5\n\n### Read\n\nhttp://localhost:1880/modbus/read\n\n## Write\n\n### Test HTTP without Modbus\n\nhttp://localhost:1880/modbus/flex/write/test?value=[1,2,3,4,5]&unitid=1&fc=16&address=0&quantity=5\n\n\n### Flex Write\n\nhttp://localhost:1880/modbus/flex/write?value=10&unitid=1&fc=6&address=0&quantity=1\n\nhttp://localhost:1880/modbus/flex/write?value=[1,2,3,4,5]&unitid=1&fc=16&address=0&quantity=5\n\n### Write\n\nhttp://localhost:1880/modbus/write\n",
     "x": 240,
@@ -332,9 +335,9 @@
     "wires": []
   },
   {
-    "id": "11651dd7.39ac22",
+    "id": "a3dd6f31.9eb17",
     "type": "http in",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "url": "/modbus/flex/write/test",
     "method": "get",
@@ -344,14 +347,14 @@
     "y": 620,
     "wires": [
       [
-        "18b385b6.4daf0a"
+        "efac3450.e15668"
       ]
     ]
   },
   {
-    "id": "1fafc9da.7e6216",
+    "id": "d88e2d99.cd96e",
     "type": "debug",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "active": true,
     "console": "false",
@@ -361,9 +364,9 @@
     "wires": []
   },
   {
-    "id": "18b385b6.4daf0a",
+    "id": "efac3450.e15668",
     "type": "function",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "func": "if (msg.payload.value && msg.payload.value.indexOf(',') > -1) {\n    msg.payload.value = JSON.parse(msg.payload.value)\n}\n\nif (msg.value && msg.value.indexOf(',') > -1) {\n    msg.value = JSON.parse(msg.payload.value)\n}\nreturn msg;",
     "outputs": 1,
@@ -372,15 +375,15 @@
     "y": 620,
     "wires": [
       [
-        "1fafc9da.7e6216",
-        "5ba40073.7997a"
+        "d88e2d99.cd96e",
+        "d20d5d26.f4c1a"
       ]
     ]
   },
   {
-    "id": "5ba40073.7997a",
+    "id": "d20d5d26.f4c1a",
     "type": "http response",
-    "z": "934a0213.59b38",
+    "z": "278c3ffc.fa40d8",
     "name": "",
     "statusCode": "",
     "headers": {},
@@ -389,15 +392,15 @@
     "wires": []
   },
   {
-    "id": "7e257e6c.0c55",
+    "id": "228160dd.0bd268",
     "type": "modbus-client",
-    "z": "934a0213.59b38",
-    "name": "",
+    "z": "278c3ffc.fa40d8",
+    "name": "Modbus Flex Server",
     "clienttype": "tcp",
     "bufferCommands": true,
     "stateLogEnabled": false,
     "tcpHost": "127.0.0.1",
-    "tcpPort": "10502",
+    "tcpPort": "18502",
     "tcpType": "DEFAULT",
     "serialPort": "/dev/ttyUSB",
     "serialType": "RTU-BUFFERD",
@@ -406,9 +409,9 @@
     "serialStopbits": "1",
     "serialParity": "none",
     "serialConnectionDelay": "100",
-    "unit_id": 1,
-    "commandDelay": 1,
-    "clientTimeout": 1000,
-    "reconnectTimeout": 2000
+    "unit_id": "1",
+    "commandDelay": "1",
+    "clientTimeout": "1000",
+    "reconnectTimeout": "2000"
   }
 ]

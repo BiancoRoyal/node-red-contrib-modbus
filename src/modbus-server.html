@@ -6,31 +6,32 @@
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
 -->
 <script type="text/javascript">
-    RED.nodes.registerType('modbus-server', {
-        category: 'modbus',
-        color: '#E9967A',
-        defaults: {
-            name: {value: ""},
-            logEnabled: {value: false},
-            serverPort: {value: 10502, required: true, validate: RED.validators.number()},
-            responseDelay: {value: 100, required: true, validate: RED.validators.number()},
-            delayUnit: {
-                value: "ms", required: true, validate: function (v) {
-                    return "ms" == v || "s" == v || "m" == v || "h" == v
-                }
-            },
-            coilsBufferSize: {value: 10000, validate: RED.validators.number()},
-            holdingBufferSize: {value: 10000, validate: RED.validators.number()},
-            inputBufferSize: {value: 10000, validate: RED.validators.number()}
-        },
-        inputs: 1,
-        outputs: 3,
-        icon: "modbus.png",
-        paletteLabel: "Modbus-Server",
-        label: function () {
-            return this.name || "Modbus Server"
+  RED.nodes.registerType('modbus-server', {
+    category: 'modbus',
+    color: '#E9967A',
+    defaults: {
+      name: {value: ''},
+      logEnabled: {value: false},
+      serverPort: {value: 10502, required: true, validate: RED.validators.number()},
+      responseDelay: {value: 100, required: true, validate: RED.validators.number()},
+      delayUnit: {
+        value: 'ms', required: true, validate: function (v) {
+          return 'ms' == v || 's' == v || 'm' == v || 'h' == v
         }
-    })
+      },
+      coilsBufferSize: {value: 10000, validate: RED.validators.number()},
+      holdingBufferSize: {value: 10000, validate: RED.validators.number()},
+      inputBufferSize: {value: 10000, validate: RED.validators.number()}
+    },
+    inputs: 1,
+    outputs: 3,
+    align: "right",
+    icon: 'modbus.png',
+    paletteLabel: 'Modbus-Server',
+    label: function () {
+      return this.name || 'Modbus Server'
+    }
+  })
 </script>
 
 
@@ -41,7 +42,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-serverPort"><i class="icon-tag"></i> <span data-i18n="modbus-contrib.label.port"></span></label>
-        <input type="text" id="node-input-serverPort" placeholder="8888">
+        <input type="text" id="node-input-serverPort" placeholder="2000 to 65536">
     </div>
     <div class="form-row">
         <label for="node-input-responseDelay"><i class="icon-tag"></i> <span data-i18n="modbus-contrib.label.responseDelay"></span></label>
@@ -70,6 +71,7 @@
         <label style="min-width:160px" for="node-input-logEnabled"><i class="fa fa-th"></i> <span data-i18n="modbus-contrib.label.logEnabled"></span></label>
         <input type="checkbox" id="node-input-logEnabled" style="max-width:30px">
     </div>
+
 </script>
 
 
@@ -83,4 +85,5 @@
     <p>Output 1: holding Buffer, type, msg</p>
     <p>Output 2: coils Buffer, type, msg</p>
     <p>Output 3: input Buffer, type, msg</p>
+
 </script>

@@ -1,0 +1,79 @@
+<!--
+ Copyright (c) 2016,2017, Klaus Landsdorf (http://bianco-royal.de/)
+ All rights reserved.
+ node-red-contrib-modbus - The BSD 3-Clause License
+ node-red-contrib-modbusio - The BSD 3-Clause License
+
+ @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
+-->
+
+<script type="text/javascript">
+  RED.nodes.registerType('modbus-io-config', {
+    category: 'config',
+    color: '#E9967A',
+    defaults: {
+      name: {value: ''},
+      path: {value: '', required: true},
+      format: {value: 'utf8'},
+      addressOffset: {value: 0}
+    },
+    label: function () {
+      return this.name || 'IO:' + this.name + '@' + this.path
+    },
+    oneditprepare: function () {
+    },
+    oneditsave: function () {
+    }
+  })
+</script>
+
+
+<script type="text/x-red" data-template-name="modbus-io-config">
+    <div class="form-row" style="min-width:640px">
+        <label for="node-config-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-config-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-path"><i class="icon-file"></i> <span data-i18n="modbus-contrib.label.path"></span></label>
+        <input type="text" id="node-config-input-path">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-format"><i class="fa fa-file-code-o"></i> <span data-i18n="modbus-contrib.label.format"></span></label>
+        <select id="node-config-input-format">
+            <option value="utf8" data-i18n="modbus-contrib.label.utf8"></option>
+            <option value="ansi" data-i18n="modbus-contrib.label.ansi"></option>
+            <option value="" data-i18n="modbus-contrib.label.buffer"></option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-addressOffset"><i class="icon-file"></i> <span data-i18n="modbus-contrib.label.addressOffset"></span></label>
+        <input type="text" id="node-config-input-addressOffset" placeholder="0">
+    </div>
+</script>
+
+
+<script type="text/x-red" data-help-name="modbus-io-config">
+    <p>MODBUS I/O JSON for register and coil addresses.</p>
+
+    <p>Modbus Outputs – %QX / %QB / %QW / %QD</p>
+
+    <p>Modbus Inputs  – %IX / %IB / %IW / %ID</p>
+
+    <div>
+        <h3>IO-File Format</h3>
+        <p>No matter what is your source, you have to build a JSON file with the</p>
+        <p>CODESYS CSV Export transformed to JSON-IO-File example:</p>
+        <pre>
+            {"name":"Modbus Holding Registers","valueAddress":"%IW0"}
+            {"name":"iCountDummyBorder","valueAddress":"%IW0"}
+            {"name":"bReset","valueAddress":"%IX8.0"}
+            {"name":"Modbus Input Registers","valueAddress":"%QW0"}
+            {"name":"iBooleanSetOne","valueAddress":"%QW4"}
+            {"name":"bOperationActive","valueAddress":"%QX8.0"}
+        </pre>
+    </div>
+    <div>
+        <a href="https://gist.github.com/biancode/46bfc4fe78cc059a379b383ea445d2d0" target="_blank">see Converter Flow</a>
+    </div>
+
+</script>

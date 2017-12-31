@@ -1,11 +1,12 @@
 {
   "name": "node-red-contrib-modbus",
-  "version": "2.5.0",
+  "version": "3.0.0",
   "private": false,
   "description": "The all in one Modbus TCP and Serial contribution package for Node-RED.",
   "dependencies": {
     "bson": "1.0.4",
     "debug": "3.1.0",
+    "line-by-line": "^0.1.5",
     "modbus-serial": "7.0.1",
     "node-modbus": "4.0.1",
     "serialport": "6.0.4",
@@ -42,7 +43,9 @@
       "Modbus-Server": "modbus/modbus-server.js",
       "Modbus-Flex-Server": "modbus/modbus-flex-server.js",
       "Modbus-Queue-Info": "modbus/modbus-queue-info.js",
-      "Modbus-Flex-Connector": "modbus/modbus-flex-connector.js"
+      "Modbus-Flex-Connector": "modbus/modbus-flex-connector.js",
+      "Modbus-IO-Config": "modbus/modbus-io-config.js",
+      "Modbus-Response-Filter": "modbus/modbus-response-filter.js"
     }
   },
   "author": "Klaus Landsdorf",

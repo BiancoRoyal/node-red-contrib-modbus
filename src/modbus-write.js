@@ -153,10 +153,11 @@ module.exports = function (RED) {
     function buildMessage (values, response, msg) {
       let origMsg = mbCore.getOriginalMessage(node.bufferMessageList, msg) || msg
       origMsg.payload = values
+      origMsg.topic = msg.topic
       origMsg.responseBuffer = response
       origMsg.input = msg
 
-      let rawMsg = origMsg
+      let rawMsg = Object.assign({}, origMsg)
       rawMsg.payload = response
       rawMsg.values = values
       delete rawMsg['responseBuffer']
@@ -165,7 +166,7 @@ module.exports = function (RED) {
     }
 
     function setNodeStatusTo (statusValue) {
-      let statusOptions = mbBasics.set_node_status_properties(statusValue, node.showStatusActivities)
+      let statusOptions = mbBasics.setNodeStatusProperties(statusValue, node.showStatusActivities)
       if (mbBasics.statusLog) {
         verboseLog('status options: ' + JSON.stringify(statusOptions))
       }

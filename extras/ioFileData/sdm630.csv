@@ -1,0 +1,7 @@
+Outputs;Modbus Input Registers;%QD30001;SDM 630 v2
+Outputs[30001];fPhaseLine1NeutralVolts;%QD30001;SDM 630 v2
+Outputs[30003];fPhaseLine2NeutralVolts;%QD30003;SDM 630 v2
+Outputs[30005];fPhaseLine3NeutralVolts;%QD30005;SDM 630 v2
+Outputs[30007];fPhase1Current;%QD30007;SDM 630 v2
+Outputs[30009];fPhase2Current;%QD30009;SDM 630 v2
+Outputs[30011];fPhase3Current;%QD30011;SDM 630 v2

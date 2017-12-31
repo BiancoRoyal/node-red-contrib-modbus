@@ -19,6 +19,7 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config)
 
     this.name = config.name
+    this.topic = config.topic
     this.unitid = parseInt(config.unitid)
     this.lowLowLevel = parseInt(config.lowLowLevel)
     this.lowLevel = parseInt(config.lowLevel)
@@ -65,8 +66,10 @@ module.exports = function (RED) {
           node.lowLevelReached = true
           let msg = {
             payload: Date.now(),
+            topic: node.topic,
             state: 'low level reached',
             unitid: unit,
+            modbusClientName: modbusClient.name,
             items: items
           }
 
@@ -78,8 +81,10 @@ module.exports = function (RED) {
           node.highLevelReached = true
           let msg = {
             payload: Date.now(),
+            topic: node.topic,
             state: 'high level reached',
             unitid: unit,
+            modbusClientName: modbusClient.name,
             highLevel: node.highLevel,
             items: items
           }
@@ -97,8 +102,10 @@ module.exports = function (RED) {
           node.highHighLevelReached = true
           let msg = {
             payload: Date.now(),
+            topic: node.topic,
             state: 'high high level reached',
             unitid: unit,
+            modbusClientName: modbusClient.name,
             highLevel: node.highLevel,
             highHighLevel: node.highHighLevel,
             items: items
@@ -178,6 +185,7 @@ module.exports = function (RED) {
           payload: Date.now(),
           state: 'queue reset done',
           unitid: msg.unitid,
+          modbusClientName: modbusClient.name,
           lowlowLevel: node.lowlowLevel,
           lowLevel: node.lowLevel,
           highLevel: node.highLevel,

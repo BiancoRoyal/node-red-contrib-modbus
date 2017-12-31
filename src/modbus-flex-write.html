@@ -8,24 +8,25 @@
 
 
 <script type="text/javascript">
-    RED.nodes.registerType('modbus-flex-write', {
-        category: 'modbus',
-        color: '#E9967A',
-        defaults: {
-            name: {value: ""},
-            showStatusActivities: {value: false},
-            showErrors: {value: false},
-            server: {type: "modbus-client", required: true}
-        },
-        inputs: 1,
-        outputs: 2,
-        icon: "modbus.png",
-        align: 'right',
-        paletteLabel: "Modbus-Flex-Write",
-        label: function () {
-            return this.name || "Modbus Flex Write"
-        }
-    })
+  RED.nodes.registerType('modbus-flex-write', {
+    category: 'modbus',
+    color: '#E9967A',
+    defaults: {
+      name: {value: ''},
+      showStatusActivities: {value: false},
+      showErrors: {value: false},
+      server: {type: 'modbus-client', required: true}
+    },
+    inputs: 1,
+    outputs: 2,
+    align: "right",
+    icon: 'modbus.png',
+    align: 'right',
+    paletteLabel: 'Modbus-Flex-Write',
+    label: function () {
+      return this.name || 'Modbus Flex Write'
+    }
+  })
 </script>
 
 
@@ -49,6 +50,7 @@
         data-i18n="modbus-contrib.label.showErrors"></span></label>
         <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
     </div>
+
 </script>
 
 
@@ -97,4 +99,5 @@
         msg.payload = { value: msg.payload, 'fc': 15, 'unitid': 1, 'address': 0 , 'quantity': 10 }
         return msg
      </code>
+
 </script>

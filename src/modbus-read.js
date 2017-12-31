@@ -18,6 +18,7 @@ module.exports = function (RED) {
   'use strict'
   let mbBasics = require('./modbus-basics')
   let mbCore = require('./core/modbus-core')
+  let mbIOCore = require('./core/modbus-io-core')
   let internalDebugLog = require('debug')('contribModbus:read')
 
   function ModbusRead (config) {
@@ -29,7 +30,7 @@ module.exports = function (RED) {
 
     this.dataType = config.dataType
     this.adr = config.adr
-    this.quantity = config.quantity
+    this.quantity = config.quantity || 1
 
     this.rate = config.rate
     this.rateUnit = config.rateUnit
@@ -40,6 +41,10 @@ module.exports = function (RED) {
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
     this.connection = null
+
+    this.useIOFile = config.useIOFile
+    this.ioFile = RED.nodes.getNode(config.ioFile)
+    this.useIOForPayload = config.useIOForPayload
 
     let node = this
     let modbusClient = RED.nodes.getNode(config.server)
@@ -118,7 +123,7 @@ module.exports = function (RED) {
         from: node.name,
         payload: {
           unitid: node.unitid,
-          fc: node.functionCodeModbus(node.dataType),
+          fc: mbCore.functionCodeModbus(node.dataType),
           address: node.adr,
           quantity: node.quantity,
           messageId: mbCore.getObjectId()
@@ -133,28 +138,13 @@ module.exports = function (RED) {
       modbusClient.emit('readModbus', msg, node.onModbusReadDone, node.onModbusReadError)
     }
 
-    node.functionCodeModbus = function (dataType) {
-      switch (dataType) {
-        case 'Coil':
-          return 1
-        case 'Input':
-          return 2
-        case 'HoldingRegister':
-          return 3
-        case 'InputRegister':
-          return 4
-        default:
-          return dataType
-      }
-    }
-
     node.onModbusReadDone = function (resp, msg) {
       if (node.showStatusActivities) {
         setNodeStatusTo('reading done')
         verboseLog('reading done -> ' + JSON.stringify(msg))
       }
 
-      node.send(buildMessage(resp.data, resp, msg))
+      sendMessage(resp.data, resp, msg)
     }
 
     node.onModbusReadError = function (err, msg) {
@@ -175,8 +165,48 @@ module.exports = function (RED) {
       }
     }
 
-    function buildMessage (values, response, msg) {
-      return [{payload: values, responseBuffer: response, input: msg}, {payload: response, values: values, input: msg}]
+    function sendMessage (values, response, msg) {
+      if (node.useIOFile && node.ioFile.lastUpdatedAt) {
+        mbIOCore.internalDebug('node.adr:' + node.adr + ' node.quantity:' + node.quantity)
+        let allValueNames = mbIOCore.nameValuesFromIOFile(msg, node.ioFile, values, response, node.adr)
+        let valueNames = mbIOCore.filterValueNames(allValueNames, mbCore.functionCodeModbus(node.dataType), node.adr, node.quantity)
+
+        let origMsg = {
+          topic: msg.topic,
+          responseBuffer: response,
+          input: msg
+        }
+
+        if (node.useIOForPayload) {
+          origMsg.payload = valueNames
+          origMsg.values = values
+        } else {
+          origMsg.payload = values
+          origMsg.valueNames = valueNames
+        }
+
+        node.send([
+          origMsg,
+          {
+            payload: response,
+            values: values,
+            input: msg,
+            valueNames: valueNames
+          }])
+      } else {
+        node.send([
+          {
+            payload: values,
+            responseBuffer: response,
+            input: msg
+          },
+          {
+            payload: response,
+            values: values,
+            input: msg
+          }
+        ])
+      }
     }
 
     function setNodeStatusTo (statusValue) {
@@ -184,7 +214,7 @@ module.exports = function (RED) {
         return
       }
 
-      let statusOptions = mbBasics.set_node_status_properties(statusValue, node.showStatusActivities)
+      let statusOptions = mbBasics.setNodeStatusProperties(statusValue, node.showStatusActivities)
 
       if (statusValue.search('active') !== -1 || statusValue === 'polling') {
         timeoutOccurred = false

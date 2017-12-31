@@ -32,6 +32,7 @@
     },
     inputs: 1,
     outputs: 3,
+    align: "right",
     icon: 'modbus.png',
     paletteLabel: 'Modbus-Flex-Server',
     label: function () {
@@ -41,46 +42,46 @@
       let node = this
 
       let tabs = RED.tabs.create({
-        id: "node-input-connector-tabs",
+        id: 'node-input-connector-tabs',
         onchange: function (tab) {
-          $("#node-input-connector-tabs-content").children().hide()
-          $("#" + tab.id).show()
+          $('#node-input-connector-tabs-content').children().hide()
+          $('#' + tab.id).show()
         }
       })
 
       tabs.addTab({
-        id: "modbus-server-tab-settings",
-        label: this._("modbus-contrib.tabs-label.settings")
+        id: 'modbus-server-tab-settings',
+        label: this._('modbus-contrib.tabs-label.settings')
       })
 
       tabs.addTab({
-        id: "modbus-server-tab-getCoil",
-        label: this._("modbus-contrib.tabs-label.getCoil")
+        id: 'modbus-server-tab-getCoil',
+        label: this._('modbus-contrib.tabs-label.getCoil')
       })
 
       tabs.addTab({
-        id: "modbus-server-tab-getInput",
-        label: this._("modbus-contrib.tabs-label.getInput")
+        id: 'modbus-server-tab-getInput',
+        label: this._('modbus-contrib.tabs-label.getInput')
       })
 
       tabs.addTab({
-        id: "modbus-server-tab-getHolding",
-        label: this._("modbus-contrib.tabs-label.getHolding")
+        id: 'modbus-server-tab-getHolding',
+        label: this._('modbus-contrib.tabs-label.getHolding')
       })
 
       tabs.addTab({
-        id: "modbus-server-tab-setCoil",
-        label: this._("modbus-contrib.tabs-label.setCoil")
+        id: 'modbus-server-tab-setCoil',
+        label: this._('modbus-contrib.tabs-label.setCoil')
       })
 
       tabs.addTab({
-        id: "modbus-server-tab-setRegister",
-        label: this._("modbus-contrib.tabs-label.setRegister")
+        id: 'modbus-server-tab-setRegister',
+        label: this._('modbus-contrib.tabs-label.setRegister')
       })
 
       let editorGlobals = {
-        msg:true,
-        context:true,
+        msg: true,
+        context: true,
         RED: true,
         util: true,
         flow: true,
@@ -96,92 +97,92 @@
       this.editorGetCoil = RED.editor.createEditor({
         id: 'node-input-func-editor-getCoil',
         mode: 'ace/mode/javascript',
-        value: $("#node-input-funcGetCoil").val(),
+        value: $('#node-input-funcGetCoil').val(),
         globals: editorGlobals
-      });
+      })
 
       this.editorGetInput = RED.editor.createEditor({
         id: 'node-input-func-editor-getInputRegister',
         mode: 'ace/mode/javascript',
-        value: $("#node-input-funcGetInputRegister").val(),
+        value: $('#node-input-funcGetInputRegister').val(),
         globals: editorGlobals
-      });
+      })
 
       this.editorGetHolding = RED.editor.createEditor({
         id: 'node-input-func-editor-getHoldingRegister',
         mode: 'ace/mode/javascript',
-        value: $("#node-input-funcGetHoldingRegister").val(),
+        value: $('#node-input-funcGetHoldingRegister').val(),
         globals: editorGlobals
-      });
+      })
 
       this.editorSetCoil = RED.editor.createEditor({
         id: 'node-input-func-editor-setCoil',
         mode: 'ace/mode/javascript',
-        value: $("#node-input-funcSetCoil").val(),
+        value: $('#node-input-funcSetCoil').val(),
         globals: editorGlobals
-      });
+      })
 
       this.editorSetRegister = RED.editor.createEditor({
         id: 'node-input-func-editor-setRegister',
         mode: 'ace/mode/javascript',
-        value: $("#node-input-funcSetRegister").val(),
+        value: $('#node-input-funcSetRegister').val(),
         globals: editorGlobals
-      });
+      })
     },
-    oneditsave: function() {
-      $("#node-input-funcGetCoil").val(this.editorGetCoil.getValue());
-      this.editorGetCoil.destroy();
-      delete this.editorGetCoil;
+    oneditsave: function () {
+      $('#node-input-funcGetCoil').val(this.editorGetCoil.getValue())
+      this.editorGetCoil.destroy()
+      delete this.editorGetCoil
 
-      $("#node-input-funcGetInputRegister").val(this.editorGetInput.getValue());
-      this.editorGetInput.destroy();
-      delete this.editorGetInput;
+      $('#node-input-funcGetInputRegister').val(this.editorGetInput.getValue())
+      this.editorGetInput.destroy()
+      delete this.editorGetInput
 
-      $("#node-input-funcGetHoldingRegister").val(this.editorGetHolding.getValue());
-      this.editorGetHolding.destroy();
-      delete this.editorGetHolding;
+      $('#node-input-funcGetHoldingRegister').val(this.editorGetHolding.getValue())
+      this.editorGetHolding.destroy()
+      delete this.editorGetHolding
 
-      $("#node-input-funcSetCoil").val(this.editorSetCoil.getValue());
-      this.editorSetCoil.destroy();
-      delete this.editorSetCoil;
+      $('#node-input-funcSetCoil').val(this.editorSetCoil.getValue())
+      this.editorSetCoil.destroy()
+      delete this.editorSetCoil
 
-      $("#node-input-funcSetRegister").val(this.editorSetRegister.getValue());
-      this.editorSetRegister.destroy();
-      delete this.editorSetRegister;
+      $('#node-input-funcSetRegister').val(this.editorSetRegister.getValue())
+      this.editorSetRegister.destroy()
+      delete this.editorSetRegister
     },
-    oneditcancel: function() {
-      this.editorGetCoil.destroy();
-      delete this.editorGetCoil;
+    oneditcancel: function () {
+      this.editorGetCoil.destroy()
+      delete this.editorGetCoil
 
-      this.editorGetInput.destroy();
-      delete this.editorGetInput;
+      this.editorGetInput.destroy()
+      delete this.editorGetInput
 
-      this.editorGetHolding.destroy();
-      delete this.editorGetHolding;
+      this.editorGetHolding.destroy()
+      delete this.editorGetHolding
 
-      this.editorSetCoil.destroy();
-      delete this.editorSetCoil;
+      this.editorSetCoil.destroy()
+      delete this.editorSetCoil
 
-      this.editorSetRegister.destroy();
-      delete this.editorSetRegister;
+      this.editorSetRegister.destroy()
+      delete this.editorSetRegister
     },
-    oneditresize: function(size) {
-      let rows = $("#dialog-form>div:not(.node-text-editor-row)");
-      let height = $("#dialog-form").height();
+    oneditresize: function (size) {
+      let rows = $('#dialog-form>div:not(.node-text-editor-row)')
+      let height = $('#dialog-form').height()
 
       for (let i = 0; i < rows.size(); i++) {
-        height -= $(rows[i]).outerHeight(true);
+        height -= $(rows[i]).outerHeight(true)
       }
 
-      let editorRow = $("#dialog-form>div.node-text-editor-row");
-      height -= (parseInt(editorRow.css("marginTop"))+parseInt(editorRow.css("marginBottom")));
+      let editorRow = $('#dialog-form>div.node-text-editor-row')
+      height -= (parseInt(editorRow.css('marginTop')) + parseInt(editorRow.css('marginBottom')))
 
-      $(".node-text-editor").css("height", height+"px");
-      this.editorGetCoil.resize();
-      this.editorGetInput.resize();
-      this.editorGetHolding.resize();
-      this.editorSetCoil.resize();
-      this.editorSetRegister.resize();
+      $('.node-text-editor').css('height', height + 'px')
+      this.editorGetCoil.resize()
+      this.editorGetInput.resize()
+      this.editorGetHolding.resize()
+      this.editorSetCoil.resize()
+      this.editorSetRegister.resize()
 
     }
   })
@@ -200,7 +201,7 @@
             </div>
             <div class="form-row">
                 <label for="node-input-serverPort"><i class="icon-tag"></i> <span data-i18n="modbus-contrib.label.port"></span></label>
-                <input type="text" id="node-input-serverPort" placeholder="8888">
+                <input type="text" id="node-input-serverPort" placeholder="2000 to 65536">
             </div>
             <div class="form-row">
                 <label for="node-input-responseDelay"><i class="icon-tag"></i> <span data-i18n="modbus-contrib.label.responseDelay"></span></label>
@@ -285,6 +286,7 @@
             </div>
         </div>
     </div>
+
 </script>
 
 
@@ -304,5 +306,6 @@
     <p>Output 1: holding Buffer, type, msg</p>
     <p>Output 2: coils Buffer, type, msg</p>
     <p>Output 3: input Buffer, type, msg</p>
+
 
 </script>

@@ -10,7 +10,14 @@
       "pollrate": "Poll Rate",
       "server": "Server",
       "delayOnStart": "Delay on start",
-      "startDelayTime": "Delay Time"
+      "startDelayTime": "Delay Time",
+      "useIOFile": "Using IO-File",
+      "ioFile": "IO-File",
+      "useIOForPayload": "IO's As Payload"
+    },
+    "tabs-label": {
+      "settings": "Settings",
+      "options": "Optionals"
     }
   }
 }

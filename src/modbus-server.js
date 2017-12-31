@@ -96,15 +96,15 @@ module.exports = function (RED) {
         'holding': Buffer.alloc(node.holdingBufferSize, 0),
         'input': Buffer.alloc(node.inputBufferSize, 0)
       })
-      .compose(modbus.server.tcp.complete)
-      .init(function () {
-        let init = function () {
-          this.coils.fill(0)
-          this.holding.fill(0)
-          this.input.fill(0)
-        }.bind(this)
-        init()
-      })
+        .compose(modbus.server.tcp.complete)
+        .init(function () {
+          let init = function () {
+            this.coils.fill(0)
+            this.holding.fill(0)
+            this.input.fill(0)
+          }.bind(this)
+          init()
+        })
 
       verboseLog('starting modbus server')
 
@@ -118,7 +118,7 @@ module.exports = function (RED) {
       verboseLog('modbus server started')
       setNodeStatusTo('active')
     } else {
-      verboseWarn("modbus server isn't ready")
+      verboseWarn('modbus server isn\'t ready')
       setNodeStatusTo('error')
     }
 

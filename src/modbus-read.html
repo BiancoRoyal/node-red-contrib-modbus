@@ -9,157 +9,214 @@
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
 -->
 <script type="text/javascript">
-    RED.nodes.registerType('modbus-read', {
-        category: 'modbus',
-        color: '#E9967A',
-        defaults: {
-            name: {value: ""},
-            topic: {value: ""},
-            showStatusActivities: {value: false},
-            showErrors: {value: false},
-            unitid: {value: ""},
-            dataType: {value: "", required: true},
-            adr: {value: "", required: true, validate: RED.validators.number()},
-            quantity: {value: "", required: true, validate: RED.validators.number()},
-            rate: {
-                value: "", required: true, validate: function (v) {
-                    return v > 0
-                }
-            },
-            rateUnit: {
-                value: "", required: true, validate: function (v) {
-                    return "ms" == v || "s" == v || "m" == v || "h" == v
-                }
-            },
-            delayOnStart: {value: false},
-            startDelayTime: {value: ''},
-            server: {type: "modbus-client", required:true}
-        },
-        inputs: 0,
-        outputs: 2,
-        icon: "modbus.png",
-        paletteLabel: "Modbus-Read",
-        label: function () {
-            let nodeLabel = this.name || "Modbus Read"
-            if (this.once) {
-                nodeLabel += ' ¹'
-            }
-            return nodeLabel
-        },
-        oneditprepare: function () {
-            if (this.delayOnStart) {
-              $('#node-delay').show()
-            }
-            else {
-              $('#node-delay').hide()
-              $('#node-input-delayOnStart').prop('checked', false)
-            }
-
-            $('#node-input-delayOnStart').change(function () {
-                if ($(this).is(':checked')) {
-                  $('#node-delay').show()
-                } else {
-                  $('#node-delay').hide()
-                }
-            })
-        },
-        button: {
-            onclick: function () {
-              let label = (this.name || 'modbus-read').replace(/&/g, '&amp').replace(/</g, '&lt').replace(/>/g, '&gt')
-              let node = this
-
-              $.ajax({
-                url: 'modbus/read/inject/' + node.id,
-                type: 'POST',
-                success: function (resp) {
-                  RED.notify(node._('modbusinject.success', {label: label}), 'success')
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                  if (jqXHR.status === 404) {
-                    RED.notify(node._('common.notification.error', {message: node._('common.notification.errors.not-deployed')}), 'error')
-                  } else if (jqXHR.status === 500) {
-                    RED.notify(node._('common.notification.error', {message: node._('modbusinject.errors.failed')}), 'error')
-                  } else if (jqXHR.status === 0) {
-                    RED.notify(node._('common.notification.error', {message: node._('common.notification.errors.no-response')}), 'error')
-                  } else {
-                    RED.notify(node._('common.notification.error', {
-                      message: node._('common.notification.errors.unexpected', {
-                        status: jqXHR.status,
-                        message: textStatus
-                      })
-                    }), 'error')
-                  }
-                }
-              })
-            }
+  RED.nodes.registerType('modbus-read', {
+    category: 'modbus',
+    color: '#E9967A',
+    defaults: {
+      name: {value: ''},
+      topic: {value: ''},
+      showStatusActivities: {value: false},
+      showErrors: {value: false},
+      unitid: {value: ''},
+      dataType: {value: '', required: true},
+      adr: {value: '', required: true, validate: RED.validators.number()},
+      quantity: {value: '', required: true, validate: RED.validators.number()},
+      rate: {
+        value: '', required: true, validate: function (v) {
+          return v > 0
         }
+      },
+      rateUnit: {
+        value: '', required: true, validate: function (v) {
+          return 'ms' == v || 's' == v || 'm' == v || 'h' == v
+        }
+      },
+      delayOnStart: {value: false},
+      startDelayTime: {value: ''},
+      server: {type: 'modbus-client', required: true},
+      useIOFile: {value: false},
+      ioFile: {value: '', type: 'modbus-io-config', required: false},
+      useIOForPayload: {value: false}
+    },
+    inputs: 0,
+    outputs: 2,
+    align: "left",
+    icon: 'modbus.png',
+    paletteLabel: 'Modbus-Read',
+    label: function () {
+      let nodeLabel = this.name || 'Modbus Read'
+      if (this.once) {
+        nodeLabel += ' ¹'
+      }
+      return nodeLabel
+    },
+    oneditprepare: function () {
 
-    })
+      let tabs = RED.tabs.create({
+        id: "node-input-modbus-tabs",
+        onchange: function (tab) {
+          $("#node-input-tabs-content").children().hide()
+          $("#" + tab.id).show()
+        }
+      })
+
+      tabs.addTab({
+        id: "modbus-settings-tab",
+        label: this._("modbus-contrib.tabs-label.settings")
+      })
+
+      tabs.addTab({
+        id: "modbus-options-tab",
+        label: this._("modbus-contrib.tabs-label.options")
+      })
+
+      let useIOFileCheckbox = $('#node-input-useIOFile')
+      let modbusiofileRow = $('#modbusiofile-row')
+
+      useIOFileCheckbox.change(function () {
+        if ($(this).is(':checked')) {
+          modbusiofileRow.show()
+        } else {
+          modbusiofileRow.hide()
+        }
+      })
+
+      if (this.delayOnStart) {
+        $('#node-delay').show()
+      }
+      else {
+        $('#node-delay').hide()
+        $('#node-input-delayOnStart').prop('checked', false)
+      }
+
+      $('#node-input-delayOnStart').change(function () {
+        if ($(this).is(':checked')) {
+          $('#node-delay').show()
+        } else {
+          $('#node-delay').hide()
+        }
+      })
+    },
+    button: {
+      onclick: function () {
+        let label = (this.name || 'modbus-read').replace(/&/g, '&amp').replace(/</g, '&lt').replace(/>/g, '&gt')
+        let node = this
+
+        $.ajax({
+          url: 'modbus/read/inject/' + node.id,
+          type: 'POST',
+          success: function (resp) {
+            RED.notify(node._('modbusinject.success', {label: label}), 'success')
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status === 404) {
+              RED.notify(node._('common.notification.error', {message: node._('common.notification.errors.not-deployed')}), 'error')
+            } else if (jqXHR.status === 500) {
+              RED.notify(node._('common.notification.error', {message: node._('modbusinject.errors.failed')}), 'error')
+            } else if (jqXHR.status === 0) {
+              RED.notify(node._('common.notification.error', {message: node._('common.notification.errors.no-response')}), 'error')
+            } else {
+              RED.notify(node._('common.notification.error', {
+                message: node._('common.notification.errors.unexpected', {
+                  status: jqXHR.status,
+                  message: textStatus
+                })
+              }), 'error')
+            }
+          }
+        })
+      }
+    }
+  })
 </script>
 
 <script type="text/x-red" data-template-name="modbus-read">
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="node-input-modbus-tabs"></ul>
     </div>
-    <div class="form-row">
-        <label for="node-input-topic"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.topic"></span></label>
-        <input type="text" id="node-input-topic" placeholder="Topic">
-    </div>
-    <div class="form-row">
-        <label for="node-input-unitid"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.unitId"></span></label>
-        <input type="text" id="node-input-unitid">
-    </div>
-    <div class="form-row">
-        <label for="node-input-dataType"><i class="icon-list"></i> <span data-i18n="modbus-contrib.label.functioncode"></span></label>
-        <select id="node-input-dataType">
-            <option value="Coil">FC 1: Read Coil Status</option>
-            <option value="Input">FC 2: Read Input Status</option>
-            <option value="HoldingRegister">FC 3: Read Holding Registers</option>
-            <option value="InputRegister">FC 4: Read Input Registers</option>
-        </select>
-    </div>
-    <div class="form-row">
-        <label for="node-input-adr"><i class="icon-home"></i> <span data-i18n="modbus-contrib.label.address"></span></label>
-        <input type="text" id="node-input-adr" placeholder="0:65535">
-    </div>
-    <div class="form-row">
-        <label for="node-input-quantity"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.quantity"></span></label>
-        <input type="text" id="node-input-quantity" placeholder="1-65535">
-    </div>
-    <div class="form-row">
-        <label for="node-input-rate"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.pollrate"></span></label>
-        <input type="number" id="node-input-rate" placeholder="1-65535" style="max-width:120px">
-        <select id="node-input-rateUnit" style="max-width:160px">
-            <option value="ms">millisecond(s)</option>
-            <option value="s">second(s)</option>
-            <option value="m">minute(s)</option>
-            <option value="h">hour(s)</option>
-        </select>
-    </div>
-    <div class="form-row" id="node-delayonstart">
-        <label for="node-input-delayOnStart" style="width:140px">
-        <i class="fa fa-power-off"></i> <span data-i18n="modbus-contrib.label.delayOnStart"></span></label>
-        <input type="checkbox" id="node-input-delayOnStart" style="width:40px">
-    </div>
-    <div class="form-row" id="node-delay">
-        <label for="node-input-startDelayTime"><i class="fa fa-clock-o"></i> <span data-i18n="modbus-contrib.label.startDelayTime"></span></label>
-        <input type="text" id="node-input-startDelayTime" placeholder="10" style="width:80px">
-    </div>
-    <div class="form-row">
-        <label for="node-input-server"><i class="icon-globe"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
-        <input type="text" id="node-input-server">
-    </div>
-    <hr>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
-        data-i18n="modbus-contrib.label.showActivities"></span></label>
-        <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
-    </div>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
-        data-i18n="modbus-contrib.label.showErrors"></span></label>
-        <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
+    <div id="node-input-tabs-content" style="min-height: 170px;">
+        <div id="modbus-settings-tab" style="display:none">
+            <div class="form-row">
+                <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+                <input type="text" id="node-input-name" placeholder="Name">
+            </div>
+            <div class="form-row">
+                <label for="node-input-topic"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.topic"></span></label>
+                <input type="text" id="node-input-topic" placeholder="Topic">
+            </div>
+            <div class="form-row">
+                <label for="node-input-unitid"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.unitId"></span></label>
+                <input type="text" id="node-input-unitid">
+            </div>
+            <div class="form-row">
+                <label for="node-input-dataType"><i class="icon-list"></i> <span data-i18n="modbus-contrib.label.functioncode"></span></label>
+                <select id="node-input-dataType">
+                    <option value="Coil">FC 1: Read Coil Status</option>
+                    <option value="Input">FC 2: Read Input Status</option>
+                    <option value="HoldingRegister">FC 3: Read Holding Registers</option>
+                    <option value="InputRegister">FC 4: Read Input Registers</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="node-input-adr"><i class="icon-home"></i> <span data-i18n="modbus-contrib.label.address"></span></label>
+                <input type="text" id="node-input-adr" placeholder="0:65535">
+            </div>
+            <div class="form-row">
+                <label for="node-input-quantity"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.quantity"></span></label>
+                <input type="text" id="node-input-quantity" placeholder="1-65535">
+            </div>
+            <div class="form-row">
+                <label for="node-input-rate"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.pollrate"></span></label>
+                <input type="number" id="node-input-rate" placeholder="1-65535" style="max-width:120px">
+                <select id="node-input-rateUnit" style="max-width:160px">
+                    <option value="ms">millisecond(s)</option>
+                    <option value="s">second(s)</option>
+                    <option value="m">minute(s)</option>
+                    <option value="h">hour(s)</option>
+                </select>
+            </div>
+            <div class="form-row" id="node-delayonstart">
+                <label for="node-input-delayOnStart" style="width:140px">
+                <i class="fa fa-power-off"></i> <span data-i18n="modbus-contrib.label.delayOnStart"></span></label>
+                <input type="checkbox" id="node-input-delayOnStart" style="width:40px">
+            </div>
+            <div class="form-row" id="node-delay">
+                <label for="node-input-startDelayTime"><i class="fa fa-clock-o"></i> <span data-i18n="modbus-contrib.label.startDelayTime"></span></label>
+                <input type="text" id="node-input-startDelayTime" placeholder="10" style="width:80px">
+            </div>
+            <div class="form-row">
+                <label for="node-input-server"><i class="icon-globe"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
+                <input type="text" id="node-input-server">
+            </div>
+        </div>
+        <div id="modbus-options-tab" style="display:none">
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.showActivities"></span></label>
+                <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.showErrors"></span></label>
+                <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
+            </div>
+            <hr>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-useIOFile"><i class="fa fa-file-code-o"></i> <span
+                data-i18n="modbus-contrib.label.useIOFile"></span></label>
+                <input type="checkbox" id="node-input-useIOFile" style="max-width:30px">
+            </div>
+            <div id="modbusiofile-row">
+                <div class="form-row">
+                    <label style="min-width:160px" for="node-input-useIOForPayload"><i class="fa fa-comment-o"></i> <span data-i18n="modbus-contrib.label.useIOForPayload"></span></label>
+                    <input type="checkbox" id="node-input-useIOForPayload" style="max-width:30px">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-ioFile"><i class="icon-file"></i> <span data-i18n="modbus-contrib.label.ioFile"></span></label>
+                    <input type="text" id="node-input-ioFile">
+                </div>
+            </div>
+        </div>
     </div>
 </script>
 

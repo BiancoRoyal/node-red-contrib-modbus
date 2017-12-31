@@ -1,0 +1,137 @@
+[
+  {
+    "id": "a040a097.85dbf8",
+    "type": "tab",
+    "label": "CODESYS Convert",
+    "disabled": false,
+    "info": ""
+  },
+  {
+    "id": "a75f4e61.0bff88",
+    "type": "file in",
+    "z": "a040a097.85dbf8",
+    "name": "Modbus I/O File devices.csv",
+    "filename": "/Users/Shared/modbus/device.csv",
+    "format": "utf8",
+    "sendError": true,
+    "x": 340,
+    "y": 100,
+    "wires": [
+      [
+        "787c6123.110e68"
+      ]
+    ]
+  },
+  {
+    "id": "308a6747.6a63",
+    "type": "inject",
+    "z": "a040a097.85dbf8",
+    "name": "",
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "x": 140,
+    "y": 100,
+    "wires": [
+      [
+        "a75f4e61.0bff88"
+      ]
+    ]
+  },
+  {
+    "id": "787c6123.110e68",
+    "type": "csv",
+    "z": "a040a097.85dbf8",
+    "name": "",
+    "sep": ";",
+    "hdrin": "",
+    "hdrout": "",
+    "multi": "one",
+    "ret": "\\n",
+    "temp": "",
+    "x": 570,
+    "y": 100,
+    "wires": [
+      [
+        "cdae5d50.2021b8"
+      ]
+    ]
+  },
+  {
+    "id": "b5ecf7c6.2a417",
+    "type": "debug",
+    "z": "a040a097.85dbf8",
+    "name": "",
+    "active": true,
+    "console": "false",
+    "complete": "false",
+    "x": 950,
+    "y": 60,
+    "wires": []
+  },
+  {
+    "id": "cdae5d50.2021b8",
+    "type": "function",
+    "z": "a040a097.85dbf8",
+    "name": "Filter named Register",
+    "func": "if(msg.payload.col4 !== undefined && msg.payload.col4.indexOf('//') === -1) {\n    var varName = msg.payload.col4;\n    var varValue = msg.payload.col5;\n    msg.payload = { 'name': varName, 'valueAddress': varValue };\n    return msg;\n}\n",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 740,
+    "y": 100,
+    "wires": [
+      [
+        "b5ecf7c6.2a417",
+        "bc66a06e.9493a"
+      ]
+    ]
+  },
+  {
+    "id": "bc66a06e.9493a",
+    "type": "file",
+    "z": "a040a097.85dbf8",
+    "name": "",
+    "filename": "/Users/Shared/modbus/device.json",
+    "appendNewline": true,
+    "createDir": false,
+    "overwriteFile": "false",
+    "x": 1020,
+    "y": 100,
+    "wires": []
+  },
+  {
+    "id": "57b3938a.4c5d34",
+    "type": "inject",
+    "z": "a040a097.85dbf8",
+    "name": "",
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "x": 140,
+    "y": 60,
+    "wires": [
+      [
+        "5986e448.703afc"
+      ]
+    ]
+  },
+  {
+    "id": "5986e448.703afc",
+    "type": "file",
+    "z": "a040a097.85dbf8",
+    "name": "",
+    "filename": "/Users/Shared/modbus/device.json",
+    "appendNewline": true,
+    "createDir": false,
+    "overwriteFile": "delete",
+    "x": 390,
+    "y": 60,
+    "wires": []
+  }
+]

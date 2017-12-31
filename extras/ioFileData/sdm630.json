@@ -1,0 +1,6 @@
+{"name":"fPhaseLine1NeutralVolts","valueAddress":"%QD30001"}
+{"name":"fPhaseLine2NeutralVolts","valueAddress":"%QD30003"}
+{"name":"fPhaseLine3NeutralVolts","valueAddress":"%QD30005"}
+{"name":"fPhase1Current","valueAddress":"%QD30007"}
+{"name":"fPhase2Current","valueAddress":"%QD30009"}
+{"name":"fPhase3Current","valueAddress":"%QD30011"}

@@ -1,0 +1,11 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "Show Activities",
+      "showErrors": "Show Errors",
+      "file": "IO-Datei",
+      "path": "IO-Datei",
+      "format": "Format"
+    }
+  }
+}

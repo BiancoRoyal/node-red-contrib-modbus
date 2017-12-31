@@ -15,6 +15,7 @@ module.exports = function (RED) {
   'use strict'
   let mbBasics = require('./modbus-basics')
   let mbCore = require('./core/modbus-core')
+  let mbIOCore = require('./core/modbus-io-core')
   let internalDebugLog = require('debug')('contribModbus:getter')
 
   function ModbusGetter (config) {
@@ -31,6 +32,10 @@ module.exports = function (RED) {
     this.showErrors = config.showErrors
     this.msgThruput = config.msgThruput
     this.connection = null
+
+    this.useIOFile = config.useIOFile
+    this.ioFile = RED.nodes.getNode(config.ioFile)
+    this.useIOForPayload = config.useIOForPayload
 
     let node = this
     let modbusClient = RED.nodes.getNode(config.server)
@@ -82,7 +87,7 @@ module.exports = function (RED) {
           payload: {
             value: msg.payload.value || msg.payload,
             unitid: node.unitid,
-            fc: node.functionCodeModbus(node.dataType),
+            fc: mbCore.functionCodeModbus(node.dataType),
             address: node.adr,
             quantity: node.quantity,
             messageId: msg.messageId
@@ -98,21 +103,6 @@ module.exports = function (RED) {
         }
       }
     })
-
-    node.functionCodeModbus = function (dataType) {
-      switch (dataType) {
-        case 'Coil':
-          return 1
-        case 'Input':
-          return 2
-        case 'HoldingRegister':
-          return 3
-        case 'InputRegister':
-          return 4
-        default:
-          return dataType
-      }
-    }
 
     node.onModbusReadDone = function (resp, msg) {
       if (node.showStatusActivities) {
@@ -138,19 +128,36 @@ module.exports = function (RED) {
     function buildMessage (values, response, msg) {
       let origMsg = mbCore.getOriginalMessage(node.bufferMessageList, msg) || msg
       origMsg.payload = values
+      origMsg.topic = msg.topic
       origMsg.responseBuffer = response
       origMsg.input = msg
 
-      let rawMsg = origMsg
+      let rawMsg = Object.assign({}, origMsg)
       rawMsg.payload = response
       rawMsg.values = values
       delete rawMsg['responseBuffer']
 
-      return [origMsg, rawMsg]
+      if (node.useIOFile && node.ioFile.lastUpdatedAt) {
+        let allValueNames = mbIOCore.nameValuesFromIOFile(msg, node.ioFile, values, response, node.adr)
+        let valueNames = mbIOCore.filterValueNames(allValueNames, mbCore.functionCodeModbus(node.dataType), node.adr, node.quantity)
+
+        if (node.useIOForPayload) {
+          origMsg.payload = valueNames
+          origMsg.values = values
+        } else {
+          origMsg.payload = values
+          origMsg.valueNames = valueNames
+        }
+
+        rawMsg.valueNames = valueNames
+        return [origMsg, rawMsg]
+      } else {
+        return [origMsg, rawMsg]
+      }
     }
 
     function setNodeStatusTo (statusValue) {
-      let statusOptions = mbBasics.set_node_status_properties(statusValue, node.showStatusActivities)
+      let statusOptions = mbBasics.setNodeStatusProperties(statusValue, node.showStatusActivities)
 
       node.status({
         fill: statusOptions.fill,

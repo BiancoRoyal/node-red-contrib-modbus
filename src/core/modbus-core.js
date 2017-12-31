@@ -28,4 +28,19 @@ de.biancoroyal.modbus.core.getOriginalMessage = function (messageList, msg) {
   return origMsg
 }
 
+de.biancoroyal.modbus.core.functionCodeModbus = function (dataType) {
+  switch (dataType) {
+    case 'Coil':
+      return 1
+    case 'Input':
+      return 2
+    case 'HoldingRegister':
+      return 3
+    case 'InputRegister':
+      return 4
+    default:
+      return dataType
+  }
+}
+
 module.exports = de.biancoroyal.modbus.core
