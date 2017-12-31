@@ -60,23 +60,20 @@
     <p>Modbus Inputs  – %IX / %IB / %IW / %ID</p>
 
     <div>
+        <h3>IO-File Format</h3>
+        <p>No matter what is your source, you have to build a JSON file with the</p>
+        <p>CODESYS CSV Export transformed to JSON-IO-File example:</p>
         <pre>
-        [{"id":"48729ed3.0b9ce","type":"file in","z":"d7a8d841.8f2be8","name":"Modbus I/O File devices.csv",
-        "filename":"/Users/Shared/modbus/device.csv","format":"utf8","sendError":true,"x":420,"y":320,"wires":[["61f8097.ae7b7f8"]]},
-        {"id":"24c6a2d1.f13146","type":"inject","z":"d7a8d841.8f2be8","name":"","topic":"","payload":"","payloadType":"date",
-        "repeat":"","crontab":"","once":false,"x":220,"y":320,"wires":[["48729ed3.0b9ce"]]},
-        {"id":"61f8097.ae7b7f8","type":"csv","z":"d7a8d841.8f2be8","name":"","sep":";","hdrin":"","hdrout":"",
-        "multi":"one","ret":"\\n","temp":"","x":650,"y":320,"wires":[["b79bce66.7a6208"]]},{"id":"da10d940.a0cd48","type":"debug",
-        "z":"d7a8d841.8f2be8","name":"","active":true,"console":"false","complete":"false","x":1030,"y":280,"wires":[]},
-        {"id":"b79bce66.7a6208","type":"function","z":"d7a8d841.8f2be8","name":"Filter named Register",
-        "func":"if(msg.payload.col4 !== undefined && msg.payload.col4.indexOf('//') === -1) {\n    var varName = msg.payload.col4;\n    var varValue = msg.payload.col5;\n    msg.payload = { 'name': varName, 'valueAddress': varValue };\n    return msg;\n}\n",
-        "outputs":1,"noerr":0,"x":820,"y":320,"wires":[["da10d940.a0cd48","3a728e5b.6ba6c2"]]},{"id":"3a728e5b.6ba6c2",
-        "type":"file","z":"d7a8d841.8f2be8","name":"","filename":"/Users/Shared/modbus/device.json","appendNewline":true,
-        "createDir":false,"overwriteFile":"false","x":1100,"y":320,"wires":[]},{"id":"e2644f58.7d1698","type":"inject",
-        "z":"d7a8d841.8f2be8","name":"","topic":"","payload":"","payloadType":"date","repeat":"","crontab":"","once":false,
-        "x":220,"y":280,"wires":[["37a6655f.06fb12"]]},{"id":"37a6655f.06fb12","type":"file","z":"d7a8d841.8f2be8","name":"",
-        "filename":"/Users/Shared/modbus/slaveDevice.json","appendNewline":true,"createDir":false,"overwriteFile":"delete","x":480,"y":280,"wires":[]}]
+            {"name":"Modbus Holding Registers","valueAddress":"%IW0"}
+            {"name":"iCountDummyBorder","valueAddress":"%IW0"}
+            {"name":"bReset","valueAddress":"%IX8.0"}
+            {"name":"Modbus Input Registers","valueAddress":"%QW0"}
+            {"name":"iBooleanSetOne","valueAddress":"%QW4"}
+            {"name":"bOperationActive","valueAddress":"%QX8.0"}
         </pre>
+    </div>
+    <div>
+        <a href="https://gist.github.com/biancode/46bfc4fe78cc059a379b383ea445d2d0" target="_blank">see Converter Flow</a>
     </div>
 
 </script>
