@@ -94,40 +94,90 @@
         clearInterval: true
       }
 
-      this.editorGetCoil = RED.editor.createEditor({
+      node.editorGetCoil = RED.editor.createEditor({
         id: 'node-input-func-editor-getCoil',
         mode: 'ace/mode/javascript',
         value: $('#node-input-funcGetCoil').val(),
         globals: editorGlobals
       })
 
-      this.editorGetInput = RED.editor.createEditor({
+      $( function() {
+        $( "#node-input-func-editor-getCoil" ).resizable();
+      } );
+
+      let getCoilElement = document.getElementById('node-input-func-editor-getCoil');
+      getCoilElement.addEventListener("mouseup", resizeScriptGetCoil, false);
+      function resizeScriptGetCoil () {
+        node.editorGetCoil.resize()
+      }
+
+      node.editorGetInput = RED.editor.createEditor({
         id: 'node-input-func-editor-getInputRegister',
         mode: 'ace/mode/javascript',
         value: $('#node-input-funcGetInputRegister').val(),
         globals: editorGlobals
       })
 
-      this.editorGetHolding = RED.editor.createEditor({
+      $( function() {
+        $( "#node-input-func-editor-getInputRegister" ).resizable();
+      } );
+
+      let getInputRegisterElement = document.getElementById('node-input-func-editor-getInputRegister');
+      getInputRegisterElement.addEventListener("mouseup", resizeScriptGetInputRegister, false);
+      function resizeScriptGetInputRegister () {
+        node.editorGetInput.resize()
+      }
+
+      node.editorGetHolding = RED.editor.createEditor({
         id: 'node-input-func-editor-getHoldingRegister',
         mode: 'ace/mode/javascript',
         value: $('#node-input-funcGetHoldingRegister').val(),
         globals: editorGlobals
       })
 
-      this.editorSetCoil = RED.editor.createEditor({
+      $( function() {
+        $( "#node-input-func-editor-getHoldingRegister" ).resizable();
+      } );
+
+      let getHoldingRegisterElement = document.getElementById('node-input-func-editor-getHoldingRegister');
+      getHoldingRegisterElement.addEventListener("mouseup", resizeScriptEditorGetHolding, false);
+      function resizeScriptEditorGetHolding () {
+        node.editorGetHolding.resize()
+      }
+
+      node.editorSetCoil = RED.editor.createEditor({
         id: 'node-input-func-editor-setCoil',
         mode: 'ace/mode/javascript',
         value: $('#node-input-funcSetCoil').val(),
         globals: editorGlobals
       })
 
-      this.editorSetRegister = RED.editor.createEditor({
+      $( function() {
+        $( "#node-input-func-editor-setCoil" ).resizable();
+      } );
+
+      let setCoilElement = document.getElementById('node-input-func-editor-setCoil');
+      setCoilElement.addEventListener("mouseup", resizeScriptSetCoil, false);
+      function resizeScriptSetCoil () {
+        node.editorSetCoil.resize()
+      }
+
+      node.editorSetRegister = RED.editor.createEditor({
         id: 'node-input-func-editor-setRegister',
         mode: 'ace/mode/javascript',
         value: $('#node-input-funcSetRegister').val(),
         globals: editorGlobals
       })
+
+      $( function() {
+        $( "#node-input-func-editor-setRegister" ).resizable();
+      } );
+
+      let setRegisterElement = document.getElementById('node-input-func-editor-setRegister');
+      setRegisterElement.addEventListener("mouseup", resizeScriptSetRegister, false);
+      function resizeScriptSetRegister () {
+        node.editorSetRegister.resize()
+      }
     },
     oneditsave: function () {
       $('#node-input-funcGetCoil').val(this.editorGetCoil.getValue())

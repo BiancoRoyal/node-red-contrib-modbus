@@ -52,6 +52,8 @@
   "license": "BSD-3-Clause",
   "main": "node",
   "files": [
+    "docs",
+    "examples",
     "modbus"
   ],
   "bugs": {
