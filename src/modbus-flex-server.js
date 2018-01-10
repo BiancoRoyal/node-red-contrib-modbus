@@ -13,6 +13,7 @@
  */
 module.exports = function (RED) {
   'use strict'
+  // SOURCE-MAP-REQUIRED
   let ModbusRTU = require('modbus-serial')
   let mbBasics = require('./modbus-basics')
   let internalDebugLog = require('debug')('contribModbus:flex:server')

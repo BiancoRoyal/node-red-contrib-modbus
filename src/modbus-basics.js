@@ -6,6 +6,8 @@
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  **/
 'use strict'
+// SOURCE-MAP-REQUIRED
+
 /**
  * Modbus core node basics.
  * @module NodeRedModbusBasics

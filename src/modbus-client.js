@@ -15,6 +15,7 @@
  */
 module.exports = function (RED) {
   'use strict'
+  // SOURCE-MAP-REQUIRED
   let coreModbusClient = require('./core/modbus-client-core')
 
   function ModbusClientNode (config) {

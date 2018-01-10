@@ -16,6 +16,7 @@
  */
 module.exports = function (RED) {
   'use strict'
+  // SOURCE-MAP-REQUIRED
   let mbBasics = require('./modbus-basics')
   let mbCore = require('./core/modbus-core')
   let mbIOCore = require('./core/modbus-io-core')

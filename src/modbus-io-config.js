@@ -8,6 +8,7 @@
  */
 module.exports = function (RED) {
   'use strict'
+  // SOURCE-MAP-REQUIRED
   const coreIO = require('./core/modbus-io-core')
 
   function ModbusIOConfigNode (config) {

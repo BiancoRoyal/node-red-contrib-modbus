@@ -13,6 +13,7 @@
  */
 module.exports = function (RED) {
   'use strict'
+  // SOURCE-MAP-REQUIRED
   let mbCore = require('./core/modbus-core')
   var modbusIOFileValuNames = []
 

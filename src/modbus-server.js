@@ -13,6 +13,7 @@
  */
 module.exports = function (RED) {
   'use strict'
+  // SOURCE-MAP-REQUIRED
   let stampit = require('stampit')
   let modbus = require('node-modbus')
   let mbBasics = require('./modbus-basics')

@@ -6,6 +6,7 @@
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  */
 'use strict'
+// SOURCE-MAP-REQUIRED
 
 var de = de || {biancoroyal: {modbus: {core: {client: {}}}}} // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.core.client.internalDebug = de.biancoroyal.modbus.core.client.internalDebug || require('debug')('contribModbus:core:client') // eslint-disable-line no-use-before-define

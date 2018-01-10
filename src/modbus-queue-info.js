@@ -13,6 +13,7 @@
  */
 module.exports = function (RED) {
   'use strict'
+  // SOURCE-MAP-REQUIRED
   let internalDebugLog = require('debug')('contribModbus:queue')
 
   function ModbusQueueInfo (config) {

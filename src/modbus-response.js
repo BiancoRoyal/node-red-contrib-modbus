@@ -15,6 +15,7 @@
  */
 module.exports = function (RED) {
   'use strict'
+  // SOURCE-MAP-REQUIRED
   let util = require('util')
   let mbBasics = require('./modbus-basics')
   let internalDebugLog = require('debug')('contribModbus:response')
