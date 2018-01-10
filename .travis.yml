@@ -9,3 +9,7 @@ before_script:
   - npm test
 script:
   - gulp publish
+branches:
+  only:
+  - master
+  - develop
