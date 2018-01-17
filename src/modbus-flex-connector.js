@@ -105,7 +105,7 @@ module.exports = function (RED) {
     }
 
     function setNodeStatusTo (statusValue) {
-      let statusOptions = mbBasics.set_node_status_properties(statusValue, node.showStatusActivities)
+      let statusOptions = mbBasics.setNodeStatusProperties(statusValue, node.showStatusActivities)
 
       node.status({
         fill: statusOptions.fill,
