@@ -7,7 +7,7 @@
     "bson": "1.0.4",
     "debug": "3.1.0",
     "line-by-line": "0.1.5",
-    "modbus-serial": "7.0.1",
+    "modbus-serial": "7.0.3",
     "node-modbus": "4.0.1",
     "serialport": "6.0.4",
     "source-map-support": "0.5.0",
@@ -109,6 +109,7 @@
   },
   "standard": {
     "ignore": [
+      "code/",
       "node_modules/",
       "examples/",
       "modbus/",
