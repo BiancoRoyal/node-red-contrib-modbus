@@ -25,11 +25,11 @@ gulp.task('default', function () {
 })
 
 gulp.task('docs', sequence('doc', 'docIcons', 'docImages'))
-gulp.task('build', sequence('clean', 'web', 'nodejs', 'locale', 'nodejsclearly'))
-gulp.task('publish', sequence('build', 'maps', 'icons', 'docs'))
+gulp.task('build', sequence('clean', 'web', 'nodejs', 'locale', 'code'))
+gulp.task('publish', sequence('build', 'icons', 'docs', 'maps'))
 
 gulp.task('clean', function () {
-  return gulp.src(['modbus', 'docs/gen', 'maps'])
+  return gulp.src(['modbus', 'docs/gen', 'maps', 'code'])
     .pipe(clean({force: true}))
 })
 
@@ -88,7 +88,7 @@ gulp.task('nodejs', function (cb) {
   )
 })
 
-gulp.task('nodejsclearly', function (cb) {
+gulp.task('code', function () {
   gulp.src('src/**/*.js')
       .pipe(babel({presets: ['es2015']}))
       .pipe(gulp.dest('code'))
