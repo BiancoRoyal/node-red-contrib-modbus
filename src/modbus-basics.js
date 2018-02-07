@@ -139,3 +139,25 @@ module.exports.setNodeStatusProperties = function (statusValue, showActivities) 
 
   return {fill: fillValue, shape: shapeValue, status: statusValue}
 }
+
+module.exports.setModbusError = function (node, modbusClient, err, msg, setNodeStatusTo) {
+  if (err) {
+    switch (err.message) {
+      case 'Timed out':
+        setNodeStatusTo('timeout')
+        break
+      case 'FSM Not Ready To Reconnect':
+        setNodeStatusTo('not ready to reconnect')
+        break
+      case 'Port Not Open':
+        setNodeStatusTo('reconnect')
+        modbusClient.emit('reconnect')
+        break
+      default:
+        setNodeStatusTo('error ' + err.message)
+        if (node.showErrors) {
+          node.error(err, msg)
+        }
+    }
+  }
+}

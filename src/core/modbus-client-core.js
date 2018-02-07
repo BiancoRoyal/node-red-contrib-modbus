@@ -36,7 +36,8 @@ de.biancoroyal.modbus.core.client.createStatelyMachine = function () {
       'read': 'READING',
       'write': 'WRITING',
       'empty': 'EMPTY',
-      'failure': 'FAILED'
+      'failure': 'FAILED',
+      'close': 'CLOSED'
     },
     'EMPTY': {'queue': 'QUEUEING', 'failure': 'FAILED'},
     'READING': {'activate': 'ACTIVATED', 'failure': 'FAILED'},

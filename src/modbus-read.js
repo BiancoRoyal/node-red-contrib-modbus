@@ -107,10 +107,19 @@ module.exports = function (RED) {
       timerID = null
     }
 
+    node.onModbusBroken = function () {
+      setNodeStatusTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.')
+      if (timerID) {
+        clearInterval(timerID) // clear Timer from events
+      }
+      timerID = null
+    }
+
     modbusClient.on('mbinit', node.onModbusInit)
     modbusClient.on('mbconnected', node.onModbusConnect)
     modbusClient.on('mbactive', node.onModbusActive)
     modbusClient.on('mberror', node.onModbusError)
+    modbusClient.on('mbbroken', node.onModbusBroken)
     modbusClient.on('mbclosed', node.onModbusClose)
 
     node.modbusPollingRead = function () {
@@ -149,7 +158,8 @@ module.exports = function (RED) {
     }
 
     node.onModbusReadError = function (err, msg) {
-      setModbusError(err, msg)
+      internalDebugLog(err.message)
+      mbBasics.setModbusError(node, modbusClient, err, msg, setNodeStatusTo)
     }
 
     node.on('close', function () {
@@ -235,37 +245,6 @@ module.exports = function (RED) {
 
     function getTimeInfo () {
       return ' ( ' + node.rate + ' ' + mbBasics.get_timeUnit_name(node.rateUnit) + ' ) '
-    }
-
-    function setModbusError (err, msg) {
-      let working = false
-
-      if (err) {
-        internalDebugLog(err.message)
-
-        switch (err.message) {
-          case 'Timed out':
-            timeoutOccurred = true
-            setNodeStatusTo('timeout')
-            working = true
-            break
-          case 'FSM Not Ready To Read':
-            setNodeStatusTo('not ready to read')
-            working = true
-            break
-          case 'Port Not Open':
-            setNodeStatusTo('reconnect')
-            modbusClient.emit('reconnect')
-            working = true
-            break
-          default:
-            setNodeStatusTo('error ' + err.message)
-            if (node.showErrors) {
-              node.error(err, msg)
-            }
-        }
-      }
-      return working
     }
   }
 

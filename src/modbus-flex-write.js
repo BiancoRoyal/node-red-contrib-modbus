@@ -54,10 +54,15 @@ module.exports = function (RED) {
       setNodeStatusTo('closed')
     }
 
+    node.onModbusBroken = function () {
+      setNodeStatusTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.')
+    }
+
     modbusClient.on('mbinit', node.onModbusInit)
     modbusClient.on('mbconnected', node.onModbusConnect)
     modbusClient.on('mbactive', node.onModbusActive)
     modbusClient.on('mberror', node.onModbusError)
+    modbusClient.on('mbbroken', node.onModbusBroken)
     modbusClient.on('mbclosed', node.onModbusClose)
 
     node.on('input', function (msg) {
@@ -157,7 +162,8 @@ module.exports = function (RED) {
     }
 
     node.onModbusWriteError = function (err, msg) {
-      setModbusError(err, mbCore.getOriginalMessage(node.bufferMessageList, msg) || msg)
+      internalDebugLog(err.message)
+      mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg) || msg, setNodeStatusTo)
     }
 
     node.on('close', function () {
@@ -193,36 +199,6 @@ module.exports = function (RED) {
         shape: statusOptions.shape,
         text: statusOptions.status
       })
-    }
-
-    function setModbusError (err, msg) {
-      let working = false
-
-      if (err) {
-        internalDebugLog(err.message)
-
-        switch (err.message) {
-          case 'Timed out':
-            setNodeStatusTo('timeout')
-            working = true
-            break
-          case 'FSM Not Ready To Write':
-            setNodeStatusTo('not ready to write')
-            working = true
-            break
-          case 'Port Not Open':
-            setNodeStatusTo('reconnect')
-            modbusClient.emit('reconnect')
-            working = true
-            break
-          default:
-            setNodeStatusTo('error ' + err.message)
-            if (node.showErrors) {
-              node.error(err, msg)
-            }
-        }
-      }
-      return working
     }
   }
 
