@@ -7,7 +7,7 @@
     "bson": "1.0.4",
     "debug": "3.1.0",
     "line-by-line": "0.1.5",
-    "modbus-serial": "7.1.4",
+    "modbus-serial": "7.1.5",
     "node-modbus": "4.2.1",
     "serialport": "6.1.0",
     "source-map-support": "0.5.0",
