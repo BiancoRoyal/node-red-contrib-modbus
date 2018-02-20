@@ -49,7 +49,7 @@
       "Modbus-Response-Filter": "modbus/modbus-response-filter.js"
     }
   },
-  "author": "Klaus Landsdorf",
+  "author": "Klaus Landsdorf <klaus.landsdorf@bianco-royal.de>",
   "license": "BSD-3-Clause",
   "main": "node",
   "files": [
