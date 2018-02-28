@@ -13,6 +13,8 @@ module.exports = function (RED) {
 
   function ModbusIOConfigNode (config) {
     const fs = require('fs-extra')
+    const UNLIMITED_LISTENERS = 0
+
     RED.nodes.createNode(this, config)
 
     this.name = config.name
@@ -21,6 +23,7 @@ module.exports = function (RED) {
     this.addressOffset = config.addressOffset
 
     let node = this
+    node.setMaxListeners(UNLIMITED_LISTENERS)
     node.lastUpdatedAt = null
     let lineReader = new coreIO.LineByLineReader(node.path)
     coreIO.internalDebug('Read IO File ' + node.path)

@@ -304,7 +304,7 @@ module.exports = function (RED) {
               autoOpen: true
             }).then(node.setTCPConnectionOptions)
               .then(node.setTCPConnected)
-              .catch(node.modbusErrorHandling)
+              .catch(node.modbusTcpErrorHandling)
             break
           case 'TELNET':
             verboseLog('Telnet port')
@@ -312,7 +312,7 @@ module.exports = function (RED) {
               port: node.tcpPort,
               autoOpen: true
             }).then(node.setTCPConnectionOptions)
-              .catch(node.modbusErrorHandling)
+              .catch(node.modbusTcpErrorHandling)
             break
           case 'TPC-RTU-BUFFERED':
             verboseLog('TCP RTU buffered port')
@@ -320,7 +320,7 @@ module.exports = function (RED) {
               port: node.tcpPort,
               autoOpen: true
             }).then(node.setTCPConnectionOptions)
-              .catch(node.modbusErrorHandling)
+              .catch(node.modbusTcpErrorHandling)
             break
           default:
             verboseLog('TCP port')
@@ -328,7 +328,7 @@ module.exports = function (RED) {
               port: node.tcpPort,
               autoOpen: true
             }).then(node.setTCPConnectionOptions)
-              .catch(node.modbusErrorHandling)
+              .catch(node.modbusTcpErrorHandling)
         }
       } else {
         if (!node.checkUnitId(node.unit_id)) {
@@ -351,7 +351,7 @@ module.exports = function (RED) {
               parity: node.serialParity,
               autoOpen: false
             }).then(node.setSerialConnectionOptions)
-              .catch(node.modbusErrorHandling)
+              .catch(node.modbusSerialErrorHandling)
             break
           case 'RTU':
             verboseLog('RTU port serial')
@@ -362,7 +362,7 @@ module.exports = function (RED) {
               parity: node.serialParity,
               autoOpen: false
             }).then(node.setSerialConnectionOptions)
-              .catch(node.modbusErrorHandling)
+              .catch(node.modbusSerialErrorHandling)
             break
           default:
             verboseLog('RTU buffered port serial')
@@ -373,7 +373,7 @@ module.exports = function (RED) {
               parity: node.serialParity,
               autoOpen: false
             }).then(node.setSerialConnectionOptions)
-              .catch(node.modbusErrorHandling)
+              .catch(node.modbusSerialErrorHandling)
             break
         }
       }
@@ -400,9 +400,29 @@ module.exports = function (RED) {
       } else {
         coreModbusClient.modbusSerialDebug('modbusErrorHandling:' + JSON.stringify(err))
       }
-      if (coreModbusClient.networkErrors.includes(err.errno)) {
+      if (err.errno && coreModbusClient.networkErrors.includes(err.errno)) {
         node.statlyMachine.failure()
       }
+    }
+
+    node.modbusTcpErrorHandling = function (err) {
+      if (err.message) {
+        coreModbusClient.modbusSerialDebug('modbusTcpErrorHandling:' + err.message)
+      } else {
+        coreModbusClient.modbusSerialDebug('modbusTcpErrorHandling:' + JSON.stringify(err))
+      }
+      if (err.errno && coreModbusClient.networkErrors.includes(err.errno)) {
+        node.statlyMachine.failure()
+      }
+    }
+
+    node.modbusSerialErrorHandling = function (err) {
+      if (err.message) {
+        coreModbusClient.modbusSerialDebug('modbusSerialErrorHandling:' + err.message)
+      } else {
+        coreModbusClient.modbusSerialDebug('modbusSerialErrorHandling:' + JSON.stringify(err))
+      }
+      node.statlyMachine.failure()
     }
 
     node.openSerialClient = function () {
@@ -473,7 +493,7 @@ module.exports = function (RED) {
       let state = node.statlyMachine.getMachineState()
 
       if (node.messageAllowedStates.indexOf(state) === -1) {
-        cberr(new Error('FSM Not Ready To Read'), msg)
+        cberr(new Error('FSM Not Ready To Read At State ' + state), msg)
         return
       }
 
@@ -566,7 +586,7 @@ module.exports = function (RED) {
       let state = node.statlyMachine.getMachineState()
 
       if (node.messageAllowedStates.indexOf(state) === -1) {
-        cberr(new Error('FSM Not Ready To Write'), msg)
+        cberr(new Error('FSM Not Ready To Write At State ' + state), msg)
         return
       }
 

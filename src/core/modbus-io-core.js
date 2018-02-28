@@ -19,11 +19,11 @@ de.biancoroyal.modbus.io.core.nameValuesFromIOFile = function (msg, ioFileConfig
 
   if (ioFileConfig.configData) {
     ioFileConfig.configData.forEach(function (mapping) {
-      if (mapping.valueAddress.startsWith('%I')) {
+      if (mapping.valueAddress && mapping.valueAddress.startsWith('%I')) {
         valueNames.push(ioCore.buildInputAddressMapping('MB-INPUTS', mapping, Number(ioFileConfig.addressOffset), Number(readingOffset)))
       }
 
-      if (mapping.valueAddress.startsWith('%Q')) {
+      if (mapping.valueAddress && mapping.valueAddress.startsWith('%Q')) {
         valueNames.push(ioCore.buildOutputAddressMapping('MB-OUTPUTS', mapping, Number(ioFileConfig.addressOffset), Number(readingOffset)))
       }
     })
@@ -40,11 +40,11 @@ de.biancoroyal.modbus.io.core.allValueNamesFromIOFile = function (ioNode) {
 
   if (ioNode && ioNode.configData) {
     ioNode.configData.forEach(function (mapping) {
-      if (mapping.valueAddress.startsWith('%I')) {
+      if (mapping.valueAddress && mapping.valueAddress.startsWith('%I')) {
         valueNames.push(ioCore.buildInputAddressMapping('MB-INPUTS', mapping, Number(ioNode.addressOffset), 0))
       }
 
-      if (mapping.valueAddress.startsWith('%Q')) {
+      if (mapping.valueAddress && mapping.valueAddress.startsWith('%Q')) {
         valueNames.push(ioCore.buildOutputAddressMapping('MB-OUTPUTS', mapping, Number(ioNode.addressOffset), 0))
       }
     })
