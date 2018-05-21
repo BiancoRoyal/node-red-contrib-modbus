@@ -12,6 +12,7 @@
     defaults: {
       name: {value: ''},
       logEnabled: {value: false},
+      hostname: {value: '0.0.0.0'},
       serverPort: {value: 10502, required: true, validate: RED.validators.number()},
       responseDelay: {value: 100, required: true, validate: RED.validators.number()},
       delayUnit: {
@@ -39,6 +40,10 @@
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-hostname"><i class="icon-tag"></i> <span data-i18n="modbus-contrib.label.hostname"></span></label>
+        <input type="text" id="node-input-hostname" placeholder="0.0.0.0 (IPv4) or :: (IPv6)">
     </div>
     <div class="form-row">
         <label for="node-input-serverPort"><i class="icon-tag"></i> <span data-i18n="modbus-contrib.label.port"></span></label>

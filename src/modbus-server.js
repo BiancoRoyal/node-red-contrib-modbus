@@ -25,6 +25,7 @@ module.exports = function (RED) {
 
     this.name = config.name
     this.logEnabled = config.logEnabled
+    this.hostname = config.hostname || '0.0.0.0'
     this.serverPort = parseInt(config.serverPort)
     this.responseDelay = parseInt(config.responseDelay)
     this.delayUnit = config.delayUnit
@@ -91,6 +92,7 @@ module.exports = function (RED) {
         'logLabel': 'ModbusServer',
         'logLevel': modbusLogLevel,
         'logEnabled': node.logEnabled,
+        'hostname': node.hostname,
         'port': node.serverPort,
         'responseDelay': mbBasics.calc_rateByUnit(node.responseDelay, node.delayUnit),
         'coils': Buffer.alloc(node.coilsBufferSize, 0),

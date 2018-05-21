@@ -24,6 +24,7 @@ module.exports = function (RED) {
 
     this.name = config.name
     this.logEnabled = config.logEnabled
+    this.serverAddress = config.serverAddress || '0.0.0.0'
     this.serverPort = parseInt(config.serverPort)
     this.responseDelay = parseInt(config.responseDelay)
     this.delayUnit = config.delayUnit
@@ -114,10 +115,10 @@ module.exports = function (RED) {
       verboseLog('starting modbus flex server')
 
       try {
-        internalDebugLog('ModbusTCP flex server listening on modbus://0.0.0.0:' + node.serverPort)
+        internalDebugLog('ModbusTCP flex server listening on modbus://' + node.serverAddress + ':' + node.serverPort)
         if (node.server === null) {
           node.server = new ModbusRTU.ServerTCP(node.vector, {
-            host: '0.0.0.0',
+            host: node.serverAddress,
             port: node.serverPort,
             debug: node.logEnabled,
             unitID: node.unitId
