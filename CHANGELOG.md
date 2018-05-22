@@ -1,7 +1,3 @@
-# Change Log
-
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
-
 <a name="3.6.0"></a>
 # [3.6.0](https://github.com/biancode/node-red-contrib-modbus/compare/v3.5.1...v3.6.0) (2018-05-22)
 
@@ -28,7 +24,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 <a name="3.3.4"></a>
-## [3.3.4](https://github.com/biancode/node-red-contrib-modbus/compare/v3.3.2...v3.3.4) (2018-03-05)
+## [3.3.4](https://github.com/biancode/node-red-contrib-modbus/compare/v3.3.3...v3.3.4) (2018-03-05)
 
 
 
@@ -57,28 +53,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-<a name="3.2.1"></a>
-## [3.2.1](https://github.com/biancode/node-red-contrib-modbus/compare/v3.0.5-npm-error...v3.2.1) (2018-02-07)
-
-
-
-<a name="3.2.0"></a>
-# [3.2.0](https://github.com/biancode/node-red-contrib-modbus/compare/v3.0.5-npm-error...v3.2.0) (2018-02-06)
-
-new serialport 6.1.0 and modbus-serial 7.1.3
-
-<a name="3.1.0"></a>
-# [3.1.0](https://github.com/biancode/node-red-contrib-modbus/compare/v3.0.2...v3.1.0) (2018-02-05)
-
-
-
-<a name="3.0.4"></a>
-## [3.0.4](https://github.com/biancode/node-red-contrib-modbus/compare/v3.0.2...v3.0.4) (2018-02-05)
-
-
-
-<a name="3.0.3"></a>
-## [3.0.3](https://github.com/biancode/node-red-contrib-modbus/compare/v3.0.2...v3.0.3) (2018-01-17)
+<a name="3.0.5-npm-error"></a>
+## [3.0.5-npm-error](https://github.com/biancode/node-red-contrib-modbus/compare/v3.0.4...v3.0.5-npm-error) (2018-02-05)
 
 
 
@@ -92,43 +68,13 @@ new serialport 6.1.0 and modbus-serial 7.1.3
 
 
 
-<a name="3.0.0"></a>
-# [3.0.0](https://github.com/biancode/node-red-contrib-modbus/compare/v2.5.0...v3.0.0) (2017-12-28)
-
-
-
 <a name="2.5.0"></a>
-# [2.5.0](https://github.com/biancode/node-red-contrib-modbus/compare/v2.4.1...v2.5.0) (2017-12-19)
-
-
-
-<a name="2.4.1"></a>
-## [2.4.1](https://github.com/biancode/node-red-contrib-modbus/compare/v2.4.0...v2.4.1) (2017-12-07)
-
-
-
-<a name="2.4.0"></a>
-# [2.4.0](https://github.com/biancode/node-red-contrib-modbus/compare/v2.3.2...v2.4.0) (2017-12-06)
-
-
-
-<a name="2.3.3"></a>
-## [2.3.3](https://github.com/biancode/node-red-contrib-modbus/compare/v2.3.2...v2.3.3) (2017-12-06)
+# [2.5.0](https://github.com/biancode/node-red-contrib-modbus/compare/v2.3.2...v2.5.0) (2017-12-19)
 
 
 
 <a name="2.3.2"></a>
-## [2.3.2](https://github.com/biancode/node-red-contrib-modbus/compare/v2.3.1...v2.3.2) (2017-11-21)
-
-
-
-<a name="2.3.1"></a>
-## [2.3.1](https://github.com/biancode/node-red-contrib-modbus/compare/v2.3.0...v2.3.1) (2017-11-21)
-
-
-
-<a name="2.3.0"></a>
-# [2.3.0](https://github.com/biancode/node-red-contrib-modbus/compare/v2.2.3...v2.3.0) (2017-11-17)
+## [2.3.2](https://github.com/biancode/node-red-contrib-modbus/compare/v2.2.3...v2.3.2) (2017-11-21)
 
 
 
@@ -157,33 +103,23 @@ new serialport 6.1.0 and modbus-serial 7.1.3
 
 
 
-<a name="2.1.0"></a>
-# [2.1.0](https://github.com/biancode/node-red-contrib-modbus/compare/v2.0.1...v2.1.0) (2017-10-15)
+<a name="1.0.16"></a>
+## [1.0.16](https://github.com/biancode/node-red-contrib-modbus/compare/v1.0.12...v1.0.16) (2017-05-10)
 
-* flow data node response unified for all read and write nodes
-* handles with HTTP requests by message identifier
-* handles as expected with topic for MQTT queues
-    * add topic in Read node
 
-<a name="2.0.1"></a>
-## [2.0.1](https://github.com/biancode/node-red-contrib-modbus/compare/v1.3.0...v2.0.1) (2017-10-02)
 
-* breaking change for the queue info node to work without the Node-RED catch node
-* new Modbus Flex Server ( flexible server of modbus-serial )
-* upgrade to serialport 5.x
-* upgrade to node-modbus 4.x
-* upgrade to debug 3.x
-* using vm2 sandboxes
-* locales updates
+<a name="1.0.12"></a>
+## [1.0.12](https://github.com/biancode/node-red-contrib-modbus/compare/v1.0.8...v1.0.12) (2017-05-06)
 
-<a name="1.3.0"></a>
-# [1.3.0](https://github.com/biancode/node-red-contrib-modbus/compare/v1.2.0...v1.3.0) (2017-09-29)
 
-<a name="1.2.0"></a>
-# [1.2.0](https://github.com/biancode/node-red-contrib-modbus/compare/v1.1.0...v1.2.0) (2017-07-02)
 
-<a name="1.1.0"></a>
-# [1.1.0](https://github.com/biancode/node-red-contrib-modbus/compare/v1.0.0...v1.1.0) (2017-05-16)
+<a name="1.0.8"></a>
+## [1.0.8](https://github.com/biancode/node-red-contrib-modbus/compare/v1.0.0...v1.0.8) (2017-03-05)
+
+
 
 <a name="1.0.0"></a>
 # 1.0.0 (2017-01-18)
+
+
+
