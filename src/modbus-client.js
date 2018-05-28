@@ -341,6 +341,11 @@ module.exports = function (RED) {
           node.serialConnectionDelay = serialConnectionDelayTimeMS
         }
 
+        if (!node.serialPort) {
+          node.error(new Error('wrong serial port'), {payload: node.serialPort})
+          node.statlyMachine.failure()
+        }
+
         switch (node.serialType) {
           case 'ASCII':
             verboseLog('ASCII port serial')
