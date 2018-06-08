@@ -79,17 +79,17 @@ gulp.task('nodejs', function (cb) {
   let anchor = '// SOURCE-MAP-REQUIRED'
 
   pump([gulp.src('src/**/*.js')
-        .pipe(sourcemaps.init({loadMaps: true}))
-        .pipe(replace(anchor, 'require(\'source-map-support\').install()'))
-        .pipe(babel({presets: ['es2015']}))
-        .pipe(uglify())
-        .pipe(sourcemaps.write('maps')), gulp.dest('modbus')],
-    cb
+    .pipe(sourcemaps.init({loadMaps: true}))
+    .pipe(replace(anchor, 'require(\'source-map-support\').install()'))
+    .pipe(babel({presets: ['es2015']}))
+    .pipe(uglify())
+    .pipe(sourcemaps.write('maps')), gulp.dest('modbus')],
+  cb
   )
 })
 
 gulp.task('code', function () {
   gulp.src('src/**/*.js')
-      .pipe(babel({presets: ['es2015']}))
-      .pipe(gulp.dest('code'))
+    .pipe(babel({presets: ['es2015']}))
+    .pipe(gulp.dest('code'))
 })
