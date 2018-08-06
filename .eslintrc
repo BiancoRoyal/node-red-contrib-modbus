@@ -1,9 +1,0 @@
-{
-  "plugins": [
-    "mocha"
-  ],
-  "extends": [
-    "standard",
-    "standard-jsx"
-  ]
-}

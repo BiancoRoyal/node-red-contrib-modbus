@@ -13,15 +13,27 @@
 var clientNode = require('../../src/modbus-client.js')
 var serverNode = require('../../src/modbus-server.js')
 var readNode = require('../../src/modbus-queue-info.js')
-var helper = require('../helper.js')
+var helper = require('node-red-contrib-test-helper')
 
 describe('Queue Info node Testing', function () {
   before(function (done) {
-    helper.startServer(done)
+    helper.startServer(function () {
+      done()
+    })
   })
 
-  afterEach(function () {
-    helper.unload()
+  afterEach(function (done) {
+    helper.unload().then(function () {
+      done()
+    }).catch(function () {
+      done()
+    })
+  })
+
+  after(function (done) {
+    helper.stopServer(function () {
+      done()
+    })
   })
 
   describe('Node', function () {

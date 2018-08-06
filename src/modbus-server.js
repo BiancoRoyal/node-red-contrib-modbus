@@ -14,8 +14,7 @@
 module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
-  let stampit = require('stampit')
-  let modbus = require('node-modbus')
+  let modbus = require('jsmodbus')
   let mbBasics = require('./modbus-basics')
   let internalDebugLog = require('debug')('contribModbus:server')
 
@@ -88,7 +87,7 @@ module.exports = function (RED) {
     }
 
     try {
-      let ModbusServer = stampit().refs({
+      node.server = modbus.server.tcp.complete({
         'logLabel': 'ModbusServer',
         'logLevel': modbusLogLevel,
         'logEnabled': node.logEnabled,
@@ -98,20 +97,9 @@ module.exports = function (RED) {
         'coils': Buffer.alloc(node.coilsBufferSize, 0),
         'holding': Buffer.alloc(node.holdingBufferSize, 0),
         'input': Buffer.alloc(node.inputBufferSize, 0)
-      })
-        .compose(modbus.server.tcp.complete)
-        .init(function () {
-          let init = function () {
-            this.coils.fill(0)
-            this.holding.fill(0)
-            this.input.fill(0)
-          }.bind(this)
-          init()
-        })
+      }).connect()
 
       verboseLog('starting modbus server')
-
-      node.server = ModbusServer()
     } catch (err) {
       verboseWarn(err)
       setNodeStatusTo('error')
@@ -120,6 +108,8 @@ module.exports = function (RED) {
     if (node.server != null) {
       verboseLog('modbus server started')
       setNodeStatusTo('active')
+
+      node.server.on('connect', node.start)
     } else {
       verboseWarn('modbus server isn\'t ready')
       setNodeStatusTo('error')

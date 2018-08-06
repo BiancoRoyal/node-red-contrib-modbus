@@ -32,9 +32,9 @@ relevant nodes, press Ctrl-E and copy the flow data from the Export dialog.
 At a minimum, please include:
 
  - Version of node.js? (should be >=LTS)
- - Version of Node-RED? (should be >=v0.18.4)
- - Version of node-red-contrib-modbus? (should be >=v3.6.0)
- 
+ - Version of Node-RED? (should be >=v0.18.7)
+ - Version of node-red-contrib-modbus? (should be >=v3.7.0)
+
  - What is your platform? (Linux, macOS, ...)
  - What does `DEBUG=contribModbus:*,modbus-serial* node-red -v` log? (log files are welcome)
 

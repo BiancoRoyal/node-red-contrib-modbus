@@ -88,6 +88,12 @@ gulp.task('nodejs', function (cb) {
   )
 })
 
+gulp.task('nodejsclearly', function (cb) {
+  gulp.src('src/**/*.js')
+    .pipe(babel({presets: ['es2015']}))
+    .pipe(gulp.dest('code'))
+})
+
 gulp.task('code', function () {
   gulp.src('src/**/*.js')
     .pipe(babel({presets: ['es2015']}))

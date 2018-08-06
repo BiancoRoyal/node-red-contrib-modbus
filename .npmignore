@@ -11,3 +11,4 @@ Example.png
 *.conf.js
 *.log
 src
+maps/

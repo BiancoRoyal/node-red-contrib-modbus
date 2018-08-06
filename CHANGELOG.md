@@ -1,19 +1,10 @@
-# Change Log
-
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
-
 <a name="3.6.1"></a>
 ## [3.6.1](https://github.com/biancode/node-red-contrib-modbus/compare/v3.6.0...v3.6.1) (2018-06-08)
 
 
 
 <a name="3.6.0"></a>
-# [3.6.0](https://github.com/biancode/node-red-contrib-modbus/compare/v3.5.1...v3.6.0) (2018-05-22)
-
-
-
-<a name="3.5.1"></a>
-## [3.5.1](https://github.com/biancode/node-red-contrib-modbus/compare/v3.5.0...v3.5.1) (2018-05-22)
+# [3.6.0](https://github.com/biancode/node-red-contrib-modbus/compare/v3.5.0...v3.6.0) (2018-05-28)
 
 
 
@@ -33,12 +24,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 <a name="3.3.4"></a>
-## [3.3.4](https://github.com/biancode/node-red-contrib-modbus/compare/v3.3.3...v3.3.4) (2018-03-05)
-
-
-
-<a name="3.3.3"></a>
-## [3.3.3](https://github.com/biancode/node-red-contrib-modbus/compare/v3.3.2...v3.3.3) (2018-02-22)
+## [3.3.4](https://github.com/biancode/node-red-contrib-modbus/compare/v3.3.2...v3.3.4) (2018-03-05)
 
 
 
@@ -48,22 +34,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 <a name="3.3.1"></a>
-## [3.3.1](https://github.com/biancode/node-red-contrib-modbus/compare/v3.3.0...v3.3.1) (2018-02-20)
-
-
-
-<a name="3.3.0"></a>
-# [3.3.0](https://github.com/biancode/node-red-contrib-modbus/compare/v3.2.2...v3.3.0) (2018-02-08)
-
-
-
-<a name="3.2.2"></a>
-## [3.2.2](https://github.com/biancode/node-red-contrib-modbus/compare/v3.0.5-npm-error...v3.2.2) (2018-02-07)
-
-
-
-<a name="3.0.5-npm-error"></a>
-## [3.0.5-npm-error](https://github.com/biancode/node-red-contrib-modbus/compare/v3.0.4...v3.0.5-npm-error) (2018-02-05)
+## [3.3.1](https://github.com/biancode/node-red-contrib-modbus/compare/v3.0.2...v3.3.1) (2018-02-20)
 
 
 
@@ -93,17 +64,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 <a name="2.2.2"></a>
-## [2.2.2](https://github.com/biancode/node-red-contrib-modbus/compare/v2.2.1...v2.2.2) (2017-11-08)
-
-
-
-<a name="2.2.1"></a>
-## [2.2.1](https://github.com/biancode/node-red-contrib-modbus/compare/v2.2.0...v2.2.1) (2017-11-04)
-
-
-
-<a name="2.2.0"></a>
-# [2.2.0](https://github.com/biancode/node-red-contrib-modbus/compare/v2.1.1...v2.2.0) (2017-11-02)
+## [2.2.2](https://github.com/biancode/node-red-contrib-modbus/compare/v2.1.1...v2.2.2) (2017-11-08)
 
 
 
@@ -129,3 +90,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 <a name="1.0.0"></a>
 # 1.0.0 (2017-01-18)
+
+
+

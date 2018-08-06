@@ -6,25 +6,25 @@
 [![NPM download](https://img.shields.io/npm/dm/node-red-contrib-modbus.svg)](http://www.npm-stats.com/~packages/node-red-contrib-modbus)
 [![NPM version](https://badge.fury.io/js/node-red-contrib-modbus.png)](https://www.npmjs.com/package/node-red-contrib-modbus)
 [![Build Status](https://travis-ci.org/biancode/node-red-contrib-modbus.svg?branch=master)](https://travis-ci.org/biancode/node-red-contrib-modbus)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/456a38405124477bafb4772c5b42a260)](https://www.codacy.com/app/klaus/node-red-contrib-modbus?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=biancode/node-red-contrib-modbus&amp;utm_campaign=Badge_Grade)
+
+# node-red-contrib-modbus
+
+## The all in one Modbus TCP and Serial contribution package for Node-RED.
 
 [![nodemodbus64](images/modbus-icon64.png)](https://www.npmjs.com/package/node-red-contrib-modbus)
 
-node-red-contrib-modbus 
-========================
-
-#### The all in one Modbus TCP and Serial contribution package for Node-RED.
-
 [Node-RED][1] contribution package for [Modbus][8]
 
-## [Become a backer of the project straight away!][11]
+**[Become a backer of the project straight away!][11]**
 
 Based on [modbus-serial][2] with TCP, C701, Telnet, Serial, RTU buffered, and ASCII
 
-* stress tested with Node-RED v0.17.5 and Node.js v6.x and v8.x LTS
+* stress tested with Node-RED v0.18.7 and Node.js v6.x and v8.x LTS
 * works with queueing per unit and round robin scheduling
 * Node.JS 4.x is supported with v1.x
 
-# Install
+## Install
 
 Run the following command in the root directory of your Node-RED install
 
@@ -37,8 +37,8 @@ Run the following command for global install
 try these options on npm install to build, if you have problems to install
 
     --unsafe-perm --build-from-source
-    
-# Update/Upgrade/Downgrade
+
+## Update/Upgrade/Downgrade
 
 To update the dependencies or the whole package, you have just to install again.
 To get a special version please set the version with @M.M.F:
@@ -48,8 +48,8 @@ To get a special version please set the version with @M.M.F:
 or global by
 
     npm install -g node-red-contrib-modbus@1.3.0
-    
-# How to use
+
+## How to use
 
 see [Wiki][10] pages
 
@@ -59,9 +59,9 @@ see [YouTube Playlist][9]
 
 ![Flow Example](images/Screenshot01V210.png)
 
-# Debug
+## Debug
 
-Debug will be activated by starting Node-RED with debug mode: 
+Debug will be activated by starting Node-RED with debug mode:
 
     DEBUG=contribModbus*,modbus-serial node-red -v
 
@@ -69,7 +69,7 @@ Debug will be activated by starting Node-RED with debug mode:
 
     DEBUG=contribModbus:{option},contribModbus:{option},...
 
-## Options
+### Options
 
  * core
     * core:client
@@ -86,11 +86,19 @@ Debug will be activated by starting Node-RED with debug mode:
 
 see [Wiki][10] pages to get more options in detail
 
-# Authors
+## Contributing
+
+**[Become a backer of the project straight away!][2]**
+
+Let's work together!
+Please read and in best case accept [CONTRIBUTING](.github/CONTRIBUTING.md) by your sign and send it via E-Mail.
+You could also send just a pull request or issues while testing, please!
+
+## Authors
 
 since April 2016 by [Klaus Landsdorf][4]
 
-### History 
+### History
 
 * contribution in 2016 by [iurly][6]
 

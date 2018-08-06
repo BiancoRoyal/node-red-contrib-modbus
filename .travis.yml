@@ -1,17 +1,27 @@
 language: node_js
-node_js:
-    - 6
-    - "lts/*"
+matrix:
+  include:
+  - node_js: 6
+  - node_js: 7
+  - node_js: "lts/*"
+  - node_js: 9
+  - node_js: 10
+  allow_failures:
+  - node_js: 6
+  - node_js: 7
+  - node_js: 9
+  - node_js: 10
 install:
-  - npm install
-  - npm install -g gulp
-  - npm install -g gulp-cli
+- npm install
+- npm install -g gulp
+- npm install -g gulp-cli
 script:
-  - npm test
-  - gulp publish
+- npm test
+- npm run coverage
+- gulp publish
 cache:
   directories:
-    - "node_modules"
+  - "node_modules"
 branches:
   only:
   - master
