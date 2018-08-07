@@ -1,5 +1,5 @@
 /**
- Copyright 2016,2017 - Klaus Landsdorf (http://bianco-royal.de/)
+ Copyright (c) 2016,2017,2018 Klaus Landsdorf (http://bianco-royal.de/)
  All rights reserved.
  node-red-contrib-modbus
  node-red-contrib-modbusio

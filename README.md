@@ -16,13 +16,16 @@
 
 [Node-RED][1] contribution package for [Modbus][8]
 
-**[Become a backer of the project straight away!][11]**
-
 Based on [modbus-serial][2] with TCP, C701, Telnet, Serial, RTU buffered, and ASCII
 
 * stress tested with Node-RED v0.18.7 and Node.js v6.x and v8.x LTS
 * works with queueing per unit and round robin scheduling
 * Node.JS 4.x is supported with v1.x
+
+
+**[Become a backer of the project straight away!][11]**
+
+If you like that contributor's package for Modbus, then please give us your star at [GitHub][12] !
 
 ## Install
 
@@ -117,3 +120,4 @@ since April 2016 by [Klaus Landsdorf][4]
 [9]:http://bit.ly/2jzwjqP
 [10]:https://github.com/biancode/node-red-contrib-modbus/wiki
 [11]:https://bianco-royal.cloud/supporter/
+[12]:https://github.com/biancode/node-red-contrib-modbus
