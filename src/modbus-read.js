@@ -164,14 +164,13 @@ module.exports = function (RED) {
       mbBasics.setModbusError(node, modbusClient, err, msg)
     }
 
-    node.on('close', function () {
-      modbusClient.deregisterForModbus(node, () => {
-        if (timerID) {
-          clearInterval(timerID)
-        }
-        timerID = null
-        mbBasics.setNodeStatusTo('closed', node)
-      })
+    node.on('close', function (done) {
+      if (timerID) {
+        clearInterval(timerID)
+      }
+      timerID = null
+      mbBasics.setNodeStatusTo('closed', node)
+      modbusClient.deregisterForModbus(node, done)
     })
 
     function sendMessage (values, response, msg) {

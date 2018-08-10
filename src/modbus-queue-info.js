@@ -32,7 +32,7 @@ module.exports = function (RED) {
     let node = this
 
     let modbusClient = RED.nodes.getNode(config.server)
-
+    modbusClient.registerForModbus(node)
     node.queueReadInterval = null
 
     if (RED.settings.verbose) {
@@ -198,12 +198,13 @@ module.exports = function (RED) {
       }
     })
 
-    node.on('close', function () {
+    node.on('close', function (done) {
       mbBasics.setNodeStatusTo('closed', node)
       if (node.queueReadInterval) {
         clearInterval(node.queueReadInterval)
       }
       node.queueReadInterval = null
+      modbusClient.deregisterForModbus(node, done)
     })
   }
 

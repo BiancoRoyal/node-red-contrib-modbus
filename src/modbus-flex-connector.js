@@ -29,7 +29,7 @@ module.exports = function (RED) {
 
     let node = this
     let modbusClient = RED.nodes.getNode(config.server)
-
+    modbusClient.registerForModbus(node)
     mbBasics.initModbusClientEvents(node, modbusClient)
     mbBasics.setNodeStatusTo('waiting', node)
 

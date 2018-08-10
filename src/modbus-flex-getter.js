@@ -34,7 +34,7 @@ module.exports = function (RED) {
     let node = this
     node.bufferMessageList = new Map()
     let modbusClient = RED.nodes.getNode(config.server)
-
+    modbusClient.registerForModbus(node)
     mbBasics.initModbusClientEvents(node, modbusClient)
     mbBasics.setNodeStatusTo('waiting', node)
 
@@ -120,8 +120,9 @@ module.exports = function (RED) {
       }
     })
 
-    node.on('close', function () {
+    node.on('close', function (done) {
       mbBasics.setNodeStatusTo('closed', node)
+      modbusClient.deregisterForModbus(node, done)
     })
   }
 
