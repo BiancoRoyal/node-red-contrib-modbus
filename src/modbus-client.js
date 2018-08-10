@@ -16,6 +16,7 @@
 module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
+  let mbBasics = require('./modbus-basics')
   let coreModbusClient = require('./core/modbus-client-core')
 
   function ModbusClientNode (config) {
@@ -53,7 +54,7 @@ module.exports = function (RED) {
     this.reconnectTimeout = parseInt(config.reconnectTimeout) || reconnectTimeMS
 
     let node = this
-
+    node.closingModbus = false
     node.client = null
     node.bufferCommandList = new Map()
     node.sendAllowed = new Map()
@@ -63,6 +64,8 @@ module.exports = function (RED) {
 
     node.statlyMachine = null
     node.statlyMachine = coreModbusClient.createStatelyMachine()
+    stateLog('start: ' + node.statlyMachine.getMachineState())
+    stateLog('FSM events:' + node.statlyMachine.getMachineEvents())
 
     node.initQueue = function () {
       node.bufferCommandList.clear()
@@ -213,10 +216,19 @@ module.exports = function (RED) {
       }
     }
 
+    node.statlyMachine.onNEW = function (event, oldState, newState) {
+      stateLog('after event: ' + event + ' old: ' + oldState + ' new: ' + newState)
+    }
+
     node.statlyMachine.onINIT = function (event, oldState, newState) {
+      stateLog('after event: ' + event + ' old: ' + oldState + ' new: ' + newState)
       node.updateServerinfo()
       node.initQueue()
-      setTimeout(node.connectClient, node.reconnectTimeout)
+      try {
+        setTimeout(node.connectClient, node.reconnectTimeout)
+      } catch (err) {
+        node.error(err, {payload: 'client connection error'})
+      }
       verboseWarn('reconnect in ' + node.reconnectTimeout + ' ms')
       verboseLog('event: ' + event + ' old: ' + oldState + ' new: ' + newState)
       node.emit('mbinit')
@@ -707,15 +719,14 @@ module.exports = function (RED) {
 
     verboseLog('initialized')
     node.setMaxListeners(unlimitedListeners)
-    node.statlyMachine.init()
 
     node.on('reconnect', function () {
       node.statlyMachine.failure().close()
     })
 
     node.on('dynamicReconnect', function (msg) {
-      if (!msg || !msg.payload) {
-        throw new Error('Message Payload not Valid')
+      if (mbBasics.invalidPayloadIn(msg)) {
+        throw new Error('Message Or Payload Not Valid')
       }
 
       coreModbusClient.internalDebug('Dynamic Reconnect Parameters ' + JSON.stringify(msg.payload))
@@ -786,6 +797,42 @@ module.exports = function (RED) {
         done()
       }
     })
+
+    // handle using as config node
+    node.registeredNodeList = {}
+
+    node.registerForModbus = function (modbusNode) {
+      node.registeredNodeList[modbusNode.id] = modbusNode
+      if (Object.keys(node.registeredNodeList).length === 1) {
+        node.closingModbus = false
+        node.statlyMachine.init()
+      }
+    }
+
+    node.deregisterForModbus = function (modbusNode, done) {
+      delete node.registeredNodeList[modbusNode.id]
+
+      if (node.closingModbus) {
+        done()
+      }
+      if (Object.keys(node.registeredNodeList).length === 0) {
+        node.closingModbus = true
+        if (node.client) {
+          node.client.close(function () {
+            node.statlyMachine.close().break().stop()
+            done()
+          }).catch(function (err) {
+            node.statlyMachine.failure().stop()
+            verboseLog(err.message)
+            done()
+          })
+        } else {
+          done()
+        }
+      } else {
+        done()
+      }
+    }
   }
 
   RED.nodes.registerType('modbus-client', ModbusClientNode)

@@ -21,7 +21,7 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config)
 
     this.name = config.name
-    this.maxReconnectsPerMinute = config.maxReconnectsPerMinute | 4
+    this.maxReconnectsPerMinute = config.maxReconnectsPerMinute || 4
     this.emptyQueue = config.emptyQueue
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
@@ -30,95 +30,30 @@ module.exports = function (RED) {
     let node = this
     let modbusClient = RED.nodes.getNode(config.server)
 
-    setNodeStatusTo('waiting')
-
-    node.onModbusInit = function () {
-      setNodeStatusTo('initialize')
-    }
-
-    node.onModbusConnect = function () {
-      setNodeStatusTo('connected')
-    }
-
-    node.onModbusActive = function () {
-      setNodeStatusTo('active')
-    }
-
-    node.onModbusError = function (failureMsg) {
-      setNodeStatusTo('failure')
-      if (node.showErrors) {
-        node.warn(failureMsg)
-      }
-    }
-
-    node.onModbusClose = function () {
-      setNodeStatusTo('closed')
-    }
-
-    node.onModbusBroken = function () {
-      setNodeStatusTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.')
-    }
-
-    modbusClient.on('mbinit', node.onModbusInit)
-    modbusClient.on('mbconnected', node.onModbusConnect)
-    modbusClient.on('mbactive', node.onModbusActive)
-    modbusClient.on('mberror', node.onModbusError)
-    modbusClient.on('mbbroken', node.onModbusBroken)
-    modbusClient.on('mbclosed', node.onModbusClose)
+    mbBasics.initModbusClientEvents(node, modbusClient)
+    mbBasics.setNodeStatusTo('waiting', node)
 
     node.on('input', function (msg) {
+      if (mbBasics.invalidPayloadIn(msg)) {
+        return
+      }
+
       if (!modbusClient.client) {
         return
       }
 
-      if (msg && msg.payload) {
-        if (node.showStatusActivities) {
-          setNodeStatusTo(modbusClient.statlyMachine.getMachineState())
-          verboseLog(msg)
-        }
-
-        if (msg.payload.connectorType) {
-          internalDebugLog('dynamicReconnect: ' + JSON.stringify(msg.payload))
-          msg.payload.emptyQueue = node.emptyQueue
-          modbusClient.emit('dynamicReconnect', msg)
-        } else {
-          node.error(new Error('Payload Not Valid - Connector Type'), msg)
-        }
-      } else {
-        node.error(new Error('Payload Not Valid'), msg)
-      }
-    })
-
-    node.onModbusReconnectDone = function (resp, msg) {
       if (node.showStatusActivities) {
-        setNodeStatusTo('reading done')
+        mbBasics.setNodeStatusTo(modbusClient.statlyMachine.getMachineState(), node)
       }
-    }
 
-    node.onModbusReconnectError = function (err, msg) {
-      internalDebugLog(err.message)
-      mbBasics.setModbusError(node, modbusClient, err, msg, setNodeStatusTo)
-    }
-
-    node.on('close', function () {
-      setNodeStatusTo('closed')
+      if (msg.payload.connectorType) {
+        internalDebugLog('dynamicReconnect: ' + JSON.stringify(msg.payload))
+        msg.payload.emptyQueue = node.emptyQueue
+        modbusClient.emit('dynamicReconnect', msg)
+      } else {
+        node.error(new Error('Payload Not Valid - Connector Type'), msg)
+      }
     })
-
-    function verboseLog (logMessage) {
-      if (RED.settings.verbose) {
-        internalDebugLog((typeof logMessage === 'string') ? logMessage : JSON.stringify(logMessage))
-      }
-    }
-
-    function setNodeStatusTo (statusValue) {
-      let statusOptions = mbBasics.setNodeStatusProperties(statusValue, node.showStatusActivities)
-
-      node.status({
-        fill: statusOptions.fill,
-        shape: statusOptions.shape,
-        text: statusOptions.status
-      })
-    }
   }
 
   RED.nodes.registerType('modbus-flex-connector', ModbusFlexConnector)

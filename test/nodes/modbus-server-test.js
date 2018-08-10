@@ -39,17 +39,15 @@ describe('Server node Testing', function () {
       helper.load(serverNode, [{
         id: '8cd6ca70.0dd188',
         type: 'modbus-server',
-        z: '5dcb7dec.f36a24',
         name: 'modbusServer',
         logEnabled: false,
-        serverPort: 11502,
+        serverPort: 6502,
         responseDelay: 100,
         delayUnit: 'ms',
         coilsBufferSize: 1024,
         holdingBufferSize: 1024,
         inputBufferSize: 1024,
-        x: 500,
-        y: 300,
+        discreteBufferSize: 1024,
         wires: []
       }], function () {
         var modbusServer = helper.getNode('8cd6ca70.0dd188')

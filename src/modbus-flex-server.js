@@ -31,6 +31,7 @@ module.exports = function (RED) {
     this.unitId = config.unitId
     this.minAddress = config.minAddress
     this.splitAddress = config.splitAddress
+    this.showErrors = config.showErrors
 
     this.funcGetCoil = new VMScript(config.funcGetCoil).compile()
     this.funcGetInputRegister = new VMScript(config.funcGetInputRegister).compile()
@@ -48,51 +49,9 @@ module.exports = function (RED) {
     node.coils = Buffer.alloc(node.coilsBufferSize, 0)
     node.registers = Buffer.alloc(node.registersBufferSize, 0)
 
-    node.server = null
+    node.modbusServer = null
 
-    setNodeStatusTo('initialized')
-
-    function verboseWarn (logMessage) {
-      if (RED.settings.verbose) {
-        node.warn((node.name) ? node.name + ': ' + logMessage : 'Modbus response: ' + logMessage)
-      }
-    }
-
-    function verboseLog (logMessage) {
-      if (RED.settings.verbose) {
-        internalDebugLog((typeof logMessage === 'string') ? logMessage : JSON.stringify(logMessage))
-      }
-    }
-
-    function setNodeStatusTo (statusValue) {
-      if (mbBasics.statusLog) {
-        verboseLog('server status: ' + statusValue)
-      }
-
-      let fillValue = 'red'
-      let shapeValue = 'dot'
-
-      switch (statusValue) {
-        case 'initialized':
-          fillValue = 'green'
-          shapeValue = 'ring'
-          break
-
-        case 'active':
-          fillValue = 'green'
-          shapeValue = 'dot'
-          break
-
-        default:
-          if (!statusValue || statusValue === 'waiting') {
-            fillValue = 'blue'
-            statusValue = 'waiting ...'
-          }
-          break
-      }
-
-      node.status({fill: fillValue, shape: shapeValue, text: statusValue})
-    }
+    mbBasics.setNodeStatusTo('initialized', node)
 
     //     1...10000*  address - 1      Coils (outputs)    0   Read/Write
     // 10001...20000*  address - 10001  Discrete Inputs    01  Read
@@ -112,48 +71,59 @@ module.exports = function (RED) {
     vm.run('node.vector.setRegister = ' + config.funcSetRegister)
 
     node.startServer = function () {
-      verboseLog('starting modbus flex server')
-
       try {
-        internalDebugLog('ModbusTCP flex server listening on modbus://' + node.serverAddress + ':' + node.serverPort)
-        if (node.server === null) {
-          node.server = new ModbusRTU.ServerTCP(node.vector, {
-            host: node.serverAddress,
-            port: node.serverPort,
-            debug: node.logEnabled,
-            unitID: node.unitId
-          })
+        if (node.modbusServer === null) {
+          try {
+            node.modbusServer = new ModbusRTU.ServerTCP(node.vector, {
+              host: node.serverAddress,
+              port: node.serverPort,
+              debug: node.logEnabled,
+              unitID: node.unitId
+            })
+          } catch (err) {
+            node.error(err, {payload: 'server net error -> for port 502 on unix, you have to be a super user'})
+          }
 
-          node.server.on('socketError', function (err) {
-            verboseWarn(err)
-            setNodeStatusTo('error')
+          node.modbusServer.on('socketError', function (err) {
             internalDebugLog(err.message)
+            if (node.showErrors) {
+              node.warn(err)
+            }
+            mbBasics.setNodeStatusTo('error', node)
 
-            node.server.close(function () {
-              verboseLog('closed modbus flex server by socket error and restart now')
+            node.modbusServer.close(function () {
               node.startServer()
             })
           })
+
+          node.modbusServer._server.on('connection', function (sock) {
+            internalDebugLog('Modbus Flex Server client connection')
+            if (sock) {
+              internalDebugLog('Modbus Flex Server client to ' + JSON.stringify(sock.address()) + ' from ' + sock.remoteAddress + ' ' + sock.remotePort)
+            }
+            mbBasics.setNodeStatusTo('active', node)
+          })
         }
       } catch (err) {
-        verboseWarn(err)
-        setNodeStatusTo('error')
+        internalDebugLog(err.message)
+        if (node.showErrors) {
+          node.warn(err)
+        }
+        mbBasics.setNodeStatusTo('error', node)
       }
 
-      if (node.server != null) {
-        verboseLog('modbus flex server started')
-        setNodeStatusTo('active')
+      if (node.modbusServer != null) {
+        internalDebugLog('Modbus Flex Server listening on modbus://' + node.serverAddress + ':' + node.serverPort)
+        mbBasics.setNodeStatusTo('initialized', node)
       } else {
-        verboseWarn('modbus flex server isn\'t ready')
-        setNodeStatusTo('error')
+        internalDebugLog('Modbus Flex Server isn\'t ready')
+        mbBasics.setNodeStatusTo('error', node)
       }
     }
 
     node.startServer()
 
     node.on('input', function (msg) {
-      verboseLog('Input:' + msg)
-
       node.send(buildMessage(msg, node.registers.slice((node.splitAddress + 1) * node.bufferFactor),
         node.coils, node.registers.slice(0, node.splitAddress * node.bufferFactor)))
     })
@@ -167,13 +137,17 @@ module.exports = function (RED) {
     }
 
     node.on('close', function () {
-      setNodeStatusTo('closed')
-      if (node.server._server) {
-        node.server._server.close()
+      mbBasics.setNodeStatusTo('closed', node)
+      if (node.modbusServer._server) {
+        node.modbusServer._server.close()
       }
-      node.server = null
+      node.modbusServer = null
     })
   }
 
-  RED.nodes.registerType('modbus-flex-server', ModbusFlexServer)
+  try {
+    RED.nodes.registerType('modbus-flex-server', ModbusFlexServer)
+  } catch (err) {
+    console.log(err.message)
+  }
 }

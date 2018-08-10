@@ -17,19 +17,19 @@ de.biancoroyal.modbus.core.getObjectId = function () {
 }
 
 de.biancoroyal.modbus.core.getOriginalMessage = function (messageList, msg) {
-  let origMsg = messageList.get(msg.payload.messageId) || undefined
+  let origMsg = messageList.get(msg.payload.messageId)
 
   if (origMsg && origMsg.messageId) {
     messageList.delete(origMsg.messageId)
-    de.biancoroyal.modbus.core.internalDebug('Remove Message In:<' + origMsg.messageId + '> Out:<' + msg.payload.messageId + '>')
   } else {
     de.biancoroyal.modbus.core.internalDebug('Message Not Found ' + msg.payload.messageId)
+    origMsg = msg
   }
 
   return origMsg
 }
 
-de.biancoroyal.modbus.core.functionCodeModbus = function (dataType) {
+de.biancoroyal.modbus.core.functionCodeModbusRead = function (dataType) {
   switch (dataType) {
     case 'Coil':
       return 1
@@ -40,8 +40,38 @@ de.biancoroyal.modbus.core.functionCodeModbus = function (dataType) {
     case 'InputRegister':
       return 4
     default:
-      return dataType
+      return -1
   }
+}
+
+de.biancoroyal.modbus.core.functionCodeModbusWrite = function (dataType) {
+  switch (dataType) {
+    case 'Coil':
+      return 5
+    case 'HoldingRegister':
+      return 6
+    case 'MCoils':
+      return 15
+    case 'MHoldingRegisters':
+      return 16
+    default:
+      return -1
+  }
+}
+
+de.biancoroyal.modbus.core.buildMessage = function (messageList, values, response, msg) {
+  let origMsg = this.getOriginalMessage(messageList, msg)
+  origMsg.payload = values
+  origMsg.topic = msg.topic
+  origMsg.responseBuffer = response
+  origMsg.input = msg
+
+  let rawMsg = Object.assign({}, origMsg)
+  rawMsg.payload = response
+  rawMsg.values = values
+  delete rawMsg['responseBuffer']
+
+  return [origMsg, rawMsg]
 }
 
 module.exports = de.biancoroyal.modbus.core

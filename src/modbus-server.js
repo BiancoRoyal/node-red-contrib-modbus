@@ -15,6 +15,8 @@ module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
   let modbus = require('jsmodbus')
+  let net = require('net')
+
   let mbBasics = require('./modbus-basics')
   let internalDebugLog = require('debug')('contribModbus:server')
 
@@ -28,58 +30,18 @@ module.exports = function (RED) {
     this.serverPort = parseInt(config.serverPort)
     this.responseDelay = parseInt(config.responseDelay)
     this.delayUnit = config.delayUnit
-
     this.coilsBufferSize = parseInt(config.coilsBufferSize * bufferFactor)
     this.holdingBufferSize = parseInt(config.holdingBufferSize * bufferFactor)
     this.inputBufferSize = parseInt(config.inputBufferSize * bufferFactor)
+    this.discreteBufferSize = parseInt(config.discreteBufferSize * bufferFactor)
+    this.showErrors = config.showErrors
 
     let node = this
 
-    node.server = null
+    node.netServer = null
+    node.modbusServer = null
 
-    setNodeStatusTo('initialized')
-
-    function verboseWarn (logMessage) {
-      if (RED.settings.verbose) {
-        node.warn((node.name) ? node.name + ': ' + logMessage : 'Modbus response: ' + logMessage)
-      }
-    }
-
-    function verboseLog (logMessage) {
-      if (RED.settings.verbose) {
-        internalDebugLog((typeof logMessage === 'string') ? logMessage : JSON.stringify(logMessage))
-      }
-    }
-
-    function setNodeStatusTo (statusValue) {
-      if (mbBasics.statusLog) {
-        verboseLog('server status: ' + statusValue)
-      }
-
-      let fillValue = 'red'
-      let shapeValue = 'dot'
-
-      switch (statusValue) {
-        case 'initialized':
-          fillValue = 'green'
-          shapeValue = 'ring'
-          break
-
-        case 'active':
-          fillValue = 'green'
-          shapeValue = 'dot'
-          break
-
-        default:
-          if (!statusValue || statusValue === 'waiting') {
-            fillValue = 'blue'
-            statusValue = 'waiting ...'
-          }
-          break
-      }
-
-      node.status({fill: fillValue, shape: shapeValue, text: statusValue})
-    }
+    mbBasics.setNodeStatusTo('initialized', node)
 
     let modbusLogLevel = 'warn'
     if (RED.settings.verbose) {
@@ -87,52 +49,60 @@ module.exports = function (RED) {
     }
 
     try {
-      node.server = modbus.server.tcp.complete({
+      node.netServer = new net.Server()
+      node.modbusServer = new modbus.server.TCP(node.netServer, {
         'logLabel': 'ModbusServer',
         'logLevel': modbusLogLevel,
         'logEnabled': node.logEnabled,
-        'hostname': node.hostname,
-        'port': node.serverPort,
         'responseDelay': mbBasics.calc_rateByUnit(node.responseDelay, node.delayUnit),
         'coils': Buffer.alloc(node.coilsBufferSize, 0),
         'holding': Buffer.alloc(node.holdingBufferSize, 0),
-        'input': Buffer.alloc(node.inputBufferSize, 0)
-      }).connect()
+        'input': Buffer.alloc(node.inputBufferSize, 0),
+        'discrete': Buffer.alloc(node.discreteBufferSize, 0)
+      })
 
-      verboseLog('starting modbus server')
+      node.modbusServer.on('connection', function (client) {
+        internalDebugLog('Modbus Server client connection')
+        if (client && client.socket) {
+          internalDebugLog('Modbus Server client to ' + JSON.stringify(client.socket.address()) + ' from ' + client.socket.remoteAddress + ' ' + client.socket.remotePort)
+        }
+        mbBasics.setNodeStatusTo('active', node)
+      })
+
+      node.netServer.listen(node.serverPort, node.hostname, () => {
+        internalDebugLog('Modbus Server listening on modbus://' + node.hostname + ':' + node.serverPort)
+        mbBasics.setNodeStatusTo('initialized', node)
+      })
     } catch (err) {
-      verboseWarn(err)
-      setNodeStatusTo('error')
-    }
-
-    if (node.server != null) {
-      verboseLog('modbus server started')
-      setNodeStatusTo('active')
-
-      node.server.on('connect', node.start)
-    } else {
-      verboseWarn('modbus server isn\'t ready')
-      setNodeStatusTo('error')
+      internalDebugLog(err.message)
+      if (node.showErrors) {
+        node.warn(err)
+      }
+      mbBasics.setNodeStatusTo('error', node)
     }
 
     node.on('input', function (msg) {
-      verboseLog('Input:' + msg)
-
-      node.send(buildMessage(msg, node.server.getHolding(), node.server.getCoils(), node.server.getInput()))
+      node.send(buildMessage(msg))
     })
 
-    function buildMessage (msg, modbusHolding, modbusCoils, modbusInput) {
+    function buildMessage (msg) {
       return [
-        {type: 'holding', message: msg, payload: modbusHolding},
-        {type: 'coils', message: msg, payload: modbusCoils},
-        {type: 'input', message: msg, payload: modbusInput}
+        {type: 'holding', message: msg, payload: node.modbusServer.holding},
+        {type: 'coils', message: msg, payload: node.modbusServer.coils},
+        {type: 'input', message: msg, payload: node.modbusServer.input},
+        {type: 'discrete', message: msg, payload: node.modbusServer.discrete}
       ]
     }
 
-    node.on('close', function () {
-      setNodeStatusTo('closed')
-      node.server.close()
-      node.server = null
+    node.on('close', function (done) {
+      mbBasics.setNodeStatusTo('closed', node)
+      if (node.netServer) {
+        node.netServer.close(() => {
+          internalDebugLog('Modbus Server closed')
+          done()
+        })
+      }
+      node.modbusServer = null
     })
   }
 

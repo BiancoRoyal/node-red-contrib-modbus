@@ -41,27 +41,21 @@ describe('Queue Info node Testing', function () {
       helper.load([clientNode, serverNode, readNode], [{
         id: 'e54529b9.952ea8',
         type: 'modbus-server',
-        z: '5dcb7dec.f36a24',
         name: 'modbusServer',
         logEnabled: false,
-        serverPort: 11502,
+        serverPort: 9502,
         responseDelay: 100,
         delayUnit: 'ms',
         coilsBufferSize: 1024,
         holdingBufferSize: 1024,
         inputBufferSize: 1024,
-        x: 260,
-        y: 200,
         wires: []
       }, {
         id: 'b9cf4e9c.4d53a',
         type: 'modbus-queue-info',
-        z: '5dcb7dec.f36a24',
         name: 'modbusQueueInfo',
         unitid: 1,
         server: 'dc764ad7.580238',
-        x: 340,
-        y: 260,
         wires: [[], []]
       }, {
         id: 'dc764ad7.580238',
@@ -70,7 +64,7 @@ describe('Queue Info node Testing', function () {
         name: 'modbusClient',
         clienttype: 'tcp',
         tcpHost: '127.0.0.1',
-        tcpPort: 11502,
+        tcpPort: 9502,
         unit_id: 1,
         clientTimeout: 5000,
         reconnectTimeout: 5000

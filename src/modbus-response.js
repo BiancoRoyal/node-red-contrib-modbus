@@ -16,9 +16,7 @@
 module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
-  let util = require('util')
   let mbBasics = require('./modbus-basics')
-  let internalDebugLog = require('debug')('contribModbus:response')
 
   function ModbusResponse (config) {
     RED.nodes.createNode(this, config)
@@ -27,51 +25,7 @@ module.exports = function (RED) {
 
     let node = this
 
-    setNodeStatusTo('initialized')
-
-    function verboseLog (logMessage) {
-      if (RED.settings.verbose) {
-        internalDebugLog((typeof logMessage === 'string') ? logMessage : JSON.stringify(logMessage))
-      }
-    }
-
-    function setNodeStatusTo (statusValue, response) {
-      if (mbBasics.statusLog) {
-        verboseLog('response status: ' + statusValue)
-      }
-
-      let fillValue = 'red'
-      let shapeValue = 'dot'
-
-      switch (statusValue) {
-        case 'initialized':
-          fillValue = 'green'
-          shapeValue = 'ring'
-          break
-
-        case 'active':
-          fillValue = 'green'
-          shapeValue = 'dot'
-          break
-
-        default:
-          if (!statusValue || statusValue === 'waiting') {
-            fillValue = 'blue'
-            statusValue = 'waiting ...'
-          }
-          break
-      }
-
-      node.status({fill: fillValue, shape: shapeValue, text: util.inspect(response, false, null)})
-    }
-
-    function setNodeStatusResponse (length) {
-      node.status({
-        fill: 'green',
-        shape: 'dot',
-        text: 'active got length: ' + length
-      })
-    }
+    mbBasics.setNodeStatusTo('initialized', node)
 
     node.on('input', function (msg) {
       let inputType = 'default'
@@ -87,25 +41,25 @@ module.exports = function (RED) {
       switch (inputType) {
         case 'data':
           if (msg.payload.data.length > node.registerShowMax) {
-            setNodeStatusResponse(msg.payload.data.length)
+            mbBasics.setNodeStatusResponse(msg.payload.data.length, node)
           } else {
-            setNodeStatusTo('active', msg.payload)
+            mbBasics.setNodeStatusByResponseTo('active', msg.payload, node)
           }
           break
         case 'address':
           if (msg.payload.length && msg.payload.length > node.registerShowMax) {
-            setNodeStatusResponse(msg.payload.length)
+            mbBasics.setNodeStatusResponse(msg.payload.length, node)
           } else {
-            setNodeStatusTo('active', msg.payload)
+            mbBasics.setNodeStatusByResponseTo('active', msg.payload, node)
           }
           break
         default:
-          setNodeStatusTo('active', JSON.stringify(msg.payload))
+          mbBasics.setNodeStatusByResponseTo('active', JSON.stringify(msg.payload), node)
       }
     })
 
     node.on('close', function () {
-      setNodeStatusTo('closed')
+      mbBasics.setNodeStatusTo('closed', node)
     })
   }
 

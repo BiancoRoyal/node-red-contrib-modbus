@@ -44,7 +44,7 @@ describe('Read node Testing', function () {
         z: '5dcb7dec.f36a24',
         name: 'modbusServer',
         logEnabled: false,
-        serverPort: 11502,
+        serverPort: 8502,
         responseDelay: 100,
         delayUnit: 'ms',
         coilsBufferSize: 1024,
@@ -74,7 +74,7 @@ describe('Read node Testing', function () {
         name: 'modbusClient',
         clienttype: 'tcp',
         tcpHost: '127.0.0.1',
-        tcpPort: 11502,
+        tcpPort: 8502,
         unit_id: '1',
         clientTimeout: 5000,
         reconnectTimeout: 5000

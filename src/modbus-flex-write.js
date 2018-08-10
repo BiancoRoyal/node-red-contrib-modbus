@@ -29,48 +29,27 @@ module.exports = function (RED) {
     let modbusClient = RED.nodes.getNode(config.server)
     node.bufferMessageList = new Map()
 
-    setNodeStatusTo('waiting')
+    mbBasics.initModbusClientEvents(node, modbusClient)
+    mbBasics.setNodeStatusTo('waiting', node)
 
-    node.onModbusInit = function () {
-      setNodeStatusTo('initialize')
-    }
-
-    node.onModbusConnect = function () {
-      setNodeStatusTo('connected')
-    }
-
-    node.onModbusActive = function () {
-      setNodeStatusTo('active')
-    }
-
-    node.onModbusError = function (failureMsg) {
-      setNodeStatusTo('failure')
-      if (node.showErrors) {
-        node.warn(failureMsg)
+    node.onModbusWriteDone = function (resp, msg) {
+      if (node.showStatusActivities) {
+        mbBasics.setNodeStatusTo('writing done', node)
       }
+
+      node.send(mbBasics.buildMessage(node.bufferMessageList, msg.payload, resp, msg))
     }
 
-    node.onModbusClose = function () {
-      setNodeStatusTo('closed')
+    node.onModbusWriteError = function (err, msg) {
+      internalDebugLog(err.message)
+      if (node.showErrors) {
+        node.error(err, msg)
+      }
+      mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg))
     }
-
-    node.onModbusBroken = function () {
-      setNodeStatusTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.')
-    }
-
-    modbusClient.on('mbinit', node.onModbusInit)
-    modbusClient.on('mbconnected', node.onModbusConnect)
-    modbusClient.on('mbactive', node.onModbusActive)
-    modbusClient.on('mberror', node.onModbusError)
-    modbusClient.on('mbbroken', node.onModbusBroken)
-    modbusClient.on('mbclosed', node.onModbusClose)
 
     node.on('input', function (msg) {
-      if (!(msg && msg.hasOwnProperty('payload'))) return
-
-      if (msg.payload == null) {
-        setNodeStatusTo('payload error')
-        node.error('invalid msg.payload', msg)
+      if (mbBasics.invalidPayloadIn(msg)) {
         return
       }
 
@@ -78,128 +57,82 @@ module.exports = function (RED) {
         return
       }
 
-      if (msg.payload) {
-        try {
-          if (typeof msg.payload === 'string') {
-            msg.payload = JSON.parse(msg.payload)
-          }
+      try {
+        if (typeof msg.payload === 'string') {
+          msg.payload = JSON.parse(msg.payload)
+        }
 
-          msg.payload.fc = parseInt(msg.payload.fc)
-          msg.payload.unitid = parseInt(msg.payload.unitid)
-          msg.payload.address = parseInt(msg.payload.address)
-          msg.payload.quantity = parseInt(msg.payload.quantity)
+        msg.payload.fc = parseInt(msg.payload.fc)
+        msg.payload.unitid = parseInt(msg.payload.unitid)
+        msg.payload.address = parseInt(msg.payload.address)
+        msg.payload.quantity = parseInt(msg.payload.quantity)
 
-          if (!(Number.isInteger(msg.payload.fc) &&
+        if (!(Number.isInteger(msg.payload.fc) &&
               (msg.payload.fc === 5 ||
                 msg.payload.fc === 6 ||
                 msg.payload.fc === 15 ||
                 msg.payload.fc === 16))) {
-            node.error('FC Not Valid', msg)
-            return
-          }
+          node.error('FC Not Valid', msg)
+          return
+        }
 
-          if (!(Number.isInteger(msg.payload.address) &&
+        if (!(Number.isInteger(msg.payload.address) &&
               msg.payload.address >= 0 &&
               msg.payload.address <= 65535)) {
-            node.error('Address Not Valid', msg)
-            return
-          }
+          node.error('Address Not Valid', msg)
+          return
+        }
 
-          if (!(Number.isInteger(msg.payload.quantity) &&
+        if (!(Number.isInteger(msg.payload.quantity) &&
               msg.payload.quantity >= 1 &&
               msg.payload.quantity <= 65535)) {
-            node.error('Quantity Not Valid', msg)
-            return
-          }
+          node.error('Quantity Not Valid', msg)
+          return
+        }
 
-          /* HTTP requests for boolean and multiple data string [1,2,3,4,5] */
-          if (msg.payload.hasOwnProperty('value') && typeof msg.payload.value === 'string') {
-            if (msg.payload.value === 'true' || msg.payload.value === 'false') {
-              msg.payload.value = (msg.payload.value === 'true')
-            } else {
-              if (msg.payload.value.indexOf(',') > -1) {
-                msg.payload.value = JSON.parse(msg.payload.value)
-              }
+        /* HTTP requests for boolean and multiple data string [1,2,3,4,5] */
+        if (msg.payload.hasOwnProperty('value') && typeof msg.payload.value === 'string') {
+          if (msg.payload.value === 'true' || msg.payload.value === 'false') {
+            msg.payload.value = (msg.payload.value === 'true')
+          } else {
+            if (msg.payload.value.indexOf(',') > -1) {
+              msg.payload.value = JSON.parse(msg.payload.value)
             }
           }
+        }
 
-          msg.messageId = mbCore.getObjectId()
-          node.bufferMessageList.set(msg.messageId, msg)
-          internalDebugLog('Add Message ' + msg.messageId)
+        msg.messageId = mbCore.getObjectId()
+        node.bufferMessageList.set(msg.messageId, msg)
 
-          msg = {
-            topic: msg.topic || node.id,
-            payload: {
-              value: msg.payload.value || msg.value,
-              unitid: msg.payload.unitid,
-              fc: msg.payload.fc,
-              address: msg.payload.address,
-              quantity: msg.payload.quantity,
-              messageId: msg.messageId
-            },
-            _msgid: msg._msgid
-          }
+        msg = {
+          topic: msg.topic || node.id,
+          payload: {
+            value: msg.payload.value || msg.value,
+            unitid: msg.payload.unitid,
+            fc: msg.payload.fc,
+            address: msg.payload.address,
+            quantity: msg.payload.quantity,
+            messageId: msg.messageId
+          },
+          _msgid: msg._msgid
+        }
 
-          modbusClient.emit('writeModbus', msg, node.onModbusWriteDone, node.onModbusWriteError)
-        } catch (err) {
+        modbusClient.emit('writeModbus', msg, node.onModbusWriteDone, node.onModbusWriteError)
+      } catch (err) {
+        if (node.showErrors) {
+          internalDebugLog(err.message)
           node.error(err, msg)
         }
-      } else {
-        node.error(new Error('Payload Not Valid'), msg)
       }
 
       if (node.showStatusActivities) {
-        setNodeStatusTo(modbusClient.statlyMachine.getMachineState())
-        verboseLog(msg)
+        mbBasics.setNodeStatusTo(modbusClient.statlyMachine.getMachineState(), node)
       }
     })
-
-    node.onModbusWriteDone = function (resp, msg) {
-      if (node.showStatusActivities) {
-        setNodeStatusTo('writing done')
-      }
-      node.send(buildMessage(msg.payload, resp, msg))
-    }
-
-    node.onModbusWriteError = function (err, msg) {
-      internalDebugLog(err.message)
-      mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg) || msg, setNodeStatusTo)
-    }
 
     node.on('close', function () {
-      setNodeStatusTo('closed')
+      mbBasics.setNodeStatusTo('closed', node)
     })
-
-    function verboseLog (logMessage) {
-      if (RED.settings.verbose) {
-        internalDebugLog((typeof logMessage === 'string') ? logMessage : JSON.stringify(logMessage))
-      }
-    }
-
-    function buildMessage (values, response, msg) {
-      let origMsg = mbCore.getOriginalMessage(node.bufferMessageList, msg) || msg
-      origMsg.payload = values
-      origMsg.topic = msg.topic
-      origMsg.responseBuffer = response
-      origMsg.input = msg
-
-      let rawMsg = Object.assign({}, origMsg)
-      rawMsg.payload = response
-      rawMsg.values = values
-      delete rawMsg['responseBuffer']
-
-      return [origMsg, rawMsg]
-    }
-
-    function setNodeStatusTo (statusValue) {
-      let statusOptions = mbBasics.setNodeStatusProperties(statusValue, false)
-
-      node.status({
-        fill: statusOptions.fill,
-        shape: statusOptions.shape,
-        text: statusOptions.status
-      })
-    }
   }
 
   RED.nodes.registerType('modbus-flex-write', ModbusFlexWrite)

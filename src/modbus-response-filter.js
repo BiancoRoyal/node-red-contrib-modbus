@@ -15,6 +15,7 @@ module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
   let mbCore = require('./core/modbus-core')
+  let mbBasics = require('./modbus-basics')
   var modbusIOFileValuNames = []
 
   function ModbusResponseFilter (config) {
@@ -63,6 +64,10 @@ module.exports = function (RED) {
     }
 
     node.on('input', function (msg) {
+      if (mbBasics.invalidPayloadIn(msg)) {
+        return
+      }
+
       if (node.registers) {
         if (!msg.payload.length || msg.payload.length !== node.registers) {
           if (node.showErrors) {
@@ -76,6 +81,10 @@ module.exports = function (RED) {
         // without register safety
         node.send(node.filterFromPayload(msg))
       }
+    })
+
+    node.on('close', function () {
+      mbBasics.setNodeStatusTo('closed', node)
     })
   }
 

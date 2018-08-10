@@ -8,17 +8,21 @@
 'use strict'
 // SOURCE-MAP-REQUIRED
 
+var de = de || {biancoroyal: {modbus: {basics: {}}}} // eslint-disable-line no-use-before-define
+de.biancoroyal.modbus.basics.internalDebug = de.biancoroyal.modbus.basics.internalDebug || require('debug')('contribModbus:basics') // eslint-disable-line no-use-before-define
+de.biancoroyal.modbus.basics.util = de.biancoroyal.modbus.basics.util || require('util') // eslint-disable-line no-use-before-define
+
 /**
  * Modbus core node basics.
  * @module NodeRedModbusBasics
  */
-module.exports.statusLog = false
+de.biancoroyal.modbus.basics.statusLog = false
 /**
  *
  * @param unit
  * @returns {string}
  */
-module.exports.get_timeUnit_name = function (unit) {
+de.biancoroyal.modbus.basics.get_timeUnit_name = function (unit) {
   let unitAbbreviation = ''
 
   switch (unit) {
@@ -41,7 +45,7 @@ module.exports.get_timeUnit_name = function (unit) {
   return unitAbbreviation
 }
 
-module.exports.calc_rateByUnit = function (rate, rateUnit) {
+de.biancoroyal.modbus.basics.calc_rateByUnit = function (rate, rateUnit) {
   switch (rateUnit) {
     case 'ms':
       break
@@ -67,7 +71,7 @@ module.exports.calc_rateByUnit = function (rate, rateUnit) {
  * @param showActivities
  * @returns {{fill: string, shape: string, status: *}}
  */
-module.exports.setNodeStatusProperties = function (statusValue, showActivities) {
+de.biancoroyal.modbus.basics.setNodeStatusProperties = function (statusValue, showActivities) {
   let fillValue = 'yellow'
   let shapeValue = 'ring'
 
@@ -140,24 +144,110 @@ module.exports.setNodeStatusProperties = function (statusValue, showActivities) 
   return {fill: fillValue, shape: shapeValue, status: statusValue}
 }
 
-module.exports.setModbusError = function (node, modbusClient, err, msg, setNodeStatusTo) {
+de.biancoroyal.modbus.basics.setNodeStatusByResponseTo = function (statusValue, response, node) {
+  let fillValue = 'red'
+  let shapeValue = 'dot'
+
+  switch (statusValue) {
+    case 'initialized':
+      fillValue = 'green'
+      shapeValue = 'ring'
+      break
+
+    case 'active':
+      fillValue = 'green'
+      shapeValue = 'dot'
+      break
+
+    default:
+      if (!statusValue || statusValue === 'waiting') {
+        fillValue = 'blue'
+        statusValue = 'waiting ...'
+      }
+      break
+  }
+
+  node.status({fill: fillValue, shape: shapeValue, text: this.util.inspect(response, false, null)})
+}
+
+de.biancoroyal.modbus.basics.setNodeStatusResponse = function (length, node) {
+  node.status({
+    fill: 'green',
+    shape: 'dot',
+    text: 'active got length: ' + length
+  })
+}
+
+de.biancoroyal.modbus.basics.setModbusError = function (node, modbusClient, err, msg) {
   if (err) {
     switch (err.message) {
       case 'Timed out':
-        setNodeStatusTo('timeout')
+        this.setNodeStatusTo('timeout', node)
         break
       case 'FSM Not Ready To Reconnect':
-        setNodeStatusTo('not ready to reconnect')
+        this.setNodeStatusTo('not ready to reconnect', node)
         break
       case 'Port Not Open':
-        setNodeStatusTo('reconnect')
+        this.setNodeStatusTo('reconnect', node)
         modbusClient.emit('reconnect')
         break
       default:
-        setNodeStatusTo('error ' + err.message)
+        this.setNodeStatusTo('error ' + err.message, node)
         if (node.showErrors) {
           node.error(err, msg)
         }
     }
   }
 }
+
+de.biancoroyal.modbus.basics.setNodeStatusTo = function (statusValue, node) {
+  let statusOptions = this.setNodeStatusProperties(statusValue, node.showStatusActivities)
+
+  node.status({
+    fill: statusOptions.fill,
+    shape: statusOptions.shape,
+    text: statusOptions.status
+  })
+}
+
+de.biancoroyal.modbus.basics.onModbusInit = function (node) {
+  this.setNodeStatusTo('initialize', node)
+}
+
+de.biancoroyal.modbus.basics.onModbusConnect = function (node) {
+  this.setNodeStatusTo('connected', node)
+}
+
+de.biancoroyal.modbus.basics.onModbusActive = function (node) {
+  this.setNodeStatusTo('active', node)
+}
+
+de.biancoroyal.modbus.basics.onModbusError = function (node, failureMsg) {
+  this.setNodeStatusTo('failure', node)
+  if (node.showErrors) {
+    node.warn(failureMsg)
+  }
+}
+
+de.biancoroyal.modbus.basics.onModbusClose = function (node) {
+  this.setNodeStatusTo('closed', node)
+}
+
+de.biancoroyal.modbus.basics.onModbusBroken = function (node, modbusClient) {
+  this.setNodeStatusTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.', node)
+}
+
+de.biancoroyal.modbus.basics.initModbusClientEvents = function (node, modbusClient) {
+  modbusClient.on('mbinit', () => { this.onModbusInit(node) })
+  modbusClient.on('mbconnected', () => { this.onModbusConnect(node) })
+  modbusClient.on('mbactive', () => { this.onModbusActive(node) })
+  modbusClient.on('mberror', (failureMsg) => { this.onModbusError(node, failureMsg) })
+  modbusClient.on('mbbroken', () => { this.onModbusBroken(node, modbusClient) })
+  modbusClient.on('mbclosed', () => { this.onModbusClose(node) })
+}
+
+de.biancoroyal.modbus.basics.invalidPayloadIn = function (msg) {
+  return !(msg && msg.hasOwnProperty('payload'))
+}
+
+module.exports = de.biancoroyal.modbus.basics

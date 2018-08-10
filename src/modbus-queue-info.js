@@ -14,6 +14,7 @@
 module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
+  let mbBasics = require('./modbus-basics')
   let internalDebugLog = require('debug')('contribModbus:queue')
 
   function ModbusQueueInfo (config) {
@@ -38,7 +39,7 @@ module.exports = function (RED) {
       internalDebugLog.enabled = true
     }
 
-    setNodeStatusTo('waiting')
+    mbBasics.setNodeStatusTo('waiting', node)
 
     node.resetStates = function () {
       node.lowLowLevelReached = true
@@ -138,7 +139,7 @@ module.exports = function (RED) {
           text: 'active unit ' + unit + ' queue items: ' + items
         })
       } else {
-        setNodeStatusTo('active unit ' + unit + ' without queue')
+        mbBasics.setNodeStatusTo('active unit ' + unit + ' without queue', node)
       }
     }
 
@@ -198,20 +199,12 @@ module.exports = function (RED) {
     })
 
     node.on('close', function () {
-      setNodeStatusTo('closed')
+      mbBasics.setNodeStatusTo('closed', node)
       if (node.queueReadInterval) {
         clearInterval(node.queueReadInterval)
       }
       node.queueReadInterval = null
     })
-
-    function setNodeStatusTo (statusValue) {
-      node.status({
-        fill: 'green',
-        shape: 'ring',
-        text: statusValue
-      })
-    }
   }
 
   RED.nodes.registerType('modbus-queue-info', ModbusQueueInfo)

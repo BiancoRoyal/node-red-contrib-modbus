@@ -50,7 +50,7 @@ describe('Flex Getter node Testing', function () {
         type: 'modbus-server',
         name: 'modbusServer',
         logEnabled: false,
-        serverPort: 11502,
+        serverPort: 9502,
         responseDelay: 100,
         delayUnit: 'ms',
         coilsBufferSize: 1024,
@@ -63,7 +63,7 @@ describe('Flex Getter node Testing', function () {
         name: 'modbusClient',
         clienttype: 'tcp',
         tcpHost: '127.0.0.1',
-        tcpPort: 11502,
+        tcpPort: 9502,
         unit_id: 1,
         clientTimeout: 5000,
         reconnectTimeout: 5000

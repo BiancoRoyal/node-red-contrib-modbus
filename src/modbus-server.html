@@ -22,7 +22,9 @@
       },
       coilsBufferSize: {value: 10000, validate: RED.validators.number()},
       holdingBufferSize: {value: 10000, validate: RED.validators.number()},
-      inputBufferSize: {value: 10000, validate: RED.validators.number()}
+      inputBufferSize: {value: 10000, validate: RED.validators.number()},
+      discreteBufferSize: {value: 10000, validate: RED.validators.number()},
+      showErrors: {value: false}
     },
     inputs: 1,
     outputs: 3,
@@ -71,7 +73,16 @@
         <label for="node-input-inputBufferSize"><i class="icon-tag"></i> <span data-i18n="modbus-contrib.label.inputs"></span></label>
         <input type="text" id="node-input-inputBufferSize" placeholder="1024">
     </div>
+    <div class="form-row">
+        <label for="node-input-discreteBufferSize"><i class="icon-tag"></i> <span data-i18n="modbus-contrib.label.discretes"></span></label>
+        <input type="text" id="node-input-discreteBufferSize" placeholder="1024">
+    </div>
     <hr>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
+        data-i18n="modbus-contrib.label.showErrors"></span></label>
+        <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
+    </div>
     <div class="form-row">
         <label style="min-width:160px" for="node-input-logEnabled"><i class="fa fa-th"></i> <span data-i18n="modbus-contrib.label.logEnabled"></span></label>
         <input type="checkbox" id="node-input-logEnabled" style="max-width:30px">

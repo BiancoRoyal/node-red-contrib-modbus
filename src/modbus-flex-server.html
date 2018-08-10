@@ -29,7 +29,8 @@
       funcGetInputRegister: {value: 'function getFlexInputRegister(addr, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}'},
       funcGetHoldingRegister: {value: 'function getFlexHoldingRegsiter(addr, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr > node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}'},
       funcSetCoil: {value: 'function setFlexCoil(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\tnode.coils.writeUInt8(value, addr * node.bufferFactor)  \n\t} \n}'},
-      funcSetRegister: {value: 'function setFlexRegister(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\tnode.registers.writeUInt16BE(value, addr * node.bufferFactor)  \n\t} \n}'}
+      funcSetRegister: {value: 'function setFlexRegister(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\tnode.registers.writeUInt16BE(value, addr * node.bufferFactor)  \n\t} \n}'},
+      showErrors: {value: false}
     },
     inputs: 1,
     outputs: 3,
@@ -290,6 +291,11 @@
                 <input type="text" id="node-input-splitAddress" placeholder="10000">
             </div>
             <hr>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.showErrors"></span></label>
+                <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
+            </div>
             <div class="form-row">
                 <label style="min-width:160px" for="node-input-logEnabled"><i class="fa fa-th"></i> <span data-i18n="modbus-contrib.label.logEnabled"></span></label>
                 <input type="checkbox" id="node-input-logEnabled" style="max-width:30px">

@@ -12,6 +12,7 @@
 var de = de || {biancoroyal: {modbus: {io: {core: {}}}}} // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.io.core.internalDebug = de.biancoroyal.modbus.io.core.internalDebug || require('debug')('contribModbus:io:core') // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.io.core.LineByLineReader = de.biancoroyal.modbus.io.core.LineByLineReader || require('line-by-line') // eslint-disable-line no-use-before-define
+de.biancoroyal.modbus.io.core.core = de.biancoroyal.modbus.io.core.core || require('./modbus-core') // eslint-disable-line no-use-before-define
 
 de.biancoroyal.modbus.io.core.nameValuesFromIOFile = function (msg, ioFileConfig, values, response, readingOffset) {
   let valueNames = []
@@ -429,6 +430,39 @@ de.biancoroyal.modbus.io.core.isRegisterSizeWrong = function (register, start, b
   }
 
   return (startRegister < 0 || register.length < startRegister || endRegister > register.length)
+}
+
+de.biancoroyal.modbus.io.core.buildMessageWithIO = function (node, values, response, msg) {
+  let origMsg = this.core.getOriginalMessage(node.bufferMessageList, msg)
+  origMsg.payload = values
+  origMsg.topic = msg.topic
+  origMsg.responseBuffer = response
+  origMsg.input = msg
+
+  let rawMsg = Object.assign({}, origMsg)
+  rawMsg.payload = response
+  rawMsg.values = values
+  delete rawMsg['responseBuffer']
+
+  if (node.useIOFile && node.ioFile.lastUpdatedAt) {
+    let allValueNames = this.nameValuesFromIOFile(msg, node.ioFile, values, response, parseInt(msg.payload.address) || 0)
+    let valueNames = this.filterValueNames(allValueNames, parseInt(msg.payload.fc) || 3,
+      parseInt(msg.payload.address) || 0,
+      parseInt(msg.payload.quantity) || 1)
+
+    if (node.useIOForPayload) {
+      origMsg.payload = valueNames
+      origMsg.values = values
+    } else {
+      origMsg.payload = values
+      origMsg.valueNames = valueNames
+    }
+
+    rawMsg.valueNames = valueNames
+    return [origMsg, rawMsg]
+  } else {
+    return [origMsg, rawMsg]
+  }
 }
 
 module.exports = de.biancoroyal.modbus.io.core

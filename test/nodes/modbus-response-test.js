@@ -10,8 +10,144 @@
 
 'use strict'
 
+var injectNode = require('node-red/nodes/core/core/20-inject.js')
 var nodeUnderTest = require('../../src/modbus-response.js')
 var helper = require('node-red-contrib-test-helper')
+
+let shortLengthInjectData = [
+  {
+    'id': 'f1ff9252.b5ce18',
+    'type': 'modbus-response',
+    'name': 'shortLengthInjectData',
+    'registerShowMax': 20,
+    'wires': []
+  },
+  {
+    'id': '8827b34f.682e8',
+    'type': 'inject',
+    'name': 'ShortLengthInject',
+    'topic': '',
+    'payload': '{"data":{"length":2}}',
+    'payloadType': 'json',
+    'repeat': '',
+    'crontab': '',
+    'once': true,
+    'onceDelay': 0.1,
+    'wires': [
+      [
+        'f1ff9252.b5ce18'
+      ]
+    ]
+  }
+]
+
+let longLengthInjectData = [
+  {
+    'id': 'f1ff9252.b5ce18',
+    'type': 'modbus-response',
+    'name': 'longLengthInjectData',
+    'registerShowMax': 20,
+    'wires': []
+  },
+  {
+    'id': '8827b34f.682e8',
+    'type': 'inject',
+    'name': 'LongLengthInject',
+    'topic': '',
+    'payload': '{"data":{"length":22}}',
+    'payloadType': 'json',
+    'repeat': '',
+    'crontab': '',
+    'once': true,
+    'onceDelay': 0.1,
+    'wires': [
+      [
+        'f1ff9252.b5ce18'
+      ]
+    ]
+  }
+]
+
+let shortLengthInjectAddress = [
+  {
+    'id': 'f1ff9252.b5ce18',
+    'type': 'modbus-response',
+    'name': 'shortLengthInjectAddress',
+    'registerShowMax': 20,
+    'wires': []
+  },
+  {
+    'id': '8827b34f.682e8',
+    'type': 'inject',
+    'name': 'ShortLengthInject',
+    'topic': '',
+    'payload': '{"length":2, "address": {}}',
+    'payloadType': 'json',
+    'repeat': '',
+    'crontab': '',
+    'once': true,
+    'onceDelay': 0.1,
+    'wires': [
+      [
+        'f1ff9252.b5ce18'
+      ]
+    ]
+  }
+]
+
+let longLengthInjectAddress = [
+  {
+    'id': 'f1ff9252.b5ce18',
+    'type': 'modbus-response',
+    'name': 'longLengthInjectAddress',
+    'registerShowMax': 20,
+    'wires': []
+  },
+  {
+    'id': '8827b34f.682e8',
+    'type': 'inject',
+    'name': 'LongLengthInject',
+    'topic': '',
+    'payload': '{"length":22, "address": {}}',
+    'payloadType': 'json',
+    'repeat': '',
+    'crontab': '',
+    'once': true,
+    'onceDelay': 0.1,
+    'wires': [
+      [
+        'f1ff9252.b5ce18'
+      ]
+    ]
+  }
+]
+
+let injectJustPayload = [
+  {
+    'id': 'f1ff9252.b5ce18',
+    'type': 'modbus-response',
+    'name': 'injectJustPayload',
+    'registerShowMax': 20,
+    'wires': []
+  },
+  {
+    'id': '8827b34f.682e8',
+    'type': 'inject',
+    'name': 'LongLengthInject',
+    'topic': '',
+    'payload': '{}',
+    'payloadType': 'json',
+    'repeat': '',
+    'crontab': '',
+    'once': true,
+    'onceDelay': 0.1,
+    'wires': [
+      [
+        'f1ff9252.b5ce18'
+      ]
+    ]
+  }
+]
 
 describe('Response node Testing', function () {
   before(function (done) {
@@ -36,19 +172,77 @@ describe('Response node Testing', function () {
 
   describe('Node', function () {
     it('should be loaded', function (done) {
-      var flow = [{id: 'n1', type: 'modbus-response', name: 'modbusNode'}]
+      var flow = [
+        {
+          'id': 'f1ff9252.b5ce18',
+          'type': 'modbus-response',
+          'name': 'modbusNode',
+          'registerShowMax': 20,
+          'wires': []
+        }
+      ]
 
       helper.load(nodeUnderTest, flow, function () {
-        var modbusReadNode = helper.getNode('n1')
-        modbusReadNode.should.have.property('name', 'modbusNode')
+        let modbusResponseNode = helper.getNode('f1ff9252.b5ce18')
+        modbusResponseNode.should.have.property('name', 'modbusNode')
         done()
+      })
+    })
+
+    it('should work with short data', function (done) {
+      helper.load([injectNode, nodeUnderTest], shortLengthInjectData, function () {
+        let modbusResponseNode = helper.getNode('f1ff9252.b5ce18')
+        modbusResponseNode.on('input', function (msg) {
+          modbusResponseNode.should.have.property('name', 'shortLengthInjectData')
+          done()
+        })
+      })
+    })
+
+    it('should work with long data', function (done) {
+      helper.load([injectNode, nodeUnderTest], longLengthInjectData, function () {
+        let modbusResponseNode = helper.getNode('f1ff9252.b5ce18')
+        modbusResponseNode.on('input', function (msg) {
+          modbusResponseNode.should.have.property('name', 'longLengthInjectData')
+          done()
+        })
+      })
+    })
+
+    it('should work with short address', function (done) {
+      helper.load([injectNode, nodeUnderTest], shortLengthInjectAddress, function () {
+        let modbusResponseNode = helper.getNode('f1ff9252.b5ce18')
+        modbusResponseNode.on('input', function (msg) {
+          modbusResponseNode.should.have.property('name', 'shortLengthInjectAddress')
+          done()
+        })
+      })
+    })
+
+    it('should work with long address', function (done) {
+      helper.load([injectNode, nodeUnderTest], longLengthInjectAddress, function () {
+        let modbusResponseNode = helper.getNode('f1ff9252.b5ce18')
+        modbusResponseNode.on('input', function (msg) {
+          modbusResponseNode.should.have.property('name', 'longLengthInjectAddress')
+          done()
+        })
+      })
+    })
+
+    it('should work with just payload', function (done) {
+      helper.load([injectNode, nodeUnderTest], injectJustPayload, function () {
+        let modbusResponseNode = helper.getNode('f1ff9252.b5ce18')
+        modbusResponseNode.on('input', function (msg) {
+          modbusResponseNode.should.have.property('name', 'injectJustPayload')
+          done()
+        })
       })
     })
   })
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      helper.request().post('/modbus-read/invalid').expect(404).end(done)
+      helper.request().post('/modbus-response/invalid').expect(404).end(done)
     })
   })
 })

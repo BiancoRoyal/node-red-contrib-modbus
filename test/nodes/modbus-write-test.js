@@ -42,34 +42,27 @@ describe('Write node Testing', function () {
       helper.load([injectNode, clientNode, serverNode, writeNode], [{
         id: 'e54529b9.952ea8',
         type: 'modbus-server',
-        z: '5dcb7dec.f36a24',
         name: 'modbusServer',
         logEnabled: false,
-        serverPort: 11502,
+        serverPort: 8502,
         responseDelay: 100,
         delayUnit: 'ms',
         coilsBufferSize: 1024,
         holdingBufferSize: 1024,
         inputBufferSize: 1024,
-        x: 260,
-        y: 200,
         wires: []
       }, {
         id: '8ad2951c.2df708',
         type: 'modbus-write',
-        z: '5dcb7dec.f36a24',
         name: 'modbusWrite',
         dataType: 'HoldingRegister',
         adr: '0',
         quantity: '1',
         server: 'dc764ad7.580238',
-        x: 400,
-        y: 260,
         wires: [[], []]
       }, {
         id: '67dded7e.025904',
         type: 'inject',
-        z: '5dcb7dec.f36a24',
         name: 'injectTrue',
         topic: '',
         payload: true,
@@ -77,8 +70,6 @@ describe('Write node Testing', function () {
         repeat: '',
         crontab: '',
         once: false,
-        x: 250,
-        y: 260,
         wires: [['8ad2951c.2df708']]
       }, {
         id: 'dc764ad7.580238',
@@ -87,7 +78,7 @@ describe('Write node Testing', function () {
         name: 'modbusClient',
         clienttype: 'tcp',
         tcpHost: '127.0.0.1',
-        tcpPort: 11502,
+        tcpPort: 8502,
         unit_id: 1,
         clientTimeout: 5000,
         reconnectTimeout: 5000

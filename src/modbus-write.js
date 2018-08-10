@@ -36,48 +36,27 @@ module.exports = function (RED) {
     let modbusClient = RED.nodes.getNode(config.server)
     node.bufferMessageList = new Map()
 
-    setNodeStatusTo('waiting')
+    mbBasics.initModbusClientEvents(node, modbusClient)
+    mbBasics.setNodeStatusTo('waiting', node)
 
-    node.onModbusInit = function () {
-      setNodeStatusTo('initialize')
-    }
-
-    node.onModbusConnect = function () {
-      setNodeStatusTo('connected')
-    }
-
-    node.onModbusActive = function () {
-      setNodeStatusTo('active')
-    }
-
-    node.onModbusError = function (failureMsg) {
-      setNodeStatusTo('failure')
-      if (node.showErrors) {
-        node.warn(failureMsg)
+    node.onModbusWriteDone = function (resp, msg) {
+      if (node.showStatusActivities) {
+        mbBasics.setNodeStatusTo('write done', node)
       }
+
+      node.send(mbBasics.buildMessage(node.bufferMessageList, msg.payload, resp, msg))
     }
 
-    node.onModbusClose = function () {
-      setNodeStatusTo('closed')
+    node.onModbusWriteError = function (err, msg) {
+      internalDebugLog(err.message)
+      if (node.showErrors) {
+        node.error(err, msg)
+      }
+      mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg))
     }
-
-    node.onModbusBroken = function () {
-      setNodeStatusTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.')
-    }
-
-    modbusClient.on('mbinit', node.onModbusInit)
-    modbusClient.on('mbconnected', node.onModbusConnect)
-    modbusClient.on('mbactive', node.onModbusActive)
-    modbusClient.on('mberror', node.onModbusError)
-    modbusClient.on('mbbroken', node.onModbusBroken)
-    modbusClient.on('mbclosed', node.onModbusClose)
 
     node.on('input', function (msg) {
-      if (!(msg && msg.hasOwnProperty('payload'))) return
-
-      if (msg.payload == null) {
-        setNodeStatusTo('payload error')
-        node.error(new Error('Invalid msg.payload'), msg)
+      if (mbBasics.invalidPayloadIn(msg)) {
         return
       }
 
@@ -98,13 +77,12 @@ module.exports = function (RED) {
 
       msg.messageId = mbCore.getObjectId()
       node.bufferMessageList.set(msg.messageId, msg)
-      internalDebugLog('Add Message ' + msg.messageId)
 
       msg = {
         payload: {
           value: msg.payload.value || msg.payload,
           unitid: node.unitid,
-          fc: node.functionCodeModbus(node.dataType),
+          fc: mbCore.functionCodeModbusWrite(node.dataType),
           address: node.adr,
           quantity: node.quantity,
           messageId: msg.messageId
@@ -115,74 +93,13 @@ module.exports = function (RED) {
       modbusClient.emit('writeModbus', msg, node.onModbusWriteDone, node.onModbusWriteError)
 
       if (node.showStatusActivities) {
-        setNodeStatusTo(modbusClient.statlyMachine.getMachineState())
-        verboseLog(msg)
+        mbBasics.setNodeStatusTo(modbusClient.statlyMachine.getMachineState(), node)
       }
     })
-
-    node.functionCodeModbus = function (dataType) {
-      switch (dataType) {
-        case 'Coil':
-          return 5
-        case 'HoldingRegister':
-          return 6
-        case 'MCoils':
-          return 15
-        case 'MHoldingRegisters':
-          return 16
-        default:
-          return dataType
-      }
-    }
-
-    node.onModbusWriteDone = function (resp, msg) {
-      if (node.showStatusActivities) {
-        setNodeStatusTo('write done')
-      }
-      node.send(buildMessage(msg.payload, resp, msg))
-    }
-
-    node.onModbusWriteError = function (err, msg) {
-      internalDebugLog(err.message)
-      mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg) || msg, setNodeStatusTo)
-    }
 
     node.on('close', function () {
-      setNodeStatusTo('closed')
+      mbBasics.setNodeStatusTo('closed', node)
     })
-
-    function verboseLog (logMessage) {
-      if (RED.settings.verbose) {
-        internalDebugLog((typeof logMessage === 'string') ? logMessage : JSON.stringify(logMessage))
-      }
-    }
-
-    function buildMessage (values, response, msg) {
-      let origMsg = mbCore.getOriginalMessage(node.bufferMessageList, msg) || msg
-      origMsg.payload = values
-      origMsg.topic = msg.topic
-      origMsg.responseBuffer = response
-      origMsg.input = msg
-
-      let rawMsg = Object.assign({}, origMsg)
-      rawMsg.payload = response
-      rawMsg.values = values
-      delete rawMsg['responseBuffer']
-
-      return [origMsg, rawMsg]
-    }
-
-    function setNodeStatusTo (statusValue) {
-      let statusOptions = mbBasics.setNodeStatusProperties(statusValue, node.showStatusActivities)
-      if (mbBasics.statusLog) {
-        verboseLog('status options: ' + JSON.stringify(statusOptions))
-      }
-      node.status({
-        fill: statusOptions.fill,
-        shape: statusOptions.shape,
-        text: statusOptions.status
-      })
-    }
   }
 
   RED.nodes.registerType('modbus-write', ModbusWrite)
