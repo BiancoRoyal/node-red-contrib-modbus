@@ -2,6 +2,7 @@
   "modbus-contrib": {
     "label": {
       "showActivities": "Show Activities",
+      "logIOActivities": "Log IO",
       "showErrors": "Show Errors",
       "unitId": "Unit-Id",
       "functioncode": "FC",

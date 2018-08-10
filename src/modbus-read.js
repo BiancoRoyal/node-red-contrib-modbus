@@ -46,6 +46,7 @@ module.exports = function (RED) {
     this.useIOFile = config.useIOFile
     this.ioFile = RED.nodes.getNode(config.ioFile)
     this.useIOForPayload = config.useIOForPayload
+    this.logIOActivities = config.logIOActivities
 
     let node = this
     let modbusClient = RED.nodes.getNode(config.server)
@@ -175,7 +176,7 @@ module.exports = function (RED) {
 
     function sendMessage (values, response, msg) {
       if (node.useIOFile && node.ioFile.lastUpdatedAt) {
-        if (RED.settings.verbose) {
+        if (node.logIOActivities) {
           mbIOCore.internalDebug('node.adr:' + node.adr + ' node.quantity:' + node.quantity)
         }
 

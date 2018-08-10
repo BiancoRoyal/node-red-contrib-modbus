@@ -1,0 +1,8 @@
+{"name":"Modbus Holding Registers","valueAddress":"%IW0"}
+{"name":"Modbus Input Registers","valueAddress":"%QW0"}
+{"name":"bOperationActive","valueAddress":"%QX8.0"}
+{"name":"bOrderActive","valueAddress":"%QX8.1"}
+{"name":"bRecipeActive","valueAddress":"%QX8.2"}
+{"name":"bInfoActive","valueAddress":"%QX8.3"}
+{"name":"bServiceActive","valueAddress":"%QX8.4"}
+{"name":"bSimulationActive","valueAddress":"%QX8.5"}

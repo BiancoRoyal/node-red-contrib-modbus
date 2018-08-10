@@ -171,9 +171,17 @@ module.exports = function (RED) {
         msg.queues = modbusClient.bufferCommandList
       }
 
-      if (msg &&
-        msg.resetQueue &&
-        modbusClient.bufferCommands) {
+      msg.queueOptions = {
+        date: Date.now(),
+        state: 'queue request',
+        modbusClientName: modbusClient.name,
+        lowlowLevel: node.lowlowLevel,
+        lowLevel: node.lowLevel,
+        highLevel: node.highLevel,
+        highHighLevel: node.highHighLevel
+      }
+
+      if (msg && msg.resetQueue && modbusClient.bufferCommands) {
         modbusClient.initQueue()
         modbusClient.warn('Init Queue By External Node')
         node.resetStates()
@@ -182,20 +190,10 @@ module.exports = function (RED) {
           shape: 'ring',
           text: 'active empty unit queue'
         })
-
-        let result = {
-          payload: Date.now(),
-          state: 'queue reset done',
-          unitid: msg.unitid,
-          modbusClientName: modbusClient.name,
-          lowlowLevel: node.lowlowLevel,
-          lowLevel: node.lowLevel,
-          highLevel: node.highLevel,
-          highHighLevel: node.highHighLevel
-        }
-
-        node.send(result)
+        msg.queueOptions.state = 'queue reset done'
       }
+
+      node.send(msg)
     })
 
     node.on('close', function (done) {

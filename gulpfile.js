@@ -25,8 +25,8 @@ gulp.task('default', function () {
 })
 
 gulp.task('docs', sequence('doc', 'docIcons', 'docImages'))
-gulp.task('build', sequence('clean', 'web', 'nodejs', 'locale', 'code'))
-gulp.task('publish', sequence('build', 'icons', 'docs', 'maps'))
+gulp.task('build', sequence('clean', 'web', 'nodejs', 'locale', 'code', 'icons'))
+gulp.task('publish', sequence('build', 'docs', 'maps'))
 
 gulp.task('clean', function () {
   return gulp.src(['modbus', 'docs/gen', 'maps', 'code'])
