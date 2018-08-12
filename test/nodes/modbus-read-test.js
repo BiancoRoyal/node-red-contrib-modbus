@@ -201,9 +201,9 @@ describe('Read node Testing', function () {
           'showStatusActivities': false,
           'showErrors': false,
           'unitid': '',
-          'dataType': 'Coil',
+          'dataType': 'InputRegister',
           'adr': '0',
-          'quantity': '10',
+          'quantity': '20',
           'rate': '200',
           'rateUnit': 'ms',
           'delayOnStart': false,
@@ -246,15 +246,18 @@ describe('Read node Testing', function () {
           'id': 'e0519b16.5fcdd',
           'type': 'modbus-io-config',
           'name': 'TestIOFile',
-          'path': './resources/device.json',
+          'path': './test/nodes/resources/device.json',
           'format': 'utf8',
           'addressOffset': ''
         }
       ], function () {
         let h1 = helper.getNode('h1')
-
+        let countMsg = 0
         h1.on('input', function (msg) {
-          done()
+          countMsg++
+          if (countMsg > 4) {
+            done()
+          }
         })
       }, function () {
         helper.log('function callback')
