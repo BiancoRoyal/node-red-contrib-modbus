@@ -47,6 +47,7 @@ module.exports = function (RED) {
     this.ioFile = RED.nodes.getNode(config.ioFile)
     this.useIOForPayload = config.useIOForPayload
     this.logIOActivities = config.logIOActivities
+    mbIOCore.logging = this.logIOActivities
 
     let node = this
     let modbusClient = RED.nodes.getNode(config.server)

@@ -481,5 +481,99 @@ describe('Modbus IO Suite', function () {
     it('should give Unsigned Integer as default type', function () {
       assert.equal('Unsigned Integer', ioCore.getDataTypeFromFirstCharType('x'))
     })
+
+    it('should not build Input Address Mapping on unknown input', function () {
+      let expectedObject = {
+        'name': 'Modbus Holding Registers',
+        'type': 'M',
+        'mapping': {
+          'name': 'Modbus Holding Registers',
+          'valueAddress': '%IW0'
+        },
+        'error': 'variable name does not match input mapping'
+      }
+
+      let actualObject = ioCore.buildInputAddressMapping('MB-INPUTS', {
+        'name': 'Modbus Holding Registers',
+        'valueAddress': '%IW0'
+      }, 0, 0)
+
+      assert.deepEqual(expectedObject, actualObject)
+    })
+
+    it('should build Input Address Mapping on known input', function () {
+      let expectedObject = {
+        'register': 'MB-INPUTS',
+        'name': 'bOperationActive',
+        'addressStart': 4,
+        'addressOffset': 1,
+        'addressOffsetIO': 0,
+        'addressStartIO': 4,
+        'registerAddress': 4,
+        'coilStart': 64,
+        'bitAddress': [
+          '8',
+          '0'
+        ],
+        'Bit': 64,
+        'bits': 1,
+        'dataType': 'Boolean',
+        'type': 'input'
+      }
+
+      let actualObject = ioCore.buildInputAddressMapping('MB-INPUTS', {
+        'name': 'bOperationActive',
+        'valueAddress': '%IX8.0'
+      }, 0, 0)
+
+      assert.deepEqual(expectedObject, actualObject)
+    })
+
+    it('should not build Output Address Mapping on unknown output', function () {
+      let expectedObject = {
+        'name': 'Modbus Input Registers',
+        'type': 'M',
+        'mapping': {
+          'name': 'Modbus Input Registers',
+          'valueAddress': '%QW0'
+        },
+        'error': 'variable name does not match output mapping'
+      }
+
+      let actualObject = ioCore.buildOutputAddressMapping('MB-OUTPUTS', {
+        'name': 'Modbus Input Registers',
+        'valueAddress': '%QW0'
+      }, 0, 0)
+
+      assert.deepEqual(expectedObject, actualObject)
+    })
+
+    it('should build Output Address Mapping on known output', function () {
+      let expectedObject = {
+        'register': 'MB-OUTPUTS',
+        'name': 'bOperationActive',
+        'addressStart': 4,
+        'addressOffset': 1,
+        'addressOffsetIO': 0,
+        'addressStartIO': 4,
+        'registerAddress': 4,
+        'coilStart': 64,
+        'bitAddress': [
+          '8',
+          '0'
+        ],
+        'Bit': 64,
+        'bits': 1,
+        'dataType': 'Boolean',
+        'type': 'output'
+      }
+
+      let actualObject = ioCore.buildOutputAddressMapping('MB-OUTPUTS', {
+        'name': 'bOperationActive',
+        'valueAddress': '%QX8.0'
+      }, 0, 0)
+
+      assert.deepEqual(expectedObject, actualObject)
+    })
   })
 })

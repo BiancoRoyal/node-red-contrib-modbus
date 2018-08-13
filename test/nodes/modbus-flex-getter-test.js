@@ -10,9 +10,10 @@
 
 'use strict'
 
+var injectNode = require('node-red/nodes/core/core/20-inject.js')
 var clientNode = require('../../src/modbus-client.js')
 var serverNode = require('../../src/modbus-server.js')
-var getterNode = require('../../src/modbus-flex-getter.js')
+var nodeUnderTest = require('../../src/modbus-flex-getter.js')
 var helper = require('node-red-contrib-test-helper')
 
 describe('Flex Getter node Testing', function () {
@@ -36,48 +37,161 @@ describe('Flex Getter node Testing', function () {
     })
   })
 
-
   describe('Node', function () {
     it('simple Node should be loaded', function (done) {
-      helper.load([clientNode, serverNode, getterNode], [{
-        id: '322daf89.be8dd',
-        type: 'modbus-flex-getter',
-        name: 'modbusFlexGetter',
-        server: 'ce5293f4.1e1ac',
-        wires: [[], [], []]
+      helper.load([clientNode, serverNode, nodeUnderTest], [ {
+        'id': 'bc5a61b6.a3972',
+        'type': 'modbus-flex-getter',
+        'name': 'modbusFlexGetter',
+        'showStatusActivities': false,
+        'showErrors': false,
+        'server': '92e7bf63.2efd7',
+        'useIOFile': false,
+        'ioFile': '',
+        'useIOForPayload': false,
+        'wires': [
+          [],
+          []
+        ]
       }, {
         id: '996023fe.ea04b',
-        type: 'modbus-server',
-        name: 'modbusServer',
-        logEnabled: false,
-        serverPort: 9502,
-        responseDelay: 100,
-        delayUnit: 'ms',
-        coilsBufferSize: 1024,
-        holdingBufferSize: 1024,
-        inputBufferSize: 1024,
-        wires: []
+        'type': 'modbus-server',
+        'name': 'modbusServer',
+        'logEnabled': true,
+        'hostname': '127.0.0.1',
+        'serverPort': '7502',
+        'responseDelay': 100,
+        'delayUnit': 'ms',
+        'coilsBufferSize': 10000,
+        'holdingBufferSize': 10000,
+        'inputBufferSize': 10000,
+        'discreteBufferSize': 10000,
+        'showErrors': false,
+        'wires': [
+          [],
+          [],
+          []
+        ]
       }, {
-        id: 'ce5293f4.1e1ac',
-        type: 'modbus-client',
-        name: 'modbusClient',
-        clienttype: 'tcp',
-        tcpHost: '127.0.0.1',
-        tcpPort: 9502,
-        unit_id: 1,
-        clientTimeout: 5000,
-        reconnectTimeout: 5000
+        'id': '92e7bf63.2efd7',
+        'type': 'modbus-client',
+        'name': 'ModbusServer',
+        'clienttype': 'tcp',
+        'bufferCommands': true,
+        'stateLogEnabled': true,
+        'tcpHost': '127.0.0.1',
+        'tcpPort': '7502',
+        'tcpType': 'DEFAULT',
+        'serialPort': '/dev/ttyUSB',
+        'serialType': 'RTU-BUFFERD',
+        'serialBaudrate': '9600',
+        'serialDatabits': '8',
+        'serialStopbits': '1',
+        'serialParity': 'none',
+        'serialConnectionDelay': '100',
+        'unit_id': '1',
+        'commandDelay': '1',
+        'clientTimeout': '1000',
+        'reconnectTimeout': '500'
       }], function () {
-        var modbusServer = helper.getNode('996023fe.ea04b')
+        let modbusServer = helper.getNode('996023fe.ea04b')
         modbusServer.should.have.property('name', 'modbusServer')
 
-        var modbusClient = helper.getNode('ce5293f4.1e1ac')
-        modbusClient.should.have.property('name', 'modbusClient')
+        let modbusClient = helper.getNode('92e7bf63.2efd7')
+        modbusClient.should.have.property('name', 'ModbusServer')
 
-        var modbusFlexGetter = helper.getNode('322daf89.be8dd')
+        let modbusFlexGetter = helper.getNode('bc5a61b6.a3972')
         modbusFlexGetter.should.have.property('name', 'modbusFlexGetter')
 
         done()
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
+    it('simple flow with inject should be loaded', function (done) {
+      helper.load([injectNode, clientNode, serverNode, nodeUnderTest], [{
+        'id': '445454e4.968564',
+        'type': 'modbus-server',
+        'name': '',
+        'logEnabled': true,
+        'hostname': '127.0.0.1',
+        'serverPort': '8502',
+        'responseDelay': 100,
+        'delayUnit': 'ms',
+        'coilsBufferSize': 10000,
+        'holdingBufferSize': 10000,
+        'inputBufferSize': 10000,
+        'discreteBufferSize': 10000,
+        'showErrors': false,
+        'wires': [
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        'id': 'bc5a61b6.a3972',
+        'type': 'modbus-flex-getter',
+        'name': '',
+        'showStatusActivities': false,
+        'showErrors': false,
+        'server': '92e7bf63.2efd7',
+        'useIOFile': false,
+        'ioFile': '',
+        'useIOForPayload': false,
+        'wires': [
+          [
+            'h1'
+          ],
+          []
+        ]
+      },
+      {id: 'h1', type: 'helper'},
+      {
+        'id': 'fda9ed0f.c27278',
+        'type': 'inject',
+        'name': 'Flex Inject',
+        'topic': '',
+        'payload': '{"value":0,"fc":1,"unitid":1,"address":0,"quantity":1}',
+        'payloadType': 'json',
+        'repeat': '1',
+        'crontab': '',
+        'once': true,
+        'onceDelay': 0.1,
+        'wires': [
+          [
+            'bc5a61b6.a3972'
+          ]
+        ]
+      },
+      {
+        'id': '92e7bf63.2efd7',
+        'type': 'modbus-client',
+        'name': 'ModbusServer',
+        'clienttype': 'tcp',
+        'bufferCommands': true,
+        'stateLogEnabled': true,
+        'tcpHost': '127.0.0.1',
+        'tcpPort': '8502',
+        'tcpType': 'DEFAULT',
+        'serialPort': '/dev/ttyUSB',
+        'serialType': 'RTU-BUFFERD',
+        'serialBaudrate': '9600',
+        'serialDatabits': '8',
+        'serialStopbits': '1',
+        'serialParity': 'none',
+        'serialConnectionDelay': '100',
+        'unit_id': '1',
+        'commandDelay': '1',
+        'clientTimeout': '1000',
+        'reconnectTimeout': '500'
+      }
+      ], function () {
+        let h1 = helper.getNode('h1')
+        h1.on('input', function (msg) {
+          done()
+        })
       }, function () {
         helper.log('function callback')
       })

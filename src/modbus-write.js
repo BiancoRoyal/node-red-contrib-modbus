@@ -45,7 +45,7 @@ module.exports = function (RED) {
         mbBasics.setNodeStatusTo('write done', node)
       }
 
-      node.send(mbBasics.buildMessage(node.bufferMessageList, msg.payload, resp, msg))
+      node.send(mbCore.buildMessage(node.bufferMessageList, msg.payload, resp, msg))
     }
 
     node.onModbusWriteError = function (err, msg) {

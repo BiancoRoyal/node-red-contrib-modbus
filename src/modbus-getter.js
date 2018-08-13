@@ -73,7 +73,6 @@ module.exports = function (RED) {
       if (msg.payload) {
         msg.messageId = mbCore.getObjectId()
         node.bufferMessageList.set(msg.messageId, msg)
-        internalDebugLog('Add Message ' + msg.messageId)
 
         msg = {
           topic: msg.topic || node.id,

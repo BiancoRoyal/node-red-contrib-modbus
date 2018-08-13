@@ -40,47 +40,81 @@ describe('Read node Testing', function () {
   describe('Node', function () {
     it('simple Node should be loaded', function (done) {
       helper.load([clientNode, serverNode, readNode], [{
-        id: 'e54529b9.952ea8',
-        type: 'modbus-server',
-        name: 'modbusServer',
-        logEnabled: false,
-        serverPort: 8502,
-        responseDelay: 100,
-        delayUnit: 'ms',
-        coilsBufferSize: 1024,
-        holdingBufferSize: 1024,
-        inputBufferSize: 1024,
-        discreteBufferSize: 1024,
-        wires: []
-      }, {
-        id: 'b9cf4e9c.4d53a',
-        type: 'modbus-read',
-        name: 'modbusRead',
-        dataType: 'HoldingRegister',
-        adr: 0,
-        quantity: 10,
-        rate: 1,
-        rateUnit: 's',
-        server: 'dc764ad7.580238',
-        wires: [[], []]
-      }, {
-        id: 'dc764ad7.580238',
-        type: 'modbus-client',
-        name: 'modbusClient',
-        clienttype: 'tcp',
-        tcpHost: '127.0.0.1',
-        tcpPort: 8502,
-        unit_id: '1',
-        clientTimeout: 5000,
-        reconnectTimeout: 5000
-      }], function () {
+        'id': 'e54529b9.952ea8',
+        'type': 'modbus-server',
+        'name': 'modbusServer',
+        'logEnabled': true,
+        'hostname': '127.0.0.1',
+        'serverPort': '8502',
+        'responseDelay': 100,
+        'delayUnit': 'ms',
+        'coilsBufferSize': 10000,
+        'holdingBufferSize': 10000,
+        'inputBufferSize': 10000,
+        'discreteBufferSize': 10000,
+        'showErrors': false,
+        'wires': [
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        'id': '8ecaae3e.4b8928',
+        'type': 'modbus-read',
+        'name': 'modbusRead',
+        'topic': '',
+        'showStatusActivities': false,
+        'showErrors': true,
+        'unitid': '',
+        'dataType': 'Coil',
+        'adr': '0',
+        'quantity': '10',
+        'rate': '2',
+        'rateUnit': 's',
+        'delayOnStart': false,
+        'startDelayTime': '',
+        'server': '92e7bf63.2efd7',
+        'useIOFile': false,
+        'ioFile': '',
+        'useIOForPayload': false,
+        'wires': [
+          [
+            'd2840baa.d986b8'
+          ],
+          []
+        ]
+      },
+      {
+        'id': '92e7bf63.2efd7',
+        'type': 'modbus-client',
+        'name': 'ModbusServer',
+        'clienttype': 'tcp',
+        'bufferCommands': true,
+        'stateLogEnabled': true,
+        'tcpHost': '127.0.0.1',
+        'tcpPort': '8502',
+        'tcpType': 'DEFAULT',
+        'serialPort': '/dev/ttyUSB',
+        'serialType': 'RTU-BUFFERD',
+        'serialBaudrate': '9600',
+        'serialDatabits': '8',
+        'serialStopbits': '1',
+        'serialParity': 'none',
+        'serialConnectionDelay': '100',
+        'unit_id': '1',
+        'commandDelay': '1',
+        'clientTimeout': '1000',
+        'reconnectTimeout': '500'
+      }
+      ], function () {
         var modbusServer = helper.getNode('e54529b9.952ea8')
         modbusServer.should.have.property('name', 'modbusServer')
 
-        var modbusClient = helper.getNode('dc764ad7.580238')
-        modbusClient.should.have.property('name', 'modbusClient')
+        var modbusClient = helper.getNode('92e7bf63.2efd7')
+        modbusClient.should.have.property('name', 'ModbusServer')
 
-        var modbusRead = helper.getNode('b9cf4e9c.4d53a')
+        var modbusRead = helper.getNode('8ecaae3e.4b8928')
         modbusRead.should.have.property('name', 'modbusRead')
 
         done()
@@ -162,7 +196,6 @@ describe('Read node Testing', function () {
         }
       ], function () {
         let h1 = helper.getNode('h1')
-
         h1.on('input', function (msg) {
           done()
         })
@@ -179,7 +212,7 @@ describe('Read node Testing', function () {
           'name': '',
           'logEnabled': true,
           'hostname': '127.0.0.1',
-          'serverPort': '7502',
+          'serverPort': '8502',
           'responseDelay': 100,
           'delayUnit': 'ms',
           'coilsBufferSize': 10000,
@@ -212,6 +245,7 @@ describe('Read node Testing', function () {
           'useIOFile': true,
           'ioFile': 'e0519b16.5fcdd',
           'useIOForPayload': false,
+          'logIOActivities': true,
           'wires': [
             [
               'h1'
@@ -228,7 +262,7 @@ describe('Read node Testing', function () {
           'bufferCommands': true,
           'stateLogEnabled': true,
           'tcpHost': '127.0.0.1',
-          'tcpPort': '7502',
+          'tcpPort': '8502',
           'tcpType': 'DEFAULT',
           'serialPort': '/dev/ttyUSB',
           'serialType': 'RTU-BUFFERD',

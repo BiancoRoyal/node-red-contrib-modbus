@@ -86,7 +86,7 @@ let simpleReadWithClient = [
     'unit_id': '1',
     'commandDelay': '1',
     'clientTimeout': '1000',
-    'reconnectTimeout': '2000'
+    'reconnectTimeout': '500'
   }
 ]
 
