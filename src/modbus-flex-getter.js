@@ -30,6 +30,7 @@ module.exports = function (RED) {
     this.useIOFile = config.useIOFile
     this.ioFile = RED.nodes.getNode(config.ioFile)
     this.useIOForPayload = config.useIOForPayload
+    this.logIOActivities = config.logIOActivities
 
     let node = this
     node.bufferMessageList = new Map()
@@ -68,9 +69,6 @@ module.exports = function (RED) {
           msg.payload = JSON.parse(msg.payload)
         }
 
-        msg.messageId = mbCore.getObjectId()
-        node.bufferMessageList.set(msg.messageId, msg)
-
         msg.payload.fc = parseInt(msg.payload.fc) || 3
         msg.payload.unitid = parseInt(msg.payload.unitid)
         msg.payload.address = parseInt(msg.payload.address) || 0
@@ -97,6 +95,9 @@ module.exports = function (RED) {
           return
         }
 
+        msg.messageId = mbCore.getObjectId()
+        node.bufferMessageList.set(msg.messageId, msg)
+
         msg = {
           topic: msg.topic || node.id,
           payload: {
@@ -112,7 +113,10 @@ module.exports = function (RED) {
 
         modbusClient.emit('readModbus', msg, node.onModbusReadDone, node.onModbusReadError)
       } catch (err) {
-        node.error(err, msg)
+        internalDebugLog(err.message)
+        if (node.showErrors) {
+          node.error(err, msg)
+        }
       }
 
       if (node.showStatusActivities) {
@@ -122,6 +126,7 @@ module.exports = function (RED) {
 
     node.on('close', function (done) {
       mbBasics.setNodeStatusTo('closed', node)
+      node.bufferMessageList.clear()
       modbusClient.deregisterForModbus(node, done)
     })
   }

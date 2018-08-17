@@ -30,10 +30,12 @@ module.exports = function (RED) {
     this.serverPort = parseInt(config.serverPort)
     this.responseDelay = parseInt(config.responseDelay)
     this.delayUnit = config.delayUnit
+
     this.coilsBufferSize = parseInt(config.coilsBufferSize * bufferFactor)
     this.holdingBufferSize = parseInt(config.holdingBufferSize * bufferFactor)
     this.inputBufferSize = parseInt(config.inputBufferSize * bufferFactor)
     this.discreteBufferSize = parseInt(config.discreteBufferSize * bufferFactor)
+
     this.showErrors = config.showErrors
 
     let node = this

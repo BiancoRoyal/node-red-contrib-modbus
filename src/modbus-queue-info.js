@@ -28,16 +28,13 @@ module.exports = function (RED) {
     this.highLevel = parseInt(config.highLevel)
     this.highHighLevel = parseInt(config.highHighLevel)
     this.errorOnHighLevel = config.errorOnHighLevel
+    this.queueReadIntervalTime = config.queueReadIntervalTime || 1000
 
     let node = this
 
     let modbusClient = RED.nodes.getNode(config.server)
     modbusClient.registerForModbus(node)
     node.queueReadInterval = null
-
-    if (RED.settings.verbose) {
-      internalDebugLog.enabled = true
-    }
 
     mbBasics.setNodeStatusTo('waiting', node)
 
@@ -75,7 +72,6 @@ module.exports = function (RED) {
             items: items
           }
 
-          internalDebugLog(msg)
           node.send(msg)
         }
 
@@ -159,7 +155,7 @@ module.exports = function (RED) {
     modbusClient.on('mbqueue', node.onModbusQueue)
     modbusClient.on('mbactive', node.onModbusActive)
 
-    node.queueReadInterval = setInterval(node.readFromQueue, 1000)
+    node.queueReadInterval = setInterval(node.readFromQueue, node.queueReadIntervalTime)
 
     node.on('input', function (msg) {
       msg.queueEnabled = modbusClient.bufferCommands
@@ -183,7 +179,11 @@ module.exports = function (RED) {
 
       if (msg && msg.resetQueue && modbusClient.bufferCommands) {
         modbusClient.initQueue()
-        modbusClient.warn('Init Queue By External Node')
+        if (RED.settings.verbose) {
+          let infoText = 'Init Queue By External Node'
+          modbusClient.warn(infoText)
+          internalDebugLog(infoText)
+        }
         node.resetStates()
         node.status({
           fill: 'blue',

@@ -120,8 +120,8 @@ module.exports = function (RED) {
 
         modbusClient.emit('writeModbus', msg, node.onModbusWriteDone, node.onModbusWriteError)
       } catch (err) {
+        internalDebugLog(err.message)
         if (node.showErrors) {
-          internalDebugLog(err.message)
           node.error(err, msg)
         }
       }
@@ -133,6 +133,7 @@ module.exports = function (RED) {
 
     node.on('close', function (done) {
       mbBasics.setNodeStatusTo('closed', node)
+      node.bufferMessageList.clear()
       modbusClient.deregisterForModbus(node, done)
     })
   }

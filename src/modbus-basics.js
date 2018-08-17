@@ -192,8 +192,9 @@ de.biancoroyal.modbus.basics.setModbusError = function (node, modbusClient, err,
         modbusClient.emit('reconnect')
         break
       default:
-        this.setNodeStatusTo('error ' + err.message, node)
+        this.internalDebug(err.message)
         if (node.showErrors) {
+          this.setNodeStatusTo('error ' + err.message, node)
           node.error(err, msg)
         }
     }

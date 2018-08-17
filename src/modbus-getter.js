@@ -37,6 +37,7 @@ module.exports = function (RED) {
     this.useIOFile = config.useIOFile
     this.ioFile = RED.nodes.getNode(config.ioFile)
     this.useIOForPayload = config.useIOForPayload
+    this.logIOActivities = config.logIOActivities
 
     let node = this
     node.bufferMessageList = new Map()
@@ -70,33 +71,32 @@ module.exports = function (RED) {
         return
       }
 
-      if (msg.payload) {
-        msg.messageId = mbCore.getObjectId()
-        node.bufferMessageList.set(msg.messageId, msg)
+      msg.messageId = mbCore.getObjectId()
+      node.bufferMessageList.set(msg.messageId, msg)
 
-        msg = {
-          topic: msg.topic || node.id,
-          payload: {
-            value: msg.payload.value || msg.payload,
-            unitid: node.unitid,
-            fc: mbCore.functionCodeModbusRead(node.dataType),
-            address: node.adr,
-            quantity: node.quantity,
-            messageId: msg.messageId
-          },
-          _msgid: msg._msgid
-        }
+      msg = {
+        topic: msg.topic || node.id,
+        payload: {
+          value: msg.payload.value || msg.payload,
+          unitid: node.unitid,
+          fc: mbCore.functionCodeModbusRead(node.dataType),
+          address: node.adr,
+          quantity: node.quantity,
+          messageId: msg.messageId
+        },
+        _msgid: msg._msgid
+      }
 
-        modbusClient.emit('readModbus', msg, node.onModbusCommandDone, node.onModbusCommandError)
+      modbusClient.emit('readModbus', msg, node.onModbusCommandDone, node.onModbusCommandError)
 
-        if (node.showStatusActivities) {
-          mbBasics.setNodeStatusTo(modbusClient.statlyMachine.getMachineState(), node)
-        }
+      if (node.showStatusActivities) {
+        mbBasics.setNodeStatusTo(modbusClient.statlyMachine.getMachineState(), node)
       }
     })
 
     node.on('close', function (done) {
       mbBasics.setNodeStatusTo('closed', node)
+      node.bufferMessageList.clear()
       modbusClient.deregisterForModbus(node, done)
     })
   }

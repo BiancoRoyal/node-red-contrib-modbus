@@ -10,8 +10,11 @@
 
 'use strict'
 
+var injectNode = require('node-red/nodes/core/core/20-inject.js')
 var serverNode = require('../../src/modbus-server.js')
-var helper = require('node-red-contrib-test-helper')
+
+var helper = require('node-red-node-test-helper')
+helper.init(require.resolve('node-red'))
 
 describe('Server node Testing', function () {
   before(function (done) {
@@ -36,24 +39,84 @@ describe('Server node Testing', function () {
 
   describe('Node', function () {
     it('simple Node should be loaded', function (done) {
-      helper.load(serverNode, [{
-        id: '8cd6ca70.0dd188',
-        type: 'modbus-server',
-        name: 'modbusServer',
-        logEnabled: false,
-        serverPort: 6502,
-        responseDelay: 100,
-        delayUnit: 'ms',
-        coilsBufferSize: 1024,
-        holdingBufferSize: 1024,
-        inputBufferSize: 1024,
-        discreteBufferSize: 1024,
-        wires: []
-      }], function () {
-        var modbusServer = helper.getNode('8cd6ca70.0dd188')
+      helper.load(serverNode, [
+        {
+          'id': '178284ea.5055ab',
+          'type': 'modbus-server',
+          'name': 'modbusServer',
+          'logEnabled': false,
+          'hostname': '',
+          'serverPort': '5502',
+          'responseDelay': '50',
+          'delayUnit': 'ms',
+          'coilsBufferSize': 1024,
+          'holdingBufferSize': 1024,
+          'inputBufferSize': 1024,
+          'discreteBufferSize': 1024,
+          'showErrors': false,
+          'wires': [
+            [],
+            [],
+            [],
+            []
+          ]
+        }
+      ], function () {
+        var modbusServer = helper.getNode('178284ea.5055ab')
         modbusServer.should.have.property('name', 'modbusServer')
 
         done()
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
+    it('should send data on input', function (done) {
+      helper.load([injectNode, serverNode], [
+        {
+          'id': '178284ea.5055ab',
+          'type': 'modbus-server',
+          'name': 'modbusServer',
+          'logEnabled': false,
+          'hostname': '',
+          'serverPort': '5502',
+          'responseDelay': '50',
+          'delayUnit': 'ms',
+          'coilsBufferSize': 1024,
+          'holdingBufferSize': 1024,
+          'inputBufferSize': 1024,
+          'discreteBufferSize': 1024,
+          'showErrors': false,
+          'wires': [
+            ['h1'],
+            [],
+            [],
+            []
+          ]
+        },
+        {id: 'h1', type: 'helper'},
+        {
+          'id': 'a75e0ccf.e16628',
+          'type': 'inject',
+          'name': '',
+          'topic': '',
+          'payload': '',
+          'payloadType': 'date',
+          'repeat': '2',
+          'crontab': '',
+          'once': true,
+          'onceDelay': 0.1,
+          'wires': [
+            [
+              '178284ea.5055ab'
+            ]
+          ]
+        }
+      ], function () {
+        let h1 = helper.getNode('h1')
+        h1.on('input', function (msg) {
+          done()
+        })
       }, function () {
         helper.log('function callback')
       })

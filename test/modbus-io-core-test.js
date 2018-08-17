@@ -114,7 +114,12 @@ describe('Modbus IO Suite', function () {
       ]
       names.push(value)
 
-      let filterdNames = ioCore.filterValueNames(names, 2, 100, 2)
+      let node = {
+        ioFile: {},
+        logIOActivities: true
+      }
+
+      let filterdNames = ioCore.filterValueNames(node, names, 2, 100, 2)
 
       assert.equal(true, filterdNames.includes(value) && filterdNames.length === 1)
     })
@@ -173,7 +178,12 @@ describe('Modbus IO Suite', function () {
       ]
       names.push(value)
 
-      let filterdNames = ioCore.filterValueNames(names, 2, 100, 2)
+      let node = {
+        ioFile: {},
+        logIOActivities: true
+      }
+
+      let filterdNames = ioCore.filterValueNames(node, names, 2, 100, 2)
 
       assert.equal(false, filterdNames.includes(value) && filterdNames.length === 1)
     })
@@ -232,7 +242,12 @@ describe('Modbus IO Suite', function () {
       ]
       names.push(value)
 
-      let filterdNames = ioCore.filterValueNames(names, 2, 0, 2)
+      let node = {
+        ioFile: {},
+        logIOActivities: true
+      }
+
+      let filterdNames = ioCore.filterValueNames(node, names, 2, 0, 2)
 
       assert.equal(true, filterdNames.includes(value) && filterdNames.length === 1)
     })
@@ -291,7 +306,12 @@ describe('Modbus IO Suite', function () {
       ]
       names.push(value)
 
-      let filterdNames = ioCore.filterValueNames(names, 4, 0, 2)
+      let node = {
+        ioFile: {},
+        logIOActivities: true
+      }
+
+      let filterdNames = ioCore.filterValueNames(node, names, 4, 0, 2)
 
       assert.equal(true, filterdNames.includes(value) && filterdNames.length === 1)
     })
@@ -350,7 +370,12 @@ describe('Modbus IO Suite', function () {
       ]
       names.push(value)
 
-      let filterdNames = ioCore.filterValueNames(names, 4, 0, 2)
+      let node = {
+        ioFile: {},
+        logIOActivities: true
+      }
+
+      let filterdNames = ioCore.filterValueNames(node, names, 4, 0, 2)
 
       assert.equal(false, filterdNames.includes(value) && filterdNames.length === 1)
     })
@@ -446,7 +471,7 @@ describe('Modbus IO Suite', function () {
         'value': 1010}
       let responseBufferDummy = Buffer.alloc(20)
       responseBufferDummy.writeUInt32BE(0xfefefefe, 0)
-      item = ioCore.getValueFromBufferByDataType(item, 0, responseBufferDummy)
+      item = ioCore.getValueFromBufferByDataType(item, 0, responseBufferDummy, true)
       assert.equal(-258, item.value)
     })
 
@@ -574,6 +599,109 @@ describe('Modbus IO Suite', function () {
       }, 0, 0)
 
       assert.deepEqual(expectedObject, actualObject)
+    })
+
+    it('should build response message if found origin', function () {
+      let msg = {
+        'topic': 'cea01c8.36f8f6',
+        'payload': {
+          'value': 1534271807085,
+          'unitid': '',
+          'fc': 1,
+          'address': '0',
+          'quantity': '10',
+          'messageId': ''
+        },
+        '_msgid': 'cfcf4b52.b46f78',
+        'queueNumber': 0,
+        'queueUnit': 1,
+        'queueUnitId': 1
+      }
+
+      let node = {
+        'id': 'cea01c8.36f8f6',
+        'type': 'modbus-getter',
+        '_closeCallbacks': [
+          null
+        ],
+        'wires': [
+          [
+            'h1'
+          ],
+          []
+        ],
+        '_wireCount': 1,
+        'name': '',
+        'unitid': '',
+        'dataType': 'Coil',
+        'adr': '0',
+        'quantity': '10',
+        'showStatusActivities': true,
+        'showErrors': true,
+        'connection': null,
+        'useIOFile': false,
+        'ioFile': null,
+        'useIOForPayload': false,
+        'bufferMessageList': {},
+        '_events': {},
+        '_eventsCount': 1
+      }
+
+      node.bufferMessageList = new Map()
+      msg.messageId = ioCore.core.getObjectId()
+      msg.payload.messageId = msg.messageId
+      node.bufferMessageList.set(msg.messageId, msg)
+
+      let values = [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+
+      let response = {
+        'data': [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        'buffer': {
+          'type': 'Buffer',
+          'data': [
+            0,
+            0
+          ]
+        }
+      }
+
+      assert.equal(1, node.bufferMessageList.size)
+      assert.equal(2, ioCore.buildMessageWithIO(node, values, response, msg).length)
+      assert.equal(0, node.bufferMessageList.size)
     })
   })
 })

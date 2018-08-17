@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-modbus",
-  "version": "3.6.1",
+  "version": "4.0.0",
   "private": true,
   "description": "The all in one Modbus TCP and Serial contribution package for Node-RED.",
   "dependencies": {
@@ -89,8 +89,8 @@
     "js-beautify": "^1.7.5",
     "mocha": "^5.2.0",
     "nock": "^9.4.3",
-    "node-red": "^0.18.7",
-    "node-red-contrib-test-helper": "^0.1.0",
+    "node-red": "^0.19.0",
+    "node-red-node-test-helper": "^0.1.8",
     "pump": "^3.0.0",
     "should": "^13.2.2",
     "sinon": "^6.1.4",

@@ -1,27 +1,27 @@
 [
   {
-    "id": "1be09bb3.5a2c3c",
+    "id": "2cc128ac.dc2a5",
     "type": "tab",
     "label": "SDM630 Modbus Gateway",
     "disabled": false,
     "info": ""
   },
   {
-    "id": "42d0aa5b.ad0eac",
+    "id": "c4caaa9d.e89bb8",
     "type": "tab",
     "label": "SDM630 dynamic",
     "disabled": false,
     "info": ""
   },
   {
-    "id": "51a2bb4f.8967d4",
+    "id": "3110dd6a.7788ea",
     "type": "tab",
     "label": "SDM630 static",
     "disabled": false,
     "info": ""
   },
   {
-    "id": "45baf8d9.049ef",
+    "id": "bc0e5645.7034e",
     "type": "subflow",
     "name": "OPC UA Server",
     "info": "",
@@ -31,7 +31,7 @@
         "y": 90,
         "wires": [
           {
-            "id": "1c96c9df.54bb5e"
+            "id": "b6576de2.171d38"
           }
         ]
       }
@@ -39,7 +39,7 @@
     "out": []
   },
   {
-    "id": "7c9dbf07.2e9078",
+    "id": "41204b5b.b12234",
     "type": "subflow",
     "name": "Model",
     "info": "",
@@ -50,79 +50,79 @@
         "y": 390,
         "wires": [
           {
-            "id": "cfe775e3.90c4f",
+            "id": "11fe5d26.3083ab",
             "port": 0
           },
           {
-            "id": "f645eecd.cbe518",
+            "id": "c9f79fe0.2027e",
             "port": 0
           },
           {
-            "id": "18e0adcb.e2507a",
+            "id": "4be07d36.1f007c",
             "port": 0
           },
           {
-            "id": "6dbcd493.66f16c",
+            "id": "11fa7520.bcd373",
             "port": 0
           },
           {
-            "id": "278ce22d.1b276e",
+            "id": "181f83a0.4cefa4",
             "port": 0
           },
           {
-            "id": "1c0ca643.9decc2",
+            "id": "c4630081.99f958",
             "port": 0
           },
           {
-            "id": "1cfee993.a7f486",
+            "id": "3dfb3ecc.8537b2",
             "port": 0
           },
           {
-            "id": "2ecf21a0.f557d6",
+            "id": "1f9becba.ab2013",
             "port": 0
           },
           {
-            "id": "a3956cec.5c1c",
+            "id": "360e1991.e991a6",
             "port": 0
           },
           {
-            "id": "8d54256b.855978",
+            "id": "fbde5318.771de",
             "port": 0
           },
           {
-            "id": "60f1e375.16687c",
+            "id": "15b6647b.23394c",
             "port": 0
           },
           {
-            "id": "58df2f98.4b0f5",
+            "id": "78e13127.fbcaa",
             "port": 0
           },
           {
-            "id": "d992800f.5c031",
+            "id": "75df93f5.ab92e4",
             "port": 0
           },
           {
-            "id": "7ae723f8.1ed3ec",
+            "id": "f96579f7.d02868",
             "port": 0
           },
           {
-            "id": "531ff67b.5e7a08",
+            "id": "78cd21f8.b7fe48",
             "port": 0
           },
           {
-            "id": "295f0730.f293a8",
+            "id": "8178dcc.d14f4a",
             "port": 0
           },
           {
-            "id": "da48521b.52028",
+            "id": "d2823fc8.64a528",
             "port": 0
           },
           {
-            "id": "bc6c2ea7.1ab598",
+            "id": "d6127944.2a5e68",
             "port": 0
           },
           {
-            "id": "99c06c11.b4ce8",
+            "id": "78689439.084164",
             "port": 0
           }
         ]
@@ -130,7 +130,7 @@
     ]
   },
   {
-    "id": "8db6e66.51d6098",
+    "id": "249f594b.4b7c06",
     "type": "subflow",
     "name": "SDM630 charts",
     "info": "",
@@ -140,37 +140,37 @@
         "y": 360,
         "wires": [
           {
-            "id": "855b1c06.80b018"
+            "id": "ce9496c2.75b3d"
           },
           {
-            "id": "6d43fee1.c8802"
+            "id": "d8133f01.d168"
           },
           {
-            "id": "a9764f35.fa73d"
+            "id": "993fe07e.a8f05"
           },
           {
-            "id": "19d41cfa.27bca3"
+            "id": "3230ca4f.6d363e"
           },
           {
-            "id": "ddbc3975.18b938"
+            "id": "a2714322.79ca"
           },
           {
-            "id": "168de69e.b64371"
+            "id": "5c453094.331af"
           },
           {
-            "id": "70b4bd48.449e8c"
+            "id": "82562f1c.24797"
           },
           {
-            "id": "3f3329e4.640766"
+            "id": "4d4e6c52.8372e4"
           },
           {
-            "id": "a7516aae.65594"
+            "id": "dcd419d1.cb9028"
           },
           {
-            "id": "e3999bc7.233b28"
+            "id": "279f52ee.146a5e"
           },
           {
-            "id": "f1278940.3bf83"
+            "id": "46d54062.16b7f"
           }
         ]
       }
@@ -178,7 +178,7 @@
     "out": []
   },
   {
-    "id": "bd464ad6.55b4f",
+    "id": "225f9a0e.821c5e",
     "type": "subflow",
     "name": "static charts",
     "info": "",
@@ -188,16 +188,16 @@
         "y": 240,
         "wires": [
           {
-            "id": "fabed2a9.f62e08"
+            "id": "4291d6e0.c35c48"
           },
           {
-            "id": "6d3fc7e8.03a798"
+            "id": "bb68df17.2e0ee"
           },
           {
-            "id": "c73de109.fd0728"
+            "id": "9e88a58.afbf158"
           },
           {
-            "id": "67cddb1a.280244"
+            "id": "b58ce2b1.6e38e"
           }
         ]
       }
@@ -205,7 +205,96 @@
     "out": []
   },
   {
-    "id": "912acb51.045618",
+    "id": "5fd0a50b.d347fc",
+    "type": "ui_base",
+    "theme": {
+      "name": "theme-light",
+      "lightTheme": {
+        "default": "#0094CE",
+        "baseColor": "#0094CE",
+        "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+        "edited": true,
+        "reset": false
+      },
+      "darkTheme": {
+        "default": "#097479",
+        "baseColor": "#097479",
+        "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+        "edited": false
+      },
+      "customTheme": {
+        "name": "Untitled Theme 1",
+        "default": "#4B7930",
+        "baseColor": "#4B7930",
+        "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+      },
+      "themeState": {
+        "base-color": {
+          "default": "#0094CE",
+          "value": "#0094CE",
+          "edited": false
+        },
+        "page-titlebar-backgroundColor": {
+          "value": "#0094CE",
+          "edited": false
+        },
+        "page-backgroundColor": {
+          "value": "#fafafa",
+          "edited": false
+        },
+        "page-sidebar-backgroundColor": {
+          "value": "#ffffff",
+          "edited": false
+        },
+        "group-textColor": {
+          "value": "#1bbfff",
+          "edited": false
+        },
+        "group-borderColor": {
+          "value": "#ffffff",
+          "edited": false
+        },
+        "group-backgroundColor": {
+          "value": "#ffffff",
+          "edited": false
+        },
+        "widget-textColor": {
+          "value": "#111111",
+          "edited": false
+        },
+        "widget-backgroundColor": {
+          "value": "#0094ce",
+          "edited": false
+        },
+        "widget-borderColor": {
+          "value": "#ffffff",
+          "edited": false
+        },
+        "base-font": {
+          "value": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+        }
+      }
+    },
+    "site": {
+      "name": "Node-RED Dashboard",
+      "hideToolbar": "false",
+      "allowSwipe": "false",
+      "allowTempTheme": "true",
+      "dateFormat": "DD/MM/YYYY",
+      "sizes": {
+        "sx": 48,
+        "sy": 48,
+        "gx": 6,
+        "gy": 6,
+        "cx": 6,
+        "cy": 6,
+        "px": 0,
+        "py": 0
+      }
+    }
+  },
+  {
+    "id": "ed6540a7.b07558",
     "type": "ui_base",
     "theme": {
       "name": "theme-light",
@@ -293,30 +382,29 @@
     }
   },
   {
-    "id": "6df1fd5c.7db714",
+    "id": "a2d7ce83.2155a",
     "type": "OPCUA-IIoT-Connector",
-    "z": "42d0aa5b.ad0eac",
+    "z": "c4caaa9d.e89bb8",
     "endpoint": "opc.tcp://localhost:55388/",
     "keepSessionAlive": true,
     "loginEnabled": true,
     "securityPolicy": "Basic256",
     "securityMode": "SIGNANDENCRYPT",
     "name": "Dynamic Connector",
-    "showStatusActivities": false,
     "showErrors": false
   },
   {
-    "id": "84cef7f5.443d7",
+    "id": "eb418db3.56ea98",
     "type": "ui_tab",
-    "z": "42d0aa5b.ad0eac",
+    "z": "c4caaa9d.e89bb8",
     "name": "smartHome Energy",
     "icon": "dashboard",
     "order": 1
   },
   {
-    "id": "6894e3dc.b167ac",
+    "id": "8fc9ad9.af496d",
     "type": "modbus-client",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "SDM630 Modbus Gateway",
     "clienttype": "tcp",
     "bufferCommands": true,
@@ -337,47 +425,46 @@
     "reconnectTimeout": "2000"
   },
   {
-    "id": "e99d30f2.f5ae9",
+    "id": "53946c98.f01454",
     "type": "ui_tab",
-    "z": "51a2bb4f.8967d4",
+    "z": "3110dd6a.7788ea",
     "name": "smartHouse",
     "icon": "dashboard",
     "order": 3
   },
   {
-    "id": "50b2a208.f87dc4",
+    "id": "78b543c6.6e3bac",
     "type": "ui_group",
-    "z": "42d0aa5b.ad0eac",
+    "z": "c4caaa9d.e89bb8",
     "name": "Dynamic",
-    "tab": "84cef7f5.443d7",
+    "tab": "eb418db3.56ea98",
     "disp": true,
     "width": "30"
   },
   {
-    "id": "ecf79b48.6fb07",
+    "id": "e7d2d914.270698",
     "type": "ui_group",
-    "z": "51a2bb4f.8967d4",
+    "z": "3110dd6a.7788ea",
     "name": "Static",
-    "tab": "e99d30f2.f5ae9",
+    "tab": "53946c98.f01454",
     "order": 2,
     "disp": true,
     "width": "6"
   },
   {
-    "id": "a388bb83.58dde",
+    "id": "49941ef5.a77cf8",
     "type": "OPCUA-IIoT-Connector",
-    "z": "51a2bb4f.8967d4",
+    "z": "3110dd6a.7788ea",
     "endpoint": "opc.tcp://localhost:55388/",
     "keepSessionAlive": true,
     "loginEnabled": true,
     "securityPolicy": "Basic128Rsa15",
     "securityMode": "SIGN",
     "name": "Static Connector",
-    "showStatusActivities": false,
     "showErrors": false
   },
   {
-    "id": "521fc8cf.3d1198",
+    "id": "fe7b2b71.29dc48",
     "type": "OPCUA-IIoT-Connector",
     "z": "",
     "endpoint": "opc.tcp://localhost:55388/UA/NodeREDIIOTServer",
@@ -386,40 +473,39 @@
     "securityPolicy": "None",
     "securityMode": "NONE",
     "name": "Method Server",
-    "showStatusActivities": false,
     "showErrors": false
   },
   {
-    "id": "6b96ade6.1e033c",
+    "id": "37e3e3f2.c1c6cc",
     "type": "ui_group",
     "z": "",
     "name": "Model",
-    "tab": "741c856e.586404",
+    "tab": "6fcffcd3.30a594",
     "order": 2,
     "disp": true,
     "width": "8"
   },
   {
-    "id": "741c856e.586404",
+    "id": "6fcffcd3.30a594",
     "type": "ui_tab",
     "z": "",
     "name": "OPC UA",
     "icon": "dashboard"
   },
   {
-    "id": "1ee08631.1faf42",
+    "id": "3d9b923d.005916",
     "type": "ui_group",
     "z": "",
     "name": "Browser",
-    "tab": "741c856e.586404",
+    "tab": "6fcffcd3.30a594",
     "order": 1,
     "disp": true,
     "width": "20"
   },
   {
-    "id": "dd78b87a.cbd908",
+    "id": "61f4c861.ae33d",
     "type": "modbus-read",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "",
     "topic": "",
     "showStatusActivities": false,
@@ -432,23 +518,23 @@
     "rateUnit": "m",
     "delayOnStart": false,
     "startDelayTime": "",
-    "server": "6894e3dc.b167ac",
+    "server": "8fc9ad9.af496d",
     "x": 150,
     "y": 170,
     "wires": [
       [
-        "b16df7ac.7c3888"
+        "d423514.1fb3f3"
       ],
       [
-        "4b4dc985.5623c8",
-        "2c788a72.308f36"
+        "43ecd4ef.4841cc",
+        "b0f025d4.00f938"
       ]
     ]
   },
   {
-    "id": "4b4dc985.5623c8",
+    "id": "43ecd4ef.4841cc",
     "type": "modbus-response",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "",
     "registerShowMax": "1",
     "x": 370,
@@ -456,9 +542,9 @@
     "wires": []
   },
   {
-    "id": "2c788a72.308f36",
+    "id": "b0f025d4.00f938",
     "type": "function",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "extract buffer data L1-L3",
     "func": "let voltageL1 = msg.payload.buffer.readFloatBE(0,4) // 1,2\nlet voltageL2 = msg.payload.buffer.readFloatBE(4,4) // 3,4\nlet voltageL3 = msg.payload.buffer.readFloatBE(8,4) // 5,6\n\nlet powerL1 = msg.payload.buffer.readFloatBE(12,4) // 7,8\nlet powerL2 = msg.payload.buffer.readFloatBE(16,4) // 9,10\nlet powerL3 = msg.payload.buffer.readFloatBE(20,4) // 11,12\n\nlet demandL1 = msg.payload.buffer.readFloatBE(24,4) // 13,14\nlet demandL2 = msg.payload.buffer.readFloatBE(28,4) // 15,16\nlet demandL3 = msg.payload.buffer.readFloatBE(32,4) // 17,18\n\nlet voltageAVG = msg.payload.buffer.readFloatBE(84,8) // 43-46\nlet powerAVG = msg.payload.buffer.readFloatBE(92,4) // 47,48\n\nreturn [\n    {\n        payload: {\n            L1: {\n                voltage: voltageL1,\n                power: powerL1,\n                demand: demandL1\n            },\n            L2: {\n                voltage: voltageL2,\n                power: powerL2,\n                demand: demandL2\n            },\n            L3: {\n                voltage: voltageL3,\n                power: powerL3,\n                demand: demandL3\n            },\n            voltageAVG: voltageAVG,\n            powerAVG: powerAVG,            \n        }\n    }\n];",
     "outputs": "1",
@@ -467,14 +553,14 @@
     "y": 180,
     "wires": [
       [
-        "b3e6ad35.59f52"
+        "8612c344.935e1"
       ]
     ]
   },
   {
-    "id": "a6c25363.37bf28",
+    "id": "f5bba054.984b7",
     "type": "modbus-read",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "",
     "topic": "",
     "showStatusActivities": false,
@@ -487,23 +573,23 @@
     "rateUnit": "m",
     "delayOnStart": false,
     "startDelayTime": "",
-    "server": "6894e3dc.b167ac",
+    "server": "8fc9ad9.af496d",
     "x": 150,
     "y": 270,
     "wires": [
       [
-        "b16df7ac.7c3888"
+        "d423514.1fb3f3"
       ],
       [
-        "63240bd.2ea67f4",
-        "9f709743.2d5b5"
+        "32e2a5eb.05a96a",
+        "53ebe65d.94e6e"
       ]
     ]
   },
   {
-    "id": "63240bd.2ea67f4",
+    "id": "32e2a5eb.05a96a",
     "type": "function",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "extract buffer data sum",
     "func": "let powerSum = msg.payload.buffer.readFloatBE(0,8)\nlet demandSum = msg.payload.buffer.readFloatBE(8,8)\n\nreturn [\n    {\n        payload: {\n            powerSum: powerSum,\n            demandSum: demandSum\n        }\n    }\n];",
     "outputs": "1",
@@ -512,14 +598,14 @@
     "y": 290,
     "wires": [
       [
-        "b3e6ad35.59f52"
+        "8612c344.935e1"
       ]
     ]
   },
   {
-    "id": "b36c8df3.15add8",
+    "id": "72aa4ef5.58d828",
     "type": "modbus-read",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "",
     "topic": "",
     "showStatusActivities": false,
@@ -532,23 +618,23 @@
     "rateUnit": "m",
     "delayOnStart": false,
     "startDelayTime": "",
-    "server": "6894e3dc.b167ac",
+    "server": "8fc9ad9.af496d",
     "x": 150,
     "y": 390,
     "wires": [
       [
-        "b16df7ac.7c3888"
+        "d423514.1fb3f3"
       ],
       [
-        "500c17b6.5402d8",
-        "b1d83f5c.962078"
+        "4d098dca.b1cebc",
+        "2cd968ce.cb0498"
       ]
     ]
   },
   {
-    "id": "500c17b6.5402d8",
+    "id": "4d098dca.b1cebc",
     "type": "function",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "extract buffer data statics",
     "func": "let frequency = msg.payload.buffer.readFloatBE(0,4) // 71,72\n\nlet ampHourSinceLastReset = msg.payload.buffer.readFloatBE(24,4) // 83,84\nlet totalSystemPowerDemand = msg.payload.buffer.readFloatBE(28,4) // 85,86\nlet maxTotalSystemPowerDemand = msg.payload.buffer.readFloatBE(32,4) // 87,88\n\nreturn { \n    payload: {\n       frequency: frequency,\n       ampHourSinceLastReset: ampHourSinceLastReset,\n       ampHourSinceLastResetKilo: ampHourSinceLastReset / 1000.0,\n       totalSystemPowerDemand: totalSystemPowerDemand,\n       totalSystemPowerDemandKilo: totalSystemPowerDemand / 1000.0,\n       maxTotalSystemPowerDemand: maxTotalSystemPowerDemand,\n       maxTotalSystemPowerDemandKilo: maxTotalSystemPowerDemand / 1000.0\n    }\n}",
     "outputs": "1",
@@ -557,14 +643,14 @@
     "y": 410,
     "wires": [
       [
-        "b3e6ad35.59f52"
+        "8612c344.935e1"
       ]
     ]
   },
   {
-    "id": "9f709743.2d5b5",
+    "id": "53ebe65d.94e6e",
     "type": "modbus-response",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "",
     "registerShowMax": "1",
     "x": 370,
@@ -572,9 +658,9 @@
     "wires": []
   },
   {
-    "id": "b1d83f5c.962078",
+    "id": "2cd968ce.cb0498",
     "type": "modbus-response",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "",
     "registerShowMax": "1",
     "x": 370,
@@ -582,24 +668,24 @@
     "wires": []
   },
   {
-    "id": "b3e6ad35.59f52",
+    "id": "8612c344.935e1",
     "type": "link out",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "",
     "links": [
       "ad2661ec.7b23a",
       "44054254.88aa5c",
-      "9ae5e618.81d77"
+      "9412a32e.c018c"
     ],
     "x": 585,
     "y": 290,
     "wires": []
   },
   {
-    "id": "bbbd3a39.61b228",
+    "id": "fd1b692c.b5aae8",
     "type": "OPCUA-IIoT-Write",
-    "z": "42d0aa5b.ad0eac",
-    "connector": "6df1fd5c.7db714",
+    "z": "c4caaa9d.e89bb8",
+    "connector": "a2d7ce83.2155a",
     "name": "",
     "showStatusActivities": false,
     "showErrors": false,
@@ -607,14 +693,14 @@
     "y": 170,
     "wires": [
       [
-        "9e94cc5f.723d08"
+        "d8b747db.4ccc4"
       ]
     ]
   },
   {
-    "id": "9e94cc5f.723d08",
+    "id": "d8b747db.4ccc4",
     "type": "OPCUA-IIoT-Response",
-    "z": "42d0aa5b.ad0eac",
+    "z": "c4caaa9d.e89bb8",
     "name": "",
     "showStatusActivities": false,
     "showErrors": false,
@@ -622,14 +708,14 @@
     "y": 170,
     "wires": [
       [
-        "83f0468.95685b8"
+        "79530d69.49e1bc"
       ]
     ]
   },
   {
-    "id": "83f0468.95685b8",
+    "id": "79530d69.49e1bc",
     "type": "debug",
-    "z": "42d0aa5b.ad0eac",
+    "z": "c4caaa9d.e89bb8",
     "name": "",
     "active": false,
     "console": "false",
@@ -639,26 +725,26 @@
     "wires": []
   },
   {
-    "id": "9ae5e618.81d77",
+    "id": "9412a32e.c018c",
     "type": "link in",
-    "z": "42d0aa5b.ad0eac",
+    "z": "c4caaa9d.e89bb8",
     "name": "",
     "links": [
-      "b3e6ad35.59f52"
+      "8612c344.935e1"
     ],
     "x": 245,
     "y": 170,
     "wires": [
       [
-        "9e464cd2.bf8a3",
-        "fc892f7f.3a0e48"
+        "de1d91e5.f47418",
+        "85df24eb.ca1d8"
       ]
     ]
   },
   {
-    "id": "9e464cd2.bf8a3",
+    "id": "de1d91e5.f47418",
     "type": "function",
-    "z": "42d0aa5b.ad0eac",
+    "z": "c4caaa9d.e89bb8",
     "name": "Modbus to OPC UA value mapping",
     "func": "\nmsg.nodetype = \"inject\"\nmsg.injectType = \"write\"\n\nif(msg.payload.L1) {\n    msg.addressSpaceItems = [\n        {nodeId: 'ns=5;s=L1Voltage', datatypeName: 'Float'}, \n        {nodeId: 'ns=5;s=L1Power', datatypeName: 'Float'}, \n        {nodeId: 'ns=5;s=L1Demand', datatypeName: 'Float'},\n        {nodeId: 'ns=5;s=L2Voltage', datatypeName: 'Float'}, \n        {nodeId: 'ns=5;s=L2Power', datatypeName: 'Float'}, \n        {nodeId: 'ns=5;s=L2Demand', datatypeName: 'Float'},\n        {nodeId: 'ns=5;s=L3Voltage', datatypeName: 'Float'}, \n        {nodeId: 'ns=5;s=L3Power', datatypeName: 'Float'}, \n        {nodeId: 'ns=5;s=L3Demand', datatypeName: 'Float'}        \n    ]\n    \n    msg.valuesToWrite = [\n        msg.payload.L1.voltage, \n        msg.payload.L1.power, \n        msg.payload.L1.demand,\n        msg.payload.L2.voltage, \n        msg.payload.L2.power, \n        msg.payload.L2.demand,\n        msg.payload.L3.voltage, \n        msg.payload.L3.power, \n        msg.payload.L3.demand\n    ]\n    \n    return msg;\n}\n\nif(msg.payload.demandSum) {\n    msg.addressSpaceItems = [\n        {nodeId: 'ns=5;s=DemandSum', datatypeName: 'Float'}, \n        {nodeId: 'ns=5;s=PowerSum', datatypeName: 'Float'}\n    ]\n    \n    msg.valuesToWrite = [\n        msg.payload.demandSum, \n        msg.payload.powerSum\n    ]\n    \n    return msg;\n}\n",
     "outputs": 1,
@@ -667,15 +753,15 @@
     "y": 170,
     "wires": [
       [
-        "bbbd3a39.61b228",
-        "17d9aa6.edaba56"
+        "fd1b692c.b5aae8",
+        "717140da.26ee48"
       ]
     ]
   },
   {
-    "id": "17d9aa6.edaba56",
+    "id": "717140da.26ee48",
     "type": "debug",
-    "z": "42d0aa5b.ad0eac",
+    "z": "c4caaa9d.e89bb8",
     "name": "",
     "active": false,
     "console": "false",
@@ -685,9 +771,9 @@
     "wires": []
   },
   {
-    "id": "fc892f7f.3a0e48",
+    "id": "85df24eb.ca1d8",
     "type": "debug",
-    "z": "42d0aa5b.ad0eac",
+    "z": "c4caaa9d.e89bb8",
     "name": "",
     "active": false,
     "console": "false",
@@ -697,31 +783,28 @@
     "wires": []
   },
   {
-    "id": "b15f6bdb.82d178",
+    "id": "b6d209b3.70c2f8",
     "type": "OPCUA-IIoT-Listener",
-    "z": "42d0aa5b.ad0eac",
-    "connector": "6df1fd5c.7db714",
+    "z": "c4caaa9d.e89bb8",
+    "connector": "a2d7ce83.2155a",
     "action": "subscribe",
     "queueSize": 10,
     "name": "",
     "justValue": true,
-    "multipleRequest": false,
-    "metaDataInject": false,
     "showStatusActivities": false,
     "showErrors": false,
     "x": 550,
     "y": 250,
     "wires": [
       [
-        "a6091b3c.ceaeb8"
-      ],
-      []
+        "33030c02.32f8cc"
+      ]
     ]
   },
   {
-    "id": "776363bb.18ba24",
+    "id": "5d6c2772.5fa8f8",
     "type": "OPCUA-IIoT-Inject",
-    "z": "42d0aa5b.ad0eac",
+    "z": "c4caaa9d.e89bb8",
     "injectType": "listen",
     "payload": "1000",
     "payloadType": "num",
@@ -792,14 +875,14 @@
     "y": 250,
     "wires": [
       [
-        "b15f6bdb.82d178"
+        "b6d209b3.70c2f8"
       ]
     ]
   },
   {
-    "id": "b16df7ac.7c3888",
+    "id": "d423514.1fb3f3",
     "type": "debug",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "",
     "active": false,
     "console": "false",
@@ -809,26 +892,26 @@
     "wires": []
   },
   {
-    "id": "e081c51d.4f17f",
+    "id": "f5ae1229.0d09e",
     "type": "link in",
-    "z": "51a2bb4f.8967d4",
+    "z": "3110dd6a.7788ea",
     "name": "",
     "links": [
-      "b3e6ad35.59f52"
+      "8612c344.935e1"
     ],
     "x": 265,
     "y": 180,
     "wires": [
       [
-        "5e49cbc5.1c7894",
-        "81178262.0c4b2"
+        "7133bdb9.f40cd4",
+        "88ee412f.ebfa88"
       ]
     ]
   },
   {
-    "id": "5e49cbc5.1c7894",
+    "id": "7133bdb9.f40cd4",
     "type": "function",
-    "z": "51a2bb4f.8967d4",
+    "z": "3110dd6a.7788ea",
     "name": "Modbus to OPC UA value mapping",
     "func": "\nmsg.nodetype = \"inject\"\nmsg.injectType = \"write\"\n\nif(msg.payload.frequency) {\n    msg.addressSpaceItems = [\n        {nodeId: 'ns=5;s=frequency', datatypeName: 'Float'}, \n        {nodeId: 'ns=5;s=ampHourSinceLastReset', datatypeName: 'Float'}, \n        {nodeId: 'ns=5;s=totalSystemPowerDemand', datatypeName: 'Float'},\n        {nodeId: 'ns=5;s=maxTotalSystemPowerDemand', datatypeName: 'Float'}      \n    ]\n    \n    msg.valuesToWrite = [\n        msg.payload.frequency, \n        msg.payload.ampHourSinceLastResetKilo, \n        msg.payload.totalSystemPowerDemandKilo,\n        msg.payload.maxTotalSystemPowerDemandKilo\n    ]\n    \n    return msg;\n}\n",
     "outputs": 1,
@@ -837,16 +920,16 @@
     "y": 180,
     "wires": [
       [
-        "f85ab427.bb2ec8",
-        "f533cbb0.a3626"
+        "9e526135.cc214",
+        "b94159fa.e10a6"
       ]
     ]
   },
   {
-    "id": "f85ab427.bb2ec8",
+    "id": "9e526135.cc214",
     "type": "OPCUA-IIoT-Write",
-    "z": "51a2bb4f.8967d4",
-    "connector": "a388bb83.58dde",
+    "z": "3110dd6a.7788ea",
+    "connector": "49941ef5.a77cf8",
     "name": "",
     "showStatusActivities": false,
     "showErrors": false,
@@ -854,14 +937,14 @@
     "y": 180,
     "wires": [
       [
-        "ba87402f.4eae8"
+        "8e037678.0bd0f"
       ]
     ]
   },
   {
-    "id": "ba87402f.4eae8",
+    "id": "8e037678.0bd0f",
     "type": "OPCUA-IIoT-Response",
-    "z": "51a2bb4f.8967d4",
+    "z": "3110dd6a.7788ea",
     "name": "",
     "showStatusActivities": false,
     "showErrors": false,
@@ -869,14 +952,14 @@
     "y": 180,
     "wires": [
       [
-        "97a6bfcb.9fcb68"
+        "74d9be70.bff638"
       ]
     ]
   },
   {
-    "id": "97a6bfcb.9fcb68",
+    "id": "74d9be70.bff638",
     "type": "debug",
-    "z": "51a2bb4f.8967d4",
+    "z": "3110dd6a.7788ea",
     "name": "",
     "active": false,
     "console": "false",
@@ -886,9 +969,9 @@
     "wires": []
   },
   {
-    "id": "f533cbb0.a3626",
+    "id": "b94159fa.e10a6",
     "type": "debug",
-    "z": "51a2bb4f.8967d4",
+    "z": "3110dd6a.7788ea",
     "name": "",
     "active": false,
     "console": "false",
@@ -898,9 +981,9 @@
     "wires": []
   },
   {
-    "id": "81178262.0c4b2",
+    "id": "88ee412f.ebfa88",
     "type": "debug",
-    "z": "51a2bb4f.8967d4",
+    "z": "3110dd6a.7788ea",
     "name": "",
     "active": false,
     "console": "false",
@@ -910,31 +993,28 @@
     "wires": []
   },
   {
-    "id": "b44558bd.169b7",
+    "id": "c9a62b23.9512f",
     "type": "OPCUA-IIoT-Listener",
-    "z": "51a2bb4f.8967d4",
-    "connector": "a388bb83.58dde",
+    "z": "3110dd6a.7788ea",
+    "connector": "49941ef5.a77cf8",
     "action": "subscribe",
     "queueSize": 10,
     "name": "",
     "justValue": true,
-    "multipleRequest": false,
-    "metaDataInject": false,
     "showStatusActivities": false,
     "showErrors": false,
     "x": 540,
     "y": 280,
     "wires": [
       [
-        "1d155c65.03e564"
-      ],
-      []
+        "99039604.319fd8"
+      ]
     ]
   },
   {
-    "id": "64508160.9f221",
+    "id": "e600aed1.e0d7",
     "type": "OPCUA-IIoT-Inject",
-    "z": "51a2bb4f.8967d4",
+    "z": "3110dd6a.7788ea",
     "injectType": "listen",
     "payload": "1000",
     "payloadType": "num",
@@ -970,30 +1050,30 @@
     "y": 280,
     "wires": [
       [
-        "b44558bd.169b7"
+        "c9a62b23.9512f"
       ]
     ]
   },
   {
-    "id": "1b1a3b21.9d109d",
+    "id": "8c5af5de.cfffd",
     "type": "catch",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "",
     "scope": null,
     "x": 140,
     "y": 630,
     "wires": [
       [
-        "6906167d.e6fb18",
-        "a19d761c.4da13",
-        "e9286888.589ea"
+        "4d4a9dc8.000de4",
+        "81fdc5df.2318d",
+        "25e756b5.be66c2"
       ]
     ]
   },
   {
-    "id": "6906167d.e6fb18",
+    "id": "4d4a9dc8.000de4",
     "type": "debug",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "",
     "active": true,
     "console": "false",
@@ -1003,29 +1083,31 @@
     "wires": []
   },
   {
-    "id": "be0c6ff7.cb07a",
+    "id": "d11b4313.ef69a8",
     "type": "modbus-queue-info",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "",
+    "topic": "",
     "unitid": "",
+    "queueReadIntervalTime": "1000",
     "lowLowLevel": 25,
     "lowLevel": 75,
     "highLevel": 150,
     "highHighLevel": 300,
-    "server": "6894e3dc.b167ac",
+    "server": "8fc9ad9.af496d",
     "errorOnHighLevel": false,
     "x": 600,
     "y": 600,
     "wires": [
       [
-        "3692fbfd.7088fc"
+        "b74172b9.9503d"
       ]
     ]
   },
   {
-    "id": "a19d761c.4da13",
+    "id": "81fdc5df.2318d",
     "type": "function",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "reset on High",
     "func": "if(\"high level reached\" === msg.state) {\n    msg.resetQueue = true;\n}\nreturn msg;",
     "outputs": 1,
@@ -1034,14 +1116,14 @@
     "y": 590,
     "wires": [
       [
-        "be0c6ff7.cb07a"
+        "d11b4313.ef69a8"
       ]
     ]
   },
   {
-    "id": "e9286888.589ea",
+    "id": "25e756b5.be66c2",
     "type": "function",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "reset on HighHigh",
     "func": "if(\"high high level reached\" === msg.state) {\n    msg.resetQueue = true;\n}\nreturn msg;",
     "outputs": 1,
@@ -1050,14 +1132,14 @@
     "y": 630,
     "wires": [
       [
-        "be0c6ff7.cb07a"
+        "d11b4313.ef69a8"
       ]
     ]
   },
   {
-    "id": "3692fbfd.7088fc",
+    "id": "b74172b9.9503d",
     "type": "debug",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "",
     "active": true,
     "console": "false",
@@ -1067,9 +1149,9 @@
     "wires": []
   },
   {
-    "id": "99c06c11.b4ce8",
+    "id": "78689439.084164",
     "type": "OPCUA-IIoT-Server-ASO",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "nodeId": "ns=5;s=SDM630",
     "browsename": "SDM630",
     "displayname": "SDM 630",
@@ -1086,9 +1168,9 @@
     ]
   },
   {
-    "id": "5f152174.147a1",
+    "id": "2777a0bb.da5788",
     "type": "OPCUA-IIoT-Inject",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "injectType": "inject",
     "payload": "0",
     "payloadType": "num",
@@ -1103,14 +1185,14 @@
     "y": 40,
     "wires": [
       [
-        "99c06c11.b4ce8"
+        "78689439.084164"
       ]
     ]
   },
   {
-    "id": "bc6c2ea7.1ab598",
+    "id": "d6127944.2a5e68",
     "type": "OPCUA-IIoT-Server-ASO",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "nodeId": "ns=5;s=L1",
     "browsename": "L1",
     "displayname": "L1",
@@ -1127,9 +1209,9 @@
     ]
   },
   {
-    "id": "295f0730.f293a8",
+    "id": "8178dcc.d14f4a",
     "type": "OPCUA-IIoT-Server-ASO",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "nodeId": "ns=5;s=L3",
     "browsename": "L3",
     "displayname": "L3",
@@ -1146,9 +1228,9 @@
     ]
   },
   {
-    "id": "da48521b.52028",
+    "id": "d2823fc8.64a528",
     "type": "OPCUA-IIoT-Server-ASO",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "nodeId": "ns=5;s=L2",
     "browsename": "L2",
     "displayname": "L2",
@@ -1165,9 +1247,9 @@
     ]
   },
   {
-    "id": "8b1d8d37.92ec18",
+    "id": "ae47dcad.2337b",
     "type": "OPCUA-IIoT-Inject",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "injectType": "inject",
     "payload": "0",
     "payloadType": "num",
@@ -1182,22 +1264,22 @@
     "y": 240,
     "wires": [
       [
-        "bc6c2ea7.1ab598",
-        "da48521b.52028",
-        "295f0730.f293a8",
-        "531ff67b.5e7a08",
-        "7ae723f8.1ed3ec",
-        "d992800f.5c031",
-        "58df2f98.4b0f5",
-        "8d54256b.855978",
-        "60f1e375.16687c"
+        "d6127944.2a5e68",
+        "d2823fc8.64a528",
+        "8178dcc.d14f4a",
+        "78cd21f8.b7fe48",
+        "f96579f7.d02868",
+        "75df93f5.ab92e4",
+        "78e13127.fbcaa",
+        "fbde5318.771de",
+        "15b6647b.23394c"
       ]
     ]
   },
   {
-    "id": "a3956cec.5c1c",
+    "id": "360e1991.e991a6",
     "type": "OPCUA-IIoT-Server-ASO",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "nodeId": "ns=5;s=L1Demand",
     "browsename": "L1Demand",
     "displayname": "L1 demand",
@@ -1214,9 +1296,9 @@
     ]
   },
   {
-    "id": "3d6461ee.b8e92e",
+    "id": "5fb30d03.4cad64",
     "type": "OPCUA-IIoT-Inject",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "injectType": "inject",
     "payload": "0",
     "payloadType": "num",
@@ -1231,22 +1313,22 @@
     "y": 680,
     "wires": [
       [
-        "a3956cec.5c1c",
-        "2ecf21a0.f557d6",
-        "1cfee993.a7f486",
-        "1c0ca643.9decc2",
-        "278ce22d.1b276e",
-        "6dbcd493.66f16c",
-        "18e0adcb.e2507a",
-        "f645eecd.cbe518",
-        "cfe775e3.90c4f"
+        "360e1991.e991a6",
+        "1f9becba.ab2013",
+        "3dfb3ecc.8537b2",
+        "c4630081.99f958",
+        "181f83a0.4cefa4",
+        "11fa7520.bcd373",
+        "4be07d36.1f007c",
+        "c9f79fe0.2027e",
+        "11fe5d26.3083ab"
       ]
     ]
   },
   {
-    "id": "2ecf21a0.f557d6",
+    "id": "1f9becba.ab2013",
     "type": "OPCUA-IIoT-Server-ASO",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "nodeId": "ns=5;s=L2Demand",
     "browsename": "L2Demand",
     "displayname": "L2 demand",
@@ -1263,9 +1345,9 @@
     ]
   },
   {
-    "id": "1cfee993.a7f486",
+    "id": "3dfb3ecc.8537b2",
     "type": "OPCUA-IIoT-Server-ASO",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "nodeId": "ns=5;s=L3Demand",
     "browsename": "L3Demand",
     "displayname": "L3 demand",
@@ -1282,9 +1364,9 @@
     ]
   },
   {
-    "id": "1c0ca643.9decc2",
+    "id": "c4630081.99f958",
     "type": "OPCUA-IIoT-Server-ASO",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "nodeId": "ns=5;s=L1Power",
     "browsename": "L1Power",
     "displayname": "L1 power",
@@ -1301,9 +1383,9 @@
     ]
   },
   {
-    "id": "278ce22d.1b276e",
+    "id": "181f83a0.4cefa4",
     "type": "OPCUA-IIoT-Server-ASO",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "nodeId": "ns=5;s=L2Power",
     "browsename": "L2Power",
     "displayname": "L2 power",
@@ -1320,9 +1402,9 @@
     ]
   },
   {
-    "id": "6dbcd493.66f16c",
+    "id": "11fa7520.bcd373",
     "type": "OPCUA-IIoT-Server-ASO",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "nodeId": "ns=5;s=L3Power",
     "browsename": "L3Power",
     "displayname": "L3 power",
@@ -1339,9 +1421,9 @@
     ]
   },
   {
-    "id": "18e0adcb.e2507a",
+    "id": "4be07d36.1f007c",
     "type": "OPCUA-IIoT-Server-ASO",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "nodeId": "ns=5;s=L1Voltage",
     "browsename": "L1Voltage",
     "displayname": "L1 voltage",
@@ -1358,9 +1440,9 @@
     ]
   },
   {
-    "id": "f645eecd.cbe518",
+    "id": "c9f79fe0.2027e",
     "type": "OPCUA-IIoT-Server-ASO",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "nodeId": "ns=5;s=L2Voltage",
     "browsename": "L2Voltage",
     "displayname": "L2 voltage",
@@ -1377,9 +1459,9 @@
     ]
   },
   {
-    "id": "cfe775e3.90c4f",
+    "id": "11fe5d26.3083ab",
     "type": "OPCUA-IIoT-Server-ASO",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "nodeId": "ns=5;s=L3Voltage",
     "browsename": "L3Voltage",
     "displayname": "L3 voltage",
@@ -1396,9 +1478,9 @@
     ]
   },
   {
-    "id": "531ff67b.5e7a08",
+    "id": "78cd21f8.b7fe48",
     "type": "OPCUA-IIoT-Server-ASO",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "nodeId": "ns=5;s=DemandSum",
     "browsename": "DemandSum",
     "displayname": "Demand Sum",
@@ -1415,9 +1497,9 @@
     ]
   },
   {
-    "id": "7ae723f8.1ed3ec",
+    "id": "f96579f7.d02868",
     "type": "OPCUA-IIoT-Server-ASO",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "nodeId": "ns=5;s=PowerSum",
     "browsename": "PowerSum",
     "displayname": "Power Sum",
@@ -1434,9 +1516,9 @@
     ]
   },
   {
-    "id": "d992800f.5c031",
+    "id": "75df93f5.ab92e4",
     "type": "OPCUA-IIoT-Server-ASO",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "nodeId": "ns=5;s=frequency",
     "browsename": "frequency",
     "displayname": "frequency",
@@ -1453,9 +1535,9 @@
     ]
   },
   {
-    "id": "58df2f98.4b0f5",
+    "id": "78e13127.fbcaa",
     "type": "OPCUA-IIoT-Server-ASO",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "nodeId": "ns=5;s=ampHourSinceLastReset",
     "browsename": "ampHourSinceLastReset",
     "displayname": "ampere-hours since last reset",
@@ -1472,9 +1554,9 @@
     ]
   },
   {
-    "id": "8d54256b.855978",
+    "id": "fbde5318.771de",
     "type": "OPCUA-IIoT-Server-ASO",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "nodeId": "ns=5;s=totalSystemPowerDemand",
     "browsename": "totalSystemPowerDemand",
     "displayname": "total system power demand",
@@ -1491,9 +1573,9 @@
     ]
   },
   {
-    "id": "60f1e375.16687c",
+    "id": "15b6647b.23394c",
     "type": "OPCUA-IIoT-Server-ASO",
-    "z": "7c9dbf07.2e9078",
+    "z": "41204b5b.b12234",
     "nodeId": "ns=5;s=maxTotalSystemPowerDemand",
     "browsename": "maxTotalSystemPowerDemand",
     "displayname": "max total system power demand",
@@ -1510,9 +1592,9 @@
     ]
   },
   {
-    "id": "1c96c9df.54bb5e",
+    "id": "b6576de2.171d38",
     "type": "OPCUA-IIoT-Server",
-    "z": "45baf8d9.049ef",
+    "z": "bc0e5645.7034e",
     "port": "55388",
     "endpoint": "",
     "acceptExternalCommands": true,
@@ -1523,8 +1605,10 @@
     "name": "LOCAL SERVER",
     "showStatusActivities": false,
     "showErrors": true,
+    "asoDemo": false,
     "allowAnonymous": true,
     "isAuditing": false,
+    "serverDiscovery": false,
     "users": [
       {
         "name": "test",
@@ -1535,19 +1619,26 @@
         "password": "peter"
       }
     ],
+    "xmlsets": [],
+    "publicCertificateFile": "",
+    "privateCertificateFile": "",
+    "registerServerMethod": "1",
+    "discoveryServerEndpointUrl": "",
+    "capabilitiesForMDNS": "",
+    "maxNodesPerRead": "",
+    "maxNodesPerBrowse": "",
     "x": 250,
     "y": 90,
     "wires": [
       [
-        "864d5e0b.198cb8"
-      ],
-      []
+        "5f74a26e.c162fc"
+      ]
     ]
   },
   {
-    "id": "864d5e0b.198cb8",
+    "id": "5f74a26e.c162fc",
     "type": "debug",
-    "z": "45baf8d9.049ef",
+    "z": "bc0e5645.7034e",
     "name": "",
     "active": false,
     "console": "false",
@@ -1557,33 +1648,33 @@
     "wires": []
   },
   {
-    "id": "796fd297.537f34",
-    "type": "subflow:45baf8d9.049ef",
-    "z": "1be09bb3.5a2c3c",
+    "id": "b672a520.2b626",
+    "type": "subflow:bc0e5645.7034e",
+    "z": "2cc128ac.dc2a5",
     "name": "",
     "x": 360,
     "y": 60,
     "wires": []
   },
   {
-    "id": "f71435bf.51a6e",
-    "type": "subflow:7c9dbf07.2e9078",
-    "z": "1be09bb3.5a2c3c",
+    "id": "af98af46.54d3",
+    "type": "subflow:41204b5b.b12234",
+    "z": "2cc128ac.dc2a5",
     "name": "",
     "x": 130,
     "y": 60,
     "wires": [
       [
-        "796fd297.537f34"
+        "b672a520.2b626"
       ]
     ]
   },
   {
-    "id": "1147835b.fe01b5",
+    "id": "86987be9.c79f88",
     "type": "ui_chart",
-    "z": "8db6e66.51d6098",
+    "z": "249f594b.4b7c06",
     "name": "",
-    "group": "50b2a208.f87dc4",
+    "group": "78b543c6.6e3bac",
     "order": 2,
     "width": 0,
     "height": 0,
@@ -1621,11 +1712,11 @@
     ]
   },
   {
-    "id": "f9666861.2ada4",
+    "id": "23befdde.82cc22",
     "type": "ui_chart",
-    "z": "8db6e66.51d6098",
+    "z": "249f594b.4b7c06",
     "name": "",
-    "group": "50b2a208.f87dc4",
+    "group": "78b543c6.6e3bac",
     "order": 3,
     "width": 0,
     "height": 0,
@@ -1662,11 +1753,11 @@
     ]
   },
   {
-    "id": "4c617674.74d698",
+    "id": "a1d6284d.0abd28",
     "type": "ui_chart",
-    "z": "8db6e66.51d6098",
+    "z": "249f594b.4b7c06",
     "name": "",
-    "group": "50b2a208.f87dc4",
+    "group": "78b543c6.6e3bac",
     "order": 1,
     "width": 0,
     "height": 0,
@@ -1703,9 +1794,9 @@
     ]
   },
   {
-    "id": "855b1c06.80b018",
+    "id": "ce9496c2.75b3d",
     "type": "OPCUA-IIoT-Result-Filter",
-    "z": "8db6e66.51d6098",
+    "z": "249f594b.4b7c06",
     "nodeId": "ns=5;s=PowerSum",
     "datatype": "Float",
     "withPrecision": true,
@@ -1716,22 +1807,20 @@
     "minvalue": "",
     "maxvalue": "",
     "defaultvalue": "",
-    "usingListener": false,
     "topic": "Sum",
     "name": "",
     "x": 450,
     "y": 100,
     "wires": [
       [
-        "1147835b.fe01b5"
-      ],
-      []
+        "86987be9.c79f88"
+      ]
     ]
   },
   {
-    "id": "f1278940.3bf83",
+    "id": "46d54062.16b7f",
     "type": "OPCUA-IIoT-Result-Filter",
-    "z": "8db6e66.51d6098",
+    "z": "249f594b.4b7c06",
     "nodeId": "ns=5;s=DemandSum",
     "datatype": "Float",
     "withPrecision": true,
@@ -1742,22 +1831,20 @@
     "minvalue": "",
     "maxvalue": "",
     "defaultvalue": "",
-    "usingListener": false,
     "topic": "Sum",
     "name": "",
     "x": 460,
     "y": 630,
     "wires": [
       [
-        "4c617674.74d698"
-      ],
-      []
+        "a1d6284d.0abd28"
+      ]
     ]
   },
   {
-    "id": "6d43fee1.c8802",
+    "id": "d8133f01.d168",
     "type": "OPCUA-IIoT-Result-Filter",
-    "z": "8db6e66.51d6098",
+    "z": "249f594b.4b7c06",
     "nodeId": "ns=5;s=L1Power",
     "datatype": "Float",
     "withPrecision": true,
@@ -1768,22 +1855,20 @@
     "minvalue": "",
     "maxvalue": "",
     "defaultvalue": "",
-    "usingListener": false,
     "topic": "L1",
     "name": "",
     "x": 450,
     "y": 160,
     "wires": [
       [
-        "1147835b.fe01b5"
-      ],
-      []
+        "86987be9.c79f88"
+      ]
     ]
   },
   {
-    "id": "ddbc3975.18b938",
+    "id": "a2714322.79ca",
     "type": "OPCUA-IIoT-Result-Filter",
-    "z": "8db6e66.51d6098",
+    "z": "249f594b.4b7c06",
     "nodeId": "ns=5;s=L1Voltage",
     "datatype": "Float",
     "withPrecision": true,
@@ -1794,22 +1879,20 @@
     "minvalue": "",
     "maxvalue": "",
     "defaultvalue": "",
-    "usingListener": false,
     "topic": "L1",
     "name": "",
     "x": 450,
     "y": 310,
     "wires": [
       [
-        "f9666861.2ada4"
-      ],
-      []
+        "23befdde.82cc22"
+      ]
     ]
   },
   {
-    "id": "3f3329e4.640766",
+    "id": "4d4e6c52.8372e4",
     "type": "OPCUA-IIoT-Result-Filter",
-    "z": "8db6e66.51d6098",
+    "z": "249f594b.4b7c06",
     "nodeId": "ns=5;s=L1Demand",
     "datatype": "Float",
     "withPrecision": true,
@@ -1820,22 +1903,20 @@
     "minvalue": "",
     "maxvalue": "",
     "defaultvalue": "",
-    "usingListener": false,
     "topic": "L1",
     "name": "",
     "x": 450,
     "y": 480,
     "wires": [
       [
-        "4c617674.74d698"
-      ],
-      []
+        "a1d6284d.0abd28"
+      ]
     ]
   },
   {
-    "id": "a9764f35.fa73d",
+    "id": "993fe07e.a8f05",
     "type": "OPCUA-IIoT-Result-Filter",
-    "z": "8db6e66.51d6098",
+    "z": "249f594b.4b7c06",
     "nodeId": "ns=5;s=L2Power",
     "datatype": "Float",
     "withPrecision": true,
@@ -1846,22 +1927,20 @@
     "minvalue": "",
     "maxvalue": "",
     "defaultvalue": "",
-    "usingListener": false,
     "topic": "L2",
     "name": "",
     "x": 450,
     "y": 210,
     "wires": [
       [
-        "1147835b.fe01b5"
-      ],
-      []
+        "86987be9.c79f88"
+      ]
     ]
   },
   {
-    "id": "19d41cfa.27bca3",
+    "id": "3230ca4f.6d363e",
     "type": "OPCUA-IIoT-Result-Filter",
-    "z": "8db6e66.51d6098",
+    "z": "249f594b.4b7c06",
     "nodeId": "ns=5;s=L3Power",
     "datatype": "Float",
     "withPrecision": true,
@@ -1872,22 +1951,20 @@
     "minvalue": "",
     "maxvalue": "",
     "defaultvalue": "",
-    "usingListener": false,
     "topic": "L3",
     "name": "",
     "x": 450,
     "y": 260,
     "wires": [
       [
-        "1147835b.fe01b5"
-      ],
-      []
+        "86987be9.c79f88"
+      ]
     ]
   },
   {
-    "id": "168de69e.b64371",
+    "id": "5c453094.331af",
     "type": "OPCUA-IIoT-Result-Filter",
-    "z": "8db6e66.51d6098",
+    "z": "249f594b.4b7c06",
     "nodeId": "ns=5;s=L2Voltage",
     "datatype": "Float",
     "withPrecision": true,
@@ -1898,22 +1975,20 @@
     "minvalue": "",
     "maxvalue": "",
     "defaultvalue": "",
-    "usingListener": false,
     "topic": "L2",
     "name": "",
     "x": 450,
     "y": 370,
     "wires": [
       [
-        "f9666861.2ada4"
-      ],
-      []
+        "23befdde.82cc22"
+      ]
     ]
   },
   {
-    "id": "70b4bd48.449e8c",
+    "id": "82562f1c.24797",
     "type": "OPCUA-IIoT-Result-Filter",
-    "z": "8db6e66.51d6098",
+    "z": "249f594b.4b7c06",
     "nodeId": "ns=5;s=L3Voltage",
     "datatype": "Float",
     "withPrecision": true,
@@ -1924,22 +1999,20 @@
     "minvalue": "",
     "maxvalue": "",
     "defaultvalue": "",
-    "usingListener": false,
     "topic": "L3",
     "name": "",
     "x": 450,
     "y": 420,
     "wires": [
       [
-        "f9666861.2ada4"
-      ],
-      []
+        "23befdde.82cc22"
+      ]
     ]
   },
   {
-    "id": "a7516aae.65594",
+    "id": "dcd419d1.cb9028",
     "type": "OPCUA-IIoT-Result-Filter",
-    "z": "8db6e66.51d6098",
+    "z": "249f594b.4b7c06",
     "nodeId": "ns=5;s=L2Demand",
     "datatype": "Float",
     "withPrecision": true,
@@ -1950,22 +2023,20 @@
     "minvalue": "",
     "maxvalue": "",
     "defaultvalue": "",
-    "usingListener": false,
     "topic": "L2",
     "name": "",
     "x": 450,
     "y": 530,
     "wires": [
       [
-        "4c617674.74d698"
-      ],
-      []
+        "a1d6284d.0abd28"
+      ]
     ]
   },
   {
-    "id": "e3999bc7.233b28",
+    "id": "279f52ee.146a5e",
     "type": "OPCUA-IIoT-Result-Filter",
-    "z": "8db6e66.51d6098",
+    "z": "249f594b.4b7c06",
     "nodeId": "ns=5;s=L3Demand",
     "datatype": "Float",
     "withPrecision": true,
@@ -1976,33 +2047,31 @@
     "minvalue": "",
     "maxvalue": "",
     "defaultvalue": "",
-    "usingListener": false,
     "topic": "L3",
     "name": "",
     "x": 450,
     "y": 580,
     "wires": [
       [
-        "4c617674.74d698"
-      ],
-      []
+        "a1d6284d.0abd28"
+      ]
     ]
   },
   {
-    "id": "a6091b3c.ceaeb8",
-    "type": "subflow:8db6e66.51d6098",
-    "z": "42d0aa5b.ad0eac",
+    "id": "33030c02.32f8cc",
+    "type": "subflow:249f594b.4b7c06",
+    "z": "c4caaa9d.e89bb8",
     "name": "dynamic charts",
     "x": 730,
     "y": 250,
     "wires": []
   },
   {
-    "id": "24cdd7b4.f08c9",
+    "id": "c42bc472.727c9",
     "type": "ui_gauge",
-    "z": "bd464ad6.55b4f",
+    "z": "225f9a0e.821c5e",
     "name": "",
-    "group": "ecf79b48.6fb07",
+    "group": "e7d2d914.270698",
     "order": 1,
     "width": 0,
     "height": 0,
@@ -2024,11 +2093,11 @@
     "wires": []
   },
   {
-    "id": "2d45b79b.a01b1",
+    "id": "920de6b7.3a7f4",
     "type": "ui_gauge",
-    "z": "bd464ad6.55b4f",
+    "z": "225f9a0e.821c5e",
     "name": "",
-    "group": "6b96ade6.1e033c",
+    "group": "37e3e3f2.c1c6cc",
     "order": 2,
     "width": 0,
     "height": 0,
@@ -2050,11 +2119,11 @@
     "wires": []
   },
   {
-    "id": "601f8f63.3d92c8",
+    "id": "95091391.fe217",
     "type": "ui_gauge",
-    "z": "bd464ad6.55b4f",
+    "z": "225f9a0e.821c5e",
     "name": "",
-    "group": "6b96ade6.1e033c",
+    "group": "37e3e3f2.c1c6cc",
     "order": 1,
     "width": 0,
     "height": 0,
@@ -2076,11 +2145,11 @@
     "wires": []
   },
   {
-    "id": "e84de74a.d931c8",
+    "id": "9f83702d.cccdf",
     "type": "ui_gauge",
-    "z": "bd464ad6.55b4f",
+    "z": "225f9a0e.821c5e",
     "name": "",
-    "group": "ecf79b48.6fb07",
+    "group": "e7d2d914.270698",
     "order": 2,
     "width": 0,
     "height": 0,
@@ -2102,9 +2171,9 @@
     "wires": []
   },
   {
-    "id": "fabed2a9.f62e08",
+    "id": "4291d6e0.c35c48",
     "type": "OPCUA-IIoT-Result-Filter",
-    "z": "bd464ad6.55b4f",
+    "z": "225f9a0e.821c5e",
     "nodeId": "ns=5;s=frequency",
     "datatype": "Float",
     "withPrecision": true,
@@ -2115,22 +2184,20 @@
     "minvalue": "",
     "maxvalue": "",
     "defaultvalue": "",
-    "usingListener": false,
     "topic": "frequency",
     "name": "",
     "x": 480,
     "y": 160,
     "wires": [
       [
-        "24cdd7b4.f08c9"
-      ],
-      []
+        "c42bc472.727c9"
+      ]
     ]
   },
   {
-    "id": "6d3fc7e8.03a798",
+    "id": "bb68df17.2e0ee",
     "type": "OPCUA-IIoT-Result-Filter",
-    "z": "bd464ad6.55b4f",
+    "z": "225f9a0e.821c5e",
     "nodeId": "ns=5;s=ampHourSinceLastReset",
     "datatype": "Float",
     "withPrecision": true,
@@ -2141,22 +2208,20 @@
     "minvalue": "",
     "maxvalue": "",
     "defaultvalue": "",
-    "usingListener": false,
     "topic": "ampHourSinceLastReset",
     "name": "",
     "x": 530,
     "y": 210,
     "wires": [
       [
-        "e84de74a.d931c8"
-      ],
-      []
+        "9f83702d.cccdf"
+      ]
     ]
   },
   {
-    "id": "c73de109.fd0728",
+    "id": "9e88a58.afbf158",
     "type": "OPCUA-IIoT-Result-Filter",
-    "z": "bd464ad6.55b4f",
+    "z": "225f9a0e.821c5e",
     "nodeId": "ns=5;s=totalSystemPowerDemand",
     "datatype": "Float",
     "withPrecision": true,
@@ -2167,22 +2232,20 @@
     "minvalue": "",
     "maxvalue": "",
     "defaultvalue": "",
-    "usingListener": false,
     "topic": "totalSystemPowerDemand",
     "name": "",
     "x": 530,
     "y": 260,
     "wires": [
       [
-        "2d45b79b.a01b1"
-      ],
-      []
+        "920de6b7.3a7f4"
+      ]
     ]
   },
   {
-    "id": "67cddb1a.280244",
+    "id": "b58ce2b1.6e38e",
     "type": "OPCUA-IIoT-Result-Filter",
-    "z": "bd464ad6.55b4f",
+    "z": "225f9a0e.821c5e",
     "nodeId": "ns=5;s=maxTotalSystemPowerDemand",
     "datatype": "Float",
     "withPrecision": true,
@@ -2193,31 +2256,29 @@
     "minvalue": "",
     "maxvalue": "",
     "defaultvalue": "",
-    "usingListener": false,
     "topic": "maxTotalSystemPowerDemand",
     "name": "",
     "x": 550,
     "y": 310,
     "wires": [
       [
-        "601f8f63.3d92c8"
-      ],
-      []
+        "95091391.fe217"
+      ]
     ]
   },
   {
-    "id": "1d155c65.03e564",
-    "type": "subflow:bd464ad6.55b4f",
-    "z": "51a2bb4f.8967d4",
+    "id": "99039604.319fd8",
+    "type": "subflow:225f9a0e.821c5e",
+    "z": "3110dd6a.7788ea",
     "x": 720,
     "y": 280,
     "wires": []
   },
   {
-    "id": "32104a2d.b46846",
+    "id": "4aa4a797.9abab",
     "type": "OPCUA-IIoT-Browser",
-    "z": "45baf8d9.049ef",
-    "connector": "521fc8cf.3d1198",
+    "z": "bc0e5645.7034e",
+    "connector": "fe7b2b71.29dc48",
     "nodeId": "",
     "name": "",
     "showStatusActivities": false,
@@ -2226,16 +2287,16 @@
     "y": 270,
     "wires": [
       [
-        "123cd8a2.5142af",
-        "250acb.55e87d36",
-        "621c6236.c0ff2c"
+        "f266be79.df8c3",
+        "7ece72f5.92e70c",
+        "67b2cfa2.67a8e"
       ]
     ]
   },
   {
-    "id": "250acb.55e87d36",
+    "id": "7ece72f5.92e70c",
     "type": "debug",
-    "z": "45baf8d9.049ef",
+    "z": "bc0e5645.7034e",
     "name": "",
     "active": true,
     "console": "false",
@@ -2245,9 +2306,9 @@
     "wires": []
   },
   {
-    "id": "b6708fab.4da338",
+    "id": "62162cbc.94352c",
     "type": "OPCUA-IIoT-Inject",
-    "z": "45baf8d9.049ef",
+    "z": "bc0e5645.7034e",
     "payload": "",
     "payloadType": "date",
     "topic": "ns=0;i=85",
@@ -2260,27 +2321,27 @@
     "y": 270,
     "wires": [
       [
-        "32104a2d.b46846"
+        "4aa4a797.9abab"
       ]
     ]
   },
   {
-    "id": "621c6236.c0ff2c",
+    "id": "67b2cfa2.67a8e",
     "type": "OPCUA-IIoT-Response",
-    "z": "45baf8d9.049ef",
+    "z": "bc0e5645.7034e",
     "name": "",
     "x": 540,
     "y": 210,
     "wires": [
       [
-        "90562dee.42aac8"
+        "67784936.e8ad8"
       ]
     ]
   },
   {
-    "id": "90562dee.42aac8",
+    "id": "67784936.e8ad8",
     "type": "debug",
-    "z": "45baf8d9.049ef",
+    "z": "bc0e5645.7034e",
     "name": "",
     "active": false,
     "console": "false",
@@ -2290,10 +2351,10 @@
     "wires": []
   },
   {
-    "id": "123cd8a2.5142af",
+    "id": "f266be79.df8c3",
     "type": "ui_template",
-    "z": "45baf8d9.049ef",
-    "group": "1ee08631.1faf42",
+    "z": "bc0e5645.7034e",
+    "group": "3d9b923d.005916",
     "name": "",
     "order": 1,
     "width": "20",
@@ -2306,14 +2367,14 @@
     "y": 210,
     "wires": [
       [
-        "32104a2d.b46846"
+        "4aa4a797.9abab"
       ]
     ]
   },
   {
-    "id": "88a3f340.ef70b",
+    "id": "b13ac53b.6e8808",
     "type": "modbus-getter",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "",
     "showStatusActivities": false,
     "showErrors": false,
@@ -2321,21 +2382,21 @@
     "dataType": "InputRegister",
     "adr": "0",
     "quantity": "50",
-    "server": "6894e3dc.b167ac",
+    "server": "8fc9ad9.af496d",
     "x": 400,
     "y": 790,
     "wires": [
       [],
       [
-        "26d2900c.6d3508",
-        "294f7fb6.3eac4"
+        "598ee36.3b57a9c",
+        "6fa59a86.a47024"
       ]
     ]
   },
   {
-    "id": "26d2900c.6d3508",
+    "id": "598ee36.3b57a9c",
     "type": "modbus-response",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "",
     "registerShowMax": 20,
     "x": 660,
@@ -2343,9 +2404,9 @@
     "wires": []
   },
   {
-    "id": "3fd50d4e.2401da",
+    "id": "b7836311.ddcbd8",
     "type": "http in",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "",
     "url": "/modbus/read/lines",
     "method": "get",
@@ -2355,14 +2416,14 @@
     "y": 790,
     "wires": [
       [
-        "88a3f340.ef70b"
+        "b13ac53b.6e8808"
       ]
     ]
   },
   {
-    "id": "15ab91ec.4dc6ce",
+    "id": "8d24c844.e3c51",
     "type": "http response",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "",
     "statusCode": "",
     "headers": {},
@@ -2371,9 +2432,9 @@
     "wires": []
   },
   {
-    "id": "294f7fb6.3eac4",
+    "id": "6fa59a86.a47024",
     "type": "function",
-    "z": "1be09bb3.5a2c3c",
+    "z": "2cc128ac.dc2a5",
     "name": "extract buffer data L1-L3",
     "func": "let voltageL1 = msg.payload.buffer.readFloatBE(0,4) // 1,2\nlet voltageL2 = msg.payload.buffer.readFloatBE(4,4) // 3,4\nlet voltageL3 = msg.payload.buffer.readFloatBE(8,4) // 5,6\n\nlet powerL1 = msg.payload.buffer.readFloatBE(12,4) // 7,8\nlet powerL2 = msg.payload.buffer.readFloatBE(16,4) // 9,10\nlet powerL3 = msg.payload.buffer.readFloatBE(20,4) // 11,12\n\nlet demandL1 = msg.payload.buffer.readFloatBE(24,4) // 13,14\nlet demandL2 = msg.payload.buffer.readFloatBE(28,4) // 15,16\nlet demandL3 = msg.payload.buffer.readFloatBE(32,4) // 17,18\n\nlet voltageAVG = msg.payload.buffer.readFloatBE(84,8) // 43-46\nlet powerAVG = msg.payload.buffer.readFloatBE(92,4) // 47,48\n\nmsg.payload = {\n    L1: {\n        voltage: voltageL1,\n        power: powerL1,\n        demand: demandL1\n    },\n    L2: {\n        voltage: voltageL2,\n        power: powerL2,\n        demand: demandL2\n    },\n    L3: {\n        voltage: voltageL3,\n        power: powerL3,\n        demand: demandL3\n    },\n    voltageAVG: voltageAVG,\n    powerAVG: powerAVG,            \n};\n\nreturn msg;",
     "outputs": "1",
@@ -2382,7 +2443,7 @@
     "y": 750,
     "wires": [
       [
-        "15ab91ec.4dc6ce"
+        "8d24c844.e3c51"
       ]
     ]
   }

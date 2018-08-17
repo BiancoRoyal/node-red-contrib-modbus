@@ -23,7 +23,7 @@ module.exports = function (RED) {
 
     this.name = config.name
     this.filter = config.filter
-    this.registers = config.registers || 0
+    this.registers = parseInt(config.registers) || null
 
     this.filterResponseBuffer = config.filterResponseBuffer
     this.filterValues = config.filterValues
@@ -38,9 +38,10 @@ module.exports = function (RED) {
 
     modbusIOFileValuNames = node.ioFile.configData
 
+    mbBasics.setNodeStatusTo('active', node)
+
     node.ioFile.on('updatedConfig', function (configData) {
       modbusIOFileValuNames = configData
-      mbCore.internalDebug('Filter Config Data Update')
     })
 
     node.filterFromPayload = function (msg) {
@@ -49,15 +50,15 @@ module.exports = function (RED) {
       })
 
       if (node.filterResponseBuffer) {
-        delete msg.responseBuffer
+        delete msg['responseBuffer']
       }
 
       if (node.filterValues) {
-        delete msg.values
+        delete msg['values']
       }
 
       if (node.filterInput) {
-        delete msg.input
+        delete msg['input']
       }
 
       return msg
@@ -68,12 +69,12 @@ module.exports = function (RED) {
         return
       }
 
-      if (node.registers) {
+      if (node.registers && node.registers > 0) {
         if (!msg.payload.length || msg.payload.length !== node.registers) {
           if (node.showErrors) {
-            node.error(new Error('Register Length Does Not Match Setting ' + node.registers))
+            node.error(new Error(msg.payload.length + ' does not match ' + node.registers))
           }
-          mbCore.internalDebug('Register Length Does Not Match Setting ' + node.registers)
+          mbCore.internalDebug(msg.payload.length + ' Registers And Filter Length Of ' + node.registers + ' Does Not Match')
         } else {
           node.send(node.filterFromPayload(msg))
         }

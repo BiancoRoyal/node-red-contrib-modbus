@@ -3,6 +3,7 @@
     "label": {
       "showActivities": "Show Activities",
       "showErrors": "Show Errors",
+      "logIOActivities": "Log IO",
       "server": "Server",
       "useIOFile": "Using IO-File",
       "ioFile": "IO-File",

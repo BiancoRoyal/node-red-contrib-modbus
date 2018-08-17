@@ -13,6 +13,7 @@
       name: {value: ''},
       showStatusActivities: {value: false},
       showErrors: {value: false},
+      logIOActivities: {value: false},
       server: {type: 'modbus-client', required: true},
       useIOFile: {value: false},
       ioFile: {value: '', type: 'modbus-io-config', required: false},
@@ -94,6 +95,11 @@
                 <input type="checkbox" id="node-input-useIOFile" style="max-width:30px">
             </div>
             <div id="modbusiofile-row">
+                <div class="form-row">
+                    <label style="min-width:160px" for="node-input-logIOActivities"><i class="fa fa-th"></i> <span
+                    data-i18n="modbus-contrib.label.logIOActivities"></span></label>
+                    <input type="checkbox" id="node-input-logIOActivities" style="max-width:30px">
+                </div>
                 <div class="form-row">
                     <label style="min-width:160px" for="node-input-useIOForPayload"><i class="fa fa-comment-o"></i> <span data-i18n="modbus-contrib.label.useIOForPayload"></span></label>
                     <input type="checkbox" id="node-input-useIOForPayload" style="max-width:30px">

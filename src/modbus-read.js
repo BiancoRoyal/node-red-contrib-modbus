@@ -47,7 +47,6 @@ module.exports = function (RED) {
     this.ioFile = RED.nodes.getNode(config.ioFile)
     this.useIOForPayload = config.useIOForPayload
     this.logIOActivities = config.logIOActivities
-    mbIOCore.logging = this.logIOActivities
 
     let node = this
     let modbusClient = RED.nodes.getNode(config.server)
@@ -181,8 +180,8 @@ module.exports = function (RED) {
           mbIOCore.internalDebug('node.adr:' + node.adr + ' node.quantity:' + node.quantity)
         }
 
-        let allValueNames = mbIOCore.nameValuesFromIOFile(msg, node.ioFile, values, response, node.adr)
-        let valueNames = mbIOCore.filterValueNames(allValueNames, mbCore.functionCodeModbusRead(node.dataType), node.adr, node.quantity)
+        let allValueNames = mbIOCore.nameValuesFromIOFile(node, msg, values, response, node.adr)
+        let valueNames = mbIOCore.filterValueNames(node, allValueNames, mbCore.functionCodeModbusRead(node.dataType), node.adr, node.quantity)
 
         let origMsg = {
           topic: msg.topic,

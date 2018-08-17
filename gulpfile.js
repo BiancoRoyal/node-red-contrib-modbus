@@ -29,7 +29,7 @@ gulp.task('build', sequence('clean', 'web', 'nodejs', 'locale', 'code', 'icons')
 gulp.task('publish', sequence('build', 'docs', 'maps'))
 
 gulp.task('clean', function () {
-  return gulp.src(['modbus', 'docs/gen', 'maps', 'code'])
+  return gulp.src(['modbus', 'docs/gen', 'maps', 'code', 'coverage'])
     .pipe(clean({force: true}))
 })
 

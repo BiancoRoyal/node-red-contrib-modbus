@@ -1,15 +1,15 @@
 [
   {
-    "id": "30c0552e.0e9772",
+    "id": "939ba9bb.0771f8",
     "type": "tab",
     "label": "SDM630 Modbus Gateway",
     "disabled": false,
     "info": ""
   },
   {
-    "id": "1b311183.e4843e",
+    "id": "ca90aaf2.4348b8",
     "type": "modbus-read",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "",
     "topic": "",
     "showStatusActivities": false,
@@ -22,23 +22,23 @@
     "rateUnit": "m",
     "delayOnStart": false,
     "startDelayTime": "",
-    "server": "a32f2a85.9fb36",
+    "server": "94edda97.f235b8",
     "x": 150,
     "y": 80,
     "wires": [
       [
-        "9b47bbf4.aac6b"
+        "ee5635a4.a076c8"
       ],
       [
-        "3ab2e2de.d9caae",
-        "de7d5b4e.fc36f"
+        "4329d2.303a963",
+        "bdee2142.10eeb8"
       ]
     ]
   },
   {
-    "id": "3ab2e2de.d9caae",
+    "id": "4329d2.303a963",
     "type": "modbus-response",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "",
     "registerShowMax": "1",
     "x": 370,
@@ -46,9 +46,9 @@
     "wires": []
   },
   {
-    "id": "de7d5b4e.fc36f",
+    "id": "bdee2142.10eeb8",
     "type": "function",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "extract buffer data",
     "func": "let voltageL1 = msg.payload.buffer.readFloatBE(0,4) // 1,2\nlet voltageL2 = msg.payload.buffer.readFloatBE(4,4) // 3,4\nlet voltageL3 = msg.payload.buffer.readFloatBE(8,4) // 5,6\n\nlet powerL1 = msg.payload.buffer.readFloatBE(12,4) // 7,8\nlet powerL2 = msg.payload.buffer.readFloatBE(16,4) // 9,10\nlet powerL3 = msg.payload.buffer.readFloatBE(20,4) // 11,12\n\nlet demandL1 = msg.payload.buffer.readFloatBE(24,4) // 13,14\nlet demandL2 = msg.payload.buffer.readFloatBE(28,4) // 15,16\nlet demandL3 = msg.payload.buffer.readFloatBE(32,4) // 17,18\n\nlet voltageAVG = msg.payload.buffer.readFloatBE(84,8) // 43-46\nlet powerAVG = msg.payload.buffer.readFloatBE(92,4) // 47,48\n\nreturn [\n    {\n        payload: {\n            L1: {\n                voltage: voltageL1,\n                power: powerL1,\n                demand: demandL1\n            },\n            L2: {\n                voltage: voltageL2,\n                power: powerL2,\n                demand: demandL2\n            },\n            L3: {\n                voltage: voltageL3,\n                power: powerL3,\n                demand: demandL3\n            },\n            voltageAVG: voltageAVG,\n            powerAVG: powerAVG,            \n        }\n    }\n];",
     "outputs": "1",
@@ -57,14 +57,14 @@
     "y": 100,
     "wires": [
       [
-        "e5175256.655fc8"
+        "dcd133c4.5db4d8"
       ]
     ]
   },
   {
-    "id": "37d50682.bfdc12",
+    "id": "5481d70f.63bc28",
     "type": "modbus-read",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "",
     "topic": "",
     "showStatusActivities": false,
@@ -77,23 +77,23 @@
     "rateUnit": "m",
     "delayOnStart": false,
     "startDelayTime": "",
-    "server": "a32f2a85.9fb36",
+    "server": "94edda97.f235b8",
     "x": 150,
     "y": 260,
     "wires": [
       [
-        "752348ed.c43f08"
+        "6d2dfb81.4814ac"
       ],
       [
-        "3f68166.d305cea",
-        "7b845045.6042c"
+        "383443c3.7b3ce4",
+        "68cee58a.107bdc"
       ]
     ]
   },
   {
-    "id": "3f68166.d305cea",
+    "id": "383443c3.7b3ce4",
     "type": "function",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "extract buffer data",
     "func": "let powerSum = msg.payload.buffer.readFloatBE(0,8)\nlet demandSum = msg.payload.buffer.readFloatBE(8,8)\n\nreturn [\n    {\n        payload: {\n            powerSum: powerSum,\n            demandSum: demandSum\n        }\n    }\n];",
     "outputs": "1",
@@ -102,14 +102,14 @@
     "y": 240,
     "wires": [
       [
-        "33f5d8c3.04f31"
+        "a7edef20.ed43e"
       ]
     ]
   },
   {
-    "id": "8baafc54.7c8b7",
+    "id": "4ad09281.9d3a3c",
     "type": "modbus-read",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "",
     "topic": "",
     "showStatusActivities": false,
@@ -122,23 +122,23 @@
     "rateUnit": "m",
     "delayOnStart": false,
     "startDelayTime": "",
-    "server": "a32f2a85.9fb36",
+    "server": "94edda97.f235b8",
     "x": 150,
     "y": 400,
     "wires": [
       [
-        "2d644496.2be684"
+        "8bbc56da.862af8"
       ],
       [
-        "bd1a3036.795f58",
-        "9ac61936.e43c1"
+        "f2e9f005.17e79",
+        "5f7f2df3.0db0f4"
       ]
     ]
   },
   {
-    "id": "bd1a3036.795f58",
+    "id": "f2e9f005.17e79",
     "type": "function",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "extract buffer data",
     "func": "let frequency = msg.payload.buffer.readFloatBE(0,4) // 71,72\n\nlet ampHourSinceLastReset = msg.payload.buffer.readFloatBE(24,4) // 83,84\nlet totalSystemPowerDemand = msg.payload.buffer.readFloatBE(28,4) // 85,86\nlet maxTotalSystemPowerDemand = msg.payload.buffer.readFloatBE(32,4) // 87,88\n\nreturn { \n    payload: {\n       frequency: frequency,\n       ampHourSinceLastReset: ampHourSinceLastReset,\n       ampHourSinceLastResetKilo: ampHourSinceLastReset / 1000.0,\n       totalSystemPowerDemand: totalSystemPowerDemand,\n       totalSystemPowerDemandKilo: totalSystemPowerDemand / 1000.0,\n       maxTotalSystemPowerDemand: maxTotalSystemPowerDemand,\n       maxTotalSystemPowerDemandKilo: maxTotalSystemPowerDemand / 1000.0\n    }\n}",
     "outputs": "1",
@@ -147,14 +147,14 @@
     "y": 380,
     "wires": [
       [
-        "120cde39.f347a2"
+        "a7f467d4.e8f8d"
       ]
     ]
   },
   {
-    "id": "7b845045.6042c",
+    "id": "68cee58a.107bdc",
     "type": "modbus-response",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "",
     "registerShowMax": "1",
     "x": 370,
@@ -162,9 +162,9 @@
     "wires": []
   },
   {
-    "id": "9ac61936.e43c1",
+    "id": "5f7f2df3.0db0f4",
     "type": "modbus-response",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "",
     "registerShowMax": "1",
     "x": 370,
@@ -172,25 +172,25 @@
     "wires": []
   },
   {
-    "id": "1f451e5e.347c92",
+    "id": "2f709e66.a3b502",
     "type": "catch",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "",
     "scope": null,
     "x": 110,
     "y": 580,
     "wires": [
       [
-        "a1f2b4c.a22adc8",
-        "17ee36c6.e67bc9",
-        "e5d97b6a.435e78"
+        "d520b4f3.d04468",
+        "79c1efe6.d8561",
+        "e131b5e4.de0798"
       ]
     ]
   },
   {
-    "id": "a1f2b4c.a22adc8",
+    "id": "d520b4f3.d04468",
     "type": "debug",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "",
     "active": true,
     "console": "false",
@@ -200,29 +200,31 @@
     "wires": []
   },
   {
-    "id": "bac3810c.9feed",
+    "id": "d73b4b86.173728",
     "type": "modbus-queue-info",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "",
+    "topic": "",
     "unitid": "",
+    "queueReadIntervalTime": "1000",
     "lowLowLevel": 25,
     "lowLevel": 75,
     "highLevel": 150,
     "highHighLevel": 300,
-    "server": "a32f2a85.9fb36",
+    "server": "94edda97.f235b8",
     "errorOnHighLevel": false,
     "x": 600,
     "y": 540,
     "wires": [
       [
-        "3d277711.dfed4"
+        "b822febd.399538"
       ]
     ]
   },
   {
-    "id": "17ee36c6.e67bc9",
+    "id": "79c1efe6.d8561",
     "type": "function",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "reset on High",
     "func": "if(\"high level reached\" === msg.state) {\n    msg.resetQueue = true;\n}\nreturn msg;",
     "outputs": 1,
@@ -231,14 +233,14 @@
     "y": 540,
     "wires": [
       [
-        "bac3810c.9feed"
+        "d73b4b86.173728"
       ]
     ]
   },
   {
-    "id": "e5d97b6a.435e78",
+    "id": "e131b5e4.de0798",
     "type": "function",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "reset on HighHigh",
     "func": "if(\"high high level reached\" === msg.state) {\n    msg.resetQueue = true;\n}\nreturn msg;",
     "outputs": 1,
@@ -247,14 +249,14 @@
     "y": 580,
     "wires": [
       [
-        "bac3810c.9feed"
+        "d73b4b86.173728"
       ]
     ]
   },
   {
-    "id": "3d277711.dfed4",
+    "id": "b822febd.399538",
     "type": "debug",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "",
     "active": true,
     "console": "false",
@@ -264,9 +266,9 @@
     "wires": []
   },
   {
-    "id": "f1b3be30.a6758",
+    "id": "6504b429.d89244",
     "type": "debug",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "",
     "active": true,
     "console": "false",
@@ -276,63 +278,63 @@
     "wires": []
   },
   {
-    "id": "26de7945.b1922e",
+    "id": "4a30a631.51af58",
     "type": "link in",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "",
     "links": [
-      "9b47bbf4.aac6b",
-      "752348ed.c43f08",
-      "2d644496.2be684"
+      "ee5635a4.a076c8",
+      "6d2dfb81.4814ac",
+      "8bbc56da.862af8"
     ],
     "x": 295,
     "y": 480,
     "wires": [
       [
-        "f1b3be30.a6758"
+        "6504b429.d89244"
       ]
     ]
   },
   {
-    "id": "9b47bbf4.aac6b",
+    "id": "ee5635a4.a076c8",
     "type": "link out",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "",
     "links": [
-      "26de7945.b1922e"
+      "4a30a631.51af58"
     ],
     "x": 295,
     "y": 60,
     "wires": []
   },
   {
-    "id": "752348ed.c43f08",
+    "id": "6d2dfb81.4814ac",
     "type": "link out",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "",
     "links": [
-      "26de7945.b1922e"
+      "4a30a631.51af58"
     ],
     "x": 295,
     "y": 200,
     "wires": []
   },
   {
-    "id": "2d644496.2be684",
+    "id": "8bbc56da.862af8",
     "type": "link out",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "",
     "links": [
-      "26de7945.b1922e"
+      "4a30a631.51af58"
     ],
     "x": 295,
     "y": 340,
     "wires": []
   },
   {
-    "id": "e5175256.655fc8",
+    "id": "dcd133c4.5db4d8",
     "type": "debug",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "",
     "active": true,
     "console": "false",
@@ -342,9 +344,9 @@
     "wires": []
   },
   {
-    "id": "33f5d8c3.04f31",
+    "id": "a7edef20.ed43e",
     "type": "debug",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "",
     "active": true,
     "console": "false",
@@ -354,9 +356,9 @@
     "wires": []
   },
   {
-    "id": "120cde39.f347a2",
+    "id": "a7f467d4.e8f8d",
     "type": "debug",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "",
     "active": true,
     "console": "false",
@@ -366,9 +368,9 @@
     "wires": []
   },
   {
-    "id": "a32f2a85.9fb36",
+    "id": "94edda97.f235b8",
     "type": "modbus-client",
-    "z": "30c0552e.0e9772",
+    "z": "939ba9bb.0771f8",
     "name": "SDM630 Modbus Gateway",
     "clienttype": "tcp",
     "bufferCommands": true,

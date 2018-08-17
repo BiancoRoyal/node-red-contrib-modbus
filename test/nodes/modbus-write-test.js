@@ -14,7 +14,75 @@ var injectNode = require('node-red/nodes/core/core/20-inject.js')
 var clientNode = require('../../src/modbus-client.js')
 var serverNode = require('../../src/modbus-server.js')
 var nodeUnderTest = require('../../src/modbus-write.js')
-var helper = require('node-red-contrib-test-helper')
+
+var helper = require('node-red-node-test-helper')
+helper.init(require.resolve('node-red'))
+
+var testSimpleWriteParametersNodes = [injectNode, clientNode, serverNode, nodeUnderTest]
+
+var testSimpleWriteParametersFlow = [{
+  'id': '445454e4.968564',
+  'type': 'modbus-server',
+  'name': '',
+  'logEnabled': true,
+  'hostname': '127.0.0.1',
+  'serverPort': '7502',
+  'responseDelay': 100,
+  'delayUnit': 'ms',
+  'coilsBufferSize': 10000,
+  'holdingBufferSize': 10000,
+  'inputBufferSize': 10000,
+  'discreteBufferSize': 10000,
+  'showErrors': false,
+  'wires': [
+    [],
+    [],
+    []
+  ]
+},
+{
+  'id': '1ed908da.427ecf',
+  'type': 'modbus-write',
+  'name': 'Write Reset FC5',
+  'showStatusActivities': true,
+  'showErrors': false,
+  'unitid': '',
+  'dataType': 'Coil',
+  'adr': '64',
+  'quantity': '1',
+  'server': 'aef203cf.a23dc',
+  'wires': [
+    [
+      'h1'
+    ],
+    [
+    ]
+  ]
+},
+{id: 'h1', type: 'helper'},
+{
+  'id': 'aef203cf.a23dc',
+  'type': 'modbus-client',
+  'name': 'Modbus Server',
+  'clienttype': 'tcp',
+  'bufferCommands': true,
+  'stateLogEnabled': false,
+  'tcpHost': '127.0.0.1',
+  'tcpPort': '7502',
+  'tcpType': 'DEFAULT',
+  'serialPort': '/dev/ttyUSB',
+  'serialType': 'RTU-BUFFERD',
+  'serialBaudrate': '9600',
+  'serialDatabits': '8',
+  'serialStopbits': '1',
+  'serialParity': 'none',
+  'serialConnectionDelay': '100',
+  'unit_id': '1',
+  'commandDelay': '1',
+  'clientTimeout': '100',
+  'reconnectTimeout': '250'
+}
+]
 
 describe('Write node Testing', function () {
   before(function (done) {
@@ -80,8 +148,8 @@ describe('Write node Testing', function () {
         tcpHost: '127.0.0.1',
         tcpPort: 8502,
         unit_id: 1,
-        clientTimeout: 5000,
-        reconnectTimeout: 5000
+        clientTimeout: 100,
+        reconnectTimeout: 200
       }], function () {
         var inject = helper.getNode('67dded7e.025904')
         inject.should.have.property('name', 'injectTrue')
@@ -101,7 +169,7 @@ describe('Write node Testing', function () {
       })
     })
 
-    it('simple flow with inject and write should be loaded', function (done) {
+    it('simple flow with boolean injects and write should be loaded', function (done) {
       helper.load([injectNode, clientNode, serverNode, nodeUnderTest], [{
         'id': '445454e4.968564',
         'type': 'modbus-server',
@@ -126,7 +194,7 @@ describe('Write node Testing', function () {
         'id': '1ed908da.427ecf',
         'type': 'modbus-write',
         'name': 'Write Reset FC5',
-        'showStatusActivities': false,
+        'showStatusActivities': true,
         'showErrors': false,
         'unitid': '',
         'dataType': 'Coil',
@@ -149,7 +217,7 @@ describe('Write node Testing', function () {
         'topic': '',
         'payload': 'true',
         'payloadType': 'bool',
-        'repeat': '1',
+        'repeat': '2',
         'crontab': '',
         'once': false,
         'wires': [
@@ -165,9 +233,10 @@ describe('Write node Testing', function () {
         'topic': '',
         'payload': 'false',
         'payloadType': 'bool',
-        'repeat': '1',
+        'repeat': '2',
         'crontab': '',
-        'once': false,
+        'once': true,
+        'onceDelay': 0.1,
         'wires': [
           [
             '1ed908da.427ecf'
@@ -193,14 +262,69 @@ describe('Write node Testing', function () {
         'serialConnectionDelay': '100',
         'unit_id': '1',
         'commandDelay': '1',
-        'clientTimeout': '1000',
-        'reconnectTimeout': '500'
+        'clientTimeout': '100',
+        'reconnectTimeout': '250'
       }
       ], function () {
+        let modbusWrite = helper.getNode('1ed908da.427ecf')
         let h1 = helper.getNode('h1')
         h1.on('input', function (msg) {
-          done()
+          if (modbusWrite.bufferMessageList.size === 0) {
+            done()
+          }
         })
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
+    it('simple flow with string false http inject and write should be loaded', function (done) {
+      helper.load(testSimpleWriteParametersNodes, testSimpleWriteParametersFlow, function () {
+        let modbusWrite = helper.getNode('1ed908da.427ecf')
+        setTimeout(function () {
+          modbusWrite.receive({ payload: { 'value': 'false', 'fc': 5, 'unitid': 1, 'address': 0, 'quantity': 1 } })
+        }, 800)
+        let h1 = helper.getNode('h1')
+        h1.on('input', function (msg) {
+          if (modbusWrite.bufferMessageList.size === 0) {
+            done()
+          }
+        })
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
+    it('simple flow with string true http inject and write should be loaded', function (done) {
+      helper.load(testSimpleWriteParametersNodes, testSimpleWriteParametersFlow, function () {
+        let modbusWrite = helper.getNode('1ed908da.427ecf')
+        setTimeout(function () {
+          modbusWrite.receive({ payload: { 'value': 'true', 'fc': 5, 'unitid': 1, 'address': 0, 'quantity': 1 } })
+        }, 800)
+        let h1 = helper.getNode('h1')
+        h1.on('input', function (msg) {
+          if (modbusWrite.bufferMessageList.size === 0) {
+            done()
+          }
+        })
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
+
+    it('simple flow with string with array of values input from http should be parsed and written', function (done) {
+      helper.load(testSimpleWriteParametersNodes, testSimpleWriteParametersFlow, function () {
+        let h1 = helper.getNode('h1')
+        h1.on('input', function (msg) {
+          if (modbusWrite.bufferMessageList.size === 0) {
+            done()
+          }
+        })
+        let modbusWrite = helper.getNode('1ed908da.427ecf')
+        setTimeout(function () {
+          modbusWrite.receive({payload: '{ "value": [0,1,0,1], "fc": 5, "unitid": 1,"address": 0, "quantity": 4 }'})
+        }, 800)
       }, function () {
         helper.log('function callback')
       })

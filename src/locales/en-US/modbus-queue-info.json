@@ -2,6 +2,7 @@
   "modbus-contrib": {
     "label": {
       "unitId": "Unit-Id",
+      "queueReadIntervalTime": "Interval Time",
       "lowLowLevel": "Low low level",
       "lowLevel": "Low level",
       "highLevel": "High level",

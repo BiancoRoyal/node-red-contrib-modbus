@@ -297,6 +297,7 @@ module.exports = function (RED) {
       if (!node.clientTimeout) {
         node.clientTimeout = timeoutTimeMS
       }
+
       if (!node.reconnectTimeout) {
         node.reconnectTimeout = reconnectTimeMS
       }
@@ -356,6 +357,7 @@ module.exports = function (RED) {
         if (!node.serialPort) {
           node.error(new Error('wrong serial port'), {payload: node.serialPort})
           node.statlyMachine.failure()
+          return
         }
 
         switch (node.serialType) {

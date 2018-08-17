@@ -10,13 +10,101 @@
 
 'use strict'
 
+var assert = require('chai').assert
+
 var injectNode = require('node-red/nodes/core/core/20-inject.js')
+var catchNode = require('node-red/nodes/core/core/25-catch.js')
 var functionNode = require('node-red/nodes/core/core/80-function.js')
 var clientNode = require('../../src/modbus-client.js')
 var serverNode = require('../../src/modbus-server.js')
 var nodeUnderTest = require('../../src/modbus-flex-write.js')
 
-var helper = require('node-red-contrib-test-helper')
+var helper = require('node-red-node-test-helper')
+helper.init(require.resolve('node-red'))
+
+var testWriteParametersNodes = [catchNode, injectNode, functionNode, clientNode, serverNode, nodeUnderTest]
+var testWriteParametersFlow = [
+  {
+    'id': 'c2f3c1d0.3d0b1',
+    'type': 'catch',
+    'name': '',
+    'scope': null,
+    'wires': [
+      ['h2']
+    ]
+  },
+  {id: 'h2', type: 'helper'},
+  {
+    'id': '178284ea.5055ab',
+    'type': 'modbus-server',
+    'name': '',
+    'logEnabled': false,
+    'hostname': '',
+    'serverPort': '7502',
+    'responseDelay': '50',
+    'delayUnit': 'ms',
+    'coilsBufferSize': 1024,
+    'holdingBufferSize': 1024,
+    'inputBufferSize': 1024,
+    'discreteBufferSize': 1024,
+    'showErrors': false,
+    'wires': [
+      [],
+      [],
+      [],
+      []
+    ]
+  },
+  {
+    'id': '82fe7fe4.7b7bc8',
+    'type': 'modbus-flex-write',
+    'name': '',
+    'showStatusActivities': false,
+    'showErrors': true,
+    'server': '80aeec4c.0cb9e8',
+    'wires': [
+      ['h1'],
+      []
+    ]
+  },
+  {id: 'h1', type: 'helper'},
+  {
+    'id': '9d3d244.cb410d8',
+    'type': 'function',
+    'name': 'Write 0-9 on Unit 1 FC15',
+    'func': "msg.payload = { value: msg.payload, 'fc': 15, 'unitid': 1, 'address': 0 , 'quantity': 10 };\nreturn msg;",
+    'outputs': 1,
+    'noerr': 0,
+    'wires': [
+      [
+        '82fe7fe4.7b7bc8'
+      ]
+    ]
+  },
+  {
+    'id': '80aeec4c.0cb9e8',
+    'type': 'modbus-client',
+    'z': '',
+    'name': 'Modbus Server',
+    'clienttype': 'tcp',
+    'bufferCommands': true,
+    'stateLogEnabled': false,
+    'tcpHost': '127.0.0.1',
+    'tcpPort': '7502',
+    'tcpType': 'DEFAULT',
+    'serialPort': '/dev/ttyUSB',
+    'serialType': 'RTU-BUFFERD',
+    'serialBaudrate': '9600',
+    'serialDatabits': '8',
+    'serialStopbits': '1',
+    'serialParity': 'none',
+    'serialConnectionDelay': '100',
+    'unit_id': '1',
+    'commandDelay': '1',
+    'clientTimeout': '100',
+    'reconnectTimeout': '200'
+  }
+]
 
 describe('Flex Write node Testing', function () {
   before(function (done) {
@@ -41,152 +129,28 @@ describe('Flex Write node Testing', function () {
 
   describe('Node', function () {
     it('simple Node should be loaded', function (done) {
-      helper.load([injectNode, clientNode, serverNode, nodeUnderTest], [{
-        id: 'e54529b9.952ea8',
-        'type': 'modbus-server',
-        'name': 'modbusServer',
-        'logEnabled': true,
-        'hostname': '127.0.0.1',
-        'serverPort': '9502',
-        'responseDelay': 100,
-        'delayUnit': 'ms',
-        'coilsBufferSize': 10000,
-        'holdingBufferSize': 10000,
-        'inputBufferSize': 10000,
-        'discreteBufferSize': 10000,
-        'showErrors': false,
-        'wires': [
-          [],
-          [],
-          []
-        ]
-      }, {
-        id: '8ad2951c.2df708',
-        type: 'modbus-flex-write',
-        name: 'modbusFlexWrite',
-        dataType: 'HoldingRegister',
-        adr: '0',
-        quantity: '1',
-        server: 'dc764ad7.580238',
-        wires: [[], []]
-      }, {
-        id: '67dded7e.025904',
-        type: 'inject',
-        name: 'injectTrue',
-        topic: '',
-        payload: true,
-        payloadType: 'bool',
-        repeat: '',
-        crontab: '',
-        once: false,
-        wires: [['8ad2951c.2df708']]
-      }, {
-        id: 'dc764ad7.580238',
-        type: 'modbus-client',
-        name: 'modbusClient',
-        clienttype: 'tcp',
-        tcpHost: '127.0.0.1',
-        tcpPort: 7502,
-        unit_id: 1,
-        clientTimeout: 1000,
-        reconnectTimeout: 500
-      }], function () {
-        let inject = helper.getNode('67dded7e.025904')
-        inject.should.have.property('name', 'injectTrue')
-
-        let modbusServer = helper.getNode('e54529b9.952ea8')
-        modbusServer.should.have.property('name', 'modbusServer')
-
-        let modbusClient = helper.getNode('dc764ad7.580238')
-        modbusClient.should.have.property('name', 'modbusClient')
-
-        let modbusFlexWrite = helper.getNode('8ad2951c.2df708')
-        modbusFlexWrite.should.have.property('name', 'modbusFlexWrite')
-
-        done()
-      }, function () {
-        helper.log('function callback')
-      })
-    })
-
-    it('simple flow with inject and write should be loaded', function (done) {
-      helper.load([injectNode, functionNode, clientNode, serverNode, nodeUnderTest], [
+      helper.load([clientNode, nodeUnderTest], [
         {
-          id: 'e54529b9.952ea8',
-          'type': 'modbus-server',
-          'name': '',
-          'logEnabled': true,
-          'hostname': '127.0.0.1',
-          'serverPort': '9502',
-          'responseDelay': 100,
-          'delayUnit': 'ms',
-          'coilsBufferSize': 10000,
-          'holdingBufferSize': 10000,
-          'inputBufferSize': 10000,
-          'discreteBufferSize': 10000,
+          'id': 'c02b6d1.d419c1',
+          'type': 'modbus-flex-write',
+          'name': 'modbusFlexWrite',
+          'showStatusActivities': true,
           'showErrors': false,
+          'server': '80aeec4c.0cb9e8',
           'wires': [
-            [],
             [],
             []
           ]
         },
         {
-          'id': '6b6ba9f3.be6d08',
-          'type': 'inject',
-          'name': 'Write multiple!',
-          'topic': '',
-          'payload': '[1,2,3,4,5,6,7,8,9,10]',
-          'payloadType': 'json',
-          'repeat': '1',
-          'crontab': '',
-          'once': true,
-          'onceDelay': '',
-          'wires': [
-            [
-              'a6198baa.640d28'
-            ]
-          ]
-        },
-        {
-          'id': 'a6198baa.640d28',
-          'type': 'function',
-          'name': 'Write 0-9 on Unit 1 FC15',
-          'func': "msg.payload = { value: msg.payload, 'fc': 15, 'unitid': 1, 'address': 0 , 'quantity': 10 };\nreturn msg;",
-          'outputs': 1,
-          'noerr': 0,
-          'wires': [
-            [
-              'b487e6c7.60263'
-            ]
-          ]
-        },
-        {
-          'id': 'b487e6c7.60263',
-          'type': 'modbus-flex-write',
-          'name': '',
-          'showStatusActivities': false,
-          'showErrors': false,
-          'server': 'aef203cf.a23dc',
-          'wires': [
-            [
-              'h1'
-            ],
-            [
-            ]
-          ]
-        },
-        {id: 'h1', type: 'helper'},
-        {
-          'id': 'aef203cf.a23dc',
+          'id': '80aeec4c.0cb9e8',
           'type': 'modbus-client',
-          'z': '',
           'name': 'Modbus Server',
           'clienttype': 'tcp',
           'bufferCommands': true,
           'stateLogEnabled': false,
           'tcpHost': '127.0.0.1',
-          'tcpPort': '9502',
+          'tcpPort': '6502',
           'tcpType': 'DEFAULT',
           'serialPort': '/dev/ttyUSB',
           'serialType': 'RTU-BUFFERD',
@@ -197,14 +161,244 @@ describe('Flex Write node Testing', function () {
           'serialConnectionDelay': '100',
           'unit_id': '1',
           'commandDelay': '1',
-          'clientTimeout': '1000',
-          'reconnectTimeout': '500'
+          'clientTimeout': '100',
+          'reconnectTimeout': '200'
+        }
+      ], function () {
+        let modbusFlexWrite = helper.getNode('c02b6d1.d419c1')
+        modbusFlexWrite.should.have.property('name', 'modbusFlexWrite')
+        done()
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
+    it('simple flow with inject and write should be loaded', function (done) {
+      helper.load([injectNode, functionNode, clientNode, serverNode, nodeUnderTest], [
+        {
+          'id': '178284ea.5055ab',
+          'type': 'modbus-server',
+          'name': '',
+          'logEnabled': false,
+          'hostname': '',
+          'serverPort': '7502',
+          'responseDelay': '50',
+          'delayUnit': 'ms',
+          'coilsBufferSize': 1024,
+          'holdingBufferSize': 1024,
+          'inputBufferSize': 1024,
+          'discreteBufferSize': 1024,
+          'showErrors': false,
+          'wires': [
+            [],
+            [],
+            [],
+            []
+          ]
+        },
+        {
+          'id': '82fe7fe4.7b7bc8',
+          'type': 'modbus-flex-write',
+          'name': '',
+          'showStatusActivities': false,
+          'showErrors': false,
+          'server': '80aeec4c.0cb9e8',
+          'wires': [
+            ['h1'],
+            []
+          ]
+        },
+        {id: 'h1', type: 'helper'},
+        {
+          'id': 'a7908874.150ac',
+          'type': 'inject',
+          'name': 'Write multiple!',
+          'topic': '',
+          'payload': '[1,2,3,4,5,6,7,8,9,10]',
+          'payloadType': 'json',
+          'repeat': '0.1',
+          'crontab': '',
+          'once': true,
+          'onceDelay': '0.1',
+          'wires': [
+            [
+              '9d3d244.cb410d8'
+            ]
+          ]
+        },
+        {
+          'id': '9d3d244.cb410d8',
+          'type': 'function',
+          'name': 'Write 0-9 on Unit 1 FC15',
+          'func': "msg.payload = { value: msg.payload, 'fc': 15, 'unitid': 1, 'address': 0 , 'quantity': 10 };\nreturn msg;",
+          'outputs': 1,
+          'noerr': 0,
+          'wires': [
+            [
+              '82fe7fe4.7b7bc8'
+            ]
+          ]
+        },
+        {
+          'id': '80aeec4c.0cb9e8',
+          'type': 'modbus-client',
+          'z': '',
+          'name': 'Modbus Server',
+          'clienttype': 'tcp',
+          'bufferCommands': true,
+          'stateLogEnabled': false,
+          'tcpHost': '127.0.0.1',
+          'tcpPort': '7502',
+          'tcpType': 'DEFAULT',
+          'serialPort': '/dev/ttyUSB',
+          'serialType': 'RTU-BUFFERD',
+          'serialBaudrate': '9600',
+          'serialDatabits': '8',
+          'serialStopbits': '1',
+          'serialParity': 'none',
+          'serialConnectionDelay': '100',
+          'unit_id': '1',
+          'commandDelay': '1',
+          'clientTimeout': '100',
+          'reconnectTimeout': '200'
         }
       ], function () {
         let h1 = helper.getNode('h1')
         h1.on('input', function (msg) {
           done()
         })
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
+    it('simple flow with wrong inject should not crash', function (done) {
+      helper.load(testWriteParametersNodes, testWriteParametersFlow, function () {
+        let h1 = helper.getNode('h1')
+        h1.on('input', function (msg) {
+          throw Error('Should Not Get A Message On Wrong Input To Flex Writer')
+        })
+        let flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+        setTimeout(function () {
+          flexWriter.receive({})
+        }, 800)
+        setTimeout(done, 1200)
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
+    it('simple flow with wrong FC inject should not crash', function (done) {
+      helper.load(testWriteParametersNodes, testWriteParametersFlow, function () {
+        let h1 = helper.getNode('h1')
+        h1.on('input', function (msg) {
+          throw Error('Should Not Get A Message On Wrong Input To Flex Writer')
+        })
+        let flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+        setTimeout(function () {
+          flexWriter.receive({payload: '{ "value": true, "fc": 1, "unitid": 1,"address": 0, "quantity": 1 }'})
+        }, 800)
+        setTimeout(done, 1200)
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
+    it('simple flow with wrong address inject should not crash', function (done) {
+      helper.load(testWriteParametersNodes, testWriteParametersFlow, function () {
+        let h1 = helper.getNode('h1')
+        h1.on('input', function (msg) {
+          throw Error('Should Not Get A Message On Wrong Input To Flex Writer')
+        })
+        let flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+        setTimeout(function () {
+          flexWriter.receive({payload: '{ "value": true, "fc": 5, "unitid": 1,"address": -1, "quantity": 1 }'})
+        }, 800)
+        setTimeout(done, 1200)
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
+    it('simple flow with wrong quantity inject should not crash', function (done) {
+      helper.load(testWriteParametersNodes, testWriteParametersFlow, function () {
+        let h1 = helper.getNode('h1')
+        h1.on('input', function (msg) {
+          throw Error('Should Not Get A Message On Wrong Input To Flex Writer')
+        })
+        let flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+        setTimeout(function () {
+          flexWriter.receive({payload: '{ "value": true, "fc": 5, "unitid": 1,"address": 1, "quantity": -1 }'})
+        }, 800)
+        setTimeout(done, 1200)
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
+    it('simple flow with string input from http should be parsed and written', function (done) {
+      helper.load(testWriteParametersNodes, testWriteParametersFlow, function () {
+        let h1 = helper.getNode('h1')
+        h1.on('input', function (msg) {
+          if (flexWriter.bufferMessageList.size === 0) {
+            done()
+          }
+        })
+        let flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+        setTimeout(function () {
+          flexWriter.receive({payload: '{ "value": true, "fc": 5, "unitid": 1,"address": 0, "quantity": 1 }'})
+        }, 800)
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
+    it('simple flow with string with array of values input from http should be parsed and written', function (done) {
+      helper.load(testWriteParametersNodes, testWriteParametersFlow, function () {
+        let h1 = helper.getNode('h1')
+        h1.on('input', function (msg) {
+          if (flexWriter.bufferMessageList.size === 0) {
+            done()
+          }
+        })
+        let flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+        setTimeout(function () {
+          flexWriter.receive({payload: '{ "value": [0,1,0,1], "fc": 5, "unitid": 1,"address": 0, "quantity": 4 }'})
+        }, 800)
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
+    it('simple flow with string value true input from http should be parsed and written', function (done) {
+      helper.load(testWriteParametersNodes, testWriteParametersFlow, function () {
+        let flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+        let h1 = helper.getNode('h1')
+        h1.on('input', function (msg) {
+          if (flexWriter.bufferMessageList.size === 0) {
+            done()
+          }
+        })
+        setTimeout(function () {
+          flexWriter.receive({ payload: { 'value': 'true', 'fc': 5, 'unitid': 1, 'address': 0, 'quantity': 1 } })
+        }, 800)
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
+    it('simple flow with string value false input from http should be parsed and written', function (done) {
+      helper.load(testWriteParametersNodes, testWriteParametersFlow, function () {
+        let h1 = helper.getNode('h1')
+        h1.on('input', function (msg) {
+          if (flexWriter.bufferMessageList.size === 0) {
+            done()
+          }
+        })
+        let flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+        setTimeout(function () {
+          flexWriter.receive({ payload: { 'value': 'false', 'fc': 5, 'unitid': 1, 'address': 0, 'quantity': 1 } })
+        }, 800)
       }, function () {
         helper.log('function callback')
       })

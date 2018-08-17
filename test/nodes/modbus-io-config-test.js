@@ -12,7 +12,9 @@
 
 var nodeUnderTest = require('../../src/modbus-io-config.js')
 var readNode = require('../../src/modbus-read.js')
-var helper = require('node-red-contrib-test-helper')
+
+var helper = require('node-red-node-test-helper')
+helper.init(require.resolve('node-red'))
 
 describe('IO Config node Testing', function () {
   before(function (done) {
@@ -39,33 +41,33 @@ describe('IO Config node Testing', function () {
     it('should be loaded', function (done) {
       helper.load([nodeUnderTest, readNode], [
         {
-          "id": "b0fefd31.802188",
-          "type": "modbus-read",
-          "name": "",
-          "topic": "",
-          "showStatusActivities": false,
-          "showErrors": false,
-          "unitid": "",
-          "dataType": "",
-          "adr": "",
-          "quantity": "",
-          "rate": "",
-          "rateUnit": "",
-          "delayOnStart": false,
-          "startDelayTime": "",
-          "server": "",
-          "useIOFile": true,
-          "ioFile": "2f5a90d.bcaa1f",
-          "useIOForPayload": false,
-          "wires": [[], []]
+          'id': 'b0fefd31.802188',
+          'type': 'modbus-read',
+          'name': '',
+          'topic': '',
+          'showStatusActivities': false,
+          'showErrors': false,
+          'unitid': '',
+          'dataType': '',
+          'adr': '',
+          'quantity': '',
+          'rate': '',
+          'rateUnit': '',
+          'delayOnStart': false,
+          'startDelayTime': '',
+          'server': '',
+          'useIOFile': true,
+          'ioFile': '2f5a90d.bcaa1f',
+          'useIOForPayload': false,
+          'wires': [[], []]
         },
         {
-          "id": "2f5a90d.bcaa1f",
-          "type": "modbus-io-config",
-          "name": "ModbusIOConfig",
-          "path": "testpath",
-          "format": "utf8",
-          "addressOffset": ""
+          'id': '2f5a90d.bcaa1f',
+          'type': 'modbus-io-config',
+          'name': 'ModbusIOConfig',
+          'path': 'testpath',
+          'format': 'utf8',
+          'addressOffset': ''
         }
       ], function () {
         var modbusIOConfigNode = helper.getNode('2f5a90d.bcaa1f')
