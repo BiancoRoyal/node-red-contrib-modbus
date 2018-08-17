@@ -334,7 +334,7 @@ describe('Queue Info node Testing', function () {
         let countMsg = 0
         h1.on('input', function (msg) {
           countMsg++
-          if (countMsg > 16) {
+          if (countMsg === 16) {
             done()
           }
         })

@@ -291,7 +291,7 @@ describe('Read node Testing', function () {
         let countMsg = 0
         h1.on('input', function (msg) {
           countMsg++
-          if (countMsg > 4) {
+          if (countMsg === 4) {
             done()
           }
         })
@@ -385,7 +385,7 @@ describe('Read node Testing', function () {
         let countMsg = 0
         h1.on('input', function (msg) {
           countMsg++
-          if (countMsg > 4) {
+          if (countMsg === 4) {
             done()
           }
         })
