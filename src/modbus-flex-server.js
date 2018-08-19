@@ -151,6 +151,6 @@ module.exports = function (RED) {
   try {
     RED.nodes.registerType('modbus-flex-server', ModbusFlexServer)
   } catch (err) {
-    console.log(err.message)
+    internalDebugLog(err.message)
   }
 }

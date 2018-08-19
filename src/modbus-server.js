@@ -111,6 +111,6 @@ module.exports = function (RED) {
   try {
     RED.nodes.registerType('modbus-server', ModbusServer)
   } catch (err) {
-    console.log(err.message)
+    internalDebugLog(err.message)
   }
 }
