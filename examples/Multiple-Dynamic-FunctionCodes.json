@@ -1,15 +1,15 @@
 [
   {
-    "id": "4dad68e9.e8a0c8",
+    "id": "99ee41b9.1a8a2",
     "type": "tab",
     "label": "Modbus Multi",
     "disabled": false,
     "info": "flow to learn how to read with multiple devices by \non connection and node with less UI CPU load"
   },
   {
-    "id": "ebd05cf5.fb0e9",
+    "id": "602c58bf.83b66",
     "type": "modbus-server",
-    "z": "4dad68e9.e8a0c8",
+    "z": "99ee41b9.1a8a2",
     "name": "",
     "logEnabled": true,
     "hostname": "",
@@ -26,30 +26,31 @@
     "wires": [
       [],
       [],
+      [],
       []
     ]
   },
   {
-    "id": "ed9a4912.dd23",
+    "id": "68c60ac7.206f5c",
     "type": "modbus-flex-write",
-    "z": "4dad68e9.e8a0c8",
+    "z": "99ee41b9.1a8a2",
     "name": "",
     "showStatusActivities": false,
     "showErrors": false,
-    "server": "81e910a8.634ae8",
+    "server": "d4c10165.fdaad8",
     "x": 770,
     "y": 180,
     "wires": [
       [],
       [
-        "7cc1a5b7.efef5c"
+        "67acf2ed.f8710c"
       ]
     ]
   },
   {
-    "id": "7cc1a5b7.efef5c",
+    "id": "67acf2ed.f8710c",
     "type": "modbus-response",
-    "z": "4dad68e9.e8a0c8",
+    "z": "99ee41b9.1a8a2",
     "name": "",
     "registerShowMax": 20,
     "x": 1010,
@@ -57,9 +58,9 @@
     "wires": []
   },
   {
-    "id": "fcdbefff.903288",
+    "id": "6b178dfe.246364",
     "type": "modbus-response",
-    "z": "4dad68e9.e8a0c8",
+    "z": "99ee41b9.1a8a2",
     "name": "",
     "registerShowMax": 20,
     "x": 1010,
@@ -67,9 +68,9 @@
     "wires": []
   },
   {
-    "id": "9c73de8a.5b77e",
+    "id": "5b08b5ff.08a27c",
     "type": "inject",
-    "z": "4dad68e9.e8a0c8",
+    "z": "99ee41b9.1a8a2",
     "name": "",
     "topic": "",
     "payload": "",
@@ -81,14 +82,14 @@
     "y": 180,
     "wires": [
       [
-        "bd9576d6.ca556"
+        "c38598de.e467c8"
       ]
     ]
   },
   {
-    "id": "9d1a1131.4e695",
+    "id": "ed4ee1ca.41d0a8",
     "type": "inject",
-    "z": "4dad68e9.e8a0c8",
+    "z": "99ee41b9.1a8a2",
     "name": "",
     "topic": "",
     "payload": "",
@@ -100,31 +101,14 @@
     "y": 240,
     "wires": [
       [
-        "788901cc.bdeec8"
+        "444d8bb4.34049c"
       ]
     ]
   },
   {
-    "id": "bd9576d6.ca556",
-    "type": "data-generator",
-    "z": "4dad68e9.e8a0c8",
-    "name": "",
-    "field": "payload",
-    "fieldType": "msg",
-    "syntax": "json",
-    "template": "[{{int 1 65000}}, {{int 1 65000}}, {{int 1 65000}}, {{int 1 65000}}]",
-    "x": 280,
-    "y": 180,
-    "wires": [
-      [
-        "929c255.3d1e058"
-      ]
-    ]
-  },
-  {
-    "id": "929c255.3d1e058",
+    "id": "88d78e21.03f948",
     "type": "function",
-    "z": "4dad68e9.e8a0c8",
+    "z": "99ee41b9.1a8a2",
     "name": "FC16 - Unit-ID 1 - 0-4 Register",
     "func": "msg.payload = { \n    value: msg.payload,\n    fc: 16,\n    unitid: 1,\n    address: 0,\n    quantity: 4\n};\nreturn msg;",
     "outputs": 1,
@@ -133,28 +117,28 @@
     "y": 180,
     "wires": [
       [
-        "ed9a4912.dd23"
+        "68c60ac7.206f5c"
       ]
     ]
   },
   {
-    "id": "dcf44f92.c62b28",
+    "id": "910ba7f1.17849",
     "type": "catch",
-    "z": "4dad68e9.e8a0c8",
+    "z": "99ee41b9.1a8a2",
     "name": "",
     "scope": null,
     "x": 100,
     "y": 120,
     "wires": [
       [
-        "bb9e9913.312a98"
+        "181b7c07.5122ec"
       ]
     ]
   },
   {
-    "id": "bb9e9913.312a98",
+    "id": "181b7c07.5122ec",
     "type": "debug",
-    "z": "4dad68e9.e8a0c8",
+    "z": "99ee41b9.1a8a2",
     "name": "",
     "active": true,
     "console": "false",
@@ -164,13 +148,13 @@
     "wires": []
   },
   {
-    "id": "a9264650.d9409",
+    "id": "806b13ac.65bb38",
     "type": "modbus-flex-getter",
-    "z": "4dad68e9.e8a0c8",
+    "z": "99ee41b9.1a8a2",
     "name": "",
     "showStatusActivities": false,
     "showErrors": false,
-    "server": "c0d8a780.03c62",
+    "server": "d789f1bb.d6ea18",
     "useIOFile": false,
     "ioFile": "",
     "useIOForPayload": false,
@@ -179,14 +163,14 @@
     "wires": [
       [],
       [
-        "382e7fc6.c52be8"
+        "7bb5f707.7ba32"
       ]
     ]
   },
   {
-    "id": "72a4ddee.ec34a4",
+    "id": "692626c2.17ec98",
     "type": "inject",
-    "z": "4dad68e9.e8a0c8",
+    "z": "99ee41b9.1a8a2",
     "name": "",
     "topic": "",
     "payload": "",
@@ -198,14 +182,14 @@
     "y": 300,
     "wires": [
       [
-        "b308aff9.2ae14"
+        "45dce816.c25cf8"
       ]
     ]
   },
   {
-    "id": "b308aff9.2ae14",
+    "id": "45dce816.c25cf8",
     "type": "function",
-    "z": "4dad68e9.e8a0c8",
+    "z": "99ee41b9.1a8a2",
     "name": "FC3 - Unit-ID 1 - 0-4 Register",
     "func": "msg.payload = { \n    value: msg.payload,\n    fc: 3,\n    unitid: 1,\n    address: 0,\n    quantity: 4 \n};\nreturn msg;",
     "outputs": 1,
@@ -214,14 +198,14 @@
     "y": 300,
     "wires": [
       [
-        "a9264650.d9409"
+        "806b13ac.65bb38"
       ]
     ]
   },
   {
-    "id": "382e7fc6.c52be8",
+    "id": "7bb5f707.7ba32",
     "type": "modbus-response",
-    "z": "4dad68e9.e8a0c8",
+    "z": "99ee41b9.1a8a2",
     "name": "",
     "registerShowMax": 20,
     "x": 1010,
@@ -229,9 +213,9 @@
     "wires": []
   },
   {
-    "id": "788901cc.bdeec8",
+    "id": "444d8bb4.34049c",
     "type": "modbus-getter",
-    "z": "4dad68e9.e8a0c8",
+    "z": "99ee41b9.1a8a2",
     "name": "",
     "showStatusActivities": false,
     "showErrors": false,
@@ -239,7 +223,7 @@
     "dataType": "HoldingRegister",
     "adr": "0",
     "quantity": "4",
-    "server": "c0d8a780.03c62",
+    "server": "d789f1bb.d6ea18",
     "useIOFile": false,
     "ioFile": "",
     "useIOForPayload": false,
@@ -248,14 +232,14 @@
     "wires": [
       [],
       [
-        "fcdbefff.903288"
+        "6b178dfe.246364"
       ]
     ]
   },
   {
-    "id": "5c376b02.52e2ac",
+    "id": "4e246391.225dcc",
     "type": "modbus-queue-info",
-    "z": "4dad68e9.e8a0c8",
+    "z": "99ee41b9.1a8a2",
     "name": "Queue Info Read",
     "topic": "",
     "unitid": "",
@@ -264,7 +248,7 @@
     "lowLevel": 75,
     "highLevel": 150,
     "highHighLevel": 300,
-    "server": "c0d8a780.03c62",
+    "server": "d789f1bb.d6ea18",
     "errorOnHighLevel": false,
     "x": 770,
     "y": 360,
@@ -273,9 +257,9 @@
     ]
   },
   {
-    "id": "393ffa0d.074ab6",
+    "id": "61509de8.5fbc44",
     "type": "modbus-queue-info",
-    "z": "4dad68e9.e8a0c8",
+    "z": "99ee41b9.1a8a2",
     "name": "Queue Info Write",
     "topic": "",
     "unitid": "",
@@ -284,7 +268,7 @@
     "lowLevel": 75,
     "highLevel": 150,
     "highHighLevel": 300,
-    "server": "81e910a8.634ae8",
+    "server": "d4c10165.fdaad8",
     "errorOnHighLevel": false,
     "x": 770,
     "y": 420,
@@ -293,9 +277,25 @@
     ]
   },
   {
-    "id": "81e910a8.634ae8",
+    "id": "c38598de.e467c8",
+    "type": "function",
+    "z": "99ee41b9.1a8a2",
+    "name": "Random",
+    "func": "msg.payload = [\n    Math.random() * (65000 - 1) + 1,\n    Math.random() * (65000 - 1) + 1,\n    Math.random() * (65000 - 1) + 1,\n    Math.random() * (65000 - 1) + 1\n]\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 280,
+    "y": 180,
+    "wires": [
+      [
+        "88d78e21.03f948"
+      ]
+    ]
+  },
+  {
+    "id": "d4c10165.fdaad8",
     "type": "modbus-client",
-    "z": "4dad68e9.e8a0c8",
+    "z": "99ee41b9.1a8a2",
     "name": "Write VServer",
     "clienttype": "tcp",
     "bufferCommands": true,
@@ -316,9 +316,9 @@
     "reconnectTimeout": "2000"
   },
   {
-    "id": "c0d8a780.03c62",
+    "id": "d789f1bb.d6ea18",
     "type": "modbus-client",
-    "z": "4dad68e9.e8a0c8",
+    "z": "99ee41b9.1a8a2",
     "name": "Read VServer",
     "clienttype": "tcp",
     "bufferCommands": true,
