@@ -1,7 +1,7 @@
 {
   "name": "node-red-contrib-modbus",
   "version": "4.0.0",
-  "private": true,
+  "private": false,
   "description": "The all in one Modbus TCP and Serial contribution package for Node-RED.",
   "dependencies": {
     "bson": "3.0.2",
@@ -26,7 +26,7 @@
     "opcua"
   ],
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=8.0.0"
   },
   "repository": {
     "type": "git",
