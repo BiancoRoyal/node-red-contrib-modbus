@@ -260,6 +260,7 @@ describe('Flex Getter node Testing', function () {
         let h1 = helper.getNode('h1')
         let counter = 0
         h1.on('input', function (msg) {
+          counter++
           if (modbusGetter.bufferMessageList.size === 0 && counter === 1) {
             done()
           }
