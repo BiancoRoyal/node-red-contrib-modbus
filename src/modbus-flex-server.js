@@ -34,6 +34,7 @@ module.exports = function (RED) {
     this.showErrors = config.showErrors
 
     this.funcGetCoil = new VMScript(config.funcGetCoil).compile()
+    this.funcGetDiscreteInput = new VMScript(config.funcGetDiscreteInput).compile()
     this.funcGetInputRegister = new VMScript(config.funcGetInputRegister).compile()
     this.funcGetHoldingRegister = new VMScript(config.funcGetHoldingRegister).compile()
 
@@ -65,8 +66,10 @@ module.exports = function (RED) {
     })
 
     vm.run('node.vector.getCoil = ' + config.funcGetCoil)
+    vm.run('node.vector.getDiscreteInput = ' + config.funcGetDiscreteInput)
     vm.run('node.vector.getInputRegister = ' + config.funcGetInputRegister)
     vm.run('node.vector.getHoldingRegister = ' + config.funcGetHoldingRegister)
+
     vm.run('node.vector.setCoil = ' + config.funcSetCoil)
     vm.run('node.vector.setRegister = ' + config.funcSetRegister)
 
@@ -124,15 +127,15 @@ module.exports = function (RED) {
     node.startServer()
 
     node.on('input', function (msg) {
-      node.send(buildMessage(msg, node.registers.slice((node.splitAddress + 1) * node.bufferFactor),
-        node.coils, node.registers.slice(0, node.splitAddress * node.bufferFactor)))
+      node.send(buildMessage(msg))
     })
 
-    function buildMessage (msg, modbusHolding, modbusCoils, modbusInput) {
+    function buildMessage (msg) {
       return [
-        {type: 'holding', message: msg, payload: modbusHolding},
-        {type: 'coils', message: msg, payload: modbusCoils},
-        {type: 'input', message: msg, payload: modbusInput}
+        {type: 'holding', message: msg, payload: node.registers.slice(node.splitAddress * node.bufferFactor)},
+        {type: 'coils', message: msg, payload: node.coils.slice(node.splitAddress * node.bufferFactor)},
+        {type: 'input', message: msg, payload: node.registers.slice(0, node.splitAddress * node.bufferFactor)},
+        {type: 'discrete', message: msg, payload: node.coils.slice(0, node.splitAddress * node.bufferFactor)}
       ]
     }
 

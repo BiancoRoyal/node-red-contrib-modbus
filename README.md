@@ -21,8 +21,10 @@
 
 Based on [modbus-serial][2] with TCP, C701, Telnet, Serial, RTU buffered, and ASCII
 
-* stress tested with Node-RED v0.19 and Node.js v8 and v10 LTS
+* stress tested with Node-RED v0.19 and Node.js v9 and v10 LTS
 * works with queueing per unit and round robin scheduling
+* Node.JS 8.x is supported with v3.x
+* Node.JS 6.x is supported with v2.x
 * Node.JS 4.x is supported with v1.x
 
 If you like that contributor's package for Modbus, then please give us your star at [GitHub][12] !
@@ -42,6 +44,20 @@ Run the following command for global install
 try these options on npm install to build, if you have problems to install
 
     --unsafe-perm --build-from-source
+    
+### modbus-serial, serialport and jsmodbus
+
+The [serialport][14] optional dependency is just to list all ports on your system in the client configuration.
+It is not the [serialport][14] version to work with Modbus at runtime. 
+For that check the [modbus-serial][2] or [jsmodbus][13] package.json, please!
+The [modbus-serial][2] supports and works for TCP connections in that package, too.
+The [jsmodbus][13] package is just to provide a simple Modbus Server node. 
+All Modbus commands running on [modbus-serial][2].
+
+### TCP or Serial testing
+If you get in trouble *with TCP* connections, then check and test with just [modbus-serial][2] first, please!
+
+If you get in trouble *with Serial* connections, then check with just [serialport][14] first, please!
 
 ## Update/Upgrade/Downgrade
 
@@ -127,3 +143,5 @@ since April 2016 by [Klaus Landsdorf][4]
 [10]:https://github.com/biancode/node-red-contrib-modbus/wiki
 [11]:https://bianco-royal.cloud/supporter/
 [12]:https://github.com/biancode/node-red-contrib-modbus
+[13]:https://www.npmjs.com/package/jsmodbus
+[14]:https://www.npmjs.com/package/serialport

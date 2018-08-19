@@ -54,6 +54,7 @@ module.exports = function (RED) {
     this.reconnectTimeout = parseInt(config.reconnectTimeout) || reconnectTimeMS
 
     let node = this
+    node.isFirstInitOfConnection = true
     node.closingModbus = false
     node.client = null
     node.bufferCommandList = new Map()
@@ -224,11 +225,18 @@ module.exports = function (RED) {
       stateLog('after event: ' + event + ' old: ' + oldState + ' new: ' + newState)
       node.updateServerinfo()
       node.initQueue()
+
       try {
-        setTimeout(node.connectClient, node.reconnectTimeout)
+        if (node.isFirstInitOfConnection) {
+          node.isFirstInitOfConnection = false
+          setTimeout(node.connectClient, serialConnectionDelayTimeMS)
+        } else {
+          setTimeout(node.connectClient, node.reconnectTimeout)
+        }
       } catch (err) {
         node.error(err, {payload: 'client connection error'})
       }
+
       verboseWarn('reconnect in ' + node.reconnectTimeout + ' ms')
       verboseLog('event: ' + event + ' old: ' + oldState + ' new: ' + newState)
       node.emit('mbinit')
@@ -552,52 +560,57 @@ module.exports = function (RED) {
         state: node.statlyMachine.getMachineState()
       }))
 
-      switch (parseInt(msg.payload.fc)) {
-        case 1: // FC: 1
-          node.client.readCoils(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+      try {
+        switch (parseInt(msg.payload.fc)) {
+          case 1: // FC: 1
+            node.client.readCoils(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+              node.activateSending(msg)
+              cb(resp, msg)
+            }).catch(function (err) {
+              node.activateSending(msg)
+              cberr(err, msg)
+              node.modbusErrorHandling(err)
+            })
+            break
+          case 2: // FC: 2
+            node.client.readDiscreteInputs(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+              node.activateSending(msg)
+              cb(resp, msg)
+            }).catch(function (err) {
+              node.activateSending(msg)
+              cberr(err, msg)
+              node.modbusErrorHandling(err)
+            })
+            break
+          case 3: // FC: 3
+            node.client.readHoldingRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+              node.activateSending(msg)
+              cb(resp, msg)
+            }).catch(function (err) {
+              node.activateSending(msg)
+              cberr(err, msg)
+              node.modbusErrorHandling(err)
+            })
+            break
+          case 4: // FC: 4
+            node.client.readInputRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+              node.activateSending(msg)
+              cb(resp, msg)
+            }).catch(function (err) {
+              node.activateSending(msg)
+              cberr(err, msg)
+              node.modbusErrorHandling(err)
+            })
+            break
+          default:
             node.activateSending(msg)
-            cb(resp, msg)
-          }).catch(function (err) {
-            node.activateSending(msg)
-            cberr(err, msg)
-            node.modbusErrorHandling(err)
-          })
-          break
-        case 2: // FC: 2
-          node.client.readDiscreteInputs(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-            node.activateSending(msg)
-            cb(resp, msg)
-          }).catch(function (err) {
-            node.activateSending(msg)
-            cberr(err, msg)
-            node.modbusErrorHandling(err)
-          })
-          break
-        case 3: // FC: 3
-          node.client.readHoldingRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-            node.activateSending(msg)
-            cb(resp, msg)
-          }).catch(function (err) {
-            node.activateSending(msg)
-            cberr(err, msg)
-            node.modbusErrorHandling(err)
-          })
-          break
-        case 4: // FC: 4
-          node.client.readInputRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-            node.activateSending(msg)
-            cb(resp, msg)
-          }).catch(function (err) {
-            node.activateSending(msg)
-            cberr(err, msg)
-            node.modbusErrorHandling(err)
-          })
-          break
-        default:
-          node.activateSending(msg)
-          cberr(new Error('Function Code Unknown'), msg)
-          coreModbusClient.internalDebug('Function Code Unknown %s', msg.payload.fc)
-          break
+            cberr(new Error('Function Code Unknown'), msg)
+            coreModbusClient.internalDebug('Function Code Unknown %s', msg.payload.fc)
+            break
+        }
+      } catch (e) {
+        coreModbusClient.internalDebug(e.message)
+        node.modbusErrorHandling(e)
       }
     }
 
@@ -645,14 +658,31 @@ module.exports = function (RED) {
         state: node.statlyMachine.getMachineState()
       }))
 
-      switch (parseInt(msg.payload.fc)) {
-        case 15: // FC: 15
-          if (parseInt(msg.payload.value.length) !== parseInt(msg.payload.quantity)) {
-            node.activateSending(msg)
-            cberr(new Error('Quantity should be less or equal to coil payload array length: ' +
+      try {
+        switch (parseInt(msg.payload.fc)) {
+          case 15: // FC: 15
+            if (parseInt(msg.payload.value.length) !== parseInt(msg.payload.quantity)) {
+              node.activateSending(msg)
+              cberr(new Error('Quantity should be less or equal to coil payload array length: ' +
               msg.payload.value.length + ' Addr: ' + msg.payload.address + ' Q: ' + msg.payload.quantity), msg)
-          } else {
-            node.client.writeCoils(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
+            } else {
+              node.client.writeCoils(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
+                node.activateSending(msg)
+                cb(resp, msg)
+              }).catch(function (err) {
+                node.activateSending(msg)
+                cberr(err, msg)
+                node.modbusErrorHandling(err)
+              })
+            }
+            break
+          case 5: // FC: 5
+            if (msg.payload.value) {
+              msg.payload.value = true
+            } else {
+              msg.payload.value = false
+            }
+            node.client.writeCoil(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
               node.activateSending(msg)
               cb(resp, msg)
             }).catch(function (err) {
@@ -660,25 +690,25 @@ module.exports = function (RED) {
               cberr(err, msg)
               node.modbusErrorHandling(err)
             })
-          }
-          break
-        case 5: // FC: 5
-          node.client.writeCoil(parseInt(msg.payload.address), (msg.payload.value === true)).then(function (resp) {
-            node.activateSending(msg)
-            cb(resp, msg)
-          }).catch(function (err) {
-            node.activateSending(msg)
-            cberr(err, msg)
-            node.modbusErrorHandling(err)
-          })
-          break
-        case 16: // FC: 16
-          if (parseInt(msg.payload.value.length) !== parseInt(msg.payload.quantity)) {
-            node.activateSending(msg)
-            cberr(new Error('Quantity should be less or equal to register payload array length: ' +
+            break
+          case 16: // FC: 16
+            if (parseInt(msg.payload.value.length) !== parseInt(msg.payload.quantity)) {
+              node.activateSending(msg)
+              cberr(new Error('Quantity should be less or equal to register payload array length: ' +
               msg.payload.value.length + ' Addr: ' + msg.payload.address + ' Q: ' + msg.payload.quantity), msg)
-          } else {
-            node.client.writeRegisters(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
+            } else {
+              node.client.writeRegisters(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
+                node.activateSending(msg)
+                cb(resp, msg)
+              }).catch(function (err) {
+                node.activateSending(msg)
+                cberr(err, msg)
+                node.modbusErrorHandling(err)
+              })
+            }
+            break
+          case 6: // FC: 6
+            node.client.writeRegister(parseInt(msg.payload.address), parseInt(msg.payload.value)).then(function (resp) {
               node.activateSending(msg)
               cb(resp, msg)
             }).catch(function (err) {
@@ -686,23 +716,16 @@ module.exports = function (RED) {
               cberr(err, msg)
               node.modbusErrorHandling(err)
             })
-          }
-          break
-        case 6: // FC: 6
-          node.client.writeRegister(parseInt(msg.payload.address), parseInt(msg.payload.value)).then(function (resp) {
+            break
+          default:
             node.activateSending(msg)
-            cb(resp, msg)
-          }).catch(function (err) {
-            node.activateSending(msg)
-            cberr(err, msg)
-            node.modbusErrorHandling(err)
-          })
-          break
-        default:
-          node.activateSending(msg)
-          cberr(new Error('Function Code Unknown'), msg)
-          coreModbusClient.internalDebug('Function Code Unknown %s', msg.payload.fc)
-          break
+            cberr(new Error('Function Code Unknown'), msg)
+            coreModbusClient.internalDebug('Function Code Unknown %s', msg.payload.fc)
+            break
+        }
+      } catch (e) {
+        coreModbusClient.internalDebug(e.message)
+        node.modbusErrorHandling(e)
       }
     }
 

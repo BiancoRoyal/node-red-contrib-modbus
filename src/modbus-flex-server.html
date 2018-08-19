@@ -25,15 +25,16 @@
       registersBufferSize: {value: 20000, validate: RED.validators.number()},
       minAddress: {value: 0, validate: RED.validators.number()},
       splitAddress: {value: 10000, validate: RED.validators.number()},
-      funcGetCoil: {value: 'function getFlexCoil(addr, unitID) {\n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.coils.readUInt8(addr * node.bufferFactor) \n\t}  \n}'},
+      funcGetCoil: {value: 'function getFlexCoil(addr, unitID) {\n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\treturn node.coils.readUInt8(addr * node.bufferFactor) \n\t}  \n}'},
+      funcGetDiscreteInput: {value: 'function getFlexDiscreteInput(addr, unitID) {\n\tif (unitID === node.unitId && \n\t\taddr > node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.coils.readUInt8(addr * node.bufferFactor) \n\t}  \n}'},
       funcGetInputRegister: {value: 'function getFlexInputRegister(addr, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}'},
       funcGetHoldingRegister: {value: 'function getFlexHoldingRegsiter(addr, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr > node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}'},
-      funcSetCoil: {value: 'function setFlexCoil(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\tnode.coils.writeUInt8(value, addr * node.bufferFactor)  \n\t} \n}'},
+      funcSetCoil: {value: 'function setFlexCoil(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\tnode.coils.writeUInt8(value, addr * node.bufferFactor)  \n\t} \n}'},
       funcSetRegister: {value: 'function setFlexRegister(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\tnode.registers.writeUInt16BE(value, addr * node.bufferFactor)  \n\t} \n}'},
       showErrors: {value: false}
     },
     inputs: 1,
-    outputs: 3,
+    outputs: 4,
     align: "right",
     icon: 'modbus.png',
     paletteLabel: 'Modbus-Flex-Server',
@@ -59,6 +60,11 @@
       tabs.addTab({
         id: 'modbus-server-tab-getCoil',
         label: this._('modbus-contrib.tabs-label.getCoil')
+      })
+
+      tabs.addTab({
+        id: 'modbus-server-tab-getDiscreteInput',
+        label: this._('modbus-contrib.tabs-label.getDiscreteInput')
       })
 
       tabs.addTab({
@@ -111,6 +117,23 @@
       getCoilElement.addEventListener("mouseup", resizeScriptGetCoil, false);
       function resizeScriptGetCoil () {
         node.editorGetCoil.resize()
+      }
+
+      node.editorGetDiscreteInput = RED.editor.createEditor({
+        id: 'node-input-func-editor-getDiscreteInput',
+        mode: 'ace/mode/javascript',
+        value: $('#node-input-funcGetDiscreteInput').val(),
+        globals: editorGlobals
+      })
+
+      $( function() {
+        $( "#node-input-func-editor-getDiscreteInput" ).resizable();
+      } );
+
+      let getDiscreteInputElement = document.getElementById('node-input-func-editor-getDiscreteInput');
+      getDiscreteInputElement.addEventListener("mouseup", resizeScriptGetDiscreteInput, false);
+      function resizeScriptGetDiscreteInput () {
+        node.editorGetDiscreteInput.resize()
       }
 
       node.editorGetInput = RED.editor.createEditor({
@@ -186,6 +209,10 @@
       this.editorGetCoil.destroy()
       delete this.editorGetCoil
 
+      $('#node-input-funcGetDiscreteInput').val(this.editorGetDiscreteInput.getValue())
+      this.editorGetDiscreteInput.destroy()
+      delete this.editorGetDiscreteInput
+
       $('#node-input-funcGetInputRegister').val(this.editorGetInput.getValue())
       this.editorGetInput.destroy()
       delete this.editorGetInput
@@ -205,6 +232,9 @@
     oneditcancel: function () {
       this.editorGetCoil.destroy()
       delete this.editorGetCoil
+
+      this.editorGetDiscreteInput.destroy()
+      delete this.editorGetDiscreteInput
 
       this.editorGetInput.destroy()
       delete this.editorGetInput
@@ -231,6 +261,7 @@
 
       $('.node-text-editor').css('height', height + 'px')
       this.editorGetCoil.resize()
+      this.editorGetDiscreteInput.resize()
       this.editorGetInput.resize()
       this.editorGetHolding.resize()
       this.editorSetCoil.resize()
@@ -310,6 +341,15 @@
                 <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-func-editor-getCoil"></div>
             </div>
         </div>
+        <div id="modbus-server-tab-getDiscreteInput" style="display:none">
+            <div class="form-row" style="margin-bottom: 0px;">
+                <label for="node-input-funcGetDiscreteInput"><i class="fa fa-wrench"></i> <span data-i18n="function.label.function"></span></label>
+                <input type="hidden" id="node-input-funcGetDiscreteInput">
+            </div>
+            <div class="form-row node-text-editor-row">
+                <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-func-editor-getDiscreteInput"></div>
+            </div>
+        </div>
         <div id="modbus-server-tab-getInput" style="display:none">
             <div class="form-row" style="margin-bottom: 0px;">
                 <label for="node-input-funcGetInputRegister"><i class="fa fa-wrench"></i> <span data-i18n="function.label.function"></span></label>
@@ -367,6 +407,7 @@
     <p>Output 1: holding Buffer, type, msg</p>
     <p>Output 2: coils Buffer, type, msg</p>
     <p>Output 3: input Buffer, type, msg</p>
+    <p>Output 4: discrete inputs Buffer, type, msg</p>
 
 
 </script>

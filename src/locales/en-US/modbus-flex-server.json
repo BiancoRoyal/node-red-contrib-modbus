@@ -16,6 +16,7 @@
     "tabs-label": {
       "settings": "Settings",
       "getCoil": "Get Coil",
+      "getDiscreteInput": "Get Discrete",
       "getInput": "Get Input",
       "getHolding": "Get Holding",
       "setCoil": "Set Coil",
