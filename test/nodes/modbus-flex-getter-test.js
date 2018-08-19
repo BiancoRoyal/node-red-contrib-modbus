@@ -258,8 +258,9 @@ describe('Flex Getter node Testing', function () {
       helper.load(testFlexGetterNodes, testFlexGetterFlowWithInject, function () {
         let modbusGetter = helper.getNode('bc5a61b6.a3972')
         let h1 = helper.getNode('h1')
+        let counter = 0
         h1.on('input', function (msg) {
-          if (modbusGetter.bufferMessageList.size === 0) {
+          if (modbusGetter.bufferMessageList.size === 0 && counter === 1) {
             done()
           }
         })
@@ -268,12 +269,14 @@ describe('Flex Getter node Testing', function () {
       })
     })
 
-    it('simple flow with inject should be loaded', function (done) {
+    it('simple flow should be loaded and with receive got input', function (done) {
       helper.load(testFlexGetterNodes, testFlexGetterFlow, function () {
         let modbusGetter = helper.getNode('bc5a61b6.a3972')
         let h1 = helper.getNode('h1')
+        let counter = 0
         h1.on('input', function (msg) {
-          if (modbusGetter.bufferMessageList.size === 0) {
+          counter++
+          if (modbusGetter.bufferMessageList.size === 0 && counter === 1) {
             done()
           }
         })

@@ -467,8 +467,12 @@ describe('Client node Testing', function () {
     it('should work with simple read on local server', function (done) {
       helper.load([serverNode, readNode, nodeUnderTest], simpleReadWithClient, function () {
         let h1 = helper.getNode('h1')
+        let counter = 0
         h1.on('input', function (msg) {
-          done()
+          counter++
+          if (counter === 1) {
+            done()
+          }
         })
       })
     })

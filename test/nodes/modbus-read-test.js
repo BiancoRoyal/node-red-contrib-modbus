@@ -198,8 +198,12 @@ describe('Read node Testing', function () {
         }
       ], function () {
         let h1 = helper.getNode('h1')
+        let counter = 0
         h1.on('input', function (msg) {
-          done()
+          counter++
+          if (counter === 1) {
+            done()
+          }
         })
       }, function () {
         helper.log('function callback')

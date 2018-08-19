@@ -353,8 +353,12 @@ describe('Getter node Testing', function () {
       }
       ], function () {
         let h1 = helper.getNode('h1')
+        let counter = 0
         h1.on('input', function (msg) {
-          done()
+          counter++
+          if (counter === 1) {
+            done()
+          }
         })
       }, function () {
         helper.log('function callback')
@@ -365,8 +369,10 @@ describe('Getter node Testing', function () {
       helper.load(testGetterNodes, testGetterFlowWithInject, function () {
         let modbusGetter = helper.getNode('cea01c8.36f8f6')
         let h1 = helper.getNode('h1')
+        let counter = 0
         h1.on('input', function (msg) {
-          if (modbusGetter.bufferMessageList.size === 0) {
+          counter++
+          if (modbusGetter.bufferMessageList.size === 0 && counter === 1) {
             done()
           }
         })
