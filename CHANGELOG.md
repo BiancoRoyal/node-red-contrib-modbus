@@ -1,3 +1,17 @@
+# Change Log
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+<a name="4.0.2"></a>
+## [4.0.2](https://github.com/biancode/node-red-contrib-modbus/compare/v4.0.0...v4.0.2) (2018-11-08)
+
+
+### Bug Fixes
+
+* **log:** remove console logs ([a859d91](https://github.com/biancode/node-red-contrib-modbus/commit/a859d91))
+
+
+
 <a name="3.6.1"></a>
 ## [3.6.1](https://github.com/biancode/node-red-contrib-modbus/compare/v3.6.0...v3.6.1) (2018-06-08)
 
@@ -90,6 +104,3 @@
 
 <a name="1.0.0"></a>
 # 1.0.0 (2017-01-18)
-
-
-
