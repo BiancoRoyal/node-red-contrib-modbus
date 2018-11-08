@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
-npm install -g npm-check-updates
 
-npm outdated
+npm cache verify
+
+# npm install -g npm-check-updates
+
+npm outdated --depth=0
 
 ncu -u --upgradeAll --packageFile package.json
 

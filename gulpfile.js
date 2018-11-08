@@ -30,11 +30,11 @@ gulp.task('publish', sequence('build', 'docs', 'maps'))
 
 gulp.task('clean', function () {
   return gulp.src(['modbus', 'docs/gen', 'maps', 'code', 'coverage'])
-    .pipe(clean({force: true}))
+    .pipe(clean({ force: true }))
 })
 
 gulp.task('doc', function (cb) {
-  gulp.src(['README.md', 'src/**/*.js'], {read: false})
+  gulp.src(['README.md', 'src/**/*.js'], { read: false })
     .pipe(jsdoc(cb))
 })
 
@@ -79,9 +79,9 @@ gulp.task('nodejs', function (cb) {
   let anchor = '// SOURCE-MAP-REQUIRED'
 
   pump([gulp.src('src/**/*.js')
-    .pipe(sourcemaps.init({loadMaps: true}))
+    .pipe(sourcemaps.init({ loadMaps: true }))
     .pipe(replace(anchor, 'require(\'source-map-support\').install()'))
-    .pipe(babel({presets: ['es2015']}))
+    .pipe(babel({ presets: ['@babel/env'] }))
     .pipe(uglify())
     .pipe(sourcemaps.write('maps')), gulp.dest('modbus')],
   cb
@@ -90,12 +90,12 @@ gulp.task('nodejs', function (cb) {
 
 gulp.task('nodejsclearly', function (cb) {
   gulp.src('src/**/*.js')
-    .pipe(babel({presets: ['es2015']}))
+    .pipe(babel({ presets: ['@babel/env'] }))
     .pipe(gulp.dest('code'))
 })
 
 gulp.task('code', function () {
   gulp.src('src/**/*.js')
-    .pipe(babel({presets: ['es2015']}))
+    .pipe(babel({ presets: ['@babel/env'] }))
     .pipe(gulp.dest('code'))
 })
