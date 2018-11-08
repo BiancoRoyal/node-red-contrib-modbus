@@ -89,10 +89,10 @@ module.exports = function (RED) {
 
     function buildMessage (msg) {
       return [
-        {type: 'holding', message: msg, payload: node.modbusServer.holding},
-        {type: 'coils', message: msg, payload: node.modbusServer.coils},
-        {type: 'input', message: msg, payload: node.modbusServer.input},
-        {type: 'discrete', message: msg, payload: node.modbusServer.discrete}
+        { type: 'holding', message: msg, payload: node.modbusServer.holding },
+        { type: 'coils', message: msg, payload: node.modbusServer.coils },
+        { type: 'input', message: msg, payload: node.modbusServer.input },
+        { type: 'discrete', message: msg, payload: node.modbusServer.discrete }
       ]
     }
 
@@ -111,6 +111,6 @@ module.exports = function (RED) {
   try {
     RED.nodes.registerType('modbus-server', ModbusServer)
   } catch (err) {
-    console.log(err.message)
+    internalDebugLog(err.message)
   }
 }

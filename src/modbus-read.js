@@ -260,7 +260,7 @@ module.exports = function (RED) {
         res.sendStatus(200)
       } catch (err) {
         res.sendStatus(500)
-        node.error(RED._('modbusinject.failed', {error: err.toString()}))
+        node.error(RED._('modbusinject.failed', { error: err.toString() }))
       }
     } else {
       res.sendStatus(404)

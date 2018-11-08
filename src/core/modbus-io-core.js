@@ -9,7 +9,7 @@
 'use strict'
 // SOURCE-MAP-REQUIRED
 
-var de = de || {biancoroyal: {modbus: {io: {core: {}}}}} // eslint-disable-line no-use-before-define
+var de = de || { biancoroyal: { modbus: { io: { core: {} } } } } // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.io.core.internalDebug = de.biancoroyal.modbus.io.core.internalDebug || require('debug')('contribModbus:io:core') // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.io.core.LineByLineReader = de.biancoroyal.modbus.io.core.LineByLineReader || require('line-by-line') // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.io.core.core = de.biancoroyal.modbus.io.core.core || require('./modbus-core') // eslint-disable-line no-use-before-define
@@ -157,7 +157,7 @@ de.biancoroyal.modbus.io.core.buildInputAddressMapping = function (registerName,
     }
   }
 
-  return {'name': mapping.name, 'type': type, 'mapping': mapping, 'error': 'variable name does not match input mapping'}
+  return { 'name': mapping.name, 'type': type, 'mapping': mapping, 'error': 'variable name does not match input mapping' }
 }
 
 de.biancoroyal.modbus.io.core.buildOutputAddressMapping = function (registerName, mapping, offset, readingOffset, logging) {
@@ -242,7 +242,7 @@ de.biancoroyal.modbus.io.core.buildOutputAddressMapping = function (registerName
     }
   }
 
-  return {'name': mapping.name, 'type': type, 'mapping': mapping, 'error': 'variable name does not match output mapping'}
+  return { 'name': mapping.name, 'type': type, 'mapping': mapping, 'error': 'variable name does not match output mapping' }
 }
 
 de.biancoroyal.modbus.io.core.insertValues = function (valueNames, register, logging) {

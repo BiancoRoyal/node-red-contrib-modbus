@@ -8,7 +8,7 @@
 'use strict'
 // SOURCE-MAP-REQUIRED
 
-var de = de || {biancoroyal: {modbus: {core: {}}}} // eslint-disable-line no-use-before-define
+var de = de || { biancoroyal: { modbus: { core: {} } } } // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.core.internalDebug = de.biancoroyal.modbus.core.internalDebug || require('debug')('contribModbus:core') // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.core.ObjectID = de.biancoroyal.modbus.core.ObjectID || require('bson').ObjectID // eslint-disable-line no-use-before-define
 

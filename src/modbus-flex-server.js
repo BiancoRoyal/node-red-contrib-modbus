@@ -20,7 +20,7 @@ module.exports = function (RED) {
 
   function ModbusFlexServer (config) {
     RED.nodes.createNode(this, config)
-    const {VM, VMScript} = require('vm2')
+    const { VM, VMScript } = require('vm2')
 
     this.name = config.name
     this.logEnabled = config.logEnabled
@@ -62,7 +62,7 @@ module.exports = function (RED) {
     node.vector = {}
 
     const vm = new VM({
-      sandbox: {node}
+      sandbox: { node }
     })
 
     vm.run('node.vector.getCoil = ' + config.funcGetCoil)
@@ -84,7 +84,7 @@ module.exports = function (RED) {
               unitID: node.unitId
             })
           } catch (err) {
-            node.error(err, {payload: 'server net error -> for port 502 on unix, you have to be a super user'})
+            node.error(err, { payload: 'server net error -> for port 502 on unix, you have to be a super user' })
           }
 
           node.modbusServer.on('socketError', function (err) {
@@ -132,10 +132,10 @@ module.exports = function (RED) {
 
     function buildMessage (msg) {
       return [
-        {type: 'holding', message: msg, payload: node.registers.slice(node.splitAddress * node.bufferFactor)},
-        {type: 'coils', message: msg, payload: node.coils.slice(node.splitAddress * node.bufferFactor)},
-        {type: 'input', message: msg, payload: node.registers.slice(0, node.splitAddress * node.bufferFactor)},
-        {type: 'discrete', message: msg, payload: node.coils.slice(0, node.splitAddress * node.bufferFactor)}
+        { type: 'holding', message: msg, payload: node.registers.slice(node.splitAddress * node.bufferFactor) },
+        { type: 'coils', message: msg, payload: node.coils.slice(node.splitAddress * node.bufferFactor) },
+        { type: 'input', message: msg, payload: node.registers.slice(0, node.splitAddress * node.bufferFactor) },
+        { type: 'discrete', message: msg, payload: node.coils.slice(0, node.splitAddress * node.bufferFactor) }
       ]
     }
 
@@ -151,6 +151,6 @@ module.exports = function (RED) {
   try {
     RED.nodes.registerType('modbus-flex-server', ModbusFlexServer)
   } catch (err) {
-    console.log(err.message)
+    internalDebugLog(err.message)
   }
 }
