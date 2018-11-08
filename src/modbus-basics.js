@@ -8,7 +8,7 @@
 'use strict'
 // SOURCE-MAP-REQUIRED
 
-var de = de || {biancoroyal: {modbus: {basics: {}}}} // eslint-disable-line no-use-before-define
+var de = de || { biancoroyal: { modbus: { basics: {} } } } // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.basics.internalDebug = de.biancoroyal.modbus.basics.internalDebug || require('debug')('contribModbus:basics') // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.basics.util = de.biancoroyal.modbus.basics.util || require('util') // eslint-disable-line no-use-before-define
 
@@ -141,7 +141,7 @@ de.biancoroyal.modbus.basics.setNodeStatusProperties = function (statusValue, sh
       break
   }
 
-  return {fill: fillValue, shape: shapeValue, status: statusValue}
+  return { fill: fillValue, shape: shapeValue, status: statusValue }
 }
 
 de.biancoroyal.modbus.basics.setNodeStatusByResponseTo = function (statusValue, response, node) {
@@ -167,7 +167,7 @@ de.biancoroyal.modbus.basics.setNodeStatusByResponseTo = function (statusValue, 
       break
   }
 
-  node.status({fill: fillValue, shape: shapeValue, text: this.util.inspect(response, false, null)})
+  node.status({ fill: fillValue, shape: shapeValue, text: this.util.inspect(response, false, null) })
 }
 
 de.biancoroyal.modbus.basics.setNodeStatusResponse = function (length, node) {

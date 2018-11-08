@@ -234,7 +234,7 @@ module.exports = function (RED) {
           setTimeout(node.connectClient, node.reconnectTimeout)
         }
       } catch (err) {
-        node.error(err, {payload: 'client connection error'})
+        node.error(err, { payload: 'client connection error' })
       }
 
       verboseWarn('reconnect in ' + node.reconnectTimeout + ' ms')
@@ -312,7 +312,7 @@ module.exports = function (RED) {
 
       if (node.clienttype === 'tcp') {
         if (!node.checkUnitId(node.unit_id)) {
-          node.error(new Error('wrong unit-id (0..255)'), {payload: node.unit_id})
+          node.error(new Error('wrong unit-id (0..255)'), { payload: node.unit_id })
           node.statlyMachine.failure()
           return
         }
@@ -353,7 +353,7 @@ module.exports = function (RED) {
         }
       } else {
         if (!node.checkUnitId(node.unit_id)) {
-          node.error(new Error('wrong unit-id serial (1..247)'), {payload: node.unit_id})
+          node.error(new Error('wrong unit-id serial (1..247)'), { payload: node.unit_id })
           node.statlyMachine.failure()
           return
         }
@@ -363,7 +363,7 @@ module.exports = function (RED) {
         }
 
         if (!node.serialPort) {
-          node.error(new Error('wrong serial port'), {payload: node.serialPort})
+          node.error(new Error('wrong serial port'), { payload: node.serialPort })
           node.statlyMachine.failure()
           return
         }
@@ -499,7 +499,7 @@ module.exports = function (RED) {
           node.unitSendingAllowed.push(unit)
         }
 
-        node.bufferCommandList.get(unit).push({callModbus: callModbus, msg: msg, cb: cb, cberr: cberr})
+        node.bufferCommandList.get(unit).push({ callModbus: callModbus, msg: msg, cb: cb, cberr: cberr })
       } else {
         msg.queueUnit = node.unit_id
         queueLog(JSON.stringify({
@@ -512,7 +512,7 @@ module.exports = function (RED) {
           node.unitSendingAllowed.push(node.unit_id)
         }
 
-        node.bufferCommandList.get(node.unit_id).push({callModbus: callModbus, msg: msg, cb: cb, cberr: cberr})
+        node.bufferCommandList.get(node.unit_id).push({ callModbus: callModbus, msg: msg, cb: cb, cberr: cberr })
       }
     }
 
