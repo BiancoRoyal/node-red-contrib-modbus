@@ -766,7 +766,7 @@ module.exports = function (RED) {
           break
         case 'SERIAL':
           if (msg.payload.serialPort) {
-            node.serialPort = parseInt(msg.payload.serialPort) || node.serialPort
+            node.serialPort = msg.payload.serialPort || node.serialPort
           }
 
           if (msg.payload.serialBaudrate) {
