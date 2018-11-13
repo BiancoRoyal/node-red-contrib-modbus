@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.1.1"></a>
+## [4.1.1](https://github.com/biancode/node-red-contrib-modbus/compare/v4.1.0...v4.1.1) (2018-11-13)
+
+
+### Bug Fixes
+
+* modbus flex server ([7d332f0](https://github.com/biancode/node-red-contrib-modbus/commit/7d332f0))
+
+
+
 <a name="4.1.0"></a>
 # [4.1.0](https://github.com/biancode/node-red-contrib-modbus/compare/v4.0.2...v4.1.0) (2018-11-08)
 
