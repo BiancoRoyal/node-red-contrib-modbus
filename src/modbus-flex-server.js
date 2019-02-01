@@ -133,9 +133,9 @@ module.exports = function (RED) {
     function buildMessage (msg) {
       return [
         { type: 'holding', message: msg, payload: node.registers.slice(node.splitAddress * node.bufferFactor) },
-        { type: 'coils', message: msg, payload: node.coils.slice(node.splitAddress * node.bufferFactor) },
+        { type: 'coils', message: msg, payload: node.coils.slice(0, node.splitAddress * node.bufferFactor) },
         { type: 'input', message: msg, payload: node.registers.slice(0, node.splitAddress * node.bufferFactor) },
-        { type: 'discrete', message: msg, payload: node.coils.slice(0, node.splitAddress * node.bufferFactor) }
+        { type: 'discrete', message: msg, payload: node.coils.slice(node.splitAddress * node.bufferFactor) }
       ]
     }
 
