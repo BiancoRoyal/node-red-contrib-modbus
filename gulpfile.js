@@ -1,65 +1,50 @@
-/**
- Copyright (c) 2016, Klaus Landsdorf (http://bianco-royal.de/)
- Copyright 2016-2017 Klaus Landsdorf (http://bianco-royal.de/)
- All rights reserved.
- node-red-contrib-modbus - The BSD 3-Clause License
+/*
+ The MIT License
 
- @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
- **/
+ Copyright (c) 2017, 2018, 2019 - Klaus Landsdorf (http://bianco-royal.de/)
+ All rights reserved.
+ node-red-contrib-iiot-jwt
+ */
 
 'use strict'
 
-const gulp = require('gulp')
+const { series, src, dest } = require('gulp')
 const htmlmin = require('gulp-htmlmin')
 const jsdoc = require('gulp-jsdoc3')
 const clean = require('gulp-clean')
 const uglify = require('gulp-uglify')
 const babel = require('gulp-babel')
-const sequence = require('gulp-sequence')
 const sourcemaps = require('gulp-sourcemaps')
 const pump = require('pump')
 const replace = require('gulp-replace')
 
-gulp.task('default', function () {
-  // place code for your default task here
-})
+function releaseIcons () {
+  return src('src/icons/**/*').pipe(dest('modbus/icons'))
+}
 
-gulp.task('docs', sequence('doc', 'docIcons', 'docImages'))
-gulp.task('build', sequence('clean', 'web', 'nodejs', 'locale', 'code', 'icons'))
-gulp.task('publish', sequence('build', 'docs', 'maps'))
+function docIcons () {
+  return src('src/icons/**/*').pipe(dest('docs/gen/icons'))
+}
 
-gulp.task('clean', function () {
-  return gulp.src(['modbus', 'docs/gen', 'maps', 'code', 'coverage'])
+function docImages () {
+  return src('images/**/*').pipe(dest('docs/gen/images'))
+}
+
+function releaseLocal () {
+  return src('src/locales/**/*').pipe(dest('modbus/locales'))
+}
+
+function releasePublicData () {
+  return src('src/public/**/*').pipe(dest('modbus/public'))
+}
+
+function cleanProject () {
+  return src(['modbus', 'docs/gen', 'jcoverage'], { allowEmpty: true })
     .pipe(clean({ force: true }))
-})
+}
 
-gulp.task('doc', function (cb) {
-  gulp.src(['README.md', 'src/**/*.js'], { read: false })
-    .pipe(jsdoc(cb))
-})
-
-gulp.task('docIcons', function () {
-  return gulp.src('src/icons/**/*').pipe(gulp.dest('docs/gen/icons'))
-})
-
-gulp.task('docImages', function () {
-  return gulp.src('images/**/*').pipe(gulp.dest('docs/gen/images'))
-})
-
-gulp.task('icons', function () {
-  return gulp.src('src/icons/**/*').pipe(gulp.dest('modbus/icons'))
-})
-
-gulp.task('locale', function () {
-  return gulp.src('src/locales/**/*').pipe(gulp.dest('modbus/locales'))
-})
-
-gulp.task('maps', function () {
-  return gulp.src('maps/**/*').pipe(gulp.dest('modbus/maps'))
-})
-
-gulp.task('web', function () {
-  return gulp.src('src/*.htm*')
+function releaseWebContent () {
+  return src('src/*.htm*')
     .pipe(htmlmin({
       minifyJS: true,
       minifyCSS: true,
@@ -72,30 +57,28 @@ gulp.task('web', function () {
       processScripts: ['text/x-red'],
       quoteCharacter: "'"
     }))
-    .pipe(gulp.dest('modbus'))
-})
+    .pipe(dest('modbus'))
+}
 
-gulp.task('nodejs', function (cb) {
+function releaseJSContent (cb) {
   let anchor = '// SOURCE-MAP-REQUIRED'
 
-  pump([gulp.src('src/**/*.js')
-    .pipe(sourcemaps.init({ loadMaps: true }))
-    .pipe(replace(anchor, 'require(\'source-map-support\').install()'))
-    .pipe(babel({ presets: ['@babel/env'] }))
-    .pipe(uglify())
-    .pipe(sourcemaps.write('maps')), gulp.dest('modbus')],
-  cb
-  )
-})
+  pump([
+    src('src/**/*.js')
+      .pipe(sourcemaps.init({ loadMaps: true }))
+      .pipe(replace(anchor, 'require(\'source-map-support\').install()'))
+      .pipe(babel({ presets: ['@babel/env'] }))
+      .pipe(uglify())
+      .pipe(sourcemaps.write('maps')), dest('modbus')],
+  cb)
+}
 
-gulp.task('nodejsclearly', function (cb) {
-  gulp.src('src/**/*.js')
-    .pipe(babel({ presets: ['@babel/env'] }))
-    .pipe(gulp.dest('code'))
-})
+function doc (cb) {
+  src(['README.md', 'src/**/*.js'], { read: false })
+    .pipe(jsdoc(cb))
+}
 
-gulp.task('code', function () {
-  gulp.src('src/**/*.js')
-    .pipe(babel({ presets: ['@babel/env'] }))
-    .pipe(gulp.dest('code'))
-})
+exports.clean = cleanProject
+exports.build = series(cleanProject, releaseWebContent, releaseJSContent, releaseLocal)
+exports.buildDocs = series(doc, docIcons, docImages)
+exports.publish = series(cleanProject, releaseWebContent, releaseJSContent, releaseLocal, releasePublicData, releaseIcons, doc, docIcons, docImages)

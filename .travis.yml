@@ -10,13 +10,12 @@ matrix:
   - node_js: 9
   - node_js: 8
 install:
-- npm install
-- npm install -g gulp
-- npm install -g gulp-cli
+  - npm install
+  - npm install --only=dev
 script:
-- npm test
-- npm run coverage
-- gulp publish
+  - npm test
+  - npm run coverage
+  - gulp publish
 cache:
   directories:
   - "node_modules"
