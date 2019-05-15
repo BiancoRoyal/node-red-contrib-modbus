@@ -2,7 +2,6 @@
  Copyright (c) 2017,2018 Klaus Landsdorf (http://bianco-royal.de/)
  All rights reserved.
  node-red-contrib-modbus - The BSD 3-Clause License
-
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  **/
 /**
@@ -127,7 +126,37 @@ module.exports = function (RED) {
     node.startServer()
 
     node.on('input', function (msg) {
-      node.send(buildMessage(msg))
+	
+		if(	msg.payload.register === 'holding'
+			|| msg.payload.register === 'coils'
+			|| msg.payload.register === 'input'
+			|| msg.payload.register === 'discrete'){
+			
+			if (!(Number.isInteger(msg.payload.address) &&
+				  msg.payload.address >= 0 &&
+				  msg.payload.address <= 65535)) {
+			  node.error('Address Not Valid', msg)
+			  return
+			}
+			switch (type) {
+				case 'holding': 
+					node.registers.writeUInt16BE(msg.payload.value, (msg.payload.address + node.splitAddress) * node.bufferFactor)
+					break
+				case 'coils': 
+					node.coils.writeUInt8(msg.payload.value, msg.payload.address * node.bufferFactor)
+					break
+				case 'input': 
+					node.registers.writeUInt16BE(msg.payload.value, msg.payload.address * node.bufferFactor)
+					break
+				case 'discrete': 
+					node.coils.writeUInt8(msg.payload.value, (msg.payload.address + node.splitAddress) * node.bufferFactor)
+					break
+			}
+		}
+
+		if (msg.payload.disablemsg != '1') {
+			node.send(buildMessage(msg))
+		}
     })
 
     function buildMessage (msg) {

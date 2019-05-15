@@ -408,6 +408,17 @@
     <p>Output 2: coils Buffer, type, msg</p>
     <p>Output 3: input Buffer, type, msg</p>
     <p>Output 4: discrete inputs Buffer, type, msg</p>
-
+	<br>
+	<p>On injecting a special payload, you can write directly to any register. This should only be used if you want to simulate a Modbus client.
+	<code>msg.payload = { 
+    'value': msg.payload, 
+    'register': 'holding', 
+    'address': 1 ,
+    'disablemsg' : 0
+	};
+	return msg;</code></p>
+	<p>Valid registers are:<ul><li>holding</li><li>coils</li><li>input</li><li>discrete</li></ul>
+	Set disablemsg to 1, if you want to disable the Flex Server outputs when injecting.</p>
+	
 
 </script>
