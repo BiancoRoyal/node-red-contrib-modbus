@@ -154,7 +154,7 @@ module.exports = function (RED) {
             }
         }
 
-        if (msg.payload.disablemsg != '1') {
+        if (msg.payload.disablemsg !== 1) {
             node.send(buildMessage(msg))
         }
     })
