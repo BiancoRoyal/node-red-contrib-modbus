@@ -1,0 +1,609 @@
+[
+    {
+        "id": "773d005b.cd22d8",
+        "type": "tab",
+        "label": "Flex Server as Slave",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "b5c5319c.07e0b8",
+        "type": "inject",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "topic": "Inject",
+        "payload": "",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 90,
+        "y": 20,
+        "wires": [
+            [
+                "7c7e0ef2.453118"
+            ]
+        ]
+    },
+    {
+        "id": "ad6a539.c3737b",
+        "type": "inject",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "topic": "",
+        "payload": "1",
+        "payloadType": "num",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 90,
+        "y": 120,
+        "wires": [
+            [
+                "f5b52f9.da40ed"
+            ]
+        ]
+    },
+    {
+        "id": "f5b52f9.da40ed",
+        "type": "function",
+        "z": "773d005b.cd22d8",
+        "name": "Set coils register 0",
+        "func": "msg.payload = { \n    'value': msg.payload, \n    'register': 'coils', \n    'address': 0 ,\n    'disablemsg' : 1\n} ;\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 270,
+        "y": 100,
+        "wires": [
+            [
+                "7c7e0ef2.453118"
+            ]
+        ]
+    },
+    {
+        "id": "6d5a3077.e2632",
+        "type": "inject",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "topic": "",
+        "payload": "0",
+        "payloadType": "num",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 90,
+        "y": 80,
+        "wires": [
+            [
+                "f5b52f9.da40ed"
+            ]
+        ]
+    },
+    {
+        "id": "c2a77416.0c366",
+        "type": "debug",
+        "z": "773d005b.cd22d8",
+        "name": "holding ",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 940,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "ef53de42.56dfd8",
+        "type": "debug",
+        "z": "773d005b.cd22d8",
+        "name": "coils ",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 930,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "37d9456a.be0852",
+        "type": "debug",
+        "z": "773d005b.cd22d8",
+        "name": "input ",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 930,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "2ba65ddb.5f27ca",
+        "type": "debug",
+        "z": "773d005b.cd22d8",
+        "name": "discrete inputs",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 960,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "7c7e0ef2.453118",
+        "type": "modbus-flex-server",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "logEnabled": false,
+        "serverAddress": "127.0.0.1",
+        "serverPort": 11502,
+        "responseDelay": 100,
+        "unitId": 1,
+        "delayUnit": "ms",
+        "coilsBufferSize": 20000,
+        "registersBufferSize": 20000,
+        "minAddress": 0,
+        "splitAddress": 10000,
+        "funcGetCoil": "function getFlexCoil(addr, unitID) {\n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\treturn node.coils.readUInt8(addr * node.bufferFactor) \n\t}  \n}",
+        "funcGetDiscreteInput": "function getFlexDiscreteInput(addr, unitID) {\n\taddr += node.splitAddress\n\tif (unitID === node.unitId && \n\t\taddr >= node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.coils.readUInt8(addr * node.bufferFactor) \n\t}  \n}",
+        "funcGetInputRegister": "function getFlexInputRegister(addr, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}",
+        "funcGetHoldingRegister": "function getFlexHoldingRegsiter(addr, unitID) { \n\taddr += node.splitAddress\n\tif (unitID === node.unitId && \n\t\taddr >= node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}",
+        "funcSetCoil": "function setFlexCoil(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\tnode.coils.writeUInt8(value, addr * node.bufferFactor)  \n\t} \n}",
+        "funcSetRegister": "function setFlexRegister(addr, value, unitID) { \n\taddr += node.splitAddress\n\tif (unitID === node.unitId && \n\t\taddr >= node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\tnode.registers.writeUInt16BE(value, addr * node.bufferFactor)  \n\t} \n}",
+        "showErrors": false,
+        "x": 680,
+        "y": 120,
+        "wires": [
+            [
+                "c2a77416.0c366"
+            ],
+            [
+                "ef53de42.56dfd8"
+            ],
+            [
+                "37d9456a.be0852"
+            ],
+            [
+                "2ba65ddb.5f27ca"
+            ]
+        ]
+    },
+    {
+        "id": "7f6bf77b.91b04",
+        "type": "inject",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "topic": "",
+        "payload": "1",
+        "payloadType": "num",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 90,
+        "y": 220,
+        "wires": [
+            [
+                "624b4932.55bb48"
+            ]
+        ]
+    },
+    {
+        "id": "624b4932.55bb48",
+        "type": "function",
+        "z": "773d005b.cd22d8",
+        "name": "Set discrete register 0",
+        "func": "msg.payload = { \n    'value': msg.payload, \n    'register': 'discrete', \n    'address': 0 ,\n    'disablemsg' : 1\n} ;\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 280,
+        "y": 200,
+        "wires": [
+            [
+                "7c7e0ef2.453118"
+            ]
+        ]
+    },
+    {
+        "id": "261a1d0f.1892d2",
+        "type": "inject",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "topic": "",
+        "payload": "0",
+        "payloadType": "num",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 90,
+        "y": 180,
+        "wires": [
+            [
+                "624b4932.55bb48"
+            ]
+        ]
+    },
+    {
+        "id": "8e14ca38.67c7e8",
+        "type": "inject",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "topic": "",
+        "payload": "1",
+        "payloadType": "num",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 90,
+        "y": 320,
+        "wires": [
+            [
+                "a201fa81.71e298"
+            ]
+        ]
+    },
+    {
+        "id": "a201fa81.71e298",
+        "type": "function",
+        "z": "773d005b.cd22d8",
+        "name": "Set holding register 0",
+        "func": "msg.payload = { \n    'value': msg.payload, \n    'register': 'holding', \n    'address': 0 ,\n    'disablemsg' : 1\n} ;\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 280,
+        "y": 300,
+        "wires": [
+            [
+                "7c7e0ef2.453118"
+            ]
+        ]
+    },
+    {
+        "id": "2e8ef6c0.bf2f42",
+        "type": "inject",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "topic": "",
+        "payload": "0",
+        "payloadType": "num",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 90,
+        "y": 280,
+        "wires": [
+            [
+                "a201fa81.71e298"
+            ]
+        ]
+    },
+    {
+        "id": "4a8185c6.28407c",
+        "type": "inject",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "topic": "",
+        "payload": "1",
+        "payloadType": "num",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 90,
+        "y": 420,
+        "wires": [
+            [
+                "b9f8e19b.5999f"
+            ]
+        ]
+    },
+    {
+        "id": "b9f8e19b.5999f",
+        "type": "function",
+        "z": "773d005b.cd22d8",
+        "name": "Set Input register 0",
+        "func": "msg.payload = { \n    'value': msg.payload, \n    'register': 'input', \n    'address': 0 ,\n    'disablemsg' : 1\n} ;\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 270,
+        "y": 400,
+        "wires": [
+            [
+                "7c7e0ef2.453118"
+            ]
+        ]
+    },
+    {
+        "id": "94df215c.c128e",
+        "type": "inject",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "topic": "",
+        "payload": "0",
+        "payloadType": "num",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 90,
+        "y": 380,
+        "wires": [
+            [
+                "b9f8e19b.5999f"
+            ]
+        ]
+    },
+    {
+        "id": "c673953e.4b3658",
+        "type": "modbus-flex-getter",
+        "z": "773d005b.cd22d8",
+        "name": "Modbus Flexible Read",
+        "showStatusActivities": false,
+        "showErrors": true,
+        "logIOActivities": false,
+        "server": "4483385.85f9ac8",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "x": 500,
+        "y": 640,
+        "wires": [
+            [
+                "5913ce4a.9fdbb",
+                "834e4b55.1558e8",
+                "905a2f03.a1a32"
+            ],
+            [
+                "98c58674.0cc79",
+                "622bfb4f.c83aec"
+            ]
+        ]
+    },
+    {
+        "id": "93ed4e15.56a4",
+        "type": "inject",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 120,
+        "y": 580,
+        "wires": [
+            [
+                "e761d393.a42a1"
+            ]
+        ]
+    },
+    {
+        "id": "e761d393.a42a1",
+        "type": "function",
+        "z": "773d005b.cd22d8",
+        "name": "FC1",
+        "func": "msg.payload = { 'fc': 1, 'unitid': 1, 'address': 0 , 'quantity': 16 }\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 270,
+        "y": 580,
+        "wires": [
+            [
+                "c673953e.4b3658"
+            ]
+        ]
+    },
+    {
+        "id": "5913ce4a.9fdbb",
+        "type": "debug",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "payload",
+        "x": 750,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "98c58674.0cc79",
+        "type": "debug",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 730,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "622bfb4f.c83aec",
+        "type": "modbus-response",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "registerShowMax": 20,
+        "x": 770,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "905a2f03.a1a32",
+        "type": "debug",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 730,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "834e4b55.1558e8",
+        "type": "debug",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "responseBuffer",
+        "x": 780,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "764d20db.f6cce",
+        "type": "inject",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 120,
+        "y": 620,
+        "wires": [
+            [
+                "37e6f7dc.f52e68"
+            ]
+        ]
+    },
+    {
+        "id": "37e6f7dc.f52e68",
+        "type": "function",
+        "z": "773d005b.cd22d8",
+        "name": "FC2",
+        "func": "msg.payload = { 'fc': 2, 'unitid': 1, 'address': 0 , 'quantity': 8 }\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 270,
+        "y": 620,
+        "wires": [
+            [
+                "c673953e.4b3658"
+            ]
+        ]
+    },
+    {
+        "id": "4f644547.4ec13c",
+        "type": "inject",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 120,
+        "y": 660,
+        "wires": [
+            [
+                "6f9cbd7.c5650c4"
+            ]
+        ]
+    },
+    {
+        "id": "6f9cbd7.c5650c4",
+        "type": "function",
+        "z": "773d005b.cd22d8",
+        "name": "FC3",
+        "func": "msg.payload = { 'fc': 3, 'unitid': 1, 'address': 0 , 'quantity': 8 }\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 270,
+        "y": 660,
+        "wires": [
+            [
+                "c673953e.4b3658"
+            ]
+        ]
+    },
+    {
+        "id": "1554cf19.82b009",
+        "type": "inject",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 120,
+        "y": 700,
+        "wires": [
+            [
+                "f74b28a3.5bd1a"
+            ]
+        ]
+    },
+    {
+        "id": "f74b28a3.5bd1a",
+        "type": "function",
+        "z": "773d005b.cd22d8",
+        "name": "FC4",
+        "func": "msg.payload = { 'fc': 4, 'unitid': 1, 'address': 0 , 'quantity': 10 }\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 270,
+        "y": 700,
+        "wires": [
+            [
+                "c673953e.4b3658"
+            ]
+        ]
+    },
+    {
+        "id": "653f1ec9.b19868",
+        "type": "comment",
+        "z": "773d005b.cd22d8",
+        "name": "Flexible Read and Write",
+        "info": "",
+        "x": 140,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "4483385.85f9ac8",
+        "type": "modbus-client",
+        "z": "",
+        "name": "local",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "tcpHost": "127.0.0.1",
+        "tcpPort": "11502",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "unit_id": "1",
+        "commandDelay": "1",
+        "clientTimeout": "1000",
+        "reconnectTimeout": "2000"
+    }
+]
