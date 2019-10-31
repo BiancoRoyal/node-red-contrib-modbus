@@ -2,12 +2,8 @@ language: node_js
 matrix:
   include:
   - node_js: "lts/*"
-  - node_js: 11
-  - node_js: 9
-  - node_js: 8
+  - node_js: 10
   allow_failures:
-  - node_js: 11
-  - node_js: 9
   - node_js: 8
 install:
   - npm install
