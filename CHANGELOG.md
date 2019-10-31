@@ -1,6 +1,8 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [5.0.0](https://github.com/biancode/node-red-contrib-modbus/compare/v4.1.3...v5.0.0) (2019-10-31)
 
 ## [4.1.3](https://github.com/biancode/node-red-contrib-modbus/compare/v4.1.1...v4.1.3) (2019-02-22)
 
