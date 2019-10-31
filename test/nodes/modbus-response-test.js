@@ -2,7 +2,7 @@
  * Original Work Copyright 2014 IBM Corp.
  * node-red
  *
- * Copyright (c) 2016,2017,2018 Klaus Landsdorf (http://bianco-royal.de/)
+ * Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (http://bianco-royal.de/)
  * All rights reserved.
  * node-red-contrib-modbus - The BSD 3-Clause License
  *
@@ -10,7 +10,7 @@
 
 'use strict'
 
-var injectNode = require('node-red/nodes/core/core/20-inject.js')
+var injectNode = require('@node-red/nodes/core/common/20-inject.js')
 var nodeUnderTest = require('../../src/modbus-response.js')
 
 var helper = require('node-red-node-test-helper')

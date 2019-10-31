@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018 Klaus Landsdorf (http://bianco-royal.de/)
+ Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (http://bianco-royal.de/)
  Copyright 2016 - Jason D. Harper, Argonne National Laboratory
  Copyright 2015,2016 - Mika Karaila, Valmet Automation Inc.
  Copyright 2013, 2016 IBM Corp. (node-red)
@@ -17,10 +17,10 @@
 module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
-  let mbBasics = require('./modbus-basics')
-  let mbCore = require('./core/modbus-core')
-  let mbIOCore = require('./core/modbus-io-core')
-  let internalDebugLog = require('debug')('contribModbus:read')
+  const mbBasics = require('./modbus-basics')
+  const mbCore = require('./core/modbus-core')
+  const mbIOCore = require('./core/modbus-io-core')
+  const internalDebugLog = require('debug')('contribModbus:read')
 
   function ModbusRead (config) {
     RED.nodes.createNode(this, config)
@@ -48,8 +48,8 @@ module.exports = function (RED) {
     this.useIOForPayload = config.useIOForPayload
     this.logIOActivities = config.logIOActivities
 
-    let node = this
-    let modbusClient = RED.nodes.getNode(config.server)
+    const node = this
+    const modbusClient = RED.nodes.getNode(config.server)
     modbusClient.registerForModbus(node)
     let delayTimerID = null
     let timerID = null
@@ -130,7 +130,7 @@ module.exports = function (RED) {
         return
       }
 
-      let msg = {
+      const msg = {
         topic: node.topic || 'polling',
         from: node.name,
         payload: {
@@ -180,10 +180,10 @@ module.exports = function (RED) {
           mbIOCore.internalDebug('node.adr:' + node.adr + ' node.quantity:' + node.quantity)
         }
 
-        let allValueNames = mbIOCore.nameValuesFromIOFile(node, msg, values, response, node.adr)
-        let valueNames = mbIOCore.filterValueNames(node, allValueNames, mbCore.functionCodeModbusRead(node.dataType), node.adr, node.quantity)
+        const allValueNames = mbIOCore.nameValuesFromIOFile(node, msg, values, response, node.adr)
+        const valueNames = mbIOCore.filterValueNames(node, allValueNames, mbCore.functionCodeModbusRead(node.dataType), node.adr, node.quantity)
 
-        let origMsg = {
+        const origMsg = {
           topic: msg.topic,
           responseBuffer: response,
           input: msg
@@ -226,7 +226,7 @@ module.exports = function (RED) {
         return
       }
 
-      let statusOptions = mbBasics.setNodeStatusProperties(statusValue, node.showStatusActivities)
+      const statusOptions = mbBasics.setNodeStatusProperties(statusValue, node.showStatusActivities)
 
       if (statusValue.search('active') !== -1 || statusValue === 'polling') {
         timeoutOccurred = false
@@ -252,7 +252,7 @@ module.exports = function (RED) {
   RED.nodes.registerType('modbus-read', ModbusRead)
 
   RED.httpAdmin.post('/modbus/read/inject/:id', RED.auth.needsPermission('modbus.inject.write'), function (req, res) {
-    let node = RED.nodes.getNode(req.params.id)
+    const node = RED.nodes.getNode(req.params.id)
 
     if (node) {
       try {

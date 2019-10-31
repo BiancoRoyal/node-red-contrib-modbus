@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018 Klaus Landsdorf (http://bianco-royal.de/)
+ Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (http://bianco-royal.de/)
  All rights reserved.
  node-red-contrib-modbus - The BSD 3-Clause License
 
@@ -14,9 +14,9 @@
 module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
-  let mbBasics = require('./modbus-basics')
-  let mbCore = require('./core/modbus-core')
-  let internalDebugLog = require('debug')('contribModbus:flex:write')
+  const mbBasics = require('./modbus-basics')
+  const mbCore = require('./core/modbus-core')
+  const internalDebugLog = require('debug')('contribModbus:flex:write')
 
   function ModbusFlexWrite (config) {
     RED.nodes.createNode(this, config)
@@ -25,8 +25,8 @@ module.exports = function (RED) {
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
 
-    let node = this
-    let modbusClient = RED.nodes.getNode(config.server)
+    const node = this
+    const modbusClient = RED.nodes.getNode(config.server)
     modbusClient.registerForModbus(node)
     node.bufferMessageList = new Map()
 
@@ -92,7 +92,7 @@ module.exports = function (RED) {
         }
 
         /* HTTP requests for boolean and multiple data string [1,2,3,4,5] */
-        if (msg.payload.hasOwnProperty('value') && typeof msg.payload.value === 'string') {
+        if (Object.prototype.hasOwnProperty.call(msg.payload, 'value') && typeof msg.payload.value === 'string') {
           if (msg.payload.value === 'true' || msg.payload.value === 'false') {
             msg.payload.value = (msg.payload.value === 'true')
           } else {

@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018 Klaus Landsdorf (http://bianco-royal.de/)
+ Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (http://bianco-royal.de/)
  All rights reserved.
  node-red-contrib-modbus - The BSD 3-Clause License
 
@@ -14,15 +14,15 @@
 module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
-  let modbus = require('jsmodbus')
-  let net = require('net')
+  const modbus = require('jsmodbus')
+  const net = require('net')
 
-  let mbBasics = require('./modbus-basics')
-  let internalDebugLog = require('debug')('contribModbus:server')
+  const mbBasics = require('./modbus-basics')
+  const internalDebugLog = require('debug')('contribModbus:server')
 
   function ModbusServer (config) {
     RED.nodes.createNode(this, config)
-    let bufferFactor = 8
+    const bufferFactor = 8
 
     this.name = config.name
     this.logEnabled = config.logEnabled
@@ -38,7 +38,7 @@ module.exports = function (RED) {
 
     this.showErrors = config.showErrors
 
-    let node = this
+    const node = this
 
     node.netServer = null
     node.modbusServer = null
@@ -53,14 +53,14 @@ module.exports = function (RED) {
     try {
       node.netServer = new net.Server()
       node.modbusServer = new modbus.server.TCP(node.netServer, {
-        'logLabel': 'ModbusServer',
-        'logLevel': modbusLogLevel,
-        'logEnabled': node.logEnabled,
-        'responseDelay': mbBasics.calc_rateByUnit(node.responseDelay, node.delayUnit),
-        'coils': Buffer.alloc(node.coilsBufferSize, 0),
-        'holding': Buffer.alloc(node.holdingBufferSize, 0),
-        'input': Buffer.alloc(node.inputBufferSize, 0),
-        'discrete': Buffer.alloc(node.discreteBufferSize, 0)
+        logLabel: 'ModbusServer',
+        logLevel: modbusLogLevel,
+        logEnabled: node.logEnabled,
+        responseDelay: mbBasics.calc_rateByUnit(node.responseDelay, node.delayUnit),
+        coils: Buffer.alloc(node.coilsBufferSize, 0),
+        holding: Buffer.alloc(node.holdingBufferSize, 0),
+        input: Buffer.alloc(node.inputBufferSize, 0),
+        discrete: Buffer.alloc(node.discreteBufferSize, 0)
       })
 
       node.modbusServer.on('connection', function (client) {

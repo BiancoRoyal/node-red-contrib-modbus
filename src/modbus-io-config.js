@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018 Klaus Landsdorf (http://bianco-royal.de/)
+ Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (http://bianco-royal.de/)
  All rights reserved.
  node-red-contrib-modbus
  node-red-contrib-modbusio
@@ -22,10 +22,10 @@ module.exports = function (RED) {
     this.format = config.format
     this.addressOffset = config.addressOffset
 
-    let node = this
+    const node = this
     node.setMaxListeners(UNLIMITED_LISTENERS)
     node.lastUpdatedAt = null
-    let lineReader = new coreIO.LineByLineReader(node.path)
+    const lineReader = new coreIO.LineByLineReader(node.path)
     coreIO.internalDebug('Read IO File ' + node.path)
     node.configData = []
 
@@ -57,7 +57,7 @@ module.exports = function (RED) {
         node.configData = []
         delete node.lastUpdatedAt
 
-        let lineReader = new coreIO.LineByLineReader(node.path)
+        const lineReader = new coreIO.LineByLineReader(node.path)
         lineReader.on('error', function (err) {
           coreIO.internalDebug(err.message)
         })

@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018 Klaus Landsdorf (http://bianco-royal.de/)
+ Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (http://bianco-royal.de/)
  All rights reserved.
  node-red-contrib-modbus
 
@@ -23,32 +23,32 @@ de.biancoroyal.modbus.core.client.createStatelyMachine = function () {
   this.stateLogEnabled = false
 
   return de.biancoroyal.modbus.core.client.Stately.machine({
-    'NEW': { 'init': 'INIT', 'stop': 'STOPED' },
-    'BROKEN': { 'init': 'INIT', 'stop': 'STOPED' },
-    'INIT': { 'openserial': 'OPENED', 'connect': 'CONNECTED', 'failure': 'FAILED' },
-    'OPENED': { 'connect': 'CONNECTED', 'failure': 'FAILED', 'close': 'CLOSED' },
-    'CONNECTED': { 'close': 'CLOSED', 'activate': 'ACTIVATED', 'failure': 'FAILED' },
-    'ACTIVATED': {
-      'close': 'CLOSED',
-      'read': 'READING',
-      'write': 'WRITING',
-      'queue': 'QUEUEING',
-      'failure': 'FAILED'
+    NEW: { init: 'INIT', stop: 'STOPED' },
+    BROKEN: { init: 'INIT', stop: 'STOPED' },
+    INIT: { openserial: 'OPENED', connect: 'CONNECTED', failure: 'FAILED' },
+    OPENED: { connect: 'CONNECTED', failure: 'FAILED', close: 'CLOSED' },
+    CONNECTED: { close: 'CLOSED', activate: 'ACTIVATED', failure: 'FAILED' },
+    ACTIVATED: {
+      close: 'CLOSED',
+      read: 'READING',
+      write: 'WRITING',
+      queue: 'QUEUEING',
+      failure: 'FAILED'
     },
-    'QUEUEING': {
-      'activate': 'ACTIVATED',
-      'read': 'READING',
-      'write': 'WRITING',
-      'empty': 'EMPTY',
-      'failure': 'FAILED',
-      'close': 'CLOSED'
+    QUEUEING: {
+      activate: 'ACTIVATED',
+      read: 'READING',
+      write: 'WRITING',
+      empty: 'EMPTY',
+      failure: 'FAILED',
+      close: 'CLOSED'
     },
-    'EMPTY': { 'queue': 'QUEUEING', 'failure': 'FAILED', 'close': 'CLOSED' },
-    'READING': { 'activate': 'ACTIVATED', 'failure': 'FAILED' },
-    'WRITING': { 'activate': 'ACTIVATED', 'failure': 'FAILED' },
-    'CLOSED': { 'failure': 'FAILED', 'break': 'BROKEN' },
-    'FAILED': { 'close': 'CLOSED', 'break': 'BROKEN', 'stop': 'STOPED' },
-    'STOPED': { 'queue': 'STOPED', 'activate': 'STOPED' }
+    EMPTY: { queue: 'QUEUEING', failure: 'FAILED', close: 'CLOSED' },
+    READING: { activate: 'ACTIVATED', failure: 'FAILED' },
+    WRITING: { activate: 'ACTIVATED', failure: 'FAILED' },
+    CLOSED: { failure: 'FAILED', break: 'BROKEN' },
+    FAILED: { close: 'CLOSED', break: 'BROKEN', stop: 'STOPED' },
+    STOPED: { queue: 'STOPED', activate: 'STOPED' }
   }, 'NEW')
 }
 

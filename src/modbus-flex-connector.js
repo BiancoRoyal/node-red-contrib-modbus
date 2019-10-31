@@ -14,8 +14,8 @@
 module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
-  let mbBasics = require('./modbus-basics')
-  let internalDebugLog = require('debug')('contribModbus:flex:connector')
+  const mbBasics = require('./modbus-basics')
+  const internalDebugLog = require('debug')('contribModbus:flex:connector')
 
   function ModbusFlexConnector (config) {
     RED.nodes.createNode(this, config)
@@ -27,8 +27,8 @@ module.exports = function (RED) {
     this.showErrors = config.showErrors
     this.connection = null
 
-    let node = this
-    let modbusClient = RED.nodes.getNode(config.server)
+    const node = this
+    const modbusClient = RED.nodes.getNode(config.server)
     modbusClient.registerForModbus(node)
     mbBasics.initModbusClientEvents(node, modbusClient)
     mbBasics.setNodeStatusTo('waiting', node)

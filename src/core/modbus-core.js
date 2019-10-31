@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018 Klaus Landsdorf (http://bianco-royal.de/)
+ Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (http://bianco-royal.de/)
  All rights reserved.
  node-red-contrib-modbus
 
@@ -62,16 +62,16 @@ de.biancoroyal.modbus.core.functionCodeModbusWrite = function (dataType) {
 }
 
 de.biancoroyal.modbus.core.buildMessage = function (messageList, values, response, msg) {
-  let origMsg = this.getOriginalMessage(messageList, msg)
+  const origMsg = this.getOriginalMessage(messageList, msg)
   origMsg.payload = values
   origMsg.topic = msg.topic
   origMsg.responseBuffer = response
   origMsg.input = msg
 
-  let rawMsg = Object.assign({}, origMsg)
+  const rawMsg = Object.assign({}, origMsg)
   rawMsg.payload = response
   rawMsg.values = values
-  delete rawMsg['responseBuffer']
+  delete rawMsg.responseBuffer
 
   return [origMsg, rawMsg]
 }

@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018 Klaus Landsdorf (http://bianco-royal.de/)
+ Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (http://bianco-royal.de/)
  All rights reserved.
  node-red-contrib-modbus - The BSD 3-Clause License
 
@@ -14,8 +14,8 @@
 module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
-  let mbBasics = require('./modbus-basics')
-  let internalDebugLog = require('debug')('contribModbus:queue')
+  const mbBasics = require('./modbus-basics')
+  const internalDebugLog = require('debug')('contribModbus:queue')
 
   function ModbusQueueInfo (config) {
     RED.nodes.createNode(this, config)
@@ -30,9 +30,9 @@ module.exports = function (RED) {
     this.errorOnHighLevel = config.errorOnHighLevel
     this.queueReadIntervalTime = config.queueReadIntervalTime || 1000
 
-    let node = this
+    const node = this
 
-    let modbusClient = RED.nodes.getNode(config.server)
+    const modbusClient = RED.nodes.getNode(config.server)
     modbusClient.registerForModbus(node)
     node.queueReadInterval = null
 
@@ -55,7 +55,7 @@ module.exports = function (RED) {
           unit = 1
         }
 
-        let items = modbusClient.bufferCommandList.get(unit).length
+        const items = modbusClient.bufferCommandList.get(unit).length
 
         if (!items || (!node.lowLowLevelReached && items < node.lowLowLevel)) {
           node.resetStates()
@@ -63,7 +63,7 @@ module.exports = function (RED) {
 
         if (!node.lowLevelReached && items > node.lowLowLevel && items < node.lowLevel) {
           node.lowLevelReached = true
-          let msg = {
+          const msg = {
             payload: Date.now(),
             topic: node.topic,
             state: 'low level reached',
@@ -77,7 +77,7 @@ module.exports = function (RED) {
 
         if (!node.highLevelReached && items > node.lowLevel && items > node.highLevel) {
           node.highLevelReached = true
-          let msg = {
+          const msg = {
             payload: Date.now(),
             topic: node.topic,
             state: 'high level reached',
@@ -98,7 +98,7 @@ module.exports = function (RED) {
 
         if (!node.highHighLevelReached && items > node.highLevel && items > node.highHighLevel) {
           node.highHighLevelReached = true
-          let msg = {
+          const msg = {
             payload: Date.now(),
             topic: node.topic,
             state: 'high high level reached',
@@ -180,7 +180,7 @@ module.exports = function (RED) {
       if (msg && msg.resetQueue && modbusClient.bufferCommands) {
         modbusClient.initQueue()
         if (RED.settings.verbose) {
-          let infoText = 'Init Queue By External Node'
+          const infoText = 'Init Queue By External Node'
           modbusClient.warn(infoText)
           internalDebugLog(infoText)
         }

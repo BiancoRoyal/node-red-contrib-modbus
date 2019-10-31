@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018 Klaus Landsdorf (http://bianco-royal.de/)
+ Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (http://bianco-royal.de/)
  All rights reserved.
  node-red-contrib-modbus - The BSD 3-Clause License
 
@@ -14,10 +14,10 @@
 module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
-  let mbBasics = require('./modbus-basics')
-  let mbCore = require('./core/modbus-core')
-  let mbIOCore = require('./core/modbus-io-core')
-  let internalDebugLog = require('debug')('contribModbus:flex:getter')
+  const mbBasics = require('./modbus-basics')
+  const mbCore = require('./core/modbus-core')
+  const mbIOCore = require('./core/modbus-io-core')
+  const internalDebugLog = require('debug')('contribModbus:flex:getter')
 
   function ModbusFlexGetter (config) {
     RED.nodes.createNode(this, config)
@@ -32,9 +32,9 @@ module.exports = function (RED) {
     this.useIOForPayload = config.useIOForPayload
     this.logIOActivities = config.logIOActivities
 
-    let node = this
+    const node = this
     node.bufferMessageList = new Map()
-    let modbusClient = RED.nodes.getNode(config.server)
+    const modbusClient = RED.nodes.getNode(config.server)
     modbusClient.registerForModbus(node)
     mbBasics.initModbusClientEvents(node, modbusClient)
     mbBasics.setNodeStatusTo('waiting', node)

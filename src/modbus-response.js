@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018 Klaus Landsdorf (http://bianco-royal.de/)
+ Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (http://bianco-royal.de/)
  Copyright 2016 - Jason D. Harper, Argonne National Laboratory
  Copyright 2015,2016 - Mika Karaila, Valmet Automation Inc.
  All rights reserved.
@@ -16,25 +16,25 @@
 module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
-  let mbBasics = require('./modbus-basics')
+  const mbBasics = require('./modbus-basics')
 
   function ModbusResponse (config) {
     RED.nodes.createNode(this, config)
 
     this.registerShowMax = config.registerShowMax
 
-    let node = this
+    const node = this
 
     mbBasics.setNodeStatusTo('initialized', node)
 
     node.on('input', function (msg) {
       let inputType = 'default'
 
-      if (msg.payload.hasOwnProperty('data')) {
+      if (Object.prototype.hasOwnProperty.call(msg.payload, 'data')) {
         inputType = 'data'
       }
 
-      if (msg.payload.hasOwnProperty('address')) {
+      if (Object.prototype.hasOwnProperty.call(msg.payload, 'address')) {
         inputType = 'address'
       }
 

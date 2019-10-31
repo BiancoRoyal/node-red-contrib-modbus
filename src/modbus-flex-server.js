@@ -14,9 +14,9 @@
 module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
-  let ModbusRTU = require('modbus-serial')
-  let mbBasics = require('./modbus-basics')
-  let internalDebugLog = require('debug')('contribModbus:flex:server')
+  const ModbusRTU = require('modbus-serial')
+  const mbBasics = require('./modbus-basics')
+  const internalDebugLog = require('debug')('contribModbus:flex:server')
 
   function ModbusFlexServer (config) {
     RED.nodes.createNode(this, config)
@@ -41,7 +41,7 @@ module.exports = function (RED) {
     this.funcSetCoil = new VMScript(config.funcSetCoil).compile()
     this.funcSetRegister = new VMScript(config.funcSetRegister).compile()
 
-    let node = this
+    const node = this
     node.bufferFactor = 8
 
     node.coilsBufferSize = parseInt(config.coilsBufferSize * node.bufferFactor)
@@ -127,36 +127,35 @@ module.exports = function (RED) {
     node.startServer()
 
     node.on('input', function (msg) {
-        if(    msg.payload.register === 'holding'
-            || msg.payload.register === 'coils'
-            || msg.payload.register === 'input'
-            || msg.payload.register === 'discrete'){
-
-            if (!(Number.isInteger(msg.payload.address) &&
+      if (msg.payload.register === 'holding' ||
+            msg.payload.register === 'coils' ||
+            msg.payload.register === 'input' ||
+            msg.payload.register === 'discrete') {
+        if (!(Number.isInteger(msg.payload.address) &&
                   msg.payload.address >= 0 &&
                   msg.payload.address <= 65535)) {
-              node.error('Address Not Valid', msg)
-              return
-            }
-            switch (msg.payload.register) {
-                case 'holding': 
-                    node.registers.writeUInt16BE(msg.payload.value, (msg.payload.address + node.splitAddress) * node.bufferFactor)
-                    break
-                case 'coils': 
-                    node.coils.writeUInt8(msg.payload.value, msg.payload.address * node.bufferFactor)
-                    break
-                case 'input': 
-                    node.registers.writeUInt16BE(msg.payload.value, msg.payload.address * node.bufferFactor)
-                    break
-                case 'discrete': 
-                    node.coils.writeUInt8(msg.payload.value, (msg.payload.address + node.splitAddress) * node.bufferFactor)
-                    break
-            }
+          node.error('Address Not Valid', msg)
+          return
         }
+        switch (msg.payload.register) {
+          case 'holding':
+            node.registers.writeUInt16BE(msg.payload.value, (msg.payload.address + node.splitAddress) * node.bufferFactor)
+            break
+          case 'coils':
+            node.coils.writeUInt8(msg.payload.value, msg.payload.address * node.bufferFactor)
+            break
+          case 'input':
+            node.registers.writeUInt16BE(msg.payload.value, msg.payload.address * node.bufferFactor)
+            break
+          case 'discrete':
+            node.coils.writeUInt8(msg.payload.value, (msg.payload.address + node.splitAddress) * node.bufferFactor)
+            break
+        }
+      }
 
-        if (msg.payload.disablemsg !== 1) {
-            node.send(buildMessage(msg))
-        }
+      if (msg.payload.disablemsg !== 1) {
+        node.send(buildMessage(msg))
+      }
     })
 
     function buildMessage (msg) {

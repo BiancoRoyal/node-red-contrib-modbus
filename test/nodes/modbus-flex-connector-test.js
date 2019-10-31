@@ -2,7 +2,7 @@
  * Original Work Copyright 2014 IBM Corp.
  * node-red
  *
- * Copyright (c) 2016,2017,2018 Klaus Landsdorf (http://bianco-royal.de/)
+ * Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (http://bianco-royal.de/)
  * All rights reserved.
  * node-red-contrib-modbus - The BSD 3-Clause License
  *
@@ -83,6 +83,7 @@ describe('Flex Connector node Testing', function () {
     })
 
     it('should change the Port of the client from 7522 to 8522', function (done) {
+      this.timeout(3000)
       helper.load([serverNode, nodeUnderTest, nodeClient], [
         {
           'id': '445454e4.968564',

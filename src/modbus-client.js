@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018 Klaus Landsdorf (http://bianco-royal.de/)
+ Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (http://bianco-royal.de/)
  Copyright 2016 - Jason D. Harper, Argonne National Laboratory
  Copyright 2015,2016 - Mika Karaila, Valmet Automation Inc.
  All rights reserved.
@@ -16,14 +16,14 @@
 module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
-  let mbBasics = require('./modbus-basics')
-  let coreModbusClient = require('./core/modbus-client-core')
+  const mbBasics = require('./modbus-basics')
+  const coreModbusClient = require('./core/modbus-client-core')
 
   function ModbusClientNode (config) {
     RED.nodes.createNode(this, config)
 
     // create an empty modbus client
-    let ModbusRTU = require('modbus-serial')
+    const ModbusRTU = require('modbus-serial')
 
     const unlimitedListeners = 0
     const minCommandDelayMilliseconds = 1
@@ -53,7 +53,7 @@ module.exports = function (RED) {
     this.clientTimeout = parseInt(config.clientTimeout) || timeoutTimeMS
     this.reconnectTimeout = parseInt(config.reconnectTimeout) || reconnectTimeMS
 
-    let node = this
+    const node = this
     node.isFirstInitOfConnection = true
     node.closingModbus = false
     node.client = null
@@ -88,7 +88,7 @@ module.exports = function (RED) {
     }
 
     node.setUnitIdFromPayload = function (msg) {
-      let unit = parseInt(msg.payload.unitid)
+      const unit = parseInt(msg.payload.unitid)
 
       if (Number.isInteger(unit)) {
         node.client.setID(unit)
@@ -109,7 +109,7 @@ module.exports = function (RED) {
     node.sequentialDequeueCommand = function () {
       let command = null
       let noneCommandSent = true
-      let serialUnit = parseInt(node.unitSendingAllowed.shift())
+      const serialUnit = parseInt(node.unitSendingAllowed.shift())
 
       if (Number.isInteger(serialUnit) &&
         node.bufferCommandList.get(serialUnit).length > 0) {
@@ -153,7 +153,7 @@ module.exports = function (RED) {
     }
 
     node.dequeueCommand = function () {
-      let state = node.statlyMachine.getMachineState()
+      const state = node.statlyMachine.getMachineState()
 
       if (node.messageAllowedStates.indexOf(state) === -1) {
         queueLog(JSON.stringify({
@@ -475,7 +475,7 @@ module.exports = function (RED) {
     }
 
     node.getQueueNumber = function (msg) {
-      let unit = parseInt(msg.payload.unitid)
+      const unit = parseInt(msg.payload.unitid)
 
       if (Number.isInteger(unit)) {
         return node.bufferCommandList.get(unit).length
@@ -485,7 +485,7 @@ module.exports = function (RED) {
     }
 
     node.pushToQueueByUnitId = function (callModbus, msg, cb, cberr) {
-      let unit = parseInt(msg.payload.unitid)
+      const unit = parseInt(msg.payload.unitid)
 
       if (Number.isInteger(unit)) {
         msg.queueUnit = unit
@@ -517,7 +517,7 @@ module.exports = function (RED) {
     }
 
     node.on('readModbus', function (msg, cb, cberr) {
-      let state = node.statlyMachine.getMachineState()
+      const state = node.statlyMachine.getMachineState()
 
       if (node.messageAllowedStates.indexOf(state) === -1) {
         cberr(new Error('FSM Not Ready To Read At State ' + state), msg)
@@ -615,7 +615,7 @@ module.exports = function (RED) {
     }
 
     node.on('writeModbus', function (msg, cb, cberr) {
-      let state = node.statlyMachine.getMachineState()
+      const state = node.statlyMachine.getMachineState()
 
       if (node.messageAllowedStates.indexOf(state) === -1) {
         cberr(new Error('FSM Not Ready To Write At State ' + state), msg)
@@ -863,7 +863,7 @@ module.exports = function (RED) {
   RED.nodes.registerType('modbus-client', ModbusClientNode)
 
   RED.httpAdmin.get('/modbus/serial/ports', RED.auth.needsPermission('serial.read'), function (req, res) {
-    let SerialPort = require('serialport')
+    const SerialPort = require('serialport')
     SerialPort.list(function (err, ports) {
       if (err) {
         coreModbusClient.internalDebug(err.message)

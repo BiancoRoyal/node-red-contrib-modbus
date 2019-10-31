@@ -2,7 +2,7 @@
  * Original Work Copyright 2014 IBM Corp.
  * node-red
  *
- * Copyright (c) 2016,2017,2018 Klaus Landsdorf (http://bianco-royal.de/)
+ * Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (http://bianco-royal.de/)
  * All rights reserved.
  * node-red-contrib-modbus - The BSD 3-Clause License
  *
@@ -12,9 +12,9 @@
 
 var assert = require('chai').assert
 
-var injectNode = require('node-red/nodes/core/core/20-inject.js')
-var catchNode = require('node-red/nodes/core/core/25-catch.js')
-var functionNode = require('node-red/nodes/core/core/80-function.js')
+var injectNode = require('@node-red/nodes/core/common/20-inject.js')
+var catchNode = require('@node-red/nodes/core/common/25-catch.js')
+var functionNode = require('@node-red/nodes/core/function/10-function.js')
 var clientNode = require('../../src/modbus-client.js')
 var serverNode = require('../../src/modbus-server.js')
 var nodeUnderTest = require('../../src/modbus-flex-write.js')

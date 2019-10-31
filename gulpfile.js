@@ -61,7 +61,7 @@ function releaseWebContent () {
 }
 
 function releaseJSContent (cb) {
-  let anchor = '// SOURCE-MAP-REQUIRED'
+  const anchor = '// SOURCE-MAP-REQUIRED'
 
   pump([
     src('src/**/*.js')

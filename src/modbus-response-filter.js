@@ -14,8 +14,8 @@
 module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
-  let mbCore = require('./core/modbus-core')
-  let mbBasics = require('./modbus-basics')
+  const mbCore = require('./core/modbus-core')
+  const mbBasics = require('./modbus-basics')
   var modbusIOFileValuNames = []
 
   function ModbusResponseFilter (config) {
@@ -34,7 +34,7 @@ module.exports = function (RED) {
 
     this.ioFile = RED.nodes.getNode(config.ioFile)
 
-    let node = this
+    const node = this
 
     modbusIOFileValuNames = node.ioFile.configData
 
@@ -50,15 +50,15 @@ module.exports = function (RED) {
       })
 
       if (node.filterResponseBuffer) {
-        delete msg['responseBuffer']
+        delete msg.responseBuffer
       }
 
       if (node.filterValues) {
-        delete msg['values']
+        delete msg.values
       }
 
       if (node.filterInput) {
-        delete msg['input']
+        delete msg.input
       }
 
       return msg

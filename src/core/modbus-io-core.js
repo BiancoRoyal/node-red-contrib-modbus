@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018 Klaus Landsdorf (http://bianco-royal.de/)
+ Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (http://bianco-royal.de/)
  All rights reserved.
  node-red-contrib-modbus
  node-red-contrib-modbusio
@@ -16,7 +16,7 @@ de.biancoroyal.modbus.io.core.core = de.biancoroyal.modbus.io.core.core || requi
 
 de.biancoroyal.modbus.io.core.nameValuesFromIOFile = function (node, msg, values, response, readingOffset) {
   let valueNames = []
-  let ioCore = de.biancoroyal.modbus.io.core
+  const ioCore = de.biancoroyal.modbus.io.core
 
   if (node.ioFile && node.ioFile.configData) {
     node.ioFile.configData.forEach(function (mapping) {
@@ -36,8 +36,8 @@ de.biancoroyal.modbus.io.core.nameValuesFromIOFile = function (node, msg, values
 }
 
 de.biancoroyal.modbus.io.core.allValueNamesFromIOFile = function (ioNode) {
-  let valueNames = []
-  let ioCore = de.biancoroyal.modbus.io.core
+  const valueNames = []
+  const ioCore = de.biancoroyal.modbus.io.core
 
   if (ioNode && ioNode.configData) {
     ioNode.configData.forEach(function (mapping) {
@@ -76,16 +76,16 @@ de.biancoroyal.modbus.io.core.getDataTypeFromFirstCharType = function (type) {
 }
 
 de.biancoroyal.modbus.io.core.buildInputAddressMapping = function (registerName, mapping, offset, readingOffset, logging) {
-  let ioCore = de.biancoroyal.modbus.io.core
+  const ioCore = de.biancoroyal.modbus.io.core
   let addressStart = 0
   let coilStart = 0
   let addressOffset = 0
   let bits = 0
   let bitAddress = null
 
-  let type = mapping.name.substring(0, 1)
-  let registerType = mapping.valueAddress.substring(2, 3)
-  let addressType = mapping.valueAddress.substring(0, 3)
+  const type = mapping.name.substring(0, 1)
+  const registerType = mapping.valueAddress.substring(2, 3)
+  const addressType = mapping.valueAddress.substring(0, 3)
 
   switch (type) {
     case 'w': // word
@@ -138,39 +138,39 @@ de.biancoroyal.modbus.io.core.buildInputAddressMapping = function (registerName,
   }
 
   if (bits) {
-    let addressStartIO = addressStart - (Number(offset) || 0)
+    const addressStartIO = addressStart - (Number(offset) || 0)
 
     return {
-      'register': registerName,
-      'name': mapping.name,
-      'addressStart': addressStart,
-      'addressOffset': addressOffset,
-      'addressOffsetIO': Number(offset) || 0,
-      'addressStartIO': addressStartIO,
-      'registerAddress': addressStartIO - Number(readingOffset),
-      'coilStart': coilStart,
-      'bitAddress': bitAddress,
-      'Bit': (bitAddress) ? (Number(bitAddress[0]) * 8) + Number(bitAddress[1]) : 0,
-      'bits': bits,
-      'dataType': ioCore.getDataTypeFromFirstCharType(type),
-      'type': 'input'
+      register: registerName,
+      name: mapping.name,
+      addressStart: addressStart,
+      addressOffset: addressOffset,
+      addressOffsetIO: Number(offset) || 0,
+      addressStartIO: addressStartIO,
+      registerAddress: addressStartIO - Number(readingOffset),
+      coilStart: coilStart,
+      bitAddress: bitAddress,
+      Bit: (bitAddress) ? (Number(bitAddress[0]) * 8) + Number(bitAddress[1]) : 0,
+      bits: bits,
+      dataType: ioCore.getDataTypeFromFirstCharType(type),
+      type: 'input'
     }
   }
 
-  return { 'name': mapping.name, 'type': type, 'mapping': mapping, 'error': 'variable name does not match input mapping' }
+  return { name: mapping.name, type: type, mapping: mapping, error: 'variable name does not match input mapping' }
 }
 
 de.biancoroyal.modbus.io.core.buildOutputAddressMapping = function (registerName, mapping, offset, readingOffset, logging) {
-  let ioCore = de.biancoroyal.modbus.io.core
+  const ioCore = de.biancoroyal.modbus.io.core
   let addressStart = 0
   let coilStart = 0
   let addressOffset = 0
   let bits = 0
   let bitAddress = null
 
-  let type = mapping.name.substring(0, 1)
-  let registerType = mapping.valueAddress.substring(2, 3)
-  let addressType = mapping.valueAddress.substring(0, 3)
+  const type = mapping.name.substring(0, 1)
+  const registerType = mapping.valueAddress.substring(2, 3)
+  const addressType = mapping.valueAddress.substring(0, 3)
 
   switch (type) {
     case 'w': // word
@@ -223,36 +223,36 @@ de.biancoroyal.modbus.io.core.buildOutputAddressMapping = function (registerName
   }
 
   if (bits) {
-    let addressStartIO = addressStart - (Number(offset) || 0)
+    const addressStartIO = addressStart - (Number(offset) || 0)
 
     return {
-      'register': registerName,
-      'name': mapping.name,
-      'addressStart': addressStart,
-      'addressOffset': addressOffset,
-      'addressOffsetIO': Number(offset) || 0,
-      'addressStartIO': addressStartIO,
-      'registerAddress': addressStartIO - Number(readingOffset),
-      'coilStart': coilStart,
-      'bitAddress': bitAddress,
-      'Bit': (bitAddress) ? (Number(bitAddress[0]) * 8) + Number(bitAddress[1]) : 0,
-      'bits': bits,
-      'dataType': ioCore.getDataTypeFromFirstCharType(type),
-      'type': 'output'
+      register: registerName,
+      name: mapping.name,
+      addressStart: addressStart,
+      addressOffset: addressOffset,
+      addressOffsetIO: Number(offset) || 0,
+      addressStartIO: addressStartIO,
+      registerAddress: addressStartIO - Number(readingOffset),
+      coilStart: coilStart,
+      bitAddress: bitAddress,
+      Bit: (bitAddress) ? (Number(bitAddress[0]) * 8) + Number(bitAddress[1]) : 0,
+      bits: bits,
+      dataType: ioCore.getDataTypeFromFirstCharType(type),
+      type: 'output'
     }
   }
 
-  return { 'name': mapping.name, 'type': type, 'mapping': mapping, 'error': 'variable name does not match output mapping' }
+  return { name: mapping.name, type: type, mapping: mapping, error: 'variable name does not match output mapping' }
 }
 
 de.biancoroyal.modbus.io.core.insertValues = function (valueNames, register, logging) {
-  let ioCore = de.biancoroyal.modbus.io.core
+  const ioCore = de.biancoroyal.modbus.io.core
 
   let index = 0
   for (index in valueNames) {
-    let item = valueNames[index]
+    const item = valueNames[index]
 
-    if (!item || !item.hasOwnProperty('registerAddress') || item.registerAddress < 0) {
+    if (!item || !Object.prototype.hasOwnProperty.call(item, 'registerAddress') || item.registerAddress < 0) {
       if (logging) {
         ioCore.internalDebug('Item Not Valid To Insert Value ' + JSON.stringify(item))
       }
@@ -300,8 +300,8 @@ de.biancoroyal.modbus.io.core.insertValues = function (valueNames, register, log
 }
 
 de.biancoroyal.modbus.io.core.getValueFromBufferByDataType = function (item, bufferOffset, responseBuffer, logging) {
-  let ioCore = de.biancoroyal.modbus.io.core
-  let registerLength = responseBuffer.length / 2
+  const ioCore = de.biancoroyal.modbus.io.core
+  const registerLength = responseBuffer.length / 2
 
   if (bufferOffset < 0 || bufferOffset > responseBuffer.length) {
     if (logging) {
@@ -377,15 +377,15 @@ de.biancoroyal.modbus.io.core.getValueFromBufferByDataType = function (item, buf
 }
 
 de.biancoroyal.modbus.io.core.convertValuesByType = function (valueNames, register, responseBuffer, logging) {
-  let ioCore = de.biancoroyal.modbus.io.core
+  const ioCore = de.biancoroyal.modbus.io.core
   let bufferOffset = 0
-  let sixteenBitBufferLength = 2
+  const sixteenBitBufferLength = 2
 
   let index = 0
   for (index in valueNames) {
     let item = valueNames[index]
 
-    if (!item || !item.hasOwnProperty('dataType') || !item.hasOwnProperty('registerAddress') || item.registerAddress < 0) {
+    if (!item || !Object.prototype.hasOwnProperty.call(item, 'dataType') || !Object.prototype.hasOwnProperty.call(item, 'registerAddress') || item.registerAddress < 0) {
       if (logging) {
         ioCore.internalDebug('Item Not Valid To Convert ' + JSON.stringify(item))
       }
@@ -422,15 +422,15 @@ de.biancoroyal.modbus.io.core.filterValueNames = function (node, valueNames, fc,
     return valueNames
   }
 
-  let ioCore = de.biancoroyal.modbus.io.core
+  const ioCore = de.biancoroyal.modbus.io.core
   let functionType = 'input'
 
   if (fc === 2 || fc === 4) {
     functionType = 'output'
   }
 
-  let startRegister = adr
-  let endRegister = Number(adr) + Number(quantity) - 1
+  const startRegister = adr
+  const endRegister = Number(adr) + Number(quantity) - 1
 
   if (node.logIOActivities) {
     ioCore.internalDebug('adr:' + adr + ' quantity:' + quantity + ' startRegister:' + startRegister + ' endRegister:' + endRegister + ' functionType:' + functionType)
@@ -445,8 +445,8 @@ de.biancoroyal.modbus.io.core.filterValueNames = function (node, valueNames, fc,
 }
 
 de.biancoroyal.modbus.io.core.isRegisterSizeWrong = function (register, start, bits) {
-  let sizeDivisor = Number(bits) || 16
-  let startRegister = Number(start)
+  const sizeDivisor = Number(bits) || 16
+  const startRegister = Number(start)
   let endRegister = startRegister
 
   if (sizeDivisor > 16) {
@@ -457,20 +457,20 @@ de.biancoroyal.modbus.io.core.isRegisterSizeWrong = function (register, start, b
 }
 
 de.biancoroyal.modbus.io.core.buildMessageWithIO = function (node, values, response, msg) {
-  let origMsg = this.core.getOriginalMessage(node.bufferMessageList, msg)
+  const origMsg = this.core.getOriginalMessage(node.bufferMessageList, msg)
   origMsg.payload = values
   origMsg.topic = msg.topic
   origMsg.responseBuffer = response
   origMsg.input = msg
 
-  let rawMsg = Object.assign({}, origMsg)
+  const rawMsg = Object.assign({}, origMsg)
   rawMsg.payload = response
   rawMsg.values = values
-  delete rawMsg['responseBuffer']
+  delete rawMsg.responseBuffer
 
   if (node.useIOFile && node.ioFile.lastUpdatedAt) {
-    let allValueNames = this.nameValuesFromIOFile(node, msg, values, response, parseInt(msg.payload.address) || 0)
-    let valueNames = this.filterValueNames(node, allValueNames, parseInt(msg.payload.fc) || 3,
+    const allValueNames = this.nameValuesFromIOFile(node, msg, values, response, parseInt(msg.payload.address) || 0)
+    const valueNames = this.filterValueNames(node, allValueNames, parseInt(msg.payload.fc) || 3,
       parseInt(msg.payload.address) || 0,
       parseInt(msg.payload.quantity) || 1,
       node.logIOActivities)

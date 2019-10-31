@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018 Klaus Landsdorf (http://bianco-royal.de/)
+ Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (http://bianco-royal.de/)
  All rights reserved.
  node-red-contrib-modbus - The BSD 3-Clause License
 
@@ -202,7 +202,7 @@ de.biancoroyal.modbus.basics.setModbusError = function (node, modbusClient, err,
 }
 
 de.biancoroyal.modbus.basics.setNodeStatusTo = function (statusValue, node) {
-  let statusOptions = this.setNodeStatusProperties(statusValue, node.showStatusActivities)
+  const statusOptions = this.setNodeStatusProperties(statusValue, node.showStatusActivities)
 
   node.status({
     fill: statusOptions.fill,
@@ -248,7 +248,7 @@ de.biancoroyal.modbus.basics.initModbusClientEvents = function (node, modbusClie
 }
 
 de.biancoroyal.modbus.basics.invalidPayloadIn = function (msg) {
-  return !(msg && msg.hasOwnProperty('payload'))
+  return !(msg && Object.prototype.hasOwnProperty.call(msg, 'payload'))
 }
 
 module.exports = de.biancoroyal.modbus.basics
