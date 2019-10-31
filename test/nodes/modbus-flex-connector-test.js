@@ -2,7 +2,7 @@
  * Original Work Copyright 2014 IBM Corp.
  * node-red
  *
- * Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (http://bianco-royal.de/)
+ * Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (https://bianco-royal.com/)
  * All rights reserved.
  * node-red-contrib-modbus - The BSD 3-Clause License
  *
@@ -42,37 +42,37 @@ describe('Flex Connector node Testing', function () {
     it('should be loaded', function (done) {
       helper.load([nodeUnderTest, nodeClient], [
         {
-          'id': '40ddaabb.fd44d4',
-          'type': 'modbus-flex-connector',
-          'name': 'FlexConnector',
-          'maxReconnectsPerMinute': 4,
-          'emptyQueue': true,
-          'showStatusActivities': false,
-          'showErrors': false,
-          'server': '2a253153.fae3ce',
-          'wires': []
+          id: '40ddaabb.fd44d4',
+          type: 'modbus-flex-connector',
+          name: 'FlexConnector',
+          maxReconnectsPerMinute: 4,
+          emptyQueue: true,
+          showStatusActivities: false,
+          showErrors: false,
+          server: '2a253153.fae3ce',
+          wires: []
         },
         {
-          'id': '2a253153.fae3ce',
-          'type': 'modbus-client',
-          'name': '',
-          'clienttype': 'tcp',
-          'bufferCommands': true,
-          'stateLogEnabled': false,
-          'tcpHost': '127.0.0.1',
-          'tcpPort': '11522',
-          'tcpType': 'DEFAULT',
-          'serialPort': '/dev/ttyUSB',
-          'serialType': 'RTU-BUFFERD',
-          'serialBaudrate': '9600',
-          'serialDatabits': '8',
-          'serialStopbits': '1',
-          'serialParity': 'none',
-          'serialConnectionDelay': '100',
-          'unit_id': '1',
-          'commandDelay': '100',
-          'clientTimeout': '100',
-          'reconnectTimeout': '200'
+          id: '2a253153.fae3ce',
+          type: 'modbus-client',
+          name: '',
+          clienttype: 'tcp',
+          bufferCommands: true,
+          stateLogEnabled: false,
+          tcpHost: '127.0.0.1',
+          tcpPort: '11522',
+          tcpType: 'DEFAULT',
+          serialPort: '/dev/ttyUSB',
+          serialType: 'RTU-BUFFERD',
+          serialBaudrate: '9600',
+          serialDatabits: '8',
+          serialStopbits: '1',
+          serialParity: 'none',
+          serialConnectionDelay: '100',
+          unit_id: '1',
+          commandDelay: '100',
+          clientTimeout: '100',
+          reconnectTimeout: '200'
         }
       ], function () {
         var modbusNode = helper.getNode('40ddaabb.fd44d4')
@@ -86,57 +86,57 @@ describe('Flex Connector node Testing', function () {
       this.timeout(3000)
       helper.load([serverNode, nodeUnderTest, nodeClient], [
         {
-          'id': '445454e4.968564',
-          'type': 'modbus-server',
-          'name': '',
-          'logEnabled': true,
-          'hostname': '127.0.0.1',
-          'serverPort': '8522',
-          'responseDelay': 100,
-          'delayUnit': 'ms',
-          'coilsBufferSize': 10000,
-          'holdingBufferSize': 10000,
-          'inputBufferSize': 10000,
-          'discreteBufferSize': 10000,
-          'showErrors': false,
-          'wires': [
+          id: '445454e4.968564',
+          type: 'modbus-server',
+          name: '',
+          logEnabled: true,
+          hostname: '127.0.0.1',
+          serverPort: '8522',
+          responseDelay: 100,
+          delayUnit: 'ms',
+          coilsBufferSize: 10000,
+          holdingBufferSize: 10000,
+          inputBufferSize: 10000,
+          discreteBufferSize: 10000,
+          showErrors: false,
+          wires: [
             [],
             [],
             []
           ]
         },
         {
-          'id': '40ddaabb.fd44d4',
-          'type': 'modbus-flex-connector',
-          'name': 'FlexConnector',
-          'maxReconnectsPerMinute': 4,
-          'emptyQueue': true,
-          'showStatusActivities': false,
-          'showErrors': false,
-          'server': '2a253153.fae3ce',
-          'wires': []
+          id: '40ddaabb.fd44d4',
+          type: 'modbus-flex-connector',
+          name: 'FlexConnector',
+          maxReconnectsPerMinute: 4,
+          emptyQueue: true,
+          showStatusActivities: false,
+          showErrors: false,
+          server: '2a253153.fae3ce',
+          wires: []
         },
         {
-          'id': '2a253153.fae3ce',
-          'type': 'modbus-client',
-          'name': '',
-          'clienttype': 'tcp',
-          'bufferCommands': true,
-          'stateLogEnabled': false,
-          'tcpHost': '127.0.0.1',
-          'tcpPort': '7522',
-          'tcpType': 'DEFAULT',
-          'serialPort': '/dev/ttyUSB',
-          'serialType': 'RTU-BUFFERD',
-          'serialBaudrate': '9600',
-          'serialDatabits': '8',
-          'serialStopbits': '1',
-          'serialParity': 'none',
-          'serialConnectionDelay': '100',
-          'unit_id': '1',
-          'commandDelay': '100',
-          'clientTimeout': '100',
-          'reconnectTimeout': '200'
+          id: '2a253153.fae3ce',
+          type: 'modbus-client',
+          name: '',
+          clienttype: 'tcp',
+          bufferCommands: true,
+          stateLogEnabled: false,
+          tcpHost: '127.0.0.1',
+          tcpPort: '7522',
+          tcpType: 'DEFAULT',
+          serialPort: '/dev/ttyUSB',
+          serialType: 'RTU-BUFFERD',
+          serialBaudrate: '9600',
+          serialDatabits: '8',
+          serialStopbits: '1',
+          serialParity: 'none',
+          serialConnectionDelay: '100',
+          unit_id: '1',
+          commandDelay: '100',
+          clientTimeout: '100',
+          reconnectTimeout: '200'
         }
       ], function () {
         var modbusNode = helper.getNode('40ddaabb.fd44d4')
@@ -144,7 +144,7 @@ describe('Flex Connector node Testing', function () {
         modbusNode.should.have.property('name', 'FlexConnector')
         modbusNode.should.have.property('emptyQueue', true)
         setTimeout(function () {
-          modbusNode.receive({payload: {connectorType: 'TCP', tcpHost: '127.0.0.1', tcpPort: 8522}})
+          modbusNode.receive({ payload: { connectorType: 'TCP', tcpHost: '127.0.0.1', tcpPort: 8522 } })
         }, 1000)
         setTimeout(function () {
           if (clientNode && clientNode.tcpPort === 8522) {

@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2017,2018 Klaus Landsdorf (http://bianco-royal.de/)
+ Copyright (c) 2017,2018 Klaus Landsdorf (https://bianco-royal.com/)
  All rights reserved.
  node-red-contrib-modbus - The BSD 3-Clause License
 
@@ -19,18 +19,18 @@ describe('Modbus Core Suite', function () {
     })
 
     it('should remove givin msg from message list', function () {
-      let list = new Map()
-      let msg = { messageId: 1, payload: { messageId: 1 } }
-      let otherMsg = { messageId: 1, payload: { messageId: 1 } }
+      const list = new Map()
+      const msg = { messageId: 1, payload: { messageId: 1 } }
+      const otherMsg = { messageId: 1, payload: { messageId: 1 } }
       list.set(1, msg)
       assert.equal(msg, core.getOriginalMessage(list, otherMsg))
       assert.equal(0, list.size)
     })
 
     it('should return givin otherMsg if not in message list', function () {
-      let list = new Map()
-      let msg = { messageId: 1, payload: { messageId: 1 } }
-      let otherMsg = { messageId: 2, payload: { messageId: 2 } }
+      const list = new Map()
+      const msg = { messageId: 1, payload: { messageId: 1 } }
+      const otherMsg = { messageId: 2, payload: { messageId: 2 } }
       list.set(1, msg)
       assert.equal(otherMsg, core.getOriginalMessage(list, otherMsg))
     })
@@ -76,18 +76,18 @@ describe('Modbus Core Suite', function () {
     })
 
     it('should remove givin origin msg from message list on building response message', function () {
-      let list = new Map()
-      let msg = { messageId: 1, payload: { messageId: 1 } }
-      let otherMsg = { messageId: 1, payload: { messageId: 1 } }
+      const list = new Map()
+      const msg = { messageId: 1, payload: { messageId: 1 } }
+      const otherMsg = { messageId: 1, payload: { messageId: 1 } }
       list.set(1, msg)
       assert.equal(2, core.buildMessage(list, {}, {}, otherMsg).length)
       assert.equal(0, list.size)
     })
 
     it('should build response message if origin not found', function () {
-      let list = new Map()
-      let msg = { messageId: 1, payload: { messageId: 1 } }
-      let otherMsg = { messageId: 2, payload: { messageId: 2 } }
+      const list = new Map()
+      const msg = { messageId: 1, payload: { messageId: 1 } }
+      const otherMsg = { messageId: 2, payload: { messageId: 2 } }
       list.set(1, msg)
       assert.equal(2, core.buildMessage(list, {}, {}, otherMsg).length)
       assert.equal(1, list.size)

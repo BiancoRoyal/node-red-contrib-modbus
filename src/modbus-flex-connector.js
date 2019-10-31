@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2017,2018 Klaus Landsdorf (http://bianco-royal.de/)
+ Copyright (c) 2017,2018 Klaus Landsdorf (https://bianco-royal.com/)
  All rights reserved.
  node-red-contrib-modbus - The BSD 3-Clause License
 

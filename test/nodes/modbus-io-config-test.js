@@ -2,7 +2,7 @@
  * Original Work Copyright 2014 IBM Corp.
  * node-red
  *
- * Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (http://bianco-royal.de/)
+ * Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (https://bianco-royal.com/)
  * All rights reserved.
  * node-red-contrib-modbus - The BSD 3-Clause License
  *
@@ -41,33 +41,33 @@ describe('IO Config node Testing', function () {
     it('should be loaded', function (done) {
       helper.load([nodeUnderTest, readNode], [
         {
-          'id': 'b0fefd31.802188',
-          'type': 'modbus-read',
-          'name': '',
-          'topic': '',
-          'showStatusActivities': false,
-          'showErrors': false,
-          'unitid': '',
-          'dataType': '',
-          'adr': '',
-          'quantity': '',
-          'rate': '',
-          'rateUnit': '',
-          'delayOnStart': false,
-          'startDelayTime': '',
-          'server': '',
-          'useIOFile': true,
-          'ioFile': '2f5a90d.bcaa1f',
-          'useIOForPayload': false,
-          'wires': [[], []]
+          id: 'b0fefd31.802188',
+          type: 'modbus-read',
+          name: '',
+          topic: '',
+          showStatusActivities: false,
+          showErrors: false,
+          unitid: '',
+          dataType: '',
+          adr: '',
+          quantity: '',
+          rate: '',
+          rateUnit: '',
+          delayOnStart: false,
+          startDelayTime: '',
+          server: '',
+          useIOFile: true,
+          ioFile: '2f5a90d.bcaa1f',
+          useIOForPayload: false,
+          wires: [[], []]
         },
         {
-          'id': '2f5a90d.bcaa1f',
-          'type': 'modbus-io-config',
-          'name': 'ModbusIOConfig',
-          'path': 'testpath',
-          'format': 'utf8',
-          'addressOffset': ''
+          id: '2f5a90d.bcaa1f',
+          type: 'modbus-io-config',
+          name: 'ModbusIOConfig',
+          path: 'testpath',
+          format: 'utf8',
+          addressOffset: ''
         }
       ], function () {
         var modbusIOConfigNode = helper.getNode('2f5a90d.bcaa1f')

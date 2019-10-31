@@ -1,7 +1,7 @@
 /*
  The MIT License
 
- Copyright (c) 2017, 2018, 2019 - Klaus Landsdorf (http://bianco-royal.de/)
+ Copyright (c) 2017, 2018, 2019 - Klaus Landsdorf (https://bianco-royal.com/)
  All rights reserved.
  node-red-contrib-iiot-jwt
  */

@@ -21,11 +21,14 @@
 
 Based on [modbus-serial][2] with TCP, C701, Telnet, Serial, RTU buffered, and ASCII
 
-* stress tested with Node-RED v0.19 and Node.js v9 and v10 LTS
+* stress tested with Node-RED v1.0 and Node.js v10 and 12 LTS
 * works with queueing per unit and round robin scheduling
-* Node.JS 8.x is supported with v3.x
-* Node.JS 6.x is supported with v2.x
-* Node.JS 4.x is supported with v1.x
+
+Node-RED v0.x versions:
+* Node.JS 10.x is supported with v4.x
+* Node.JS  8.x is supported with v3.x
+* Node.JS  6.x is supported with v2.x
+* Node.JS  4.x is supported with v1.x
 
 If you like that contributor's package for Modbus, then please give us your star at [GitHub][12] !
 
