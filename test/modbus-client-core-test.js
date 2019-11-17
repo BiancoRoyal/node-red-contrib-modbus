@@ -20,46 +20,101 @@ describe('Modbus Client Core Suite', function () {
   })
 
   describe('FSM states', function () {
-    it('should have NEW state after create', function (done) {
-      const fsm = clientCore.createStatelyMachine()
-      assert.equal(fsm.getMachineState(), 'NEW')
+    it('should have new state after create', function (done) {
+      const fsm = clientCore.createStateMachineService()
+      assert.equal(fsm.initialState.value, 'new')
       done()
     })
 
     it('should change to INIT state', function (done) {
-      const fsm = clientCore.createStatelyMachine()
-      assert.equal(fsm.init().getMachineState(), 'INIT')
+      const fsm = clientCore.createStateMachineService()
+      const state = fsm.transition(fsm.initialState, 'INIT')
+      assert.equal(state.value, 'init')
       done()
+    })
+
+    it('should change via service to INIT state', function (done) {
+      const fsm = clientCore.createStateMachineService()
+      const service = clientCore.startStateService(fsm)
+      service.send('INIT')
+      service.subscribe(state => {
+        assert.equal(state.value, 'init')
+        done()
+      })
     })
 
     it('should change to STOPED while NEW state get stop', function (done) {
-      const fsm = clientCore.createStatelyMachine()
-      assert.equal(fsm.stop().getMachineState(), 'STOPED')
-      done()
+      const fsm = clientCore.createStateMachineService()
+      const service = clientCore.startStateService(fsm)
+      service.send('STOP')
+      service.subscribe(state => {
+        assert.equal(state.value, 'stoped')
+        done()
+      })
     })
 
     it('should change to OPENED from INIT state', function (done) {
-      const fsm = clientCore.createStatelyMachine()
-      assert.equal(fsm.init().openserial().getMachineState(), 'OPENED')
-      done()
+      const fsm = clientCore.createStateMachineService()
+      const service = clientCore.startStateService(fsm)
+      service.send('INIT')
+      service.send('OPENSERIAL')
+      service.subscribe(state => {
+        if (state.matches('opened')) {
+          done()
+        }
+      })
     })
 
     it('should change to CONNECTED from INIT state', function (done) {
-      const fsm = clientCore.createStatelyMachine()
-      assert.equal(fsm.init().connect().getMachineState(), 'CONNECTED')
-      done()
+      const fsm = clientCore.createStateMachineService()
+      const service = clientCore.startStateService(fsm)
+      service.send('INIT')
+      service.send('CONNECT')
+      service.subscribe(state => {
+        if (state.matches('connected')) {
+          done()
+        }
+      })
     })
 
     it('should change to Serial CLOSED state', function (done) {
-      const fsm = clientCore.createStatelyMachine()
-      assert.equal(fsm.init().openserial().connect().close().getMachineState(), 'CLOSED')
-      done()
+      const fsm = clientCore.createStateMachineService()
+      const service = clientCore.startStateService(fsm)
+      service.send('INIT')
+      service.send('OPENSERIAL')
+      service.send('CONNECT')
+      service.send('CLOSE')
+      service.subscribe(state => {
+        if (state.matches('closed')) {
+          done()
+        }
+      })
     })
 
     it('should change to TCP CLOSED state', function (done) {
-      const fsm = clientCore.createStatelyMachine()
-      assert.equal(fsm.init().connect().close().getMachineState(), 'CLOSED')
-      done()
+      const fsm = clientCore.createStateMachineService()
+      const service = clientCore.startStateService(fsm)
+      service.send('INIT')
+      service.send('CONNECT')
+      service.send('CLOSE')
+      service.subscribe(state => {
+        if (state.matches('closed')) {
+          done()
+        }
+      })
+    })
+
+    it('should change to TCP CLOSED state by list of transitions', function (done) {
+      const fsm = clientCore.createStateMachineService()
+      const service = clientCore.startStateService(fsm)
+      service.send('INIT')
+      service.send('CONNECT')
+      service.send('CLOSE')
+      service.subscribe(state => {
+        if (state.matches('closed')) {
+          done()
+        }
+      })
     })
   })
 })

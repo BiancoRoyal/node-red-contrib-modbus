@@ -63,10 +63,11 @@ module.exports = function (RED) {
     node.messageAllowedStates = coreModbusClient.messagesAllowedStates
     node.serverInfo = ''
 
-    node.statlyMachine = null
-    node.statlyMachine = coreModbusClient.createStatelyMachine()
-    stateLog('start: ' + node.statlyMachine.getMachineState())
-    stateLog('FSM events:' + node.statlyMachine.getMachineEvents())
+    node.stateMachine = null
+    node.stateService = null
+    node.stateMachine = coreModbusClient.createStateMachineService()
+    node.actualServiceState = node.stateMachine.initialState
+    node.stateService = coreModbusClient.startStateService(node.stateMachine)
 
     node.initQueue = function () {
       node.bufferCommandList.clear()
@@ -148,22 +149,22 @@ module.exports = function (RED) {
       }
 
       if (noneCommandSent) {
-        node.statlyMachine.empty()
+        node.stateService.send('EMPTY')
       }
     }
 
     node.dequeueCommand = function () {
-      const state = node.statlyMachine.getMachineState()
+      const state = node.actualServiceState
 
-      if (node.messageAllowedStates.indexOf(state) === -1) {
+      if (node.messageAllowedStates.indexOf(state.value) === -1) {
         queueLog(JSON.stringify({
-          state: state,
+          state: state.value,
           message: 'dequeue command disallowed state',
           delay: node.commandDelay
         }))
       } else {
         queueLog(JSON.stringify({
-          state: state,
+          state: state.value,
           message: 'dequeue command ' + node.clienttype,
           delay: node.commandDelay
         }))
@@ -172,7 +173,7 @@ module.exports = function (RED) {
       }
 
       if (node.checkQueuesAreEmpty()) {
-        node.statlyMachine.empty()
+        node.stateService.send('EMPTY')
       }
     }
 
@@ -217,77 +218,71 @@ module.exports = function (RED) {
       }
     }
 
-    node.statlyMachine.onNEW = function (event, oldState, newState) {
-      stateLog('after event: ' + event + ' old: ' + oldState + ' new: ' + newState)
-    }
+    node.stateService.subscribe(state => {
+      node.actualServiceState = state
+      stateLog(state.value)
 
-    node.statlyMachine.onINIT = function (event, oldState, newState) {
-      stateLog('after event: ' + event + ' old: ' + oldState + ' new: ' + newState)
-      node.updateServerinfo()
-      node.initQueue()
+      if (state.matches('init')) {
+        node.updateServerinfo()
+        node.initQueue()
 
-      try {
-        if (node.isFirstInitOfConnection) {
-          node.isFirstInitOfConnection = false
-          setTimeout(node.connectClient, serialConnectionDelayTimeMS)
-        } else {
-          setTimeout(node.connectClient, node.reconnectTimeout)
+        try {
+          if (node.isFirstInitOfConnection) {
+            node.isFirstInitOfConnection = false
+            setTimeout(node.connectClient, serialConnectionDelayTimeMS)
+          } else {
+            setTimeout(node.connectClient, node.reconnectTimeout)
+          }
+        } catch (err) {
+          node.error(err, { payload: 'client connection error' })
         }
-      } catch (err) {
-        node.error(err, { payload: 'client connection error' })
+
+        verboseWarn('reconnect in ' + node.reconnectTimeout + ' ms')
+        node.emit('mbinit')
       }
 
-      verboseWarn('reconnect in ' + node.reconnectTimeout + ' ms')
-      verboseLog('event: ' + event + ' old: ' + oldState + ' new: ' + newState)
-      node.emit('mbinit')
-    }
-
-    node.statlyMachine.onCONNECTED = function (event, oldState, newState) {
-      stateLog('event: ' + event + ' old: ' + oldState + ' new: ' + newState)
-      node.emit('mbconnected')
-      node.statlyMachine.activate()
-    }
-
-    node.statlyMachine.onACTIVATED = function (event, oldState, newState) {
-      stateLog('event: ' + event + ' old: ' + oldState + ' new: ' + newState)
-      node.emit('mbactive')
-      if (node.bufferCommands) {
-        node.statlyMachine.queue()
+      if (state.matches('connected')) {
+        node.emit('mbconnected')
+        node.stateService.send('ACTIVATE')
       }
-    }
 
-    node.statlyMachine.onQUEUEING = function (event, oldState, newState) {
-      stateLog('event: ' + event + ' old: ' + oldState + ' new: ' + newState)
-      setTimeout(node.dequeueCommand, node.commandDelay)
-      node.emit('mbqueue')
-    }
-
-    node.statlyMachine.onOPENED = function (event, oldState, newState) {
-      verboseLog('event: ' + event + ' old: ' + oldState + ' new: ' + newState)
-      node.emit('mbopen')
-    }
-
-    node.statlyMachine.onCLOSED = function (event, oldState, newState) {
-      stateLog('event: ' + event + ' old: ' + oldState + ' new: ' + newState)
-      node.emit('mbclosed')
-      node.statlyMachine.break()
-    }
-
-    node.statlyMachine.onFAILED = function (event, oldState, newState) {
-      stateLog('event: ' + event + ' old: ' + oldState + ' new: ' + newState)
-      node.emit('mberror', 'FSM Reset On State ' + oldState)
-      node.statlyMachine.break()
-    }
-
-    node.statlyMachine.onBROKEN = function (event, oldState, newState) {
-      stateLog('event: ' + event + ' old: ' + oldState + ' new: ' + newState)
-      node.emit('mbbroken')
-      if (node.reconnectTimeout <= 0) {
-        node.reconnectTimeout = reconnectTimeMS
+      if (state.matches('activated')) {
+        node.emit('mbactive')
+        if (node.bufferCommands) {
+          node.stateService.send('QUEUE')
+        }
       }
-      verboseWarn('try to reconnect by init in ' + node.reconnectTimeout + ' ms')
-      setTimeout(node.statlyMachine.init, node.reconnectTimeout)
-    }
+
+      if (state.matches('queueing')) {
+        setTimeout(node.dequeueCommand, node.commandDelay)
+        node.emit('mbqueue')
+      }
+
+      if (state.matches('opened')) {
+        node.emit('mbopen')
+      }
+
+      if (state.matches('closed')) {
+        node.emit('mbclosed')
+        node.stateService.send('BREAK')
+      }
+
+      if (state.matches('failed')) {
+        node.emit('mberror', 'FSM Reset On State ' + state)
+        node.stateService.send('BREAK')
+      }
+
+      if (state.matches('broken')) {
+        node.emit('mbbroken')
+        if (node.reconnectTimeout <= 0) {
+          node.reconnectTimeout = reconnectTimeMS
+        }
+        verboseWarn('try to reconnect by init in ' + node.reconnectTimeout + ' ms')
+        setTimeout(() => {
+          node.stateService.send('INIT')
+        }, node.reconnectTimeout)
+      }
+    })
 
     node.connectClient = function () {
       if (node.client) {
@@ -313,7 +308,7 @@ module.exports = function (RED) {
       if (node.clienttype === 'tcp') {
         if (!node.checkUnitId(node.unit_id)) {
           node.error(new Error('wrong unit-id (0..255)'), { payload: node.unit_id })
-          node.statlyMachine.failure()
+          node.stateService.send('FAILURE')
           return
         }
 
@@ -354,7 +349,7 @@ module.exports = function (RED) {
       } else {
         if (!node.checkUnitId(node.unit_id)) {
           node.error(new Error('wrong unit-id serial (1..247)'), { payload: node.unit_id })
-          node.statlyMachine.failure()
+          node.stateService.send('FAILURE')
           return
         }
 
@@ -364,7 +359,7 @@ module.exports = function (RED) {
 
         if (!node.serialPort) {
           node.error(new Error('wrong serial port'), { payload: node.serialPort })
-          node.statlyMachine.failure()
+          node.stateService.send('FAILURE')
           return
         }
 
@@ -409,7 +404,7 @@ module.exports = function (RED) {
     node.setTCPConnectionOptions = function () {
       node.client.setID(node.unit_id)
       node.client.setTimeout(node.clientTimeout)
-      node.statlyMachine.connect()
+      node.stateService.send('CONNECT')
     }
 
     node.setTCPConnected = function () {
@@ -417,7 +412,7 @@ module.exports = function (RED) {
     }
 
     node.setSerialConnectionOptions = function () {
-      node.statlyMachine.openserial()
+      node.stateService.send('OPENSERIAL')
       setTimeout(node.openSerialClient, parseInt(node.serialConnectionDelay))
     }
 
@@ -428,7 +423,7 @@ module.exports = function (RED) {
         coreModbusClient.modbusSerialDebug('modbusErrorHandling:' + JSON.stringify(err))
       }
       if (err.errno && coreModbusClient.networkErrors.includes(err.errno)) {
-        node.statlyMachine.failure()
+        node.stateService.send('FAILURE')
       }
     }
 
@@ -439,7 +434,7 @@ module.exports = function (RED) {
         coreModbusClient.modbusSerialDebug('modbusTcpErrorHandling:' + JSON.stringify(err))
       }
       if (err.errno && coreModbusClient.networkErrors.includes(err.errno)) {
-        node.statlyMachine.failure()
+        node.stateService.send('FAILURE')
       }
     }
 
@@ -449,29 +444,29 @@ module.exports = function (RED) {
       } else {
         coreModbusClient.modbusSerialDebug('modbusSerialErrorHandling:' + JSON.stringify(err))
       }
-      node.statlyMachine.failure()
+      node.stateService.send('FAILURE')
     }
 
     node.openSerialClient = function () {
       // some delay for windows
-      if (node.statlyMachine.getMachineState() === 'OPENED') {
+      if (node.actualServiceState.value === 'opened') {
         verboseLog('time to open Unit ' + node.unit_id)
         coreModbusClient.modbusSerialDebug('modbus connection opened')
         node.client.setID(node.unit_id)
         node.client.setTimeout(parseInt(node.clientTimeout))
         node.client._port.on('close', node.onModbusClose)
-        node.statlyMachine.connect()
+        node.stateService.send('CONNECT')
       } else {
-        verboseLog('wrong state on connect serial ' + node.statlyMachine.getMachineState())
-        coreModbusClient.modbusSerialDebug('modbus connection not opened state is %s', node.statlyMachine.getMachineState())
-        node.statlyMachine.failure()
+        verboseLog('wrong state on connect serial ' + node.actualServiceState.value)
+        coreModbusClient.modbusSerialDebug('modbus connection not opened state is %s', node.actualServiceState.value)
+        node.stateService.send('FAILURE')
       }
     }
 
     node.onModbusClose = function () {
       verboseWarn('modbus closed port')
       coreModbusClient.modbusSerialDebug('modbus closed port')
-      node.statlyMachine.close()
+      node.stateService.send('CLOSE')
     }
 
     node.getQueueNumber = function (msg) {
@@ -517,22 +512,22 @@ module.exports = function (RED) {
     }
 
     node.on('readModbus', function (msg, cb, cberr) {
-      const state = node.statlyMachine.getMachineState()
+      const state = node.actualServiceState
 
-      if (node.messageAllowedStates.indexOf(state) === -1) {
-        cberr(new Error('FSM Not Ready To Read At State ' + state), msg)
+      if (node.messageAllowedStates.indexOf(state.value) === -1) {
+        cberr(new Error('FSM Not Ready To Read At State ' + state.value), msg)
         return
       }
 
       if (node.bufferCommands) {
         msg.queueNumber = node.getQueueNumber(msg)
         node.pushToQueueByUnitId(node.readModbus, msg, cb, cberr)
-        node.statlyMachine.queue()
+        node.stateService.send('QUEUE')
 
         queueLog(JSON.stringify({
           info: 'queue read msg',
           message: msg.payload,
-          state: state,
+          state: state.value,
           queueLength: node.bufferCommandList.get(msg.queueUnit).length
         }))
       } else {
@@ -546,7 +541,7 @@ module.exports = function (RED) {
       }
 
       if (!node.bufferCommands) {
-        node.statlyMachine.read()
+        node.stateService.send('READ')
       }
 
       node.setUnitIdFromPayload(msg)
@@ -557,7 +552,7 @@ module.exports = function (RED) {
         message: msg.payload,
         unitid: msg.queueUnitId,
         timeout: node.client.getTimeout(),
-        state: node.statlyMachine.getMachineState()
+        state: node.actualServiceState.value
       }))
 
       try {
@@ -615,22 +610,22 @@ module.exports = function (RED) {
     }
 
     node.on('writeModbus', function (msg, cb, cberr) {
-      const state = node.statlyMachine.getMachineState()
+      const state = node.actualServiceState
 
-      if (node.messageAllowedStates.indexOf(state) === -1) {
-        cberr(new Error('FSM Not Ready To Write At State ' + state), msg)
+      if (node.messageAllowedStates.indexOf(state.value) === -1) {
+        cberr(new Error('FSM Not Ready To Write At State ' + state.value), msg)
         return
       }
 
       if (node.bufferCommands) {
         msg.queueNumber = node.getQueueNumber(msg)
         node.pushToQueueByUnitId(node.writeModbus, msg, cb, cberr)
-        node.statlyMachine.queue()
+        node.stateService.send('QUEUE')
 
         queueLog(JSON.stringify({
           info: 'queue write msg',
           message: msg.payload,
-          state: state,
+          state: state.value,
           queueLength: node.bufferCommandList.get(msg.queueUnit).length
         }))
       } else {
@@ -644,7 +639,7 @@ module.exports = function (RED) {
       }
 
       if (!node.bufferCommands) {
-        node.statlyMachine.write()
+        node.stateService.send('WRITE')
       }
 
       node.setUnitIdFromPayload(msg)
@@ -655,7 +650,7 @@ module.exports = function (RED) {
         message: msg.payload,
         unitid: msg.queueUnitId,
         timeout: node.client.getTimeout(),
-        state: node.statlyMachine.getMachineState()
+        state: node.actualServiceState.value
       }))
 
       try {
@@ -739,14 +734,15 @@ module.exports = function (RED) {
           queueLength: node.bufferCommandList.length
         }))
       }
-      node.statlyMachine.activate()
+      node.stateService.send('ACTIVATE')
     }
 
     verboseLog('initialized')
     node.setMaxListeners(unlimitedListeners)
 
     node.on('reconnect', function () {
-      node.statlyMachine.failure().close()
+      node.stateService.send('FAILURE')
+      node.stateService.send('CLOSE')
     })
 
     node.on('dynamicReconnect', function (msg) {
@@ -803,12 +799,13 @@ module.exports = function (RED) {
         node.reconnectTimeout = parseInt(msg.payload.reconnectTimeout) || node.reconnectTimeout
       }
 
-      coreModbusClient.internalDebug('Dynamic Reconnect Starts')
-      node.statlyMachine.failure().close()
+      coreModbusClient.internalDebug('Dynamic Reconnect Starts on actual state ' + node.actualServiceState.value)
+      node.stateService.send('CLOSE')
     })
 
     node.on('close', function (done) {
-      node.statlyMachine.failure().stop()
+      node.stateService.send('FAILURE')
+      node.stateService.send('STOP')
       verboseLog('close node')
       if (node.client) {
         node.client.close(function () {
@@ -830,7 +827,7 @@ module.exports = function (RED) {
       node.registeredNodeList[modbusNode.id] = modbusNode
       if (Object.keys(node.registeredNodeList).length === 1) {
         node.closingModbus = false
-        node.statlyMachine.init()
+        node.stateService.send('INIT')
       }
     }
 
@@ -844,10 +841,13 @@ module.exports = function (RED) {
         node.closingModbus = true
         if (node.client) {
           node.client.close(function () {
-            node.statlyMachine.close().break().stop()
+            node.stateService.send('CLOSE')
+            node.stateService.send('BREAK')
+            node.stateService.send('STOP')
             done()
           }).catch(function (err) {
-            node.statlyMachine.failure().stop()
+            node.stateService.send('FAILURE')
+            node.stateService.send('STOP')
             verboseLog(err.message)
             done()
           })

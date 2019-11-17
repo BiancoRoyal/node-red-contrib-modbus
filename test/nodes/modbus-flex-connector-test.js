@@ -146,11 +146,11 @@ describe('Flex Connector node Testing', function () {
         setTimeout(function () {
           modbusNode.receive({ payload: { connectorType: 'TCP', tcpHost: '127.0.0.1', tcpPort: 8522 } })
         }, 1000)
-        setTimeout(function () {
+        clientNode.on('mbactive', () => {
           if (clientNode && clientNode.tcpPort === 8522) {
             done()
           }
-        }, 1000)
+        })
       })
     })
   })

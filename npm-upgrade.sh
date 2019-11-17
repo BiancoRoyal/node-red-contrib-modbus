@@ -8,4 +8,4 @@ npm outdated --depth=0
 
 ncu -u
 
-npm install
+npm i
