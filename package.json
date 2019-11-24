@@ -18,11 +18,9 @@
   "keywords": [
     "node-red",
     "modbus",
-    "fieldbus",
     "automation",
     "iiot",
-    "biancode",
-    "opcua"
+    "biancoroyal"
   ],
   "engines": {
     "node": ">=10"
@@ -54,7 +52,8 @@
   "files": [
     "docs",
     "examples",
-    "modbus"
+    "modbus",
+    "supporter.js"
   ],
   "bugs": {
     "url": "https://github.com/biancoroyal/node-red-contrib-modbus/issues/"
