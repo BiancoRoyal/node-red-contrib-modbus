@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.1.0-0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v4.1.3...v5.1.0-0) (2019-11-24)
+
+### 5.0.1-alpha.0 (2019-11-17)
+
+
+### Features
+
+* new state machine from xstate ([57aef99](https://github.com/biancoroyal/node-red-contrib-modbus/commit/57aef9956187ee9d70e862b226f3a3ef5e091528))
+
 ### [5.0.1-alpha.0](https://github.com/biancode/node-red-contrib-modbus/compare/v5.0.0...v5.0.1-alpha.0) (2019-10-31)
 
 ## [5.0.0](https://github.com/biancode/node-red-contrib-modbus/compare/v4.1.3...v5.0.0) (2019-10-31)
