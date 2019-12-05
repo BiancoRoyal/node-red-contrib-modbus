@@ -92,7 +92,7 @@
     "js-beautify": "^1.10.2",
     "mocha": "^6.2.2",
     "nock": "^11.7.0",
-    "node-red": "^1.0.2",
+    "node-red": "^1.0.3",
     "node-red-node-test-helper": "^0.2.3",
     "pump": "^3.0.0",
     "should": "^13.2.3",

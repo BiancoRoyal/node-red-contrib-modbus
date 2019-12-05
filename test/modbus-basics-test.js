@@ -82,39 +82,44 @@ describe('Modbus Node basics Suite', function () {
       checkStatus(status, 'green', 'dot', 'active')
     })
 
-    it('Node status properties for test staus', function () {
+    it('Node status properties for test status', function () {
       var status = basic.setNodeStatusProperties('test')
       checkStatus(status, 'yellow', 'ring', 'test')
     })
 
-    it('Node status properties for disconnected staus', function () {
+    it('Node status properties for disconnected status', function () {
       var status = basic.setNodeStatusProperties('disconnected')
       checkStatus(status, 'red', 'ring', 'disconnected')
     })
 
-    it('Node status properties for terminated staus', function () {
+    it('Node status properties for terminated status', function () {
       var status = basic.setNodeStatusProperties('terminated')
       checkStatus(status, 'red', 'ring', 'terminated')
     })
 
-    it('Node status properties for polling staus', function () {
+    it('Node status properties for polling status', function () {
       var status = basic.setNodeStatusProperties('polling', true)
       checkStatus(status, 'green', 'ring', 'polling')
     })
 
-    it('Node status properties for polling staus', function () {
+    it('Node status properties for polling status', function () {
       var status = basic.setNodeStatusProperties('polling', false)
       checkStatus(status, 'green', 'dot', 'active')
     })
 
-    it('Node status properties for polling staus', function () {
+    it('Node status properties for polling status', function () {
       var status = basic.setNodeStatusProperties()
       checkStatus(status, 'blue', 'ring', 'waiting ...')
     })
 
-    it('Node status properties for polling staus', function () {
+    it('Node status properties for polling status', function () {
       var status = basic.setNodeStatusProperties('waiting')
       checkStatus(status, 'blue', 'ring', 'waiting ...')
+    })
+
+    it('Node status properties for stopped status value', function () {
+      var status = basic.setNodeStatusProperties({ value: 'stopped' })
+      checkStatus(status, 'red', 'dot', 'stopped')
     })
   })
 })

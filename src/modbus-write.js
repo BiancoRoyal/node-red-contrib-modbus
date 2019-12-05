@@ -95,7 +95,7 @@ module.exports = function (RED) {
       modbusClient.emit('writeModbus', msg, node.onModbusWriteDone, node.onModbusWriteError)
 
       if (node.showStatusActivities) {
-        mbBasics.setNodeStatusTo(modbusClient.statlyMachine.getMachineState(), node)
+        mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
       }
     })
 

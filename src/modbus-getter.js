@@ -90,7 +90,7 @@ module.exports = function (RED) {
       modbusClient.emit('readModbus', msg, node.onModbusCommandDone, node.onModbusCommandError)
 
       if (node.showStatusActivities) {
-        mbBasics.setNodeStatusTo(modbusClient.statlyMachine.getMachineState(), node)
+        mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
       }
     })
 

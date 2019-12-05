@@ -27,10 +27,10 @@ de.biancoroyal.modbus.core.client.createStateMachineService = function () {
     initial: 'new',
     states: {
       new: {
-        on: { INIT: 'init', STOP: 'stoped' }
+        on: { INIT: 'init', STOP: 'stopped' }
       },
       broken: {
-        on: { INIT: 'init', STOP: 'stoped', FAILURE: 'failed', CLOSE: 'closed' }
+        on: { INIT: 'init', STOP: 'stopped', FAILURE: 'failed', CLOSE: 'closed' }
       },
       init: {
         on: { OPENSERIAL: 'opened', CONNECT: 'connected', FAILURE: 'failed' }
@@ -52,7 +52,6 @@ de.biancoroyal.modbus.core.client.createStateMachineService = function () {
       },
       queueing: {
         on: {
-          CONNECT: 'connected',
           ACTIVATE: 'activated',
           READ: 'reading',
           WRITE: 'writing',
@@ -64,9 +63,9 @@ de.biancoroyal.modbus.core.client.createStateMachineService = function () {
       empty: { on: { QUEUE: 'queueing', FAILURE: 'failed', CLOSE: 'closed' } },
       reading: { on: { ACTIVATE: 'activated', FAILURE: 'failed' } },
       writing: { on: { ACTIVATE: 'activated', FAILURE: 'failed' } },
-      closed: { on: { FAILURE: 'failed', BREAK: 'broken' } },
-      failed: { on: { CLOSE: 'closed', BREAK: 'broken', STOP: 'stoped' } },
-      stoped: { on: { QUEUE: 'stoped', ACTIVATE: 'stoped' } }
+      closed: { on: { FAILURE: 'failed', BREAK: 'broken', CONNECT: 'connected' } },
+      failed: { on: { CLOSE: 'closed', BREAK: 'broken', STOP: 'stopped' } },
+      stopped: { on: { NEW: 'new', STOP: 'stopped' } }
     }
   })
 }

@@ -127,7 +127,7 @@ module.exports = function (RED) {
       }
 
       if (node.showStatusActivities) {
-        mbBasics.setNodeStatusTo(modbusClient.statlyMachine.getMachineState(), node)
+        mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
       }
     })
 

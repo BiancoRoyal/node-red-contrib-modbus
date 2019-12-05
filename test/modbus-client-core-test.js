@@ -48,7 +48,7 @@ describe('Modbus Client Core Suite', function () {
       const service = clientCore.startStateService(fsm)
       service.send('STOP')
       service.subscribe(state => {
-        assert.equal(state.value, 'stoped')
+        assert.equal(state.value, 'stopped')
         done()
       })
     })
@@ -112,6 +112,83 @@ describe('Modbus Client Core Suite', function () {
       service.send('CLOSE')
       service.subscribe(state => {
         if (state.matches('closed')) {
+          done()
+        }
+      })
+    })
+
+    it('should change to Stopped state by list of transitions', function (done) {
+      const fsm = clientCore.createStateMachineService()
+      const service = clientCore.startStateService(fsm)
+      service.send('INIT')
+      service.send('CONNECT')
+      service.send('FAILURE')
+      service.send('STOP')
+      service.subscribe(state => {
+        if (state.matches('stopped')) {
+          done()
+        }
+      })
+    })
+
+    it('should change to Stopped state on close', function (done) {
+      const fsm = clientCore.createStateMachineService()
+      const service = clientCore.startStateService(fsm)
+      service.send('INIT')
+      service.send('CONNECT')
+      service.send('CLOSE')
+      service.send('FAILURE')
+      service.send('STOP')
+      service.subscribe(state => {
+        if (state.matches('stopped')) {
+          done()
+        }
+      })
+    })
+
+    it('should change to Stopped state on close and try to queue', function (done) {
+      const fsm = clientCore.createStateMachineService()
+      const service = clientCore.startStateService(fsm)
+      service.send('INIT')
+      service.send('CONNECT')
+      service.send('CLOSE')
+      service.send('FAILURE')
+      service.send('STOP')
+      service.send('QUEUE')
+      service.subscribe(state => {
+        if (state.matches('stopped')) {
+          done()
+        }
+      })
+    })
+
+    it('should change to Stopped state on close and try to activate', function (done) {
+      const fsm = clientCore.createStateMachineService()
+      const service = clientCore.startStateService(fsm)
+      service.send('INIT')
+      service.send('CONNECT')
+      service.send('CLOSE')
+      service.send('FAILURE')
+      service.send('STOP')
+      service.send('ACTIVATE')
+      service.subscribe(state => {
+        if (state.matches('stopped')) {
+          done()
+        }
+      })
+    })
+
+    it('should change to Stopped state on close and try to renew', function (done) {
+      const fsm = clientCore.createStateMachineService()
+      const service = clientCore.startStateService(fsm)
+      service.send('INIT')
+      service.send('CONNECT')
+      service.send('CLOSE')
+      service.send('FAILURE')
+      service.send('STOP')
+      service.send('NEW')
+      service.subscribe(state => {
+        if (state.matches('new')) {
           done()
         }
       })

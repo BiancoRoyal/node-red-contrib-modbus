@@ -75,7 +75,13 @@ de.biancoroyal.modbus.basics.setNodeStatusProperties = function (statusValue, sh
   let fillValue = 'yellow'
   let shapeValue = 'ring'
 
-  switch (statusValue) {
+  if (!statusValue) {
+    statusValue = 'waiting'
+  }
+
+  let statusText = statusValue.value || statusValue
+
+  switch (statusText) {
     case 'connecting':
       fillValue = 'yellow'
       shapeValue = 'ring'
@@ -108,10 +114,12 @@ de.biancoroyal.modbus.basics.setNodeStatusProperties = function (statusValue, sh
       break
 
     case 'active':
+    case 'reading':
+    case 'writing':
     case 'active reading':
     case 'active writing':
       if (!showActivities) {
-        statusValue = 'active'
+        statusText = 'active'
       }
       fillValue = 'green'
       shapeValue = 'dot'
@@ -123,25 +131,30 @@ de.biancoroyal.modbus.basics.setNodeStatusProperties = function (statusValue, sh
       shapeValue = 'ring'
       break
 
+    case 'stopped':
+      fillValue = 'red'
+      shapeValue = 'dot'
+      break
+
     case 'polling':
       fillValue = 'green'
       if (showActivities) {
         shapeValue = 'ring'
       } else {
-        statusValue = 'active'
+        statusText = 'active'
         shapeValue = 'dot'
       }
       break
 
     default:
-      if (!statusValue || statusValue === 'waiting') {
+      if (statusText === 'waiting') {
         fillValue = 'blue'
-        statusValue = 'waiting ...'
+        statusText = 'waiting ...'
       }
       break
   }
 
-  return { fill: fillValue, shape: shapeValue, status: statusValue }
+  return { fill: fillValue, shape: shapeValue, status: statusText }
 }
 
 de.biancoroyal.modbus.basics.setNodeStatusByResponseTo = function (statusValue, response, node) {
