@@ -363,38 +363,28 @@ module.exports = function (RED) {
           return
         }
 
+        const serialPortOptions = {
+          baudRate: parseInt(node.serialBaudrate),
+          dataBits: parseInt(node.serialDatabits),
+          stopBits: parseInt(node.serialStopbits),
+          parity: node.serialParity,
+          autoOpen: false
+        }
+
         switch (node.serialType) {
           case 'ASCII':
             verboseLog('ASCII port serial')
-            node.client.connectAsciiSerial(node.serialPort, {
-              baudRate: parseInt(node.serialBaudrate),
-              dataBits: parseInt(node.serialDatabits),
-              stopBits: parseInt(node.serialStopbits),
-              parity: node.serialParity,
-              autoOpen: false
-            }).then(node.setSerialConnectionOptions)
+            node.client.connectAsciiSerial(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
               .catch(node.modbusSerialErrorHandling)
             break
           case 'RTU':
             verboseLog('RTU port serial')
-            node.client.connectRTU(node.serialPort, {
-              baudRate: parseInt(node.serialBaudrate),
-              dataBits: parseInt(node.serialDatabits),
-              stopBits: parseInt(node.serialStopbits),
-              parity: node.serialParity,
-              autoOpen: false
-            }).then(node.setSerialConnectionOptions)
+            node.client.connectRTU(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
               .catch(node.modbusSerialErrorHandling)
             break
           default:
             verboseLog('RTU buffered port serial')
-            node.client.connectRTUBuffered(node.serialPort, {
-              baudRate: parseInt(node.serialBaudrate),
-              dataBits: parseInt(node.serialDatabits),
-              stopBits: parseInt(node.serialStopbits),
-              parity: node.serialParity,
-              autoOpen: false
-            }).then(node.setSerialConnectionOptions)
+            node.client.connectRTUBuffered(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
               .catch(node.modbusSerialErrorHandling)
             break
         }
