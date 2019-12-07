@@ -18,6 +18,7 @@ module.exports = function (RED) {
   // SOURCE-MAP-REQUIRED
   const mbBasics = require('./modbus-basics')
   const coreModbusClient = require('./core/modbus-client-core')
+  const coreModbusQueue = require('./core/modbus-queue-core')
 
   function ModbusClientNode (config) {
     RED.nodes.createNode(this, config)
@@ -69,25 +70,6 @@ module.exports = function (RED) {
     node.actualServiceState = node.stateMachine.initialState
     node.stateService = coreModbusClient.startStateService(node.stateMachine)
 
-    node.initQueue = function () {
-      node.bufferCommandList.clear()
-      node.sendAllowed.clear()
-      node.unitSendingAllowed = []
-
-      for (let step = 0; step <= 255; step++) {
-        node.bufferCommandList.set(step, [])
-        node.sendAllowed.set(step, true)
-      }
-    }
-
-    node.checkUnitId = function (unitid) {
-      if (node.clienttype === 'tcp') {
-        return unitid >= 0 && unitid <= 255
-      } else {
-        return unitid >= 1 && unitid <= 247
-      }
-    }
-
     node.setUnitIdFromPayload = function (msg) {
       const unit = parseInt(msg.payload.unitid)
 
@@ -95,7 +77,7 @@ module.exports = function (RED) {
         node.client.setID(unit)
         msg.queueUnitId = unit
       } else {
-        if (!node.checkUnitId(node.unit_id)) {
+        if (!coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
           node.unit_id = defaultUnitId
         }
         node.client.setID(node.unit_id)
@@ -103,86 +85,8 @@ module.exports = function (RED) {
       }
     }
 
-    if (Number.isNaN(node.unit_id) || !node.checkUnitId(node.unit_id)) {
+    if (Number.isNaN(node.unit_id) || !coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
       node.unit_id = defaultUnitId
-    }
-
-    node.sequentialDequeueCommand = function () {
-      let command = null
-      let noneCommandSent = true
-      const serialUnit = parseInt(node.unitSendingAllowed.shift())
-
-      if (Number.isInteger(serialUnit) &&
-        node.bufferCommandList.get(serialUnit).length > 0) {
-        queueLog(JSON.stringify({
-          type: 'queue check',
-          unitid: serialUnit,
-          sendAllowed: node.sendAllowed.get(serialUnit),
-          queueLength: node.bufferCommandList.get(serialUnit).length
-        }))
-
-        if (node.sendAllowed.get(serialUnit)) {
-          command = node.bufferCommandList.get(serialUnit).shift()
-          if (command) {
-            node.sendAllowed.set(serialUnit, false)
-            queueLog(JSON.stringify({
-              type: 'serial sending and wait',
-              unitid: serialUnit,
-              // commandData: command,
-              queueLength: node.bufferCommandList.get(serialUnit).length,
-              sendAllowedForNext: node.sendAllowed.get(serialUnit),
-              delay: node.commandDelay
-            }))
-
-            if (node.bufferCommandList.get(serialUnit).length > 0) {
-              node.unitSendingAllowed.push(serialUnit)
-            }
-            noneCommandSent = false
-            command.callModbus(command.msg, command.cb, command.cberr)
-          }
-        }
-      } else {
-        queueLog(JSON.stringify({
-          type: 'queue check is not a unit',
-          unitid: serialUnit
-        }))
-      }
-
-      if (noneCommandSent) {
-        node.stateService.send('EMPTY')
-      }
-    }
-
-    node.dequeueCommand = function () {
-      const state = node.actualServiceState
-
-      if (node.messageAllowedStates.indexOf(state.value) === -1) {
-        queueLog(JSON.stringify({
-          state: state.value,
-          message: 'dequeue command disallowed state',
-          delay: node.commandDelay
-        }))
-      } else {
-        queueLog(JSON.stringify({
-          state: state.value,
-          message: 'dequeue command ' + node.clienttype,
-          delay: node.commandDelay
-        }))
-
-        node.sequentialDequeueCommand()
-      }
-
-      if (node.checkQueuesAreEmpty()) {
-        node.stateService.send('EMPTY')
-      }
-    }
-
-    node.checkQueuesAreEmpty = function () {
-      let queueIsEmpty = true
-      for (let step = 0; step <= 255; step++) {
-        queueIsEmpty &= (node.bufferCommandList.get(step).length > 0)
-      }
-      return queueIsEmpty
     }
 
     node.updateServerinfo = function () {
@@ -212,7 +116,7 @@ module.exports = function (RED) {
       }
     }
 
-    function queueLog (logMessage) {
+    node.queueLog = function (logMessage) {
       if (node.bufferCommands) {
         verboseLog(logMessage)
       }
@@ -224,7 +128,7 @@ module.exports = function (RED) {
 
       if (state.matches('init')) {
         node.updateServerinfo()
-        node.initQueue()
+        coreModbusQueue.initQueue(node)
 
         try {
           if (node.isFirstInitOfConnection) {
@@ -254,7 +158,9 @@ module.exports = function (RED) {
       }
 
       if (state.matches('queueing')) {
-        setTimeout(node.dequeueCommand, node.commandDelay)
+        setTimeout(() => {
+          coreModbusQueue.dequeueCommand(node)
+        }, node.commandDelay)
         node.emit('mbqueue')
       }
 
@@ -306,7 +212,7 @@ module.exports = function (RED) {
       }
 
       if (node.clienttype === 'tcp') {
-        if (!node.checkUnitId(node.unit_id)) {
+        if (!coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
           node.error(new Error('wrong unit-id (0..255)'), { payload: node.unit_id })
           node.stateService.send('FAILURE')
           return
@@ -347,7 +253,7 @@ module.exports = function (RED) {
               .catch(node.modbusTcpErrorHandling)
         }
       } else {
-        if (!node.checkUnitId(node.unit_id)) {
+        if (!coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
           node.error(new Error('wrong unit-id serial (1..247)'), { payload: node.unit_id })
           node.stateService.send('FAILURE')
           return
@@ -459,48 +365,6 @@ module.exports = function (RED) {
       node.stateService.send('CLOSE')
     }
 
-    node.getQueueNumber = function (msg) {
-      const unit = parseInt(msg.payload.unitid)
-
-      if (Number.isInteger(unit)) {
-        return node.bufferCommandList.get(unit).length
-      } else {
-        return node.bufferCommandList.get(node.unit_id).length
-      }
-    }
-
-    node.pushToQueueByUnitId = function (callModbus, msg, cb, cberr) {
-      const unit = parseInt(msg.payload.unitid)
-
-      if (Number.isInteger(unit)) {
-        msg.queueUnit = unit
-        queueLog(JSON.stringify({
-          info: 'push to Queue by Unit-Id',
-          message: msg.payload,
-          unit: unit
-        }))
-
-        if (node.unitSendingAllowed.indexOf(unit) === -1) {
-          node.unitSendingAllowed.push(unit)
-        }
-
-        node.bufferCommandList.get(unit).push({ callModbus: callModbus, msg: msg, cb: cb, cberr: cberr })
-      } else {
-        msg.queueUnit = node.unit_id
-        queueLog(JSON.stringify({
-          info: 'push to Queue by default Unit-Id',
-          message: msg.payload,
-          unit: node.unit_id
-        }))
-
-        if (node.unitSendingAllowed.indexOf(node.unit_id) === -1) {
-          node.unitSendingAllowed.push(node.unit_id)
-        }
-
-        node.bufferCommandList.get(node.unit_id).push({ callModbus: callModbus, msg: msg, cb: cb, cberr: cberr })
-      }
-    }
-
     node.on('readModbus', function (msg, cb, cberr) {
       const state = node.actualServiceState
 
@@ -510,94 +374,20 @@ module.exports = function (RED) {
       }
 
       if (node.bufferCommands) {
-        msg.queueNumber = node.getQueueNumber(msg)
-        node.pushToQueueByUnitId(node.readModbus, msg, cb, cberr)
+        msg.queueNumber = coreModbusQueue.getQueueNumber(node, msg)
+        coreModbusQueue.pushToQueueByUnitId(node, coreModbusClient.readModbus, msg, cb, cberr)
         node.stateService.send('QUEUE')
 
-        queueLog(JSON.stringify({
+        node.queueLog(JSON.stringify({
           info: 'queue read msg',
           message: msg.payload,
           state: state.value,
           queueLength: node.bufferCommandList.get(msg.queueUnit).length
         }))
       } else {
-        node.readModbus(msg, cb, cberr)
+        coreModbusClient.readModbus(node, msg, cb, cberr)
       }
     })
-
-    node.readModbus = function (msg, cb, cberr) {
-      if (!node.client) {
-        return
-      }
-
-      if (!node.bufferCommands) {
-        node.stateService.send('READ')
-      }
-
-      node.setUnitIdFromPayload(msg)
-      node.client.setTimeout(node.clientTimeout)
-
-      queueLog(JSON.stringify({
-        info: 'read msg',
-        message: msg.payload,
-        unitid: msg.queueUnitId,
-        timeout: node.client.getTimeout(),
-        state: node.actualServiceState.value
-      }))
-
-      try {
-        switch (parseInt(msg.payload.fc)) {
-          case 1: // FC: 1
-            node.client.readCoils(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-              node.activateSending(msg)
-              cb(resp, msg)
-            }).catch(function (err) {
-              node.activateSending(msg)
-              cberr(err, msg)
-              node.modbusErrorHandling(err)
-            })
-            break
-          case 2: // FC: 2
-            node.client.readDiscreteInputs(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-              node.activateSending(msg)
-              cb(resp, msg)
-            }).catch(function (err) {
-              node.activateSending(msg)
-              cberr(err, msg)
-              node.modbusErrorHandling(err)
-            })
-            break
-          case 3: // FC: 3
-            node.client.readHoldingRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-              node.activateSending(msg)
-              cb(resp, msg)
-            }).catch(function (err) {
-              node.activateSending(msg)
-              cberr(err, msg)
-              node.modbusErrorHandling(err)
-            })
-            break
-          case 4: // FC: 4
-            node.client.readInputRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-              node.activateSending(msg)
-              cb(resp, msg)
-            }).catch(function (err) {
-              node.activateSending(msg)
-              cberr(err, msg)
-              node.modbusErrorHandling(err)
-            })
-            break
-          default:
-            node.activateSending(msg)
-            cberr(new Error('Function Code Unknown'), msg)
-            coreModbusClient.internalDebug('Function Code Unknown %s', msg.payload.fc)
-            break
-        }
-      } catch (e) {
-        coreModbusClient.internalDebug(e.message)
-        node.modbusErrorHandling(e)
-      }
-    }
 
     node.on('writeModbus', function (msg, cb, cberr) {
       const state = node.actualServiceState
@@ -608,117 +398,26 @@ module.exports = function (RED) {
       }
 
       if (node.bufferCommands) {
-        msg.queueNumber = node.getQueueNumber(msg)
-        node.pushToQueueByUnitId(node.writeModbus, msg, cb, cberr)
+        msg.queueNumber = coreModbusQueue.getQueueNumber(node, msg)
+        coreModbusQueue.pushToQueueByUnitId(node, coreModbusClient.writeModbus, msg, cb, cberr)
         node.stateService.send('QUEUE')
 
-        queueLog(JSON.stringify({
+        node.queueLog(JSON.stringify({
           info: 'queue write msg',
           message: msg.payload,
           state: state.value,
           queueLength: node.bufferCommandList.get(msg.queueUnit).length
         }))
       } else {
-        node.writeModbus(msg, cb, cberr)
+        coreModbusClient.writeModbus(node, msg, cb, cberr)
       }
     })
-
-    node.writeModbus = function (msg, cb, cberr) {
-      if (!node.client) {
-        return
-      }
-
-      if (!node.bufferCommands) {
-        node.stateService.send('WRITE')
-      }
-
-      node.setUnitIdFromPayload(msg)
-      node.client.setTimeout(node.clientTimeout)
-
-      queueLog(JSON.stringify({
-        info: 'write msg',
-        message: msg.payload,
-        unitid: msg.queueUnitId,
-        timeout: node.client.getTimeout(),
-        state: node.actualServiceState.value
-      }))
-
-      try {
-        switch (parseInt(msg.payload.fc)) {
-          case 15: // FC: 15
-            if (parseInt(msg.payload.value.length) !== parseInt(msg.payload.quantity)) {
-              node.activateSending(msg)
-              cberr(new Error('Quantity should be less or equal to coil payload array length: ' +
-              msg.payload.value.length + ' Addr: ' + msg.payload.address + ' Q: ' + msg.payload.quantity), msg)
-            } else {
-              node.client.writeCoils(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
-                node.activateSending(msg)
-                cb(resp, msg)
-              }).catch(function (err) {
-                node.activateSending(msg)
-                cberr(err, msg)
-                node.modbusErrorHandling(err)
-              })
-            }
-            break
-          case 5: // FC: 5
-            if (msg.payload.value) {
-              msg.payload.value = true
-            } else {
-              msg.payload.value = false
-            }
-            node.client.writeCoil(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
-              node.activateSending(msg)
-              cb(resp, msg)
-            }).catch(function (err) {
-              node.activateSending(msg)
-              cberr(err, msg)
-              node.modbusErrorHandling(err)
-            })
-            break
-          case 16: // FC: 16
-            if (parseInt(msg.payload.value.length) !== parseInt(msg.payload.quantity)) {
-              node.activateSending(msg)
-              cberr(new Error('Quantity should be less or equal to register payload array length: ' +
-              msg.payload.value.length + ' Addr: ' + msg.payload.address + ' Q: ' + msg.payload.quantity), msg)
-            } else {
-              node.client.writeRegisters(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
-                node.activateSending(msg)
-                cb(resp, msg)
-              }).catch(function (err) {
-                node.activateSending(msg)
-                cberr(err, msg)
-                node.modbusErrorHandling(err)
-              })
-            }
-            break
-          case 6: // FC: 6
-            node.client.writeRegister(parseInt(msg.payload.address), parseInt(msg.payload.value)).then(function (resp) {
-              node.activateSending(msg)
-              cb(resp, msg)
-            }).catch(function (err) {
-              node.activateSending(msg)
-              cberr(err, msg)
-              node.modbusErrorHandling(err)
-            })
-            break
-          default:
-            node.activateSending(msg)
-            cberr(new Error('Function Code Unknown'), msg)
-            coreModbusClient.internalDebug('Function Code Unknown %s', msg.payload.fc)
-            break
-        }
-      } catch (e) {
-        coreModbusClient.internalDebug(e.message)
-        node.modbusErrorHandling(e)
-      }
-    }
 
     node.activateSending = function (msg) {
       if (node.bufferCommands) {
         node.sendAllowed.set(msg.queueUnit, true)
 
-        queueLog(JSON.stringify({
+        node.queueLog(JSON.stringify({
           info: 'queue response activate sending',
           message: msg.payload,
           queueLength: node.bufferCommandList.length
@@ -741,54 +440,7 @@ module.exports = function (RED) {
       }
 
       coreModbusClient.internalDebug('Dynamic Reconnect Parameters ' + JSON.stringify(msg.payload))
-
-      switch (msg.payload.connectorType) {
-        case 'TCP':
-          node.tcpHost = msg.payload.tcpHost || node.tcpHost
-          node.tcpPort = msg.payload.tcpPort || node.tcpPort
-          node.tcpType = msg.payload.tcpType || node.tcpType
-
-          coreModbusClient.internalDebug('New Connection Data ' + node.tcpHost + ' ' + node.tcpPort + ' ' + node.tcpType)
-          break
-        case 'SERIAL':
-          if (msg.payload.serialPort) {
-            node.serialPort = msg.payload.serialPort || node.serialPort
-          }
-
-          if (msg.payload.serialBaudrate) {
-            node.serialBaudrate = parseInt(msg.payload.serialBaudrate) || node.serialBaudrate
-          }
-
-          node.serialDatabits = msg.payload.serialDatabits || node.serialDatabits
-          node.serialStopbits = msg.payload.serialStopbits || node.serialStopbits
-          node.serialParity = msg.payload.serialParity || node.serialParity
-          node.serialType = msg.payload.serialType || node.serialType
-
-          if (msg.payload.serialConnectionDelay) {
-            node.serialConnectionDelay = parseInt(msg.payload.serialConnectionDelay) || node.serialConnectionDelay
-          }
-          coreModbusClient.internalDebug('New Connection Data ' + node.serialPort + ' ' + node.serialBaudrate + ' ' + node.serialType)
-          break
-        default:
-          coreModbusClient.internalDebug('Unknown Dynamic Reconnect Type ' + msg.payload.connectorType)
-      }
-
-      if (msg.payload.unitId) {
-        node.unit_id = parseInt(msg.payload.unitId) || node.unit_id
-      }
-
-      if (msg.payload.commandDelay) {
-        node.commandDelay = parseInt(msg.payload.commandDelay) || node.commandDelay
-      }
-
-      if (msg.payload.clientTimeout) {
-        node.clientTimeout = parseInt(msg.payload.clientTimeout) || node.clientTimeout
-      }
-
-      if (msg.payload.reconnectTimeout) {
-        node.reconnectTimeout = parseInt(msg.payload.reconnectTimeout) || node.reconnectTimeout
-      }
-
+      coreModbusClient.setNewNodeSettings(node, msg)
       coreModbusClient.internalDebug('Dynamic Reconnect Starts on actual state ' + node.actualServiceState.value)
       node.stateService.send('CLOSE')
     })
