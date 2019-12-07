@@ -6,7 +6,7 @@ PLEASE, DELETE NOT NEEDED PARTS FROM THAT ISSUE!
 **I'm submitting a ...**  (check one with "x")
 
 ## Support/Advice
- - support/advice request => **Please do not submit support requests here**, instead use [the link to our support page](https://bianco-royal.cloud/supporter/#/content/backer), please!
+ - support/advice request => **Please do not submit support requests here**, instead use [the link to our support page](https://bianco-royal.com/supporter.html), please!
 
 ## Feature
  - ( ) feature request
@@ -64,11 +64,10 @@ PLEASE, DELETE NOT NEEDED PARTS FROM THAT ISSUE!
      - Version:
      - Vendor :
      - Link   : https://
-     
     
-* **node-red-contrib-modbus version:** ``
+* **node-red-contrib-modbus version:** vX.X.X
 <!-- Check which is the hash of the last commit from node-red-contrib-modbus that you have locally -->
 
-* **Node:** (min. 6.x)
-   `node --version` =
+* **Node:** (min. 10.x)
+   `node --version` = vX.X.X
 
