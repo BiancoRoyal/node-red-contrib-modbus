@@ -183,6 +183,31 @@ describe('Flex Getter node Testing', function () {
   })
 
   describe('Node', function () {
+    it('simple Node should be loaded without client config', function (done) {
+      helper.load([nodeUnderTest], [{
+        id: 'bc5a61b6.a3972',
+        type: 'modbus-flex-getter',
+        name: 'modbusFlexGetter',
+        showStatusActivities: false,
+        showErrors: false,
+        server: '',
+        useIOFile: false,
+        ioFile: '',
+        useIOForPayload: false,
+        wires: [
+          [],
+          []
+        ]
+      }], function () {
+        const modbusFlexGetter = helper.getNode('bc5a61b6.a3972')
+        modbusFlexGetter.should.have.property('name', 'modbusFlexGetter')
+
+        done()
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
     it('simple Node should be loaded', function (done) {
       helper.load([clientNode, serverNode, nodeUnderTest], [{
         id: 'bc5a61b6.a3972',

@@ -31,12 +31,15 @@ module.exports = function (RED) {
     this.queueReadIntervalTime = config.queueReadIntervalTime || 1000
 
     const node = this
+    node.queueReadInterval = null
+    mbBasics.setNodeStatusTo('waiting', node)
 
     const modbusClient = RED.nodes.getNode(config.server)
+    if (!modbusClient) {
+      return
+    }
     modbusClient.registerForModbus(node)
-    node.queueReadInterval = null
-
-    mbBasics.setNodeStatusTo('waiting', node)
+    mbBasics.initModbusClientEvents(node, modbusClient)
 
     node.resetStates = function () {
       node.lowLowLevelReached = true

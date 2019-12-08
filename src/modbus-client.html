@@ -159,7 +159,7 @@
           node.ports = []
 
           $.each(data, function (i, port) {
-            node.ports.push(port.comName)
+            node.ports.push(port.path)
           })
 
           $('#node-config-input-serialPort').autocomplete({

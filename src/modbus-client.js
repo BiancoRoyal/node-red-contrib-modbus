@@ -174,7 +174,7 @@ module.exports = function (RED) {
       }
 
       if (state.matches('failed')) {
-        node.emit('mberror', 'FSM Reset On State ' + state)
+        node.emit('mberror', 'FSM Reset On State ' + JSON.stringify(state))
         node.stateService.send('BREAK')
       }
 
@@ -506,11 +506,10 @@ module.exports = function (RED) {
 
   RED.httpAdmin.get('/modbus/serial/ports', RED.auth.needsPermission('serial.read'), function (req, res) {
     const SerialPort = require('serialport')
-    SerialPort.list(function (err, ports) {
-      if (err) {
-        coreModbusClient.internalDebug(err.message)
-      }
+    SerialPort.list().then(ports => {
       res.json(ports)
+    }).catch(err => {
+      coreModbusClient.internalDebug(err.message)
     })
   })
 }

@@ -13,7 +13,8 @@
     "@xstate/fsm": "1.1.0"
   },
   "optionalDependencies": {
-    "serialport": "8.0.5"
+    "serialport": "8.0.5",
+    "@serialport/list": "8.0.4"
   },
   "keywords": [
     "node-red",

@@ -40,6 +40,37 @@ describe('Read node Testing', function () {
   })
 
   describe('Node', function () {
+    it('simple Node should be loaded without client config', function (done) {
+      helper.load([readNode], [{
+        id: '8ecaae3e.4b8928',
+        type: 'modbus-read',
+        name: 'modbusRead',
+        topic: '',
+        showStatusActivities: false,
+        showErrors: true,
+        unitid: '',
+        dataType: 'Coil',
+        adr: '0',
+        quantity: '10',
+        rate: '2',
+        rateUnit: 's',
+        delayOnStart: false,
+        startDelayTime: '',
+        server: '',
+        useIOFile: false,
+        ioFile: '',
+        useIOForPayload: false,
+        wires: [[], []]
+      }
+      ], function () {
+        var modbusRead = helper.getNode('8ecaae3e.4b8928')
+        modbusRead.should.have.property('name', 'modbusRead')
+        done()
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
     it('simple Node should be loaded', function (done) {
       helper.load([clientNode, serverNode, readNode], [{
         id: 'e54529b9.952ea8',

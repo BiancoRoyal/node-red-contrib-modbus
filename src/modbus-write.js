@@ -33,12 +33,15 @@ module.exports = function (RED) {
     this.quantity = config.quantity
 
     const node = this
-    const modbusClient = RED.nodes.getNode(config.server)
-    modbusClient.registerForModbus(node)
     node.bufferMessageList = new Map()
-
-    mbBasics.initModbusClientEvents(node, modbusClient)
     mbBasics.setNodeStatusTo('waiting', node)
+
+    const modbusClient = RED.nodes.getNode(config.server)
+    if (!modbusClient) {
+      return
+    }
+    modbusClient.registerForModbus(node)
+    mbBasics.initModbusClientEvents(node, modbusClient)
 
     node.onModbusWriteDone = function (resp, msg) {
       if (node.showStatusActivities) {

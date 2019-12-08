@@ -128,6 +128,28 @@ describe('Flex Write node Testing', function () {
   })
 
   describe('Node', function () {
+    it('simple Node should be loaded without client config', function (done) {
+      helper.load([clientNode, nodeUnderTest], [
+        {
+          id: 'c02b6d1.d419c1',
+          type: 'modbus-flex-write',
+          name: 'modbusFlexWrite',
+          showStatusActivities: true,
+          showErrors: false,
+          server: '',
+          wires: [
+            [],
+            []
+          ]
+        }], function () {
+        const modbusFlexWrite = helper.getNode('c02b6d1.d419c1')
+        modbusFlexWrite.should.have.property('name', 'modbusFlexWrite')
+        done()
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
     it('simple Node should be loaded', function (done) {
       helper.load([clientNode, nodeUnderTest], [
         {

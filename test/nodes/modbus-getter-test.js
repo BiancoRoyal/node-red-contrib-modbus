@@ -212,6 +212,26 @@ describe('Getter node Testing', function () {
   })
 
   describe('Node', function () {
+    it('simple Node should be loaded without client config', function (done) {
+      helper.load([clientNode, serverNode, getterNode], [{
+        id: '322daf89.be8dd',
+        type: 'modbus-getter',
+        name: 'modbusGetter',
+        dataType: 'Coil',
+        adr: 0,
+        quantity: 1,
+        server: '',
+        wires: [[], [], []]
+      }], function () {
+        const modbusGetter = helper.getNode('322daf89.be8dd')
+        modbusGetter.should.have.property('name', 'modbusGetter')
+
+        done()
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
     it('simple Node should be loaded', function (done) {
       helper.load([clientNode, serverNode, getterNode], [{
         id: '322daf89.be8dd',

@@ -28,10 +28,14 @@ module.exports = function (RED) {
     this.connection = null
 
     const node = this
+    mbBasics.setNodeStatusTo('waiting', node)
+
     const modbusClient = RED.nodes.getNode(config.server)
+    if (!modbusClient) {
+      return
+    }
     modbusClient.registerForModbus(node)
     mbBasics.initModbusClientEvents(node, modbusClient)
-    mbBasics.setNodeStatusTo('waiting', node)
 
     node.on('input', function (msg) {
       if (mbBasics.invalidPayloadIn(msg)) {

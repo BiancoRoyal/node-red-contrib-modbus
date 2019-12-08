@@ -49,14 +49,18 @@ module.exports = function (RED) {
     this.logIOActivities = config.logIOActivities
 
     const node = this
-    const modbusClient = RED.nodes.getNode(config.server)
-    modbusClient.registerForModbus(node)
     let delayTimerID = null
     let timerID = null
     let timeoutOccurred = false
     node.INPUT_TIMEOUT_MILLISECONDS = 1000
-
     mbBasics.setNodeStatusTo('waiting', node)
+
+    const modbusClient = RED.nodes.getNode(config.server)
+    if (!modbusClient) {
+      return
+    }
+    modbusClient.registerForModbus(node)
+    mbBasics.initModbusClientEvents(node, modbusClient)
 
     node.onModbusInit = function () {
       mbBasics.setNodeStatusTo('initialize', node)

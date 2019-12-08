@@ -106,6 +106,26 @@ describe('Write node Testing', function () {
   })
 
   describe('Node', function () {
+    it('simple Node should be loaded without client config', function (done) {
+      helper.load([nodeUnderTest], [{
+        id: '8ad2951c.2df708',
+        type: 'modbus-write',
+        name: 'modbusWrite',
+        dataType: 'HoldingRegister',
+        adr: '0',
+        quantity: '1',
+        server: '',
+        wires: [[], []]
+      }], function () {
+        var modbusWrite = helper.getNode('8ad2951c.2df708')
+        modbusWrite.should.have.property('name', 'modbusWrite')
+
+        done()
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
     it('simple Node should be loaded', function (done) {
       helper.load([injectNode, clientNode, serverNode, nodeUnderTest], [{
         id: 'e54529b9.952ea8',
