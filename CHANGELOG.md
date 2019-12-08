@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.2.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.1.0...v5.2.0) (2019-12-08)
+
+
+### Features
+
+* [#161](https://github.com/biancoroyal/node-red-contrib-modbus/issues/161) multiple RTU devices via UnitID ([b0b5011](https://github.com/biancoroyal/node-red-contrib-modbus/commit/b0b5011be4ab5e7c06ab44fd9df7b0ff5ddd0fd8))
+
+
+### Bug Fixes
+
+* [#160](https://github.com/biancoroyal/node-red-contrib-modbus/issues/160) error on show activities true ([af27fe6](https://github.com/biancoroyal/node-red-contrib-modbus/commit/af27fe616654eb074bb29f34a163d4ffabc742bd))
+* serialport list call ([f401c58](https://github.com/biancoroyal/node-red-contrib-modbus/commit/f401c58cb384ce87489aecaa99a3000f18e4222b))
+* typo config node client ([9be8b16](https://github.com/biancoroyal/node-red-contrib-modbus/commit/9be8b1634469abfe6b8b6fb471a16f9387b6cee4))
+
 ## [5.1.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.1.0-1...v5.1.0) (2019-12-03)
 
 ## [5.1.0-1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v4.1.3...v5.1.0-1) (2019-11-24)
