@@ -88,7 +88,8 @@ const simpleReadWithClient = [
     unit_id: '1',
     commandDelay: '1',
     clientTimeout: '100',
-    reconnectTimeout: '250'
+    reconnectTimeout: '250',
+    reconnectOnTimeout: true
   }
 ]
 
@@ -135,7 +136,8 @@ describe('Client node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: '250'
+        reconnectTimeout: '250',
+        reconnectOnTimeout: true
       },
       {
         id: '384fb9f1.e96296',
@@ -185,7 +187,8 @@ describe('Client node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: '250'
+        reconnectTimeout: '250',
+        reconnectOnTimeout: true
       },
       {
         id: '384fb9f1.e96296',
@@ -235,7 +238,8 @@ describe('Client node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: '250'
+        reconnectTimeout: '250',
+        reconnectOnTimeout: true
       },
       {
         id: '384fb9f1.e96296',
@@ -285,7 +289,8 @@ describe('Client node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: '250'
+        reconnectTimeout: '250',
+        reconnectOnTimeout: true
       },
       {
         id: '384fb9f1.e96296',
@@ -335,7 +340,8 @@ describe('Client node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: '250'
+        reconnectTimeout: '250',
+        reconnectOnTimeout: true
       },
       {
         id: '384fb9f1.e96296',
@@ -385,7 +391,8 @@ describe('Client node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: '250'
+        reconnectTimeout: '250',
+        reconnectOnTimeout: true
       },
       {
         id: '384fb9f1.e96296',
@@ -435,7 +442,8 @@ describe('Client node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: '250'
+        reconnectTimeout: '250',
+        reconnectOnTimeout: true
       },
       {
         id: '384fb9f1.e96296',

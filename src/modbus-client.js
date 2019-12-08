@@ -53,6 +53,8 @@ module.exports = function (RED) {
     this.commandDelay = parseInt(config.commandDelay) || minCommandDelayMilliseconds
     this.clientTimeout = parseInt(config.clientTimeout) || timeoutTimeMS
     this.reconnectTimeout = parseInt(config.reconnectTimeout) || reconnectTimeMS
+    this.reconnectOnTimeout = config.reconnectOnTimeout
+    this.parallelUnitIdsAllowed = config.parallelUnitIdsAllowed
 
     const node = this
     node.isFirstInitOfConnection = true
@@ -61,6 +63,7 @@ module.exports = function (RED) {
     node.bufferCommandList = new Map()
     node.sendAllowed = new Map()
     node.unitSendingAllowed = []
+    node.sendToDeviceAllowed = []
     node.messageAllowedStates = coreModbusClient.messagesAllowedStates
     node.serverInfo = ''
 
@@ -68,6 +71,7 @@ module.exports = function (RED) {
     node.stateService = null
     node.stateMachine = coreModbusClient.createStateMachineService()
     node.actualServiceState = node.stateMachine.initialState
+    node.actualServiceStateBefore = node.actualServiceState
     node.stateService = coreModbusClient.startStateService(node.stateMachine)
 
     node.setUnitIdFromPayload = function (msg) {
@@ -123,6 +127,7 @@ module.exports = function (RED) {
     }
 
     node.stateService.subscribe(state => {
+      node.actualServiceStateBefore = node.actualServiceState
       node.actualServiceState = state
       stateLog(state.value)
 
@@ -180,13 +185,18 @@ module.exports = function (RED) {
 
       if (state.matches('broken')) {
         node.emit('mbbroken')
-        if (node.reconnectTimeout <= 0) {
-          node.reconnectTimeout = reconnectTimeMS
+        if (node.reconnectOnTimeout) {
+          if (node.reconnectTimeout <= 0) {
+            node.reconnectTimeout = reconnectTimeMS
+          }
+          verboseWarn('try to reconnect by init in ' + node.reconnectTimeout + ' ms')
+          setTimeout(() => {
+            node.stateService.send('INIT')
+          }, node.reconnectTimeout)
+        } else {
+          verboseWarn('stay active on broken state without reconnecting')
+          node.stateService.send('ACTIVATE')
         }
-        verboseWarn('try to reconnect by init in ' + node.reconnectTimeout + ' ms')
-        setTimeout(() => {
-          node.stateService.send('INIT')
-        }, node.reconnectTimeout)
       }
     })
 
@@ -414,13 +424,15 @@ module.exports = function (RED) {
     })
 
     node.activateSending = function (msg) {
+      const deviceId = node.sendToDeviceAllowed.shift()
       if (node.bufferCommands) {
         node.sendAllowed.set(msg.queueUnit, true)
 
         node.queueLog(JSON.stringify({
           info: 'queue response activate sending',
           message: msg.payload,
-          queueLength: node.bufferCommandList.length
+          queueLength: node.bufferCommandList.length,
+          serialUnitId: deviceId
         }))
       }
       node.stateService.send('ACTIVATE')
@@ -447,6 +459,7 @@ module.exports = function (RED) {
 
     node.on('close', function (done) {
       node.stateService.send('FAILURE')
+      node.stateService.send('CLOSE')
       node.stateService.send('STOP')
       verboseLog('close node')
       if (node.client) {

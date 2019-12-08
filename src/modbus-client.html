@@ -32,7 +32,9 @@
       unit_id: {value: 1},
       commandDelay: {value: 1},
       clientTimeout: {value: 1000},
-      reconnectTimeout: {value: 2000}
+      reconnectOnTimeout: {value: true},
+      reconnectTimeout: {value: 2000},
+      parallelUnitIdsAllowed: {value: true},
     },
     label: function () {
       let node = this
@@ -285,11 +287,21 @@
         <input type="text" id="node-config-input-clientTimeout" placeholder="1000" style="max-width:80px">
     </div>
     <div class="form-row">
+        <label style="min-width:160px" for="node-input-reconnectOnTimeout"><i class="fa fa-th"></i> <span
+        data-i18n="modbus-contrib.label.reconnectOnTimeout"></span></label>
+        <input type="checkbox" id="node-input-reconnectOnTimeout" style="max-width:30px">
+    </div>
+    <div class="form-row">
         <label for="node-config-input-reconnectTimeout">
             <i class="icon-time"></i>
             <span data-i18n="modbus-contrib.label.reconnectTimeout"></span>
         </label>
         <input type="text" id="node-config-input-reconnectTimeout" placeholder="2000" style="max-width:80px">
+    </div>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-input-parallelUnitIdsAllowed"><i class="fa fa-th"></i> <span
+        data-i18n="modbus-contrib.label.parallelUnitIdsAllowed"></span></label>
+        <input type="checkbox" id="node-input-parallelUnitIdsAllowed" style="max-width:30px">
     </div>
     <hr>
     <div class="form-row">
@@ -330,7 +342,7 @@
 
 
     <p>Uses ModbusRTU ('modbus-serial') to read/write by ethernet host:port or TTY register/coil/input addresses.</p>
-    <p>The Stately machine ('stately.js') organizing the states to work with reconnects and a queue of commands.</p>
+    <p>The Xstate machine ('Xstate/fsm') organizing the states to work with reconnects and a queue of commands.</p>
     <p>
         <h3>Basics</h3>
         <ul>
@@ -342,6 +354,8 @@
             Set the Unit-ID of the Read/Write/Getter node's to empty for using this ID</li>
             <li>Timeout (default 1000 ms) - ms for the command timeout on ModbusRTU command</li>
             <li>Reconnect timeout (default 2000 ms) - time to wait on reconnect before next sending</li>
+            <li>Reconnect on timeout - should the client do a reconnect or not on timeouts</li>
+            <li>Parallel UnitId's allowed - handle commands in parallel per UnitId or not</li>
         </ul>
 
         <h3>TCP</h3>

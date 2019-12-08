@@ -96,10 +96,12 @@ module.exports = function (RED) {
 
     node.onModbusError = function (failureMsg) {
       mbBasics.setNodeStatusTo('failure', node)
-      if (timerID) {
-        clearInterval(timerID) // clear Timer from events
+      if (modbusClient.reconnectOnTimeout) {
+        if (timerID) {
+          clearInterval(timerID) // clear Timer from events
+        }
+        timerID = null
       }
-      timerID = null
       if (node.showErrors) {
         node.warn(failureMsg)
       }
@@ -114,11 +116,13 @@ module.exports = function (RED) {
     }
 
     node.onModbusBroken = function () {
-      mbBasics.setNodeStatusTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.', node)
-      if (timerID) {
-        clearInterval(timerID) // clear Timer from events
+      if (modbusClient.reconnectOnTimeout) {
+        mbBasics.setNodeStatusTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.', node)
+        if (timerID) {
+          clearInterval(timerID) // clear Timer from events
+        }
+        timerID = null
       }
-      timerID = null
     }
 
     modbusClient.on('mbinit', node.onModbusInit)

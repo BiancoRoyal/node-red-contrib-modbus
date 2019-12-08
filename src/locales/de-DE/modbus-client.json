@@ -18,6 +18,7 @@
       "unitId": "Unit-Id",
       "commandDelay": "Queue Sendeverzögerung (ms)",
       "timeout": "Timeout (ms)",
+      "reconnectOnTimeout": "Reconnect bei Timeouts",
       "reconnectTimeout": "Reconnect-Timeout (ms)"
     }
   }
