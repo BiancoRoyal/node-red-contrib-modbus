@@ -25,6 +25,7 @@ module.exports = function (RED) {
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
 
+    this.emptyMsgOnFail = config.emptyMsgOnFail
     this.internalDebugLog = internalDebugLog
 
     const node = this
@@ -51,6 +52,11 @@ module.exports = function (RED) {
       if (node.showErrors) {
         node.error(err, msg)
       }
+
+      if (node.emptyMsgOnFail) {
+        node.send({ payload: '', error: err, status: node.status, msg })
+      }
+
       mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg))
     }
 
@@ -128,6 +134,10 @@ module.exports = function (RED) {
         internalDebugLog(err.message)
         if (node.showErrors) {
           node.error(err, msg)
+        }
+
+        if (node.emptyMsgOnFail) {
+          node.send({ payload: '', error: err, status: node.status, msg })
         }
       }
 

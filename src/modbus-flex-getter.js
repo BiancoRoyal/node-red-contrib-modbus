@@ -61,7 +61,7 @@ module.exports = function (RED) {
       }
 
       if (node.emptyMsgOnFail) {
-        node.send({ payload: '', error: err })
+        node.send({ payload: '', error: err, status: node.status, msg })
       }
 
       mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg))
@@ -132,7 +132,7 @@ module.exports = function (RED) {
         }
 
         if (node.emptyMsgOnFail) {
-          node.send({ payload: '', error: err })
+          node.send({ payload: '', error: err, status: node.status, msg })
         }
       }
 
