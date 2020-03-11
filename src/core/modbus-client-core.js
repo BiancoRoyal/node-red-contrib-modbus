@@ -82,6 +82,14 @@ de.biancoroyal.modbus.core.client.checkUnitId = function (unitid, clientType) {
   }
 }
 
+de.biancoroyal.modbus.core.client.getLogFunction = function (node) {
+  if (node.internalDebugLog) {
+    return node.internalDebugLog
+  } else {
+    return de.biancoroyal.modbus.core.client.internalDebug
+  }
+}
+
 de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
   if (!node.client) {
     return
@@ -93,6 +101,8 @@ de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
 
   node.setUnitIdFromPayload(msg)
   node.client.setTimeout(node.clientTimeout)
+
+  const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
 
   node.queueLog(JSON.stringify({
     info: 'read msg',
@@ -147,11 +157,11 @@ de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
       default:
         node.activateSending(msg)
         cberr(new Error('Function Code Unknown'), msg)
-        node.internalDebugLog('Function Code Unknown %s', msg.payload.fc)
+        nodeLog('Function Code Unknown %s', msg.payload.fc)
         break
     }
   } catch (e) {
-    node.internalDebugLog(e.message)
+    nodeLog(e.message)
     node.modbusErrorHandling(e)
   }
 }
@@ -167,6 +177,8 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
 
   node.setUnitIdFromPayload(msg)
   node.client.setTimeout(node.clientTimeout)
+
+  const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
 
   node.queueLog(JSON.stringify({
     info: 'write msg',
@@ -238,18 +250,20 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
       default:
         node.activateSending(msg)
         cberr(new Error('Function Code Unknown'), msg)
-        node.internalDebugLog('Function Code Unknown %s', msg.payload.fc)
+        nodeLog('Function Code Unknown %s', msg.payload.fc)
         break
     }
   } catch (e) {
-    node.internalDebugLog(e.message)
+    nodeLog(e.message)
     node.modbusErrorHandling(e)
   }
 }
 
 de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
+  const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
+
   if (!msg) {
-    node.internalDebugLog('New Connection message invalid.')
+    nodeLog('New Connection message invalid.')
   }
 
   switch (msg.payload.connectorType) {
@@ -257,8 +271,7 @@ de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
       node.tcpHost = msg.payload.tcpHost || node.tcpHost
       node.tcpPort = msg.payload.tcpPort || node.tcpPort
       node.tcpType = msg.payload.tcpType || node.tcpType
-
-      node.internalDebugLog('New Connection Data ' + node.tcpHost + ' ' + node.tcpPort + ' ' + node.tcpType)
+      nodeLog('New Connection Data ' + node.tcpHost + ' ' + node.tcpPort + ' ' + node.tcpType)
       break
 
     case 'SERIAL':
@@ -278,11 +291,11 @@ de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
       if (msg.payload.serialConnectionDelay) {
         node.serialConnectionDelay = parseInt(msg.payload.serialConnectionDelay) || node.serialConnectionDelay
       }
-      node.internalDebugLog('New Connection Data ' + node.serialPort + ' ' + node.serialBaudrate + ' ' + node.serialType)
+      nodeLog('New Connection Data ' + node.serialPort + ' ' + node.serialBaudrate + ' ' + node.serialType)
       break
 
     default:
-      node.internalDebugLog('Unknown Dynamic Reconnect Type ' + msg.payload.connectorType)
+      nodeLog('Unknown Dynamic Reconnect Type ' + msg.payload.connectorType)
   }
 
   if (msg.payload.unitId) {

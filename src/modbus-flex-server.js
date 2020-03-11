@@ -41,6 +41,8 @@ module.exports = function (RED) {
     this.funcSetCoil = new VMScript(config.funcSetCoil).compile()
     this.funcSetRegister = new VMScript(config.funcSetRegister).compile()
 
+    this.internalDebugLog = internalDebugLog
+
     const node = this
     node.bufferFactor = 8
 

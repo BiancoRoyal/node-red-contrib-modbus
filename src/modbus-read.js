@@ -48,6 +48,8 @@ module.exports = function (RED) {
     this.useIOForPayload = config.useIOForPayload
     this.logIOActivities = config.logIOActivities
 
+    this.internalDebugLog = internalDebugLog
+
     const node = this
     let delayTimerID = null
     let timerID = null

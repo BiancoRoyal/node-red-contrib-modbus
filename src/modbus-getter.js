@@ -39,6 +39,8 @@ module.exports = function (RED) {
     this.useIOForPayload = config.useIOForPayload
     this.logIOActivities = config.logIOActivities
 
+    this.internalDebugLog = internalDebugLog
+
     const node = this
     node.bufferMessageList = new Map()
     mbBasics.setNodeStatusTo('waiting', node)

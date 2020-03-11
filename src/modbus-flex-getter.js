@@ -33,6 +33,7 @@ module.exports = function (RED) {
     this.logIOActivities = config.logIOActivities
 
     this.emptyMsgOnFail = config.emptyMsgOnFail
+    this.internalDebugLog = internalDebugLog
 
     const node = this
     node.bufferMessageList = new Map()

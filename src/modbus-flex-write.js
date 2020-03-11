@@ -25,6 +25,8 @@ module.exports = function (RED) {
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
 
+    this.internalDebugLog = internalDebugLog
+
     const node = this
     node.bufferMessageList = new Map()
     mbBasics.setNodeStatusTo('waiting', node)

@@ -70,7 +70,8 @@
     "ci-publish": "ci-publish",
     "release": "standard-version -a",
     "rewrite-changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
-    "postinstall": "node ./supporter.js"
+    "postinstall": "node ./supporter.js",
+    "dev-link": "npm i && npm link && cd ~/.node-red && npm link node-red-contrib-modbus"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.0",

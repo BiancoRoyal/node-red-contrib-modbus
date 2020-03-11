@@ -27,6 +27,8 @@ module.exports = function (RED) {
     this.showErrors = config.showErrors
     this.connection = null
 
+    this.internalDebugLog = internalDebugLog
+
     const node = this
     mbBasics.setNodeStatusTo('waiting', node)
 
