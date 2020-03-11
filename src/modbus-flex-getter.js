@@ -32,6 +32,8 @@ module.exports = function (RED) {
     this.useIOForPayload = config.useIOForPayload
     this.logIOActivities = config.logIOActivities
 
+    this.emptyMsgOnFail = config.emptyMsgOnFail
+
     const node = this
     node.bufferMessageList = new Map()
     mbBasics.setNodeStatusTo('waiting', node)
@@ -56,6 +58,11 @@ module.exports = function (RED) {
       if (node.showErrors) {
         node.error(err, msg)
       }
+
+      if (node.emptyMsgOnFail) {
+        node.send({ payload: '', error: err })
+      }
+
       mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg))
     }
 
@@ -110,7 +117,8 @@ module.exports = function (RED) {
             fc: msg.payload.fc,
             address: msg.payload.address,
             quantity: msg.payload.quantity,
-            messageId: msg.messageId
+            messageId: msg.messageId,
+            emptyMsgOnFail: node.emptyMsgOnFail
           },
           _msgid: msg._msgid
         }
@@ -120,6 +128,10 @@ module.exports = function (RED) {
         internalDebugLog(err.message)
         if (node.showErrors) {
           node.error(err, msg)
+        }
+
+        if (node.emptyMsgOnFail) {
+          node.send({ payload: '', error: err })
         }
       }
 

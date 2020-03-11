@@ -147,11 +147,11 @@ de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
       default:
         node.activateSending(msg)
         cberr(new Error('Function Code Unknown'), msg)
-        this.internalDebug('Function Code Unknown %s', msg.payload.fc)
+        node.internalDebugLog('Function Code Unknown %s', msg.payload.fc)
         break
     }
   } catch (e) {
-    this.internalDebug(e.message)
+    node.internalDebugLog(e.message)
     node.modbusErrorHandling(e)
   }
 }
@@ -238,18 +238,18 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
       default:
         node.activateSending(msg)
         cberr(new Error('Function Code Unknown'), msg)
-        this.internalDebug('Function Code Unknown %s', msg.payload.fc)
+        node.internalDebugLog('Function Code Unknown %s', msg.payload.fc)
         break
     }
   } catch (e) {
-    this.internalDebug(e.message)
+    node.internalDebugLog(e.message)
     node.modbusErrorHandling(e)
   }
 }
 
 de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
   if (!msg) {
-    this.internalDebug('New Connection message invalid.')
+    node.internalDebugLog('New Connection message invalid.')
   }
 
   switch (msg.payload.connectorType) {
@@ -258,7 +258,7 @@ de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
       node.tcpPort = msg.payload.tcpPort || node.tcpPort
       node.tcpType = msg.payload.tcpType || node.tcpType
 
-      this.internalDebug('New Connection Data ' + node.tcpHost + ' ' + node.tcpPort + ' ' + node.tcpType)
+      node.internalDebugLog('New Connection Data ' + node.tcpHost + ' ' + node.tcpPort + ' ' + node.tcpType)
       break
 
     case 'SERIAL':
@@ -278,11 +278,11 @@ de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
       if (msg.payload.serialConnectionDelay) {
         node.serialConnectionDelay = parseInt(msg.payload.serialConnectionDelay) || node.serialConnectionDelay
       }
-      this.internalDebug('New Connection Data ' + node.serialPort + ' ' + node.serialBaudrate + ' ' + node.serialType)
+      node.internalDebugLog('New Connection Data ' + node.serialPort + ' ' + node.serialBaudrate + ' ' + node.serialType)
       break
 
     default:
-      this.internalDebug('Unknown Dynamic Reconnect Type ' + msg.payload.connectorType)
+      node.internalDebugLog('Unknown Dynamic Reconnect Type ' + msg.payload.connectorType)
   }
 
   if (msg.payload.unitId) {
