@@ -34,6 +34,7 @@ de.biancoroyal.modbus.queue.core.checkQueuesAreEmpty = function (node) {
 }
 
 de.biancoroyal.modbus.queue.core.sequentialDequeueCommand = function (node) {
+  const queueCore = de.biancoroyal.modbus.queue.core
   const nodesToWaitCount = node.unitSendingAllowed.length
   const serialUnit = parseInt(node.unitSendingAllowed.shift())
   let noneCommandToSent = true
@@ -41,9 +42,9 @@ de.biancoroyal.modbus.queue.core.sequentialDequeueCommand = function (node) {
   if (Number.isInteger(serialUnit) &&
     node.bufferCommandList.get(serialUnit).length > 0) {
     if (node.parallelUnitIdsAllowed) {
-      noneCommandToSent = this.sendDataInParallel(node, serialUnit, nodesToWaitCount)
+      noneCommandToSent = queueCore.sendDataInParallel(node, serialUnit, nodesToWaitCount)
     } else {
-      noneCommandToSent = this.sendDataPerDevice(node, serialUnit, nodesToWaitCount)
+      noneCommandToSent = queueCore.sendDataPerDevice(node, serialUnit, nodesToWaitCount)
     }
   } else {
     node.queueLog(JSON.stringify({
@@ -128,6 +129,7 @@ de.biancoroyal.modbus.queue.core.sendDataPerDevice = function (node, serialUnit,
 }
 
 de.biancoroyal.modbus.queue.core.dequeueCommand = function (node) {
+  const queueCore = de.biancoroyal.modbus.queue.core
   const state = node.actualServiceState
 
   if (node.messageAllowedStates.indexOf(state.value) === -1) {
@@ -143,10 +145,10 @@ de.biancoroyal.modbus.queue.core.dequeueCommand = function (node) {
       delay: node.commandDelay
     }))
 
-    this.sequentialDequeueCommand(node)
+    queueCore.sequentialDequeueCommand(node)
   }
 
-  if (this.checkQueuesAreEmpty(node)) {
+  if (queueCore.checkQueuesAreEmpty(node)) {
     node.stateService.send('EMPTY')
   }
 }
