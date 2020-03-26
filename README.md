@@ -7,7 +7,7 @@
 [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 [![NPM download](https://img.shields.io/npm/dm/node-red-contrib-modbus.svg)](http://www.npm-stats.com/~packages/node-red-contrib-modbus)
 [![Build Status](https://travis-ci.org/BiancoRoyal/node-red-contrib-modbus.svg?branch=master)](https://travis-ci.org/BiancoRoyal/node-red-contrib-modbus)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/456a38405124477bafb4772c5b42a260)](https://www.codacy.com/app/klaus/node-red-contrib-modbus?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=biancode/node-red-contrib-modbus&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6cbeb40ab5604b3ab99e6badc9469e8a)](https://www.codacy.com/gh/BiancoRoyal/node-red-contrib-modbus?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=BiancoRoyal/node-red-contrib-modbus&amp;utm_campaign=Badge_Grade)
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/biancode/node-red-contrib-modbus.svg)](http://isitmaintained.com/project/biancode/node-red-contrib-modbus "Percentage of issues still open")
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/biancode/node-red-contrib-modbus.svg)](http://isitmaintained.com/project/biancode/node-red-contrib-modbus "Average time to resolve an issue")
 
