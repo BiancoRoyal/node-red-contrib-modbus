@@ -264,6 +264,7 @@ de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
 
   if (!msg) {
     nodeLog('New Connection message invalid.')
+    return false
   }
 
   switch (msg.payload.connectorType) {
@@ -313,6 +314,8 @@ de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
   if (msg.payload.reconnectTimeout) {
     node.reconnectTimeout = parseInt(msg.payload.reconnectTimeout) || node.reconnectTimeout
   }
+
+  return true
 }
 
 de.biancoroyal.modbus.core.client.messagesAllowedStates = ['activated', 'queueing', 'empty']

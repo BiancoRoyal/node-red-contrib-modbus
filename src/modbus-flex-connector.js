@@ -39,6 +39,28 @@ module.exports = function (RED) {
     modbusClient.registerForModbus(node)
     mbBasics.initModbusClientEvents(node, modbusClient)
 
+    node.onConfigDone = function (msg) {
+      if (node.showStatusActivities) {
+        mbBasics.setNodeStatusTo('config done', node)
+      }
+      msg.config_change = 'emitted'
+      node.send(msg)
+    }
+
+    node.onConfigError = function (err, msg) {
+      internalDebugLog(err.message)
+      if (node.showErrors) {
+        node.error(err, msg)
+      }
+
+      if (node.emptyMsgOnFail) {
+        node.send({ payload: '', error: err, status: node.status, msg })
+      } else {
+        msg.error = err
+        node.send(msg)
+      }
+    }
+
     node.on('input', function (msg) {
       if (mbBasics.invalidPayloadIn(msg)) {
         return
@@ -55,9 +77,7 @@ module.exports = function (RED) {
       if (msg.payload.connectorType) {
         internalDebugLog('dynamicReconnect: ' + JSON.stringify(msg.payload))
         msg.payload.emptyQueue = node.emptyQueue
-        modbusClient.emit('dynamicReconnect', msg)
-        msg.payload.config_change = 'emitted'
-        node.send(msg)
+        modbusClient.emit('dynamicReconnect', msg, node.onConfigDone, node.onConfigError)
       } else {
         const errorMessage = 'Payload Not Valid - Connector Type'
         node.error(new Error(errorMessage), msg)
