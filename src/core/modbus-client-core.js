@@ -31,25 +31,29 @@ de.biancoroyal.modbus.core.client.createStateMachineService = function () {
         on: { INIT: 'init', BREAK: 'broken', STOP: 'stopped' }
       },
       broken: {
-        on: { INIT: 'init', STOP: 'stopped', FAILURE: 'failed', CLOSE: 'closed', ACTIVATE: 'activated' }
+        on: { INIT: 'init', STOP: 'stopped', FAILURE: 'failed', ACTIVATE: 'activated', RECONNECT: 'reconnecting' }
+      },
+      reconnecting: {
+        on: { INIT: 'init', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' }
       },
       init: {
-        on: { OPENSERIAL: 'opened', CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed' }
+        on: { OPENSERIAL: 'opened', CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' }
       },
       opened: {
-        on: { CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed' }
+        on: { CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', STOP: 'stopped' }
       },
       connected: {
-        on: { CLOSE: 'closed', ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed' }
+        on: { CLOSE: 'closed', ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' }
       },
       activated: {
         on: {
-          CLOSE: 'closed',
           READ: 'reading',
           WRITE: 'writing',
           QUEUE: 'queueing',
           BREAK: 'broken',
-          FAILURE: 'failed'
+          CLOSE: 'closed',
+          FAILURE: 'failed',
+          STOP: 'stopped'
         }
       },
       queueing: {
@@ -58,15 +62,16 @@ de.biancoroyal.modbus.core.client.createStateMachineService = function () {
           READ: 'reading',
           WRITE: 'writing',
           EMPTY: 'empty',
-          FAILURE: 'failed',
           BREAK: 'broken',
-          CLOSE: 'closed'
+          CLOSE: 'closed',
+          FAILURE: 'failed',
+          STOP: 'stopped'
         }
       },
-      empty: { on: { QUEUE: 'queueing', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed' } },
-      reading: { on: { ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed' } },
-      writing: { on: { ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed' } },
-      closed: { on: { FAILURE: 'failed', BREAK: 'broken', CONNECT: 'connected' } },
+      empty: { on: { QUEUE: 'queueing', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', STOP: 'stopped' } },
+      reading: { on: { ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' } },
+      writing: { on: { ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' } },
+      closed: { on: { FAILURE: 'failed', BREAK: 'broken', CONNECT: 'connected', RECONNECT: 'reconnecting', INIT: 'init', STOP: 'stopped' } },
       failed: { on: { CLOSE: 'closed', BREAK: 'broken', STOP: 'stopped' } },
       stopped: { on: { NEW: 'new', STOP: 'stopped' } }
     }
@@ -270,7 +275,7 @@ de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
     return false
   }
 
-  switch (msg.payload.connectorType) {
+  switch (msg.payload.connectorType.toUpperCase()) {
     case 'TCP':
       node.tcpHost = msg.payload.tcpHost || node.tcpHost
       node.tcpPort = msg.payload.tcpPort || node.tcpPort
