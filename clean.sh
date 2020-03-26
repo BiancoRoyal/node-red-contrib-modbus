@@ -2,6 +2,8 @@
 
 rm -rf node_modules/
 
+rm -rf modbus/
+
 rm package-lock.json
 
 npm cache verify
