@@ -22,24 +22,25 @@ de.biancoroyal.modbus.core.client.networkErrors = ['ESOCKETTIMEDOUT', 'ETIMEDOUT
 de.biancoroyal.modbus.core.client.createStateMachineService = function () {
   this.stateLogEnabled = false
 
+  // failure is a general gate point in states to jump between states
   return this.XStateFSM.createMachine({
     id: 'modbus',
     initial: 'new',
     states: {
       new: {
-        on: { INIT: 'init', STOP: 'stopped' }
+        on: { INIT: 'init', BREAK: 'broken', STOP: 'stopped' }
       },
       broken: {
-        on: { INIT: 'init', STOP: 'stopped', FAILURE: 'failed', CLOSE: 'closed', ACTIVATE: 'activated' }
+        on: { INIT: 'init', STOP: 'stopped', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', ACTIVATE: 'activated' }
       },
       init: {
-        on: { OPENSERIAL: 'opened', CONNECT: 'connected', FAILURE: 'failed' }
+        on: { OPENSERIAL: 'opened', CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed' }
       },
       opened: {
-        on: { CONNECT: 'connected', FAILURE: 'failed', CLOSE: 'closed' }
+        on: { CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed' }
       },
       connected: {
-        on: { CLOSE: 'closed', ACTIVATE: 'activated', FAILURE: 'failed' }
+        on: { CLOSE: 'closed', ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed' }
       },
       activated: {
         on: {
@@ -47,6 +48,7 @@ de.biancoroyal.modbus.core.client.createStateMachineService = function () {
           READ: 'reading',
           WRITE: 'writing',
           QUEUE: 'queueing',
+          BREAK: 'broken',
           FAILURE: 'failed'
         }
       },
@@ -57,12 +59,13 @@ de.biancoroyal.modbus.core.client.createStateMachineService = function () {
           WRITE: 'writing',
           EMPTY: 'empty',
           FAILURE: 'failed',
+          BREAK: 'broken',
           CLOSE: 'closed'
         }
       },
-      empty: { on: { QUEUE: 'queueing', FAILURE: 'failed', CLOSE: 'closed' } },
-      reading: { on: { ACTIVATE: 'activated', FAILURE: 'failed' } },
-      writing: { on: { ACTIVATE: 'activated', FAILURE: 'failed' } },
+      empty: { on: { QUEUE: 'queueing', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed' } },
+      reading: { on: { ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed' } },
+      writing: { on: { ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed' } },
       closed: { on: { FAILURE: 'failed', BREAK: 'broken', CONNECT: 'connected' } },
       failed: { on: { CLOSE: 'closed', BREAK: 'broken', STOP: 'stopped' } },
       stopped: { on: { NEW: 'new', STOP: 'stopped' } }

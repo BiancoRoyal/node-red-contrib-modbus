@@ -179,7 +179,7 @@ module.exports = function (RED) {
       }
 
       if (state.matches('failed')) {
-        node.emit('mberror', 'FSM Reset On State ' + JSON.stringify(state))
+        node.emit('mberror', 'Modbus Failure Handling On State ' + JSON.stringify(state))
         node.stateService.send('BREAK')
       }
 
@@ -442,7 +442,7 @@ module.exports = function (RED) {
     node.setMaxListeners(unlimitedListeners)
 
     node.on('reconnect', function () {
-      node.stateService.send('FAILURE')
+      node.stateService.send('BREAK')
       node.stateService.send('CLOSE')
     })
 
@@ -458,11 +458,12 @@ module.exports = function (RED) {
         cberr(new Error('Message Or Payload Not Valid'), msg)
       }
       coreModbusClient.internalDebug('Dynamic Reconnect Starts on actual state ' + node.actualServiceState.value)
+      node.stateService.send('BREAK')
       node.stateService.send('CLOSE')
     })
 
     node.on('close', function (done) {
-      node.stateService.send('FAILURE')
+      node.stateService.send('BREAK')
       node.stateService.send('CLOSE')
       node.stateService.send('STOP')
       verboseLog('close node')
