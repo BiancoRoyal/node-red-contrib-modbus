@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2017,2018 Klaus Landsdorf (https://bianco-royal.com/)
+ Copyright (c) 2017,2018,2019,2020 Klaus Landsdorf (https://bianco-royal.com/)
  All rights reserved.
  node-red-contrib-modbus - The BSD 3-Clause License
 
@@ -56,8 +56,13 @@ module.exports = function (RED) {
         internalDebugLog('dynamicReconnect: ' + JSON.stringify(msg.payload))
         msg.payload.emptyQueue = node.emptyQueue
         modbusClient.emit('dynamicReconnect', msg)
+        msg.payload.config_change = 'emitted'
+        node.send(msg)
       } else {
-        node.error(new Error('Payload Not Valid - Connector Type'), msg)
+        const errorMessage = 'Payload Not Valid - Connector Type'
+        node.error(new Error(errorMessage), msg)
+        msg.error = errorMessage
+        node.send(msg)
       }
     })
   }
