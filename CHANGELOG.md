@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.4.0-alpha.4](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.4.0-alpha.3...v5.4.0-alpha.4) (2020-03-27)
+
+
+### Bug Fixes
+
+* needs new on re-register nodes ([464662b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/464662b711a92ad94691cf266e9ebff5ac0ca4ce))
+
 ## [5.4.0-alpha.3](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.4.0-alpha.2...v5.4.0-alpha.3) (2020-03-26)
 
 
