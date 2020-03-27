@@ -32,7 +32,7 @@ module.exports = function (RED) {
     const serialConnectionDelayTimeMS = 500
     const timeoutTimeMS = 1000
     const reconnectTimeMS = 2000
-    const logHintText = 'Get More About It By Logging'
+    const logHintText = ' Get More About It By Logging'
 
     this.clienttype = config.clienttype
     this.bufferCommands = config.bufferCommands
@@ -188,12 +188,12 @@ module.exports = function (RED) {
       }
 
       if (state.matches('failed')) {
-        node.emit('mberror', 'Modbus Failure ' + logHintText)
+        node.emit('mberror', 'Modbus Failure On State ' + node.actualServiceStateBefore.value + logHintText)
         node.stateService.send('BREAK')
       }
 
       if (state.matches('broken')) {
-        node.emit('mbbroken', 'Modbus Broken ' + logHintText)
+        node.emit('mbbroken', 'Modbus Broken On State ' + node.actualServiceStateBefore.value + logHintText)
         if (node.reconnectOnTimeout) {
           if (node.reconnectTimeout <= 0) {
             node.reconnectTimeout = reconnectTimeMS
@@ -480,7 +480,9 @@ module.exports = function (RED) {
     })
 
     node.on('close', function (done) {
+      verboseLog('stop fsm on close')
       node.stateService.send('STOP')
+      node.stateMachine = null
       verboseLog('close node')
       if (node.client) {
         node.client.close(function () {
@@ -502,6 +504,7 @@ module.exports = function (RED) {
       node.registeredNodeList[modbusNode.id] = modbusNode
       if (Object.keys(node.registeredNodeList).length === 1) {
         node.closingModbus = false
+        node.stateService.send('NEW')
         node.stateService.send('INIT')
       }
     }
