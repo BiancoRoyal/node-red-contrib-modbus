@@ -21,8 +21,13 @@
 
 Based on [modbus-serial][2] with TCP, C701, Telnet, Serial, RTU buffered, and ASCII
 
-* stress tested with Node-RED v1.0 and Node.js v10 and 12 LTS
+* stress tested with Node-RED v1.0.4 and Node.js LTS
 * works with queueing per unit and round robin scheduling
+
+Node-RED v1.x versions:
+* Node.JS 13.x is beta supported with v5.x
+* Node.JS 12.x is supported with v5.x
+* Node.JS 10.x is supported with v5.x
 
 Node-RED v0.x versions:
 * Node.JS 10.x is supported with v4.x
@@ -130,7 +135,7 @@ since April 2016 by [Klaus Landsdorf][4]
 
 ### History
 
-* contribution in 2016 by [iurly][6]
+* contribution since 2016 by [Contributors][6]
 * license changed in 2016 by [Jason D. Harper][7]
 * started in early 2015 by [Mika Karaila][5]
 
@@ -139,12 +144,12 @@ since April 2016 by [Klaus Landsdorf][4]
 [3]:https://flows.nodered.org/flow/bf06a87e84395e4bce276714c6f5f884
 [4]:https://github.com/biancode
 [5]:https://github.com/mikakaraila
-[6]:https://github.com/iurly
+[6]:https://github.com/BiancoRoyal/node-red-contrib-modbus/graphs/contributors
 [7]:https://github.com/jayharper
 [8]:http://www.modbus.org/
 [9]:http://bit.ly/2jzwjqP
-[10]:https://github.com/biancode/node-red-contrib-modbus/wiki
+[10]:https://github.com/BiancoRoyal/node-red-contrib-modbus/wiki
 [11]:https://bianco-royal.cloud/supporter/
-[12]:https://github.com/biancode/node-red-contrib-modbus
+[12]:https://github.com/BiancoRoyal/node-red-contrib-modbus
 [13]:https://www.npmjs.com/package/jsmodbus
 [14]:https://www.npmjs.com/package/serialport
