@@ -8,7 +8,8 @@
       "address": "Address",
       "quantity": "Quantity",
       "simpleNegatives": "Negative UInt",
-      "server": "Server"
+      "server": "Server",
+      "emptyMsgOnFail": "Empty msg on fail"
     }
   }
 }

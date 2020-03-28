@@ -80,6 +80,8 @@
 
         switch (clientTypeSelector.val()) {
           case 'tcp':
+            $('#node-config-input-parallelUnitIdsAllowed').prop('checked', true)
+
             inputsSerialExtras.hide()
             inputsSerial.hide()
             inputsTCP.show()
@@ -108,6 +110,8 @@
             break
           case 'serial':
           case 'simpleser':
+            $('#node-config-input-parallelUnitIdsAllowed').prop('checked', false)
+
             if (clientTypeSelector.val() === 'simpleser') {
               inputsSerialExtras.hide()
               node.serialDatabits.value = 8
@@ -119,6 +123,7 @@
 
             inputsSerial.show()
             inputsTCP.hide()
+
 
             if (node.tcpHost) {
               node.tcpHost.required = false
@@ -214,7 +219,7 @@
         <div class="form-row">
             <label for="node-config-input-serialPort"><i class="fa fa-random"></i> <span data-i18n="modbus-contrib.label.serialport"></span></label>
             <input type="text" id="node-config-input-serialPort" style="width:60%;" placeholder="/dev/ttyUSB or COM4">
-            <a id="node-config-lookup-serial" class="btn"><i id="node-config-lookup-serial-icon" class="fa fa-search"></i></a>
+            <a id="node-config-lookup-serial" class="red-ui-button"><i id="node-config-lookup-serial-icon" class="fa fa-search"></i></a>
         </div>
         <div class="form-row">
             <label for="node-config-input-serialType"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.serialType"></span></label>

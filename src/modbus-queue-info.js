@@ -30,6 +30,8 @@ module.exports = function (RED) {
     this.errorOnHighLevel = config.errorOnHighLevel
     this.queueReadIntervalTime = config.queueReadIntervalTime || 1000
 
+    this.internalDebugLog = internalDebugLog
+
     const node = this
     node.queueReadInterval = null
     mbBasics.setNodeStatusTo('waiting', node)

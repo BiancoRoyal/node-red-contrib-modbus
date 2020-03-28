@@ -21,7 +21,7 @@ de.biancoroyal.modbus.core.getOriginalMessage = function (messageList, msg) {
 
   if (origMsg && origMsg.messageId) {
     if (!messageList.delete(origMsg.messageId)) {
-      this.internalDebug('WARNING: getOriginalMessage could not delete message from map ' + origMsg.messageId)
+      de.biancoroyal.modbus.core.internalDebug('WARNING: getOriginalMessage could not delete message from map ' + origMsg.messageId)
     }
   } else {
     de.biancoroyal.modbus.core.internalDebug('Message Not Found ' + msg.payload.messageId)

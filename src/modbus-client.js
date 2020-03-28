@@ -32,6 +32,7 @@ module.exports = function (RED) {
     const serialConnectionDelayTimeMS = 500
     const timeoutTimeMS = 1000
     const reconnectTimeMS = 2000
+    const logHintText = ' Get More About It By Logging'
 
     this.clienttype = config.clienttype
     this.bufferCommands = config.bufferCommands
@@ -73,6 +74,7 @@ module.exports = function (RED) {
     node.actualServiceState = node.stateMachine.initialState
     node.actualServiceStateBefore = node.actualServiceState
     node.stateService = coreModbusClient.startStateService(node.stateMachine)
+    node.reconnectTimeoutId = 0
 
     node.setUnitIdFromPayload = function (msg) {
       const unit = parseInt(msg.payload.unitid)
@@ -134,19 +136,21 @@ module.exports = function (RED) {
       if (state.matches('init')) {
         node.updateServerinfo()
         coreModbusQueue.initQueue(node)
+        node.reconnectTimeoutId = 0
 
         try {
           if (node.isFirstInitOfConnection) {
             node.isFirstInitOfConnection = false
+            verboseWarn('init in ' + serialConnectionDelayTimeMS + ' ms')
             setTimeout(node.connectClient, serialConnectionDelayTimeMS)
           } else {
+            verboseWarn('init in ' + node.reconnectTimeout + ' ms')
             setTimeout(node.connectClient, node.reconnectTimeout)
           }
         } catch (err) {
-          node.error(err, { payload: 'client connection error' })
+          node.error(err, { payload: 'client connection error ' + logHintText })
         }
 
-        verboseWarn('reconnect in ' + node.reconnectTimeout + ' ms')
         node.emit('mbinit')
       }
 
@@ -175,27 +179,42 @@ module.exports = function (RED) {
 
       if (state.matches('closed')) {
         node.emit('mbclosed')
-        node.stateService.send('BREAK')
+        node.stateService.send('RECONNECT')
+      }
+
+      if (state.matches('stopped')) {
+        verboseWarn('stopped state without reconnecting')
+        node.emit('mbclosed')
       }
 
       if (state.matches('failed')) {
-        node.emit('mberror', 'FSM Reset On State ' + JSON.stringify(state))
+        node.emit('mberror', 'Modbus Failure On State ' + node.actualServiceStateBefore.value + logHintText)
         node.stateService.send('BREAK')
       }
 
       if (state.matches('broken')) {
-        node.emit('mbbroken')
+        node.emit('mbbroken', 'Modbus Broken On State ' + node.actualServiceStateBefore.value + logHintText)
         if (node.reconnectOnTimeout) {
           if (node.reconnectTimeout <= 0) {
             node.reconnectTimeout = reconnectTimeMS
           }
+          node.stateService.send('RECONNECT')
+        } else {
+          verboseWarn('We stay active on broken state without reconnecting')
+          node.stateService.send('ACTIVATE')
+        }
+      }
+
+      if (state.matches('reconnecting')) {
+        node.emit('mbreconnecting')
+        if (!node.reconnectTimeoutId) {
+          if (node.reconnectTimeout <= 0) {
+            node.reconnectTimeout = reconnectTimeMS
+          }
           verboseWarn('try to reconnect by init in ' + node.reconnectTimeout + ' ms')
-          setTimeout(() => {
+          node.reconnectTimeoutId = setTimeout(() => {
             node.stateService.send('INIT')
           }, node.reconnectTimeout)
-        } else {
-          verboseWarn('stay active on broken state without reconnecting')
-          node.stateService.send('ACTIVATE')
         }
       }
     })
@@ -340,7 +359,7 @@ module.exports = function (RED) {
         coreModbusClient.modbusSerialDebug('modbusTcpErrorHandling:' + JSON.stringify(err))
       }
       if (err.errno && coreModbusClient.networkErrors.includes(err.errno)) {
-        node.stateService.send('FAILURE')
+        node.stateService.send('BREAK')
       }
     }
 
@@ -350,7 +369,7 @@ module.exports = function (RED) {
       } else {
         coreModbusClient.modbusSerialDebug('modbusSerialErrorHandling:' + JSON.stringify(err))
       }
-      node.stateService.send('FAILURE')
+      node.stateService.send('BREAK')
     }
 
     node.openSerialClient = function () {
@@ -365,7 +384,7 @@ module.exports = function (RED) {
       } else {
         verboseLog('wrong state on connect serial ' + node.actualServiceState.value)
         coreModbusClient.modbusSerialDebug('modbus connection not opened state is %s', node.actualServiceState.value)
-        node.stateService.send('FAILURE')
+        node.stateService.send('BREAK')
       }
     }
 
@@ -442,25 +461,28 @@ module.exports = function (RED) {
     node.setMaxListeners(unlimitedListeners)
 
     node.on('reconnect', function () {
-      node.stateService.send('FAILURE')
       node.stateService.send('CLOSE')
     })
 
-    node.on('dynamicReconnect', function (msg) {
+    node.on('dynamicReconnect', function (msg, cb, cberr) {
       if (mbBasics.invalidPayloadIn(msg)) {
         throw new Error('Message Or Payload Not Valid')
       }
 
       coreModbusClient.internalDebug('Dynamic Reconnect Parameters ' + JSON.stringify(msg.payload))
-      coreModbusClient.setNewNodeSettings(node, msg)
+      if (coreModbusClient.setNewNodeSettings(node, msg)) {
+        cb(msg)
+      } else {
+        cberr(new Error('Message Or Payload Not Valid'), msg)
+      }
       coreModbusClient.internalDebug('Dynamic Reconnect Starts on actual state ' + node.actualServiceState.value)
       node.stateService.send('CLOSE')
     })
 
     node.on('close', function (done) {
-      node.stateService.send('FAILURE')
-      node.stateService.send('CLOSE')
+      verboseLog('stop fsm on close')
       node.stateService.send('STOP')
+      node.stateMachine = null
       verboseLog('close node')
       if (node.client) {
         node.client.close(function () {
@@ -482,6 +504,7 @@ module.exports = function (RED) {
       node.registeredNodeList[modbusNode.id] = modbusNode
       if (Object.keys(node.registeredNodeList).length === 1) {
         node.closingModbus = false
+        node.stateService.send('NEW')
         node.stateService.send('INIT')
       }
     }
@@ -496,12 +519,9 @@ module.exports = function (RED) {
         node.closingModbus = true
         if (node.client) {
           node.client.close(function () {
-            node.stateService.send('CLOSE')
-            node.stateService.send('BREAK')
             node.stateService.send('STOP')
             done()
           }).catch(function (err) {
-            node.stateService.send('FAILURE')
             node.stateService.send('STOP')
             verboseLog(err.message)
             done()

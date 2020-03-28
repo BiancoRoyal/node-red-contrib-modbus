@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2017,2018 Klaus Landsdorf (https://bianco-royal.com/)
+ Copyright (c) 2017,2018,2019,2020 Klaus Landsdorf (https://bianco-royal.com/)
  All rights reserved.
  node-red-contrib-modbus - The BSD 3-Clause License
 
@@ -27,6 +27,8 @@ module.exports = function (RED) {
     this.showErrors = config.showErrors
     this.connection = null
 
+    this.internalDebugLog = internalDebugLog
+
     const node = this
     mbBasics.setNodeStatusTo('waiting', node)
 
@@ -36,6 +38,28 @@ module.exports = function (RED) {
     }
     modbusClient.registerForModbus(node)
     mbBasics.initModbusClientEvents(node, modbusClient)
+
+    node.onConfigDone = function (msg) {
+      if (node.showStatusActivities) {
+        mbBasics.setNodeStatusTo('config done', node)
+      }
+      msg.config_change = 'emitted'
+      node.send(msg)
+    }
+
+    node.onConfigError = function (err, msg) {
+      internalDebugLog(err.message)
+      if (node.showErrors) {
+        node.error(err, msg)
+      }
+
+      if (node.emptyMsgOnFail) {
+        node.send({ payload: '', error: err, status: node.status, msg })
+      } else {
+        msg.error = err
+        node.send(msg)
+      }
+    }
 
     node.on('input', function (msg) {
       if (mbBasics.invalidPayloadIn(msg)) {
@@ -53,9 +77,12 @@ module.exports = function (RED) {
       if (msg.payload.connectorType) {
         internalDebugLog('dynamicReconnect: ' + JSON.stringify(msg.payload))
         msg.payload.emptyQueue = node.emptyQueue
-        modbusClient.emit('dynamicReconnect', msg)
+        modbusClient.emit('dynamicReconnect', msg, node.onConfigDone, node.onConfigError)
       } else {
-        node.error(new Error('Payload Not Valid - Connector Type'), msg)
+        const errorMessage = 'Payload Not Valid - Connector Type'
+        node.error(new Error(errorMessage), msg)
+        msg.error = errorMessage
+        node.send(msg)
       }
     })
   }

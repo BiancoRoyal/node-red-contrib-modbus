@@ -37,6 +37,7 @@ module.exports = function (RED) {
     this.discreteBufferSize = parseInt(config.discreteBufferSize * bufferFactor)
 
     this.showErrors = config.showErrors
+    this.internalDebugLog = internalDebugLog
 
     const node = this
 

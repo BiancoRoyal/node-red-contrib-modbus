@@ -32,6 +32,8 @@ module.exports = function (RED) {
     this.adr = Number(config.adr)
     this.quantity = config.quantity
 
+    this.internalDebugLog = internalDebugLog
+
     const node = this
     node.bufferMessageList = new Map()
     mbBasics.setNodeStatusTo('waiting', node)

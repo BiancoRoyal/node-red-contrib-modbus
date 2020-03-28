@@ -22,32 +22,38 @@ de.biancoroyal.modbus.core.client.networkErrors = ['ESOCKETTIMEDOUT', 'ETIMEDOUT
 de.biancoroyal.modbus.core.client.createStateMachineService = function () {
   this.stateLogEnabled = false
 
+  // failure is a general gate point in states to jump between states
   return this.XStateFSM.createMachine({
     id: 'modbus',
     initial: 'new',
     states: {
       new: {
-        on: { INIT: 'init', STOP: 'stopped' }
+        on: { INIT: 'init', BREAK: 'broken', STOP: 'stopped' }
       },
       broken: {
-        on: { INIT: 'init', STOP: 'stopped', FAILURE: 'failed', CLOSE: 'closed', ACTIVATE: 'activated' }
+        on: { INIT: 'init', STOP: 'stopped', FAILURE: 'failed', ACTIVATE: 'activated', RECONNECT: 'reconnecting' }
+      },
+      reconnecting: {
+        on: { INIT: 'init', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' }
       },
       init: {
-        on: { OPENSERIAL: 'opened', CONNECT: 'connected', FAILURE: 'failed' }
+        on: { OPENSERIAL: 'opened', CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' }
       },
       opened: {
-        on: { CONNECT: 'connected', FAILURE: 'failed', CLOSE: 'closed' }
+        on: { CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', STOP: 'stopped' }
       },
       connected: {
-        on: { CLOSE: 'closed', ACTIVATE: 'activated', FAILURE: 'failed' }
+        on: { CLOSE: 'closed', ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' }
       },
       activated: {
         on: {
-          CLOSE: 'closed',
           READ: 'reading',
           WRITE: 'writing',
           QUEUE: 'queueing',
-          FAILURE: 'failed'
+          BREAK: 'broken',
+          CLOSE: 'closed',
+          FAILURE: 'failed',
+          STOP: 'stopped'
         }
       },
       queueing: {
@@ -56,14 +62,16 @@ de.biancoroyal.modbus.core.client.createStateMachineService = function () {
           READ: 'reading',
           WRITE: 'writing',
           EMPTY: 'empty',
+          BREAK: 'broken',
+          CLOSE: 'closed',
           FAILURE: 'failed',
-          CLOSE: 'closed'
+          STOP: 'stopped'
         }
       },
-      empty: { on: { QUEUE: 'queueing', FAILURE: 'failed', CLOSE: 'closed' } },
-      reading: { on: { ACTIVATE: 'activated', FAILURE: 'failed' } },
-      writing: { on: { ACTIVATE: 'activated', FAILURE: 'failed' } },
-      closed: { on: { FAILURE: 'failed', BREAK: 'broken', CONNECT: 'connected' } },
+      empty: { on: { QUEUE: 'queueing', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', STOP: 'stopped' } },
+      reading: { on: { ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' } },
+      writing: { on: { ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' } },
+      closed: { on: { FAILURE: 'failed', BREAK: 'broken', CONNECT: 'connected', RECONNECT: 'reconnecting', INIT: 'init', STOP: 'stopped' } },
       failed: { on: { CLOSE: 'closed', BREAK: 'broken', STOP: 'stopped' } },
       stopped: { on: { NEW: 'new', STOP: 'stopped' } }
     }
@@ -82,6 +90,14 @@ de.biancoroyal.modbus.core.client.checkUnitId = function (unitid, clientType) {
   }
 }
 
+de.biancoroyal.modbus.core.client.getLogFunction = function (node) {
+  if (node.internalDebugLog) {
+    return node.internalDebugLog
+  } else {
+    return de.biancoroyal.modbus.core.client.internalDebug
+  }
+}
+
 de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
   if (!node.client) {
     return
@@ -93,6 +109,8 @@ de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
 
   node.setUnitIdFromPayload(msg)
   node.client.setTimeout(node.clientTimeout)
+
+  const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
 
   node.queueLog(JSON.stringify({
     info: 'read msg',
@@ -147,11 +165,11 @@ de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
       default:
         node.activateSending(msg)
         cberr(new Error('Function Code Unknown'), msg)
-        this.internalDebug('Function Code Unknown %s', msg.payload.fc)
+        nodeLog('Function Code Unknown %s', msg.payload.fc)
         break
     }
   } catch (e) {
-    this.internalDebug(e.message)
+    nodeLog(e.message)
     node.modbusErrorHandling(e)
   }
 }
@@ -167,6 +185,8 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
 
   node.setUnitIdFromPayload(msg)
   node.client.setTimeout(node.clientTimeout)
+
+  const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
 
   node.queueLog(JSON.stringify({
     info: 'write msg',
@@ -238,27 +258,29 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
       default:
         node.activateSending(msg)
         cberr(new Error('Function Code Unknown'), msg)
-        this.internalDebug('Function Code Unknown %s', msg.payload.fc)
+        nodeLog('Function Code Unknown %s', msg.payload.fc)
         break
     }
   } catch (e) {
-    this.internalDebug(e.message)
+    nodeLog(e.message)
     node.modbusErrorHandling(e)
   }
 }
 
 de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
+  const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
+
   if (!msg) {
-    this.internalDebug('New Connection message invalid.')
+    nodeLog('New Connection message invalid.')
+    return false
   }
 
-  switch (msg.payload.connectorType) {
+  switch (msg.payload.connectorType.toUpperCase()) {
     case 'TCP':
       node.tcpHost = msg.payload.tcpHost || node.tcpHost
       node.tcpPort = msg.payload.tcpPort || node.tcpPort
       node.tcpType = msg.payload.tcpType || node.tcpType
-
-      this.internalDebug('New Connection Data ' + node.tcpHost + ' ' + node.tcpPort + ' ' + node.tcpType)
+      nodeLog('New Connection Data ' + node.tcpHost + ' ' + node.tcpPort + ' ' + node.tcpType)
       break
 
     case 'SERIAL':
@@ -278,11 +300,11 @@ de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
       if (msg.payload.serialConnectionDelay) {
         node.serialConnectionDelay = parseInt(msg.payload.serialConnectionDelay) || node.serialConnectionDelay
       }
-      this.internalDebug('New Connection Data ' + node.serialPort + ' ' + node.serialBaudrate + ' ' + node.serialType)
+      nodeLog('New Connection Data ' + node.serialPort + ' ' + node.serialBaudrate + ' ' + node.serialType)
       break
 
     default:
-      this.internalDebug('Unknown Dynamic Reconnect Type ' + msg.payload.connectorType)
+      nodeLog('Unknown Dynamic Reconnect Type ' + msg.payload.connectorType)
   }
 
   if (msg.payload.unitId) {
@@ -300,6 +322,8 @@ de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
   if (msg.payload.reconnectTimeout) {
     node.reconnectTimeout = parseInt(msg.payload.reconnectTimeout) || node.reconnectTimeout
   }
+
+  return true
 }
 
 de.biancoroyal.modbus.core.client.messagesAllowedStates = ['activated', 'queueing', 'empty']

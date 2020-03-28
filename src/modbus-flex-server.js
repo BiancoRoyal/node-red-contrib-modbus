@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2017,2018 Klaus Landsdorf (https://bianco-royal.com/)
+ Copyright (c) 2017,2018,2019,2020 Klaus Landsdorf (https://bianco-royal.com/)
  All rights reserved.
  node-red-contrib-modbus - The BSD 3-Clause License
 
@@ -40,6 +40,8 @@ module.exports = function (RED) {
 
     this.funcSetCoil = new VMScript(config.funcSetCoil).compile()
     this.funcSetRegister = new VMScript(config.funcSetRegister).compile()
+
+    this.internalDebugLog = internalDebugLog
 
     const node = this
     node.bufferFactor = 8
