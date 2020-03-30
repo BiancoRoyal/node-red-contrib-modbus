@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.5.0-beta.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.4.1-beta.1...v5.5.0-beta.0) (2020-03-30)
+
+
+### Features
+
+* faster client with clean timeouts and less states ([cdf4735](https://github.com/biancoroyal/node-red-contrib-modbus/commit/cdf473529d01d73d94fa82019884649e70a213bf))
+
+
+### Bug Fixes
+
+* response delay in server in not available  for now ([4542763](https://github.com/biancoroyal/node-red-contrib-modbus/commit/45427637a5a18a3a345594311e2eae1969fdea2f))
+
 ### [5.4.1-beta.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.4.1-beta.0...v5.4.1-beta.1) (2020-03-30)
 
 
