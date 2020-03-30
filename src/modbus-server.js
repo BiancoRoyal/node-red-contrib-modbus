@@ -28,7 +28,7 @@ module.exports = function (RED) {
     this.logEnabled = config.logEnabled
     this.hostname = config.hostname || '0.0.0.0'
     this.serverPort = parseInt(config.serverPort)
-    this.responseDelay = parseInt(config.responseDelay)
+    this.responseDelay = parseInt(config.responseDelay) || 1
     this.delayUnit = config.delayUnit
 
     this.coilsBufferSize = parseInt(config.coilsBufferSize * bufferFactor)
