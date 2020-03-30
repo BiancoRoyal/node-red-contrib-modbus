@@ -26,37 +26,42 @@ de.biancoroyal.modbus.queue.core.initQueue = function (node) {
 }
 
 de.biancoroyal.modbus.queue.core.checkQueuesAreEmpty = function (node) {
-  let queueIsEmpty = true
+  let queueAreEmpty = true
   for (let step = 0; step <= 255; step++) {
-    queueIsEmpty &= (node.bufferCommandList.get(step).length > 0)
+    queueAreEmpty &= (node.bufferCommandList.get(step).length === 0)
   }
-  return queueIsEmpty
+  return queueAreEmpty
 }
 
 de.biancoroyal.modbus.queue.core.sequentialDequeueCommand = function (node) {
-  const queueCore = de.biancoroyal.modbus.queue.core
-  const nodesToWaitCount = node.unitSendingAllowed.length
-  const serialUnit = parseInt(node.unitSendingAllowed.shift())
+  return new Promise(
+    function (resolve, reject) {
+      const queueCore = de.biancoroyal.modbus.queue.core
+      const nodesToWaitCount = node.unitSendingAllowed.length
+      const serialUnit = parseInt(node.unitSendingAllowed.shift())
 
-  if (!Number.isInteger(serialUnit)) {
-    node.queueLog(JSON.stringify({
-      type: 'serial unit check is not a valid unitId',
-      unitid: serialUnit
-    }))
-  } else {
-    if (node.bufferCommandList.get(serialUnit).length > 0) {
-      if (node.parallelUnitIdsAllowed) {
-        queueCore.sendDataInParallel(node, serialUnit, nodesToWaitCount)
+      if (!Number.isInteger(serialUnit)) {
+        node.queueLog(JSON.stringify({
+          type: 'serial unit check is not a valid unitId',
+          unitid: serialUnit
+        }))
+        reject(new Error('serial unit check is not a valid unitId'))
       } else {
-        queueCore.sendDataPerDevice(node, serialUnit, nodesToWaitCount)
+        if (node.bufferCommandList.get(serialUnit).length > 0) {
+          if (node.parallelUnitIdsAllowed) {
+            queueCore.sendDataInParallel(node, serialUnit, nodesToWaitCount)
+          } else {
+            queueCore.sendDataPerDevice(node, serialUnit, nodesToWaitCount)
+          }
+        } else {
+          node.queueLog(JSON.stringify({
+            type: 'queue is is empty for unitId',
+            unitid: serialUnit
+          }))
+        }
+        resolve()
       }
-    } else {
-      node.queueLog(JSON.stringify({
-        type: 'queue is is empty for unitId',
-        unitid: serialUnit
-      }))
-    }
-  }
+    })
 }
 
 de.biancoroyal.modbus.queue.core.sendDataInParallel = function (node, serialUnit, nodesToWaitCount) {
@@ -77,6 +82,7 @@ de.biancoroyal.modbus.queue.core.sendDataInParallel = function (node, serialUnit
       node.queueLog(JSON.stringify({
         type: 'unitId sending and wait',
         unitid: serialUnit,
+        nodesToWaitCount,
         // commandData: command,
         queueLength: node.bufferCommandList.get(serialUnit).length,
         sendAllowedForNext: node.sendAllowed.get(serialUnit),
@@ -108,7 +114,7 @@ de.biancoroyal.modbus.queue.core.sendDataPerDevice = function (node, serialUnit,
   if (node.sendToDeviceAllowed.length === 0) {
     command = node.bufferCommandList.get(serialUnit).shift()
     if (command) {
-      node.sendToDeviceAllowed.push(serialUnit)
+      node.sendToDeviceAllowed.push(serialUnit) // FSM will reset this with a shift on the list
       node.queueLog(JSON.stringify({
         type: 'device sending and wait',
         unitid: serialUnit,
@@ -146,7 +152,19 @@ de.biancoroyal.modbus.queue.core.dequeueCommand = function (node) {
       delay: node.commandDelay
     }))
 
-    queueCore.sequentialDequeueCommand(node)
+    queueCore.sequentialDequeueCommand(node).then(function () {
+      node.queueLog(JSON.stringify({
+        state: state.value,
+        message: 'dequeue command done ' + node.clienttype,
+        delay: node.commandDelay
+      }))
+    }).catch(function (err) {
+      node.queueLog(JSON.stringify({
+        state: state.value,
+        message: 'dequeue command error ' + err.message,
+        delay: node.commandDelay
+      }))
+    })
   }
 }
 
@@ -161,34 +179,38 @@ de.biancoroyal.modbus.queue.core.getQueueNumber = function (node, msg) {
 }
 
 de.biancoroyal.modbus.queue.core.pushToQueueByUnitId = function (node, callModbus, msg, cb, cberr) {
-  const unit = parseInt(msg.payload.unitid)
+  return new Promise(
+    function (resolve, reject) {
+      const unit = parseInt(msg.payload.unitid)
 
-  if (Number.isInteger(unit)) {
-    msg.queueUnit = unit
-    node.queueLog(JSON.stringify({
-      info: 'push to Queue by Unit-Id',
-      message: msg.payload,
-      unit: unit,
-      sendingListLength: node.unitSendingAllowed.length
-    }))
+      if (Number.isInteger(unit)) {
+        msg.queueUnit = unit
+        node.queueLog(JSON.stringify({
+          info: 'push to Queue by Unit-Id',
+          message: msg.payload,
+          unit: unit,
+          sendingListLength: node.unitSendingAllowed.length
+        }))
 
-    node.unitSendingAllowed.push(unit)
-    node.bufferCommandList.get(unit).push({ callModbus: callModbus, msg: msg, cb: cb, cberr: cberr })
-  } else {
-    msg.queueUnit = node.unit_id
-    node.queueLog(JSON.stringify({
-      info: 'push to Queue by default Unit-Id',
-      message: msg.payload,
-      unit: node.unit_id,
-      sendingListLength: node.unitSendingAllowed.length
-    }))
+        node.unitSendingAllowed.push(unit)
+        node.bufferCommandList.get(unit).push({ callModbus: callModbus, msg: msg, cb: cb, cberr: cberr })
+      } else {
+        msg.queueUnit = node.unit_id
+        node.queueLog(JSON.stringify({
+          info: 'push to Queue by default Unit-Id',
+          message: msg.payload,
+          unit: node.unit_id,
+          sendingListLength: node.unitSendingAllowed.length
+        }))
 
-    if (node.unitSendingAllowed.indexOf(node.unit_id) === -1) {
-      node.unitSendingAllowed.push(node.unit_id)
-    }
+        if (node.unitSendingAllowed.indexOf(node.unit_id) === -1) {
+          node.unitSendingAllowed.push(node.unit_id)
+        }
 
-    node.bufferCommandList.get(node.unit_id).push({ callModbus: callModbus, msg: msg, cb: cb, cberr: cberr })
-  }
+        node.bufferCommandList.get(node.unit_id).push({ callModbus: callModbus, msg: msg, cb: cb, cberr: cberr })
+      }
+      resolve()
+    })
 }
 
 module.exports = de.biancoroyal.modbus.queue.core

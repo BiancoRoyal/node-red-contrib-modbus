@@ -76,6 +76,7 @@ module.exports = function (RED) {
     node.actualServiceStateBefore = node.actualServiceState
     node.stateService = coreModbusClient.startStateService(node.stateMachine)
     node.reconnectTimeoutId = 0
+    node.queueTimeoutIdList = []
 
     node.setUnitIdFromPayload = function (msg) {
       const unit = parseInt(msg.payload.unitid)
@@ -164,13 +165,15 @@ module.exports = function (RED) {
         node.emit('mbactive')
         if (node.bufferCommands && !coreModbusQueue.checkQueuesAreEmpty(node)) {
           node.stateService.send('QUEUE')
+        } else {
+          verboseLog('Queues Are Empty On Activated')
         }
       }
 
       if (state.matches('queueing')) {
-        setTimeout(() => {
+        node.queueTimeoutIdList.push(setTimeout(() => {
           coreModbusQueue.dequeueCommand(node)
-        }, node.commandDelay)
+        }, node.commandDelay))
         node.emit('mbqueue')
       }
 
@@ -399,21 +402,23 @@ module.exports = function (RED) {
       const state = node.actualServiceState
 
       if (node.messageAllowedStates.indexOf(state.value) === -1) {
-        cberr(new Error('FSM Not Ready To Read At State ' + state.value), msg)
+        cberr(new Error('Client Not Ready To Read At State ' + state.value), msg)
         return
       }
 
       if (node.bufferCommands) {
         msg.queueNumber = coreModbusQueue.getQueueNumber(node, msg)
-        coreModbusQueue.pushToQueueByUnitId(node, coreModbusClient.readModbus, msg, cb, cberr)
-        node.stateService.send('QUEUE')
-
-        node.queueLog(JSON.stringify({
-          info: 'queue read msg',
-          message: msg.payload,
-          state: state.value,
-          queueLength: node.bufferCommandList.get(msg.queueUnit).length
-        }))
+        coreModbusQueue.pushToQueueByUnitId(node, coreModbusClient.readModbus, msg, cb, cberr).then(function () {
+          node.queueLog(JSON.stringify({
+            info: 'queued read msg',
+            message: msg.payload,
+            state: state.value,
+            queueLength: node.bufferCommandList.get(msg.queueUnit).length
+          }))
+          node.stateService.send('QUEUE')
+        }).catch(function (err) {
+          cberr(err, msg)
+        })
       } else {
         coreModbusClient.readModbus(node, msg, cb, cberr)
       }
@@ -423,21 +428,23 @@ module.exports = function (RED) {
       const state = node.actualServiceState
 
       if (node.messageAllowedStates.indexOf(state.value) === -1) {
-        cberr(new Error('FSM Not Ready To Write At State ' + state.value), msg)
+        cberr(new Error('Client Not Ready To Write At State ' + state.value), msg)
         return
       }
 
       if (node.bufferCommands) {
         msg.queueNumber = coreModbusQueue.getQueueNumber(node, msg)
-        coreModbusQueue.pushToQueueByUnitId(node, coreModbusClient.writeModbus, msg, cb, cberr)
-        node.stateService.send('QUEUE')
-
-        node.queueLog(JSON.stringify({
-          info: 'queue write msg',
-          message: msg.payload,
-          state: state.value,
-          queueLength: node.bufferCommandList.get(msg.queueUnit).length
-        }))
+        coreModbusQueue.pushToQueueByUnitId(node, coreModbusClient.writeModbus, msg, cb, cberr).then(function () {
+          node.queueLog(JSON.stringify({
+            info: 'queued write msg',
+            message: msg.payload,
+            state: state.value,
+            queueLength: node.bufferCommandList.get(msg.queueUnit).length
+          }))
+          node.stateService.send('QUEUE')
+        }).catch(function (err) {
+          cberr(err, msg)
+        })
       } else {
         coreModbusClient.writeModbus(node, msg, cb, cberr)
       }
@@ -490,10 +497,15 @@ module.exports = function (RED) {
       node.stateService.send('CLOSE')
     })
 
+    node.cleanModbusTimeouts = function () {
+      node.queueTimeoutIdList.forEach(timerId => clearTimeout(timerId))
+    }
+
     node.on('close', function (done) {
       verboseLog('stop fsm on close')
       node.stateService.send('STOP')
       node.stateMachine = null
+      node.cleanModbusTimeouts()
       verboseLog('close node')
       if (node.client) {
         node.client.close(function () {
