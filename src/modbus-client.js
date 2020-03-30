@@ -444,18 +444,28 @@ module.exports = function (RED) {
     })
 
     node.activateSending = function (msg) {
-      const deviceId = node.sendToDeviceAllowed.shift()
-      if (node.bufferCommands) {
-        node.sendAllowed.set(msg.queueUnit, true)
+      return new Promise(
+        function (resolve, reject) {
+          const deviceId = node.sendToDeviceAllowed.shift()
+          if (node.bufferCommands) {
+            node.sendAllowed.set(msg.queueUnit, true)
 
-        node.queueLog(JSON.stringify({
-          info: 'queue response activate sending',
-          message: msg.payload,
-          queueLength: node.bufferCommandList.length,
-          serialUnitId: deviceId
-        }))
-      }
-      node.stateService.send('ACTIVATE')
+            node.queueLog(JSON.stringify({
+              info: 'queue response activate sending',
+              message: msg.payload,
+              queueLength: node.bufferCommandList.length,
+              queueUnit: msg.queueUnit,
+              serialUnitId: deviceId
+            }))
+          }
+
+          if (coreModbusQueue.checkQueuesAreEmpty(node)) {
+            node.stateService.send('EMPTY')
+          } else {
+            node.stateService.send('ACTIVATE')
+          }
+          resolve()
+        })
     }
 
     verboseLog('initialized')
