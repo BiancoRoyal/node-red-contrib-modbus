@@ -37,24 +37,25 @@ de.biancoroyal.modbus.queue.core.sequentialDequeueCommand = function (node) {
   const queueCore = de.biancoroyal.modbus.queue.core
   const nodesToWaitCount = node.unitSendingAllowed.length
   const serialUnit = parseInt(node.unitSendingAllowed.shift())
-  let noneCommandToSent = true
 
-  if (Number.isInteger(serialUnit) &&
-    node.bufferCommandList.get(serialUnit).length > 0) {
-    if (node.parallelUnitIdsAllowed) {
-      noneCommandToSent = queueCore.sendDataInParallel(node, serialUnit, nodesToWaitCount)
-    } else {
-      noneCommandToSent = queueCore.sendDataPerDevice(node, serialUnit, nodesToWaitCount)
-    }
-  } else {
+  if (!Number.isInteger(serialUnit)) {
     node.queueLog(JSON.stringify({
-      type: 'queue check is not a unit',
+      type: 'serial unit check is not a valid unitId',
       unitid: serialUnit
     }))
-  }
-
-  if (noneCommandToSent) {
-    node.stateService.send('EMPTY')
+  } else {
+    if (node.bufferCommandList.get(serialUnit).length > 0) {
+      if (node.parallelUnitIdsAllowed) {
+        queueCore.sendDataInParallel(node, serialUnit, nodesToWaitCount)
+      } else {
+        queueCore.sendDataPerDevice(node, serialUnit, nodesToWaitCount)
+      }
+    } else {
+      node.queueLog(JSON.stringify({
+        type: 'queue is is empty for unitId',
+        unitid: serialUnit
+      }))
+    }
   }
 }
 
@@ -63,7 +64,7 @@ de.biancoroyal.modbus.queue.core.sendDataInParallel = function (node, serialUnit
   let noneCommandToSent = true
 
   node.queueLog(JSON.stringify({
-    type: 'queue check',
+    type: 'queue send data in parallel',
     unitid: serialUnit,
     sendAllowed: node.sendAllowed.get(serialUnit),
     queueLength: node.bufferCommandList.get(serialUnit).length
@@ -74,7 +75,7 @@ de.biancoroyal.modbus.queue.core.sendDataInParallel = function (node, serialUnit
     if (command) {
       node.sendAllowed.set(serialUnit, false)
       node.queueLog(JSON.stringify({
-        type: 'serial sending and wait per unitid',
+        type: 'unitId sending and wait',
         unitid: serialUnit,
         // commandData: command,
         queueLength: node.bufferCommandList.get(serialUnit).length,
@@ -98,7 +99,7 @@ de.biancoroyal.modbus.queue.core.sendDataPerDevice = function (node, serialUnit,
   let noneCommandToSent = true
 
   node.queueLog(JSON.stringify({
-    type: 'queue check',
+    type: 'queue send data per device',
     unitid: serialUnit,
     sendAllowed: node.sendAllowed.get(serialUnit),
     queueLength: node.bufferCommandList.get(serialUnit).length
@@ -109,7 +110,7 @@ de.biancoroyal.modbus.queue.core.sendDataPerDevice = function (node, serialUnit,
     if (command) {
       node.sendToDeviceAllowed.push(serialUnit)
       node.queueLog(JSON.stringify({
-        type: 'serial sending and wait',
+        type: 'device sending and wait',
         unitid: serialUnit,
         // commandData: command,
         queueLength: node.bufferCommandList.get(serialUnit).length,
@@ -146,10 +147,6 @@ de.biancoroyal.modbus.queue.core.dequeueCommand = function (node) {
     }))
 
     queueCore.sequentialDequeueCommand(node)
-  }
-
-  if (queueCore.checkQueuesAreEmpty(node)) {
-    node.stateService.send('EMPTY')
   }
 }
 
