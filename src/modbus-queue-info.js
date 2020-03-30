@@ -15,6 +15,7 @@ module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
   const mbBasics = require('./modbus-basics')
+  const coreModbusQueue = require('./core/modbus-queue-core')
   const internalDebugLog = require('debug')('contribModbus:queue')
 
   function ModbusQueueInfo (config) {
@@ -183,7 +184,7 @@ module.exports = function (RED) {
       }
 
       if (msg && msg.resetQueue && modbusClient.bufferCommands) {
-        modbusClient.initQueue()
+        coreModbusQueue.initQueue(modbusClient)
         if (RED.settings.verbose) {
           const infoText = 'Init Queue By External Node'
           modbusClient.warn(infoText)
