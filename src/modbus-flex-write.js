@@ -53,10 +53,7 @@ module.exports = function (RED) {
         node.error(err, msg)
       }
 
-      if (node.emptyMsgOnFail) {
-        node.send({ payload: '', error: err, status: node.status, msg })
-      }
-
+      mbBasics.emptyMsgOnFail(node, err, msg)
       mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg))
     }
 
@@ -136,9 +133,7 @@ module.exports = function (RED) {
           node.error(err, msg)
         }
 
-        if (node.emptyMsgOnFail) {
-          node.send({ payload: '', error: err, status: node.status, msg })
-        }
+        mbBasics.emptyMsgOnFail(node, err, msg)
       }
 
       if (node.showStatusActivities) {

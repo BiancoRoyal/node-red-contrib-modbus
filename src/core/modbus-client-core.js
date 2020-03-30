@@ -98,6 +98,22 @@ de.biancoroyal.modbus.core.client.getLogFunction = function (node) {
   }
 }
 
+de.biancoroyal.modbus.core.client.activateSendingOnSuccess = function (node, cb, cberr, resp, msg) {
+  node.activateSending(msg).then(function () {
+    cb(resp, msg)
+  }).catch(function (err) {
+    cberr(err, msg)
+  })
+}
+
+de.biancoroyal.modbus.core.client.activateSendingOnFailure = function (node, cberr, err, msg) {
+  node.activateSending(msg).then(function () {
+    cberr(err, msg)
+  }).catch(function (err) {
+    cberr(err, msg)
+  })
+}
+
 de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
   if (!node.client) {
     return
@@ -110,6 +126,7 @@ de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
   node.setUnitIdFromPayload(msg)
   node.client.setTimeout(node.clientTimeout)
 
+  const coreClient = de.biancoroyal.modbus.core.client
   const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
 
   node.queueLog(JSON.stringify({
@@ -124,53 +141,45 @@ de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
     switch (parseInt(msg.payload.fc)) {
       case 1: // FC: 1
         node.client.readCoils(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-          node.activateSending(msg)
-          cb(resp, msg)
+          coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
         }).catch(function (err) {
-          node.activateSending(msg)
-          cberr(err, msg)
+          coreClient.activateSendingOnFailure(node, cberr, err, msg)
           node.modbusErrorHandling(err)
         })
         break
       case 2: // FC: 2
         node.client.readDiscreteInputs(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-          node.activateSending(msg)
-          cb(resp, msg)
+          coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
         }).catch(function (err) {
-          node.activateSending(msg)
-          cberr(err, msg)
+          coreClient.activateSendingOnFailure(node, cberr, err, msg)
           node.modbusErrorHandling(err)
         })
         break
       case 3: // FC: 3
         node.client.readHoldingRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-          node.activateSending(msg)
-          cb(resp, msg)
+          coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
         }).catch(function (err) {
-          node.activateSending(msg)
-          cberr(err, msg)
+          coreClient.activateSendingOnFailure(node, cberr, err, msg)
           node.modbusErrorHandling(err)
         })
         break
       case 4: // FC: 4
         node.client.readInputRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-          node.activateSending(msg)
-          cb(resp, msg)
+          coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
         }).catch(function (err) {
-          node.activateSending(msg)
-          cberr(err, msg)
+          coreClient.activateSendingOnFailure(node, cberr, err, msg)
           node.modbusErrorHandling(err)
         })
         break
       default:
-        node.activateSending(msg)
-        cberr(new Error('Function Code Unknown'), msg)
+        coreClient.activateSendingOnFailure(node, cberr, new Error('Function Code Unknown'), msg)
         nodeLog('Function Code Unknown %s', msg.payload.fc)
         break
     }
-  } catch (e) {
-    nodeLog(e.message)
-    node.modbusErrorHandling(e)
+  } catch (err) {
+    coreClient.activateSendingOnFailure(node, cberr, err, msg)
+    nodeLog(err.message)
+    node.modbusErrorHandling(err)
   }
 }
 
@@ -186,6 +195,7 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
   node.setUnitIdFromPayload(msg)
   node.client.setTimeout(node.clientTimeout)
 
+  const coreClient = de.biancoroyal.modbus.core.client
   const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
 
   node.queueLog(JSON.stringify({
@@ -200,13 +210,11 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
     switch (parseInt(msg.payload.fc)) {
       case 15: // FC: 15
         if (parseInt(msg.payload.value.length) !== parseInt(msg.payload.quantity)) {
-          node.activateSending(msg)
-          cberr(new Error('Quantity should be less or equal to coil payload array length: ' +
+          coreClient.activateSendingOnFailure(node, cberr, new Error('Quantity should be less or equal to coil payload array length: ' +
             msg.payload.value.length + ' Addr: ' + msg.payload.address + ' Q: ' + msg.payload.quantity), msg)
         } else {
           node.client.writeCoils(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
-            node.activateSending(msg)
-            cb(resp, msg)
+            coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
           }).catch(function (err) {
             node.activateSending(msg)
             cberr(err, msg)
@@ -221,49 +229,42 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
           msg.payload.value = false
         }
         node.client.writeCoil(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
-          node.activateSending(msg)
-          cb(resp, msg)
+          coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
         }).catch(function (err) {
-          node.activateSending(msg)
-          cberr(err, msg)
+          coreClient.activateSendingOnFailure(node, cberr, err, msg)
           node.modbusErrorHandling(err)
         })
         break
       case 16: // FC: 16
         if (parseInt(msg.payload.value.length) !== parseInt(msg.payload.quantity)) {
-          node.activateSending(msg)
-          cberr(new Error('Quantity should be less or equal to register payload array length: ' +
+          coreClient.activateSendingOnFailure(node, cberr, new Error('Quantity should be less or equal to register payload array length: ' +
             msg.payload.value.length + ' Addr: ' + msg.payload.address + ' Q: ' + msg.payload.quantity), msg)
         } else {
           node.client.writeRegisters(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
-            node.activateSending(msg)
-            cb(resp, msg)
+            coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
           }).catch(function (err) {
-            node.activateSending(msg)
-            cberr(err, msg)
+            coreClient.activateSendingOnFailure(node, cberr, err, msg)
             node.modbusErrorHandling(err)
           })
         }
         break
       case 6: // FC: 6
         node.client.writeRegister(parseInt(msg.payload.address), parseInt(msg.payload.value)).then(function (resp) {
-          node.activateSending(msg)
-          cb(resp, msg)
+          coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
         }).catch(function (err) {
-          node.activateSending(msg)
-          cberr(err, msg)
+          coreClient.activateSendingOnFailure(node, cberr, err, msg)
           node.modbusErrorHandling(err)
         })
         break
       default:
-        node.activateSending(msg)
-        cberr(new Error('Function Code Unknown'), msg)
+        coreClient.activateSendingOnFailure(node, cberr, new Error('Function Code Unknown'), msg)
         nodeLog('Function Code Unknown %s', msg.payload.fc)
         break
     }
-  } catch (e) {
-    nodeLog(e.message)
-    node.modbusErrorHandling(e)
+  } catch (err) {
+    coreClient.activateSendingOnFailure(node, cberr, err, msg)
+    nodeLog(err.message)
+    node.modbusErrorHandling(err)
   }
 }
 

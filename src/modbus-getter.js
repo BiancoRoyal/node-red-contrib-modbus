@@ -39,6 +39,7 @@ module.exports = function (RED) {
     this.useIOForPayload = config.useIOForPayload
     this.logIOActivities = config.logIOActivities
 
+    this.emptyMsgOnFail = config.emptyMsgOnFail
     this.internalDebugLog = internalDebugLog
 
     const node = this
@@ -64,6 +65,8 @@ module.exports = function (RED) {
       if (node.showErrors) {
         node.error(err, msg)
       }
+
+      mbBasics.emptyMsgOnFail(node, err, msg)
       mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg))
     }
 

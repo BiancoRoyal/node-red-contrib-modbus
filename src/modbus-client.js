@@ -36,6 +36,7 @@ module.exports = function (RED) {
 
     this.clienttype = config.clienttype
     this.bufferCommands = config.bufferCommands
+    this.queueLogEnabled = config.queueLogEnabled
     this.stateLogEnabled = config.stateLogEnabled
 
     this.tcpHost = config.tcpHost
@@ -123,7 +124,7 @@ module.exports = function (RED) {
     }
 
     node.queueLog = function (logMessage) {
-      if (node.bufferCommands) {
+      if (node.bufferCommands && node.queueLogEnabled) {
         verboseLog(logMessage)
       }
     }
@@ -161,7 +162,7 @@ module.exports = function (RED) {
 
       if (state.matches('activated')) {
         node.emit('mbactive')
-        if (node.bufferCommands) {
+        if (node.bufferCommands && !coreModbusQueue.checkQueuesAreEmpty(node)) {
           node.stateService.send('QUEUE')
         }
       }

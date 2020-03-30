@@ -264,4 +264,18 @@ de.biancoroyal.modbus.basics.invalidPayloadIn = function (msg) {
   return !(msg && Object.prototype.hasOwnProperty.call(msg, 'payload'))
 }
 
+de.biancoroyal.modbus.basics.emptyMsgOnFail = function (node, err, msg) {
+  if (node.emptyMsgOnFail) {
+    msg.payload = ''
+    if (err && err.message) {
+      msg.error = err
+    } else {
+      msg.error = new Error(err)
+    }
+    msg.error.nodeStatus = node.status
+
+    node.send([msg, msg])
+  }
+}
+
 module.exports = de.biancoroyal.modbus.basics

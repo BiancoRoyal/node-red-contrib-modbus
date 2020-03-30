@@ -3,6 +3,7 @@
     "label": {
       "type": "Type",
       "queueCommands": "Queue commands",
+      "queueLogEnabled": "Queue Logging",
       "stateLogEnabled": "Log states changes",
       "host": "Host",
       "port": "Port",
