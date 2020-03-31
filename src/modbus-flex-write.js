@@ -114,7 +114,7 @@ module.exports = function (RED) {
       return msg
     }
 
-    node.buildNewMsgObject = function (node, msg) {
+    node.buildNewMessageObject = function (node, msg) {
       return {
         topic: msg.topic || node.id,
         payload: {

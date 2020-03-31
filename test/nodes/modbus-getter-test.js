@@ -57,6 +57,7 @@ var testGetterFlowWithInject = [{
   ioFile: 'e0519b16.5fcdd',
   useIOForPayload: false,
   logIOActivities: true,
+  emptyMsgOnFail: false,
   wires: [
     [
       'h1'
@@ -150,6 +151,7 @@ var testGetterFlow = [{
   ioFile: 'e0519b16.5fcdd',
   useIOForPayload: false,
   logIOActivities: true,
+  emptyMsgOnFail: false,
   wires: [
     [
       'h1'
@@ -220,6 +222,7 @@ describe('Getter node Testing', function () {
         dataType: 'Coil',
         adr: 0,
         quantity: 1,
+        emptyMsgOnFail: false,
         server: '',
         wires: [[], [], []]
       }], function () {
@@ -240,6 +243,7 @@ describe('Getter node Testing', function () {
         dataType: 'Coil',
         adr: 0,
         quantity: 1,
+        emptyMsgOnFail: false,
         server: 'ce5293f4.1e1ac',
         wires: [[], [], []]
       }, {
@@ -324,6 +328,7 @@ describe('Getter node Testing', function () {
         useIOFile: false,
         ioFile: '',
         useIOForPayload: false,
+        emptyMsgOnFail: false,
         wires: [
           [
             'h1'
