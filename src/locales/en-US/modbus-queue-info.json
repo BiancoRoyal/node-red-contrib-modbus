@@ -8,7 +8,8 @@
       "highLevel": "High level",
       "highHighLevel": "High high level",
       "server": "Server",
-      "errorOnHighLevel": "Error on high level"
+      "errorOnHighLevel": "Error on high level",
+      "showActivities": "Show Activities"
     }
   }
 }

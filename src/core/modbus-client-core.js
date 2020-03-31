@@ -268,46 +268,32 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
   }
 }
 
-de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
-  const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
+de.biancoroyal.modbus.core.client.setNewTCPNodeSettings = function (node, msg) {
+  node.tcpHost = msg.payload.tcpHost || node.tcpHost
+  node.tcpPort = msg.payload.tcpPort || node.tcpPort
+  node.tcpType = msg.payload.tcpType || node.tcpType
+}
 
-  if (!msg) {
-    nodeLog('New Connection message invalid.')
-    return false
+de.biancoroyal.modbus.core.client.setNewSerialNodeSettings = function (node, msg) {
+  if (msg.payload.serialPort) {
+    node.serialPort = msg.payload.serialPort || node.serialPort
   }
 
-  switch (msg.payload.connectorType.toUpperCase()) {
-    case 'TCP':
-      node.tcpHost = msg.payload.tcpHost || node.tcpHost
-      node.tcpPort = msg.payload.tcpPort || node.tcpPort
-      node.tcpType = msg.payload.tcpType || node.tcpType
-      nodeLog('New Connection Data ' + node.tcpHost + ' ' + node.tcpPort + ' ' + node.tcpType)
-      break
-
-    case 'SERIAL':
-      if (msg.payload.serialPort) {
-        node.serialPort = msg.payload.serialPort || node.serialPort
-      }
-
-      if (msg.payload.serialBaudrate) {
-        node.serialBaudrate = parseInt(msg.payload.serialBaudrate) || node.serialBaudrate
-      }
-
-      node.serialDatabits = msg.payload.serialDatabits || node.serialDatabits
-      node.serialStopbits = msg.payload.serialStopbits || node.serialStopbits
-      node.serialParity = msg.payload.serialParity || node.serialParity
-      node.serialType = msg.payload.serialType || node.serialType
-
-      if (msg.payload.serialConnectionDelay) {
-        node.serialConnectionDelay = parseInt(msg.payload.serialConnectionDelay) || node.serialConnectionDelay
-      }
-      nodeLog('New Connection Data ' + node.serialPort + ' ' + node.serialBaudrate + ' ' + node.serialType)
-      break
-
-    default:
-      nodeLog('Unknown Dynamic Reconnect Type ' + msg.payload.connectorType)
+  if (msg.payload.serialBaudrate) {
+    node.serialBaudrate = parseInt(msg.payload.serialBaudrate) || node.serialBaudrate
   }
 
+  node.serialDatabits = msg.payload.serialDatabits || node.serialDatabits
+  node.serialStopbits = msg.payload.serialStopbits || node.serialStopbits
+  node.serialParity = msg.payload.serialParity || node.serialParity
+  node.serialType = msg.payload.serialType || node.serialType
+
+  if (msg.payload.serialConnectionDelay) {
+    node.serialConnectionDelay = parseInt(msg.payload.serialConnectionDelay) || node.serialConnectionDelay
+  }
+}
+
+de.biancoroyal.modbus.core.client.setNewNodeOptionalSettings = function (node, msg) {
   if (msg.payload.unitId) {
     node.unit_id = parseInt(msg.payload.unitId) || node.unit_id
   }
@@ -323,6 +309,33 @@ de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
   if (msg.payload.reconnectTimeout) {
     node.reconnectTimeout = parseInt(msg.payload.reconnectTimeout) || node.reconnectTimeout
   }
+}
+
+de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
+  const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
+  const coreClient = de.biancoroyal.modbus.core.client
+
+  if (!msg) {
+    nodeLog('New Connection message invalid.')
+    return false
+  }
+
+  switch (msg.payload.connectorType.toUpperCase()) {
+    case 'TCP':
+      coreClient.setNewTCPNodeSettings(node, msg)
+      nodeLog('New Connection Data ' + node.tcpHost + ' ' + node.tcpPort + ' ' + node.tcpType)
+      break
+
+    case 'SERIAL':
+      coreClient.setNewSerialNodeSettings()
+      nodeLog('New Connection Data ' + node.serialPort + ' ' + node.serialBaudrate + ' ' + node.serialType)
+      break
+
+    default:
+      nodeLog('Unknown Dynamic Reconnect Type ' + msg.payload.connectorType)
+  }
+
+  coreClient.setNewNodeOptionalSettings(node, msg)
 
   return true
 }

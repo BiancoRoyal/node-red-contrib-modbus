@@ -76,6 +76,7 @@ describe('Queue Info node Testing', function () {
           highHighLevel: 4,
           server: 'd4c76ff5.c424b8',
           errorOnHighLevel: false,
+          showStatusActivities: true,
           wires: [
             []
           ]
@@ -169,6 +170,7 @@ describe('Queue Info node Testing', function () {
         highHighLevel: 4,
         server: '1e3ac4ea.86fa7b',
         errorOnHighLevel: false,
+        showStatusActivities: true,
         wires: [
           ['h1']
         ]
@@ -285,6 +287,7 @@ describe('Queue Info node Testing', function () {
         highHighLevel: 3,
         server: '1e3ac4ea.86fa7b',
         errorOnHighLevel: false,
+        showStatusActivities: true,
         wires: [
           ['h1']
         ]

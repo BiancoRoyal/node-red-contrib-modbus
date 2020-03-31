@@ -30,6 +30,7 @@ module.exports = function (RED) {
     this.highHighLevel = parseInt(config.highHighLevel)
     this.errorOnHighLevel = config.errorOnHighLevel
     this.queueReadIntervalTime = config.queueReadIntervalTime || 1000
+    this.showStatusActivities = config.showStatusActivities
 
     this.internalDebugLog = internalDebugLog
 
@@ -53,94 +54,110 @@ module.exports = function (RED) {
 
     node.resetStates()
 
+    node.checkLowLevelReached = function (node, items, unit) {
+      if (!node.lowLevelReached && items > node.lowLowLevel && items < node.lowLevel) {
+        node.lowLevelReached = true
+        const msg = {
+          payload: Date.now(),
+          topic: node.topic,
+          state: 'low level reached',
+          unitid: unit,
+          modbusClientName: modbusClient.name,
+          items: items
+        }
+
+        node.send(msg)
+      }
+    }
+
+    node.checkHighLevelReached = function (node, items, unit) {
+      if (!node.highLevelReached && items > node.lowLevel && items > node.highLevel) {
+        node.highLevelReached = true
+        const msg = {
+          payload: Date.now(),
+          topic: node.topic,
+          state: 'high level reached',
+          unitid: unit,
+          modbusClientName: modbusClient.name,
+          highLevel: node.highLevel,
+          items: items
+        }
+
+        if (node.errorOnHighLevel) {
+          node.error(new Error('Queue High Level Reached'), msg)
+        } else {
+          node.warn(msg)
+        }
+
+        node.send(msg)
+      }
+    }
+
+    node.checkHighHighLevelReached = function (node, items, unit) {
+      if (!node.highHighLevelReached && items > node.highLevel && items > node.highHighLevel) {
+        node.highHighLevelReached = true
+        const msg = {
+          payload: Date.now(),
+          topic: node.topic,
+          state: 'high high level reached',
+          unitid: unit,
+          modbusClientName: modbusClient.name,
+          highLevel: node.highLevel,
+          highHighLevel: node.highHighLevel,
+          items: items
+        }
+        node.error(new Error('Queue High High Level Reached'), msg)
+        node.send(msg)
+      }
+    }
+
+    node.getStatusSituationFillColor = function () {
+      let fillColor = 'blue'
+
+      if (node.lowLevelReached) {
+        fillColor = 'green'
+      }
+
+      if (node.highLevelReached) {
+        if (node.errorOnHighLevel) {
+          fillColor = 'red'
+        } else {
+          fillColor = 'yellow'
+        }
+      }
+
+      if (node.highHighLevelReached) {
+        fillColor = 'red'
+      }
+
+      return fillColor
+    }
+
     node.readFromQueue = function () {
       let unit = node.unitid || 1
 
       if (modbusClient.bufferCommands) {
-        if (unit < 0 || unit > 255) {
+        if (unit < 1 || unit > 255) {
           unit = 1
         }
 
         const items = modbusClient.bufferCommandList.get(unit).length
-
         if (!items || (!node.lowLowLevelReached && items < node.lowLowLevel)) {
           node.resetStates()
         }
 
-        if (!node.lowLevelReached && items > node.lowLowLevel && items < node.lowLevel) {
-          node.lowLevelReached = true
-          const msg = {
-            payload: Date.now(),
-            topic: node.topic,
-            state: 'low level reached',
-            unitid: unit,
-            modbusClientName: modbusClient.name,
-            items: items
-          }
+        node.checkLowLevelReached(node, items, unit)
+        node.checkHighLevelReached(node, items, unit)
+        node.checkHighHighLevelReached(node, items, unit)
 
-          node.send(msg)
+        if (node.showStatusActivities) {
+          node.status({
+            fill: node.getStatusSituationFillColor(),
+            shape: 'ring',
+            text: 'active unit ' + unit + ' queue items: ' + items
+          })
         }
-
-        if (!node.highLevelReached && items > node.lowLevel && items > node.highLevel) {
-          node.highLevelReached = true
-          const msg = {
-            payload: Date.now(),
-            topic: node.topic,
-            state: 'high level reached',
-            unitid: unit,
-            modbusClientName: modbusClient.name,
-            highLevel: node.highLevel,
-            items: items
-          }
-
-          if (node.errorOnHighLevel) {
-            node.error(new Error('Queue High Level Reached'), msg)
-          } else {
-            node.warn(msg)
-          }
-
-          node.send(msg)
-        }
-
-        if (!node.highHighLevelReached && items > node.highLevel && items > node.highHighLevel) {
-          node.highHighLevelReached = true
-          const msg = {
-            payload: Date.now(),
-            topic: node.topic,
-            state: 'high high level reached',
-            unitid: unit,
-            modbusClientName: modbusClient.name,
-            highLevel: node.highLevel,
-            highHighLevel: node.highHighLevel,
-            items: items
-          }
-          node.error(new Error('Queue High High Level Reached'), msg)
-          node.send(msg)
-        }
-
-        let fillColor = 'blue'
-        if (node.lowLevelReached) {
-          fillColor = 'green'
-        }
-
-        if (node.highLevelReached) {
-          if (node.errorOnHighLevel) {
-            fillColor = 'red'
-          } else {
-            fillColor = 'yellow'
-          }
-        }
-
-        if (node.highHighLevelReached) {
-          fillColor = 'red'
-        }
-
-        node.status({
-          fill: fillColor,
-          shape: 'ring',
-          text: 'active unit ' + unit + ' queue items: ' + items
-        })
-      } else {
+      } else if (node.showStatusActivities) {
         mbBasics.setNodeStatusTo('active unit ' + unit + ' without queue', node)
       }
     }
@@ -191,11 +208,14 @@ module.exports = function (RED) {
           internalDebugLog(infoText)
         }
         node.resetStates()
-        node.status({
-          fill: 'blue',
-          shape: 'ring',
-          text: 'active empty unit queue'
-        })
+
+        if (node.showStatusActivities) {
+          node.status({
+            fill: 'blue',
+            shape: 'ring',
+            text: 'active empty unit queue'
+          })
+        }
         msg.queueOptions.state = 'queue reset done'
       }
 

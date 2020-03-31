@@ -64,64 +64,77 @@ module.exports = function (RED) {
       mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg))
     }
 
-    node.on('input', function (msg) {
-      if (mbBasics.invalidPayloadIn(msg)) {
-        return
+    node.prepareMsg = function (msg) {
+      if (typeof msg.payload === 'string') {
+        msg.payload = JSON.parse(msg.payload)
       }
 
-      if (!modbusClient.client) {
+      msg.payload.fc = parseInt(msg.payload.fc) || 3
+      msg.payload.unitid = parseInt(msg.payload.unitid)
+      msg.payload.address = parseInt(msg.payload.address) || 0
+      msg.payload.quantity = parseInt(msg.payload.quantity) || 1
+
+      return msg
+    }
+
+    node.isValidModbusMsg = function (msg) {
+      let isValid = true
+
+      if (!(Number.isInteger(msg.payload.fc) &&
+              msg.payload.fc >= 1 &&
+              msg.payload.fc <= 4)) {
+        node.error('FC Not Valid', msg)
+        isValid &= false
+      }
+
+      if (isValid &&
+            !(Number.isInteger(msg.payload.address) &&
+            msg.payload.address >= 0 &&
+            msg.payload.address <= 65535)) {
+        node.error('Address Not Valid', msg)
+        isValid &= false
+      }
+
+      if (isValid &&
+            !(Number.isInteger(msg.payload.quantity) &&
+            msg.payload.quantity >= 1 &&
+            msg.payload.quantity <= 65535)) {
+        node.error('Quantity Not Valid', msg)
+        isValid &= false
+      }
+
+      return isValid
+    }
+
+    node.buildNewMsgObject = function (node, msg) {
+      return {
+        topic: msg.topic || node.id,
+        payload: {
+          value: msg.payload.value || msg.value,
+          unitid: msg.payload.unitid,
+          fc: msg.payload.fc,
+          address: msg.payload.address,
+          quantity: msg.payload.quantity,
+          messageId: msg.messageId,
+          emptyMsgOnFail: node.emptyMsgOnFail
+        },
+        _msgid: msg._msgid
+      }
+    }
+
+    node.on('input', function (msg) {
+      if (mbBasics.invalidPayloadIn(msg) || !modbusClient.client) {
         return
       }
 
       try {
-        if (typeof msg.payload === 'string') {
-          msg.payload = JSON.parse(msg.payload)
+        msg = node.prepareMsg(msg)
+        if (node.isValidModbusMsg(msg)) {
+          msg.messageId = mbCore.getObjectId()
+          node.bufferMessageList.set(msg.messageId, msg)
+          const newMsg = node.buildNewMessageObject(node, msg)
+          modbusClient.emit('readModbus', newMsg, node.onModbusReadDone, node.onModbusReadError)
         }
-
-        msg.payload.fc = parseInt(msg.payload.fc) || 3
-        msg.payload.unitid = parseInt(msg.payload.unitid)
-        msg.payload.address = parseInt(msg.payload.address) || 0
-        msg.payload.quantity = parseInt(msg.payload.quantity) || 1
-
-        if (!(Number.isInteger(msg.payload.fc) &&
-              msg.payload.fc >= 1 &&
-              msg.payload.fc <= 4)) {
-          node.error('FC Not Valid', msg)
-          return
-        }
-
-        if (!(Number.isInteger(msg.payload.address) &&
-              msg.payload.address >= 0 &&
-              msg.payload.address <= 65535)) {
-          node.error('Address Not Valid', msg)
-          return
-        }
-
-        if (!(Number.isInteger(msg.payload.quantity) &&
-              msg.payload.quantity >= 1 &&
-              msg.payload.quantity <= 65535)) {
-          node.error('Quantity Not Valid', msg)
-          return
-        }
-
-        msg.messageId = mbCore.getObjectId()
-        node.bufferMessageList.set(msg.messageId, msg)
-
-        msg = {
-          topic: msg.topic || node.id,
-          payload: {
-            value: msg.payload.value || msg.value,
-            unitid: msg.payload.unitid,
-            fc: msg.payload.fc,
-            address: msg.payload.address,
-            quantity: msg.payload.quantity,
-            messageId: msg.messageId,
-            emptyMsgOnFail: node.emptyMsgOnFail
-          },
-          _msgid: msg._msgid
-        }
-
-        modbusClient.emit('readModbus', msg, node.onModbusReadDone, node.onModbusReadError)
       } catch (err) {
         internalDebugLog(err.message)
         if (node.showErrors) {

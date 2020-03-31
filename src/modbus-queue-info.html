@@ -19,7 +19,8 @@
       highLevel: {value: 150, validate: RED.validators.number()},
       highHighLevel: {value: 300, validate: RED.validators.number()},
       server: {type: 'modbus-client', required: true},
-      errorOnHighLevel: {value: false}
+      errorOnHighLevel: {value: false},
+      showStatusActivities: {value: true}
     },
     inputs: 1,
     outputs: 1,
@@ -77,6 +78,11 @@
         <label style="min-width:160px" for="node-input-errorOnHighLevel"><i class="fa fa-th"></i> <span
         data-i18n="modbus-contrib.label.errorOnHighLevel"></span></label>
         <input type="checkbox" id="node-input-errorOnHighLevel" style="max-width:30px">
+    </div>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
+        data-i18n="modbus-contrib.label.showActivities"></span></label>
+        <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
     </div>
 
 </script>
