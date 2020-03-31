@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (https://bianco-royal.com/)
+ Copyright (c) 2016,2017,2018,2019,2020 Klaus Landsdorf (https://bianco-royal.com/)
  Copyright 2016 - Jason D. Harper, Argonne National Laboratory
  Copyright 2015,2016 - Mika Karaila, Valmet Automation Inc.
  All rights reserved.
@@ -76,7 +76,7 @@ module.exports = function (RED) {
     node.actualServiceStateBefore = node.actualServiceState
     node.stateService = coreModbusClient.startStateService(node.stateMachine)
     node.reconnectTimeoutId = 0
-    node.queueTimeoutIdList = []
+    node.clientTimeoutsList = []
 
     node.setUnitIdFromPayload = function (msg) {
       const unit = parseInt(msg.payload.unitid)
@@ -144,10 +144,10 @@ module.exports = function (RED) {
           if (node.isFirstInitOfConnection) {
             node.isFirstInitOfConnection = false
             verboseWarn('init in ' + serialConnectionDelayTimeMS + ' ms')
-            setTimeout(node.connectClient, serialConnectionDelayTimeMS)
+            node.clientTimeoutsList.push(setTimeout(node.connectClient, serialConnectionDelayTimeMS))
           } else {
             verboseWarn('init in ' + node.reconnectTimeout + ' ms')
-            setTimeout(node.connectClient, node.reconnectTimeout)
+            node.clientTimeoutsList.push(setTimeout(node.connectClient, node.reconnectTimeout))
           }
         } catch (err) {
           node.error(err, { payload: 'client connection error ' + logHintText })
@@ -171,7 +171,7 @@ module.exports = function (RED) {
       }
 
       if (state.matches('queueing')) {
-        node.queueTimeoutIdList.push(setTimeout(() => {
+        node.clientTimeoutsList.push(setTimeout(() => {
           coreModbusQueue.dequeueCommand(node)
         }, node.commandDelay))
         node.emit('mbqueue')
@@ -219,6 +219,7 @@ module.exports = function (RED) {
           node.reconnectTimeoutId = setTimeout(() => {
             node.stateService.send('INIT')
           }, node.reconnectTimeout)
+          node.clientTimeoutsList.push(node.reconnectTimeoutId)
         }
       }
     })
@@ -229,6 +230,7 @@ module.exports = function (RED) {
           node.client.close(function () {
             verboseLog('connection closed')
           })
+          verboseLog('connection close sent')
         } catch (err) {
           verboseLog(err.message)
         }
@@ -342,7 +344,7 @@ module.exports = function (RED) {
 
     node.setSerialConnectionOptions = function () {
       node.stateService.send('OPENSERIAL')
-      setTimeout(node.openSerialClient, parseInt(node.serialConnectionDelay))
+      node.clientTimeoutsList.push(setTimeout(node.openSerialClient, parseInt(node.serialConnectionDelay)))
     }
 
     node.modbusErrorHandling = function (err) {
@@ -453,25 +455,29 @@ module.exports = function (RED) {
     node.activateSending = function (msg) {
       return new Promise(
         function (resolve, reject) {
-          const deviceId = node.sendToDeviceAllowed.shift()
-          if (node.bufferCommands) {
-            node.sendAllowed.set(msg.queueUnit, true)
+          try {
+            const deviceId = node.sendToDeviceAllowed.shift()
+            if (node.bufferCommands) {
+              node.sendAllowed.set(msg.queueUnit, true)
 
-            node.queueLog(JSON.stringify({
-              info: 'queue response activate sending',
-              message: msg.payload,
-              queueLength: node.bufferCommandList.length,
-              queueUnit: msg.queueUnit,
-              serialUnitId: deviceId
-            }))
-          }
+              node.queueLog(JSON.stringify({
+                info: 'queue response activate sending',
+                message: msg.payload,
+                queueLength: node.bufferCommandList.length,
+                queueUnit: msg.queueUnit,
+                serialUnitId: deviceId
+              }))
+            }
 
-          if (coreModbusQueue.checkQueuesAreEmpty(node)) {
-            node.stateService.send('EMPTY')
-          } else {
-            node.stateService.send('ACTIVATE')
+            if (coreModbusQueue.checkQueuesAreEmpty(node)) {
+              node.stateService.send('EMPTY')
+            } else {
+              node.stateService.send('ACTIVATE')
+            }
+            resolve()
+          } catch (err) {
+            reject(err)
           }
-          resolve()
         })
     }
 
@@ -498,24 +504,31 @@ module.exports = function (RED) {
     })
 
     node.cleanModbusTimeouts = function () {
-      node.queueTimeoutIdList.forEach(timerId => clearTimeout(timerId))
+      node.clientTimeoutsList.forEach(timerId => clearTimeout(timerId))
     }
 
     node.on('close', function (done) {
-      verboseLog('stop fsm on close')
+      node.closingModbus = true
+      verboseLog('stop fsm on close ' + node.name)
       node.stateService.send('STOP')
-      node.stateMachine = null
       node.cleanModbusTimeouts()
-      verboseLog('close node')
+      verboseLog('close node ' + node.name)
       if (node.client) {
-        node.client.close(function () {
-          verboseLog('connection closed')
+        if (node.client.isOpen) {
+          node.client.close(function (err) {
+            if (err) {
+              verboseLog('Connection closed with error ' + node.name)
+            } else {
+              verboseLog('Connection closed well ' + node.name)
+            }
+            done()
+          })
+        } else {
+          verboseLog('connection was closed ' + node.name)
           done()
-        }).catch(function (err) {
-          verboseLog(err.message)
-          done()
-        })
+        }
       } else {
+        verboseLog('Connection closed simple ' + node.name)
         done()
       }
     })
@@ -532,28 +545,34 @@ module.exports = function (RED) {
       }
     }
 
-    node.deregisterForModbus = function (modbusNode, done) {
-      delete node.registeredNodeList[modbusNode.id]
-
-      if (node.closingModbus) {
-        done()
-      }
+    node.closeConnectionWithoutRegisteredNodes = function (done) {
       if (Object.keys(node.registeredNodeList).length === 0) {
         node.closingModbus = true
-        if (node.client) {
-          node.client.close(function () {
+        if (node.client && node.actualServiceState.value !== 'stopped') {
+          if (node.client.isOpen) {
+            node.client.close(function () {
+              node.stateService.send('STOP')
+              done()
+            })
+          } else {
             node.stateService.send('STOP')
             done()
-          }).catch(function (err) {
-            node.stateService.send('STOP')
-            verboseLog(err.message)
-            done()
-          })
+          }
         } else {
+          node.stateService.send('STOP')
           done()
         }
       } else {
         done()
+      }
+    }
+
+    node.deregisterForModbus = function (modbusNode, done) {
+      delete node.registeredNodeList[modbusNode.id]
+      if (node.closingModbus) {
+        done()
+      } else {
+        node.closeConnectionWithoutRegisteredNodes(done)
       }
     }
   }
@@ -565,6 +584,7 @@ module.exports = function (RED) {
     SerialPort.list().then(ports => {
       res.json(ports)
     }).catch(err => {
+      res.json([err.message])
       coreModbusClient.internalDebug(err.message)
     })
   })

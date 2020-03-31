@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (https://bianco-royal.com/)
+ Copyright (c) 2016,2017,2018,2019,2020 Klaus Landsdorf (https://bianco-royal.com/)
  All rights reserved.
  node-red-contrib-modbus
 
@@ -114,6 +114,69 @@ de.biancoroyal.modbus.core.client.activateSendingOnFailure = function (node, cbe
   })
 }
 
+de.biancoroyal.modbus.core.client.readModbusByFunctionCodeOne = function (node, msg, cb, cberr) {
+  const coreClient = de.biancoroyal.modbus.core.client
+  node.client.readCoils(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+    coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+  }).catch(function (err) {
+    coreClient.activateSendingOnFailure(node, cberr, err, msg)
+    node.modbusErrorHandling(err)
+  })
+}
+
+de.biancoroyal.modbus.core.client.readModbusByFunctionCodeTwo = function (node, msg, cb, cberr) {
+  const coreClient = de.biancoroyal.modbus.core.client
+  node.client.readDiscreteInputs(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+    coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+  }).catch(function (err) {
+    coreClient.activateSendingOnFailure(node, cberr, err, msg)
+    node.modbusErrorHandling(err)
+  })
+}
+
+de.biancoroyal.modbus.core.client.readModbusByFunctionCodeThree = function (node, msg, cb, cberr) {
+  const coreClient = de.biancoroyal.modbus.core.client
+  node.client.readHoldingRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+    coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+  }).catch(function (err) {
+    coreClient.activateSendingOnFailure(node, cberr, err, msg)
+    node.modbusErrorHandling(err)
+  })
+}
+
+de.biancoroyal.modbus.core.client.readModbusByFunctionCodeFour = function (node, msg, cb, cberr) {
+  const coreClient = de.biancoroyal.modbus.core.client
+  node.client.readInputRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+    coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+  }).catch(function (err) {
+    coreClient.activateSendingOnFailure(node, cberr, err, msg)
+    node.modbusErrorHandling(err)
+  })
+}
+
+de.biancoroyal.modbus.core.client.readModbusByFunctionCode = function (node, msg, cb, cberr) {
+  const coreClient = de.biancoroyal.modbus.core.client
+  const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
+
+  switch (parseInt(msg.payload.fc)) {
+    case 1:
+      coreClient.readModbusByFunctionCodeOne(node, msg, cb, cberr)
+      break
+    case 2:
+      coreClient.readModbusByFunctionCodeTwo(node, msg, cb, cberr)
+      break
+    case 3:
+      coreClient.readModbusByFunctionCodeThree(node, msg, cb, cberr)
+      break
+    case 4:
+      coreClient.readModbusByFunctionCodeFour(node, msg, cb, cberr)
+      break
+    default:
+      coreClient.activateSendingOnFailure(node, cberr, new Error('Function Code Unknown'), msg)
+      nodeLog('Function Code Unknown %s', msg.payload.fc)
+      break
+  }
+}
 de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
   if (!node.client) {
     return
@@ -138,48 +201,67 @@ de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
   }))
 
   try {
-    switch (parseInt(msg.payload.fc)) {
-      case 1: // FC: 1
-        node.client.readCoils(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-          coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
-        }).catch(function (err) {
-          coreClient.activateSendingOnFailure(node, cberr, err, msg)
-          node.modbusErrorHandling(err)
-        })
-        break
-      case 2: // FC: 2
-        node.client.readDiscreteInputs(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-          coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
-        }).catch(function (err) {
-          coreClient.activateSendingOnFailure(node, cberr, err, msg)
-          node.modbusErrorHandling(err)
-        })
-        break
-      case 3: // FC: 3
-        node.client.readHoldingRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-          coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
-        }).catch(function (err) {
-          coreClient.activateSendingOnFailure(node, cberr, err, msg)
-          node.modbusErrorHandling(err)
-        })
-        break
-      case 4: // FC: 4
-        node.client.readInputRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-          coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
-        }).catch(function (err) {
-          coreClient.activateSendingOnFailure(node, cberr, err, msg)
-          node.modbusErrorHandling(err)
-        })
-        break
-      default:
-        coreClient.activateSendingOnFailure(node, cberr, new Error('Function Code Unknown'), msg)
-        nodeLog('Function Code Unknown %s', msg.payload.fc)
-        break
-    }
+    coreClient.readModbusByFunctionCode(node, msg, cb, cberr)
   } catch (err) {
     coreClient.activateSendingOnFailure(node, cberr, err, msg)
     nodeLog(err.message)
     node.modbusErrorHandling(err)
+  }
+}
+
+de.biancoroyal.modbus.core.client.writeModbusByFunctionCodeFive = function (node, msg, cb, cberr) {
+  const coreClient = de.biancoroyal.modbus.core.client
+  if (msg.payload.value) {
+    msg.payload.value = true
+  } else {
+    msg.payload.value = false
+  }
+  node.client.writeCoil(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
+    coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+  }).catch(function (err) {
+    coreClient.activateSendingOnFailure(node, cberr, err, msg)
+    node.modbusErrorHandling(err)
+  })
+}
+
+de.biancoroyal.modbus.core.client.writeModbusByFunctionCodeFifteen = function (node, msg, cb, cberr) {
+  const coreClient = de.biancoroyal.modbus.core.client
+  if (parseInt(msg.payload.value.length) !== parseInt(msg.payload.quantity)) {
+    coreClient.activateSendingOnFailure(node, cberr, new Error('Quantity should be less or equal to coil payload array length: ' +
+      msg.payload.value.length + ' Addr: ' + msg.payload.address + ' Q: ' + msg.payload.quantity), msg)
+  } else {
+    node.client.writeCoils(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
+      coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+    }).catch(function (err) {
+      node.activateSending(msg)
+      cberr(err, msg)
+      node.modbusErrorHandling(err)
+    })
+  }
+}
+
+de.biancoroyal.modbus.core.client.writeModbusByFunctionCodeSix = function (node, msg, cb, cberr) {
+  const coreClient = de.biancoroyal.modbus.core.client
+  node.client.writeRegister(parseInt(msg.payload.address), parseInt(msg.payload.value)).then(function (resp) {
+    coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+  }).catch(function (err) {
+    coreClient.activateSendingOnFailure(node, cberr, err, msg)
+    node.modbusErrorHandling(err)
+  })
+}
+
+de.biancoroyal.modbus.core.client.writeModbusByFunctionCodeSixteen = function (node, msg, cb, cberr) {
+  const coreClient = de.biancoroyal.modbus.core.client
+  if (parseInt(msg.payload.value.length) !== parseInt(msg.payload.quantity)) {
+    coreClient.activateSendingOnFailure(node, cberr, new Error('Quantity should be less or equal to register payload array length: ' +
+      msg.payload.value.length + ' Addr: ' + msg.payload.address + ' Q: ' + msg.payload.quantity), msg)
+  } else {
+    node.client.writeRegisters(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
+      coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+    }).catch(function (err) {
+      coreClient.activateSendingOnFailure(node, cberr, err, msg)
+      node.modbusErrorHandling(err)
+    })
   }
 }
 
@@ -209,52 +291,16 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
   try {
     switch (parseInt(msg.payload.fc)) {
       case 15: // FC: 15
-        if (parseInt(msg.payload.value.length) !== parseInt(msg.payload.quantity)) {
-          coreClient.activateSendingOnFailure(node, cberr, new Error('Quantity should be less or equal to coil payload array length: ' +
-            msg.payload.value.length + ' Addr: ' + msg.payload.address + ' Q: ' + msg.payload.quantity), msg)
-        } else {
-          node.client.writeCoils(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
-            coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
-          }).catch(function (err) {
-            node.activateSending(msg)
-            cberr(err, msg)
-            node.modbusErrorHandling(err)
-          })
-        }
+        coreClient.writeModbusByFunctionCodeFifteen(node, msg, cb, cberr)
         break
       case 5: // FC: 5
-        if (msg.payload.value) {
-          msg.payload.value = true
-        } else {
-          msg.payload.value = false
-        }
-        node.client.writeCoil(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
-          coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
-        }).catch(function (err) {
-          coreClient.activateSendingOnFailure(node, cberr, err, msg)
-          node.modbusErrorHandling(err)
-        })
+        coreClient.writeModbusByFunctionCodeFive(node, msg, cb, cberr)
         break
       case 16: // FC: 16
-        if (parseInt(msg.payload.value.length) !== parseInt(msg.payload.quantity)) {
-          coreClient.activateSendingOnFailure(node, cberr, new Error('Quantity should be less or equal to register payload array length: ' +
-            msg.payload.value.length + ' Addr: ' + msg.payload.address + ' Q: ' + msg.payload.quantity), msg)
-        } else {
-          node.client.writeRegisters(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
-            coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
-          }).catch(function (err) {
-            coreClient.activateSendingOnFailure(node, cberr, err, msg)
-            node.modbusErrorHandling(err)
-          })
-        }
+        coreClient.writeModbusByFunctionCodeSixteen(node, msg, cb, cberr)
         break
       case 6: // FC: 6
-        node.client.writeRegister(parseInt(msg.payload.address), parseInt(msg.payload.value)).then(function (resp) {
-          coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
-        }).catch(function (err) {
-          coreClient.activateSendingOnFailure(node, cberr, err, msg)
-          node.modbusErrorHandling(err)
-        })
+        coreClient.writeModbusByFunctionCodeSix(node, msg, cb, cberr)
         break
       default:
         coreClient.activateSendingOnFailure(node, cberr, new Error('Function Code Unknown'), msg)
@@ -323,12 +369,12 @@ de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
   switch (msg.payload.connectorType.toUpperCase()) {
     case 'TCP':
       coreClient.setNewTCPNodeSettings(node, msg)
-      nodeLog('New Connection Data ' + node.tcpHost + ' ' + node.tcpPort + ' ' + node.tcpType)
+      nodeLog('New Connection TCP Settings ' + node.tcpHost + ' ' + node.tcpPort + ' ' + node.tcpType)
       break
 
     case 'SERIAL':
       coreClient.setNewSerialNodeSettings()
-      nodeLog('New Connection Data ' + node.serialPort + ' ' + node.serialBaudrate + ' ' + node.serialType)
+      nodeLog('New Connection Serial Settings ' + node.serialPort + ' ' + node.serialBaudrate + ' ' + node.serialType)
       break
 
     default:

@@ -2,7 +2,7 @@
  * Original Work Copyright 2014 IBM Corp.
  * node-red
  *
- * Copyright (c) 2016,2017,2018,2019 Klaus Landsdorf (https://bianco-royal.com/)
+ * Copyright (c) 2016,2017,2018,2019,2020 Klaus Landsdorf (https://bianco-royal.com/)
  * All rights reserved.
  * node-red-contrib-modbus - The BSD 3-Clause License
  *
@@ -49,7 +49,7 @@ const simpleReadWithClient = [
     dataType: 'Coil',
     adr: '0',
     quantity: '10',
-    rate: '2',
+    rate: '1',
     rateUnit: 's',
     delayOnStart: false,
     startDelayTime: '',
@@ -71,7 +71,7 @@ const simpleReadWithClient = [
   {
     id: '466860d5.3f6358',
     type: 'modbus-client',
-    name: 'ModbusClient',
+    name: 'ModbusClientRead',
     clienttype: 'tcp',
     bufferCommands: true,
     stateLogEnabled: false,
@@ -119,7 +119,7 @@ describe('Client node Testing', function () {
       helper.load([readNode, nodeUnderTest], [{
         id: '466860d5.3f6358',
         type: 'modbus-client',
-        name: 'ModbusClient',
+        name: 'ModbusClientTCPDefault',
         clienttype: 'tcp',
         bufferCommands: true,
         queueLogEnabled: true,
@@ -133,7 +133,7 @@ describe('Client node Testing', function () {
         serialDatabits: '8',
         serialStopbits: '1',
         serialParity: 'none',
-        serialConnectionDelay: '100',
+        serialConnectionDelay: '50',
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
@@ -162,7 +162,7 @@ describe('Client node Testing', function () {
         wires: [[], []]
       }], function () {
         var modbusReadNode = helper.getNode('466860d5.3f6358')
-        modbusReadNode.should.have.property('name', 'ModbusClient')
+        modbusReadNode.should.have.property('name', 'ModbusClientTCPDefault')
         setTimeout(done, 1000)
       })
     })
@@ -171,7 +171,7 @@ describe('Client node Testing', function () {
       helper.load([readNode, nodeUnderTest], [{
         id: '466860d5.3f6359',
         type: 'modbus-client',
-        name: 'ModbusClient',
+        name: 'ModbusClientTCPTelnet',
         clienttype: 'tcp',
         bufferCommands: true,
         queueLogEnabled: true,
@@ -214,7 +214,7 @@ describe('Client node Testing', function () {
         wires: [[], []]
       }], function () {
         var modbusReadNode = helper.getNode('466860d5.3f6359')
-        modbusReadNode.should.have.property('name', 'ModbusClient')
+        modbusReadNode.should.have.property('name', 'ModbusClientTCPTelnet')
         setTimeout(done, 1000)
       })
     })
@@ -223,7 +223,7 @@ describe('Client node Testing', function () {
       helper.load([readNode, nodeUnderTest], [{
         id: '466860d5.3f6360',
         type: 'modbus-client',
-        name: 'ModbusClient',
+        name: 'ModbusClientTCPRTUB',
         clienttype: 'tcp',
         bufferCommands: true,
         queueLogEnabled: true,
@@ -266,7 +266,7 @@ describe('Client node Testing', function () {
         wires: [[], []]
       }], function () {
         var modbusReadNode = helper.getNode('466860d5.3f6360')
-        modbusReadNode.should.have.property('name', 'ModbusClient')
+        modbusReadNode.should.have.property('name', 'ModbusClientTCPRTUB')
         setTimeout(done, 1000)
       })
     })
@@ -275,7 +275,7 @@ describe('Client node Testing', function () {
       helper.load([readNode, nodeUnderTest], [{
         id: '466860d5.3f6361',
         type: 'modbus-client',
-        name: 'ModbusClient',
+        name: 'ModbusClientTCPC701',
         clienttype: 'tcp',
         bufferCommands: true,
         queueLogEnabled: true,
@@ -318,7 +318,7 @@ describe('Client node Testing', function () {
         wires: [[], []]
       }], function () {
         var modbusReadNode = helper.getNode('466860d5.3f6361')
-        modbusReadNode.should.have.property('name', 'ModbusClient')
+        modbusReadNode.should.have.property('name', 'ModbusClientTCPC701')
         setTimeout(done, 1000)
       })
     })
@@ -327,7 +327,7 @@ describe('Client node Testing', function () {
       helper.load([readNode, nodeUnderTest], [{
         id: '466860d5.3f6362',
         type: 'modbus-client',
-        name: 'ModbusClient',
+        name: 'ModbusClientSerialRTUB',
         clienttype: 'simpleser',
         bufferCommands: true,
         queueLogEnabled: true,
@@ -370,7 +370,7 @@ describe('Client node Testing', function () {
         wires: [[], []]
       }], function () {
         var modbusReadNode = helper.getNode('466860d5.3f6362')
-        modbusReadNode.should.have.property('name', 'ModbusClient')
+        modbusReadNode.should.have.property('name', 'ModbusClientSerialRTUB')
         setTimeout(done, 1000)
       })
     })
@@ -379,7 +379,7 @@ describe('Client node Testing', function () {
       helper.load([readNode, nodeUnderTest], [{
         id: '466860d5.3f6363',
         type: 'modbus-client',
-        name: 'ModbusClient',
+        name: 'ModbusClientSerialRTU',
         clienttype: 'simpleser',
         bufferCommands: true,
         queueLogEnabled: true,
@@ -422,7 +422,7 @@ describe('Client node Testing', function () {
         wires: [[], []]
       }], function () {
         var modbusReadNode = helper.getNode('466860d5.3f6363')
-        modbusReadNode.should.have.property('name', 'ModbusClient')
+        modbusReadNode.should.have.property('name', 'ModbusClientSerialRTU')
         setTimeout(done, 1000)
       })
     })
@@ -431,7 +431,7 @@ describe('Client node Testing', function () {
       helper.load([readNode, nodeUnderTest], [{
         id: '466860d5.3f6364',
         type: 'modbus-client',
-        name: 'ModbusClient',
+        name: 'ModbusClientSerialASCII',
         clienttype: 'simpleser',
         bufferCommands: true,
         queueLogEnabled: true,
@@ -474,7 +474,7 @@ describe('Client node Testing', function () {
         wires: [[], []]
       }], function () {
         var modbusReadNode = helper.getNode('466860d5.3f6364')
-        modbusReadNode.should.have.property('name', 'ModbusClient')
+        modbusReadNode.should.have.property('name', 'ModbusClientSerialASCII')
         setTimeout(done, 1000)
       })
     })
