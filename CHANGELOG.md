@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.5.0-beta.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.5.0-beta.0...v5.5.0-beta.1) (2020-03-31)
+
+
+### Bug Fixes
+
+* testing works with new flaqs and clean code ([65dba5e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/65dba5e744030221c006ce249499e340fafed7a4))
+
 ## [5.5.0-beta.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.4.1-beta.1...v5.5.0-beta.0) (2020-03-30)
 
 
