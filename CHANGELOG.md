@@ -1,13 +1,4 @@
-# Changelog
-
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
-
-## [5.6.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.4.1-beta.1...v5.6.0) (2020-04-01)
-
-
-### Features
-
-* faster client with clean timeouts and less states ([cdf4735](https://github.com/biancoroyal/node-red-contrib-modbus/commit/cdf473529d01d73d94fa82019884649e70a213bf))
+# [5.6.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.4.1-beta.1...v5.6.0) (2020-04-01)
 
 
 ### Bug Fixes
@@ -22,36 +13,6 @@ All notable changes to this project will be documented in this file. See [standa
 * serial multiple UnitIds issue [#175](https://github.com/biancoroyal/node-red-contrib-modbus/issues/175) ([2f6fedf](https://github.com/biancoroyal/node-red-contrib-modbus/commit/2f6fedfb7a815f92434f22ee9110bf1b6a5fa68a))
 * similar empty msg structure ([cfbd834](https://github.com/biancoroyal/node-red-contrib-modbus/commit/cfbd8345cc489d2766708a2413d6c5b14f5bc021))
 * testing works with new flaqs and clean code ([65dba5e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/65dba5e744030221c006ce249499e340fafed7a4))
-
-## [5.5.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.5.0...v5.5.1) (2020-04-01)
-
-
-### Bug Fixes
-
-* GUI problems and performance while verbose mode is active ([9453fcc](https://github.com/biancoroyal/node-red-contrib-modbus/commit/9453fcc4afd81177c7bc46a9a20f28ba8c91b271))
-* issue [#175](https://github.com/biancoroyal/node-red-contrib-modbus/issues/175) less update queue info node on queue-changes ([45eae4e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/45eae4e405fa788e5189d19c1c55d828b03b52b1))
-* serial lock toggle for issue [#175](https://github.com/biancoroyal/node-red-contrib-modbus/issues/175) ([45e4be8](https://github.com/biancoroyal/node-red-contrib-modbus/commit/45e4be85710eb6db18cb4cbc7d3a21e62a3eea68))
-* serial multiple UnitIds issue [#175](https://github.com/biancoroyal/node-red-contrib-modbus/issues/175) ([2f6fedf](https://github.com/biancoroyal/node-red-contrib-modbus/commit/2f6fedfb7a815f92434f22ee9110bf1b6a5fa68a))
-* similar empty msg structure ([cfbd834](https://github.com/biancoroyal/node-red-contrib-modbus/commit/cfbd8345cc489d2766708a2413d6c5b14f5bc021))
-
-
-
-# [5.5.0-beta.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.5.0-beta.0...v5.5.0-beta.2) (2020-04-01)
-
-
-### Bug Fixes
-
-* queue problems with issue [#175](https://github.com/biancoroyal/node-red-contrib-modbus/issues/175) ([154c8a0](https://github.com/biancoroyal/node-red-contrib-modbus/commit/154c8a02ac757b0162c654930dda4d09775dded4))
-* testing works with new flaqs and clean code ([65dba5e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/65dba5e744030221c006ce249499e340fafed7a4))
-
-
-
-# [5.5.0-beta.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.4.1-beta.1...v5.5.0-beta.0) (2020-03-30)
-
-
-### Bug Fixes
-
-* response delay in server in not available  for now ([4542763](https://github.com/biancoroyal/node-red-contrib-modbus/commit/45427637a5a18a3a345594311e2eae1969fdea2f))
 
 
 ### Features
@@ -216,3 +177,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 # 1.0.0 (2017-01-18)
+
+
+
