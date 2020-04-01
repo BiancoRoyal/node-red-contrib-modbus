@@ -15,13 +15,12 @@ de.biancoroyal.modbus.queue.core.core = de.biancoroyal.modbus.queue.core.core ||
 
 de.biancoroyal.modbus.queue.core.initQueue = function (node) {
   node.bufferCommandList.clear()
-  node.sendAllowed.clear()
-  node.sendToDeviceAllowed = []
+  node.sendingAllowed.clear()
   node.unitSendingAllowed = []
 
   for (let step = 0; step <= 255; step++) {
     node.bufferCommandList.set(step, [])
-    node.sendAllowed.set(step, true)
+    node.sendingAllowed.set(step, true)
   }
 }
 
@@ -37,102 +36,49 @@ de.biancoroyal.modbus.queue.core.sequentialDequeueCommand = function (node) {
   return new Promise(
     function (resolve, reject) {
       const queueCore = de.biancoroyal.modbus.queue.core
-      const nodesToWaitCount = node.unitSendingAllowed.length
-      const serialUnit = parseInt(node.unitSendingAllowed.shift())
 
-      if (!Number.isInteger(serialUnit)) {
-        node.queueLog(JSON.stringify({
-          type: 'serial unit check is not a valid unitId',
-          unitid: serialUnit
-        }))
-        reject(new Error('serial unit check is not a valid unitId'))
-      } else {
-        if (node.bufferCommandList.get(serialUnit).length > 0) {
-          if (node.parallelUnitIdsAllowed) {
-            queueCore.sendDataInParallel(node, serialUnit, nodesToWaitCount)
-          } else {
-            queueCore.sendDataPerDevice(node, serialUnit, nodesToWaitCount)
-          }
-        } else {
-          node.queueLog(JSON.stringify({
-            type: 'queue is is empty for unitId',
-            unitid: serialUnit
-          }))
+      if (node.parallelUnitIdsAllowed) {
+        for (let unitId = 0; unitId < 256; unitId += 1) {
+          queueCore.sendQueueDataToModbus(node, unitId)
         }
-        resolve()
+      } else {
+        const unitId = node.unitSendingAllowed.shift()
+        if (queueCore.isValidUnitId(unitId) && node.sendingAllowed.get(unitId)) {
+          queueCore.sendQueueDataToModbus(node, unitId)
+        }
       }
+      resolve()
     })
 }
 
-de.biancoroyal.modbus.queue.core.sendDataInParallel = function (node, serialUnit, nodesToWaitCount) {
-  let command = null
-  let noneCommandToSent = true
-
-  node.queueLog(JSON.stringify({
-    type: 'queue send data in parallel',
-    unitid: serialUnit,
-    sendAllowed: node.sendAllowed.get(serialUnit),
-    queueLength: node.bufferCommandList.get(serialUnit).length
-  }))
-
-  if (node.sendAllowed.get(serialUnit)) {
-    command = node.bufferCommandList.get(serialUnit).shift()
-    if (command) {
-      node.sendAllowed.set(serialUnit, false)
-      node.queueLog(JSON.stringify({
-        type: 'unitId sending and wait',
-        unitid: serialUnit,
-        nodesToWaitCount,
-        // commandData: command,
-        queueLength: node.bufferCommandList.get(serialUnit).length,
-        sendAllowedForNext: node.sendAllowed.get(serialUnit),
-        delay: node.commandDelay
-      }))
-
-      if (node.bufferCommandList.get(serialUnit).length > 0) {
-        node.unitSendingAllowed.push(serialUnit)
-      }
-      noneCommandToSent = false
-      command.callModbus(node, command.msg, command.cb, command.cberr)
-    }
+de.biancoroyal.modbus.queue.core.sendQueueDataToModbus = function (node, unitId) {
+  const queueLength = node.bufferCommandList.get(unitId).length
+  if (!queueLength) {
+    return
   }
 
-  return noneCommandToSent
+  node.queueLog(JSON.stringify({
+    type: 'queue sending data to Modbus',
+    unitId,
+    queueLength,
+    sendingAllowed: node.sendingAllowed.get(unitId)
+  }))
+
+  const command = node.bufferCommandList.get(unitId).shift()
+  if (command) {
+    node.sendingAllowed.set(unitId, false)
+    command.callModbus(node, command.msg, command.cb, command.cberr)
+  } else {
+    throw new Error('Command On Send Not Valid')
+  }
 }
 
-de.biancoroyal.modbus.queue.core.sendDataPerDevice = function (node, serialUnit, nodesToWaitCount) {
-  let command = null
-  let noneCommandToSent = true
-
+de.biancoroyal.modbus.queue.core.dequeueLogEntry = function (node, state, info) {
   node.queueLog(JSON.stringify({
-    type: 'queue send data per device',
-    unitid: serialUnit,
-    sendAllowed: node.sendAllowed.get(serialUnit),
-    queueLength: node.bufferCommandList.get(serialUnit).length
+    state: state.value,
+    message: `${info} ${node.clienttype}`,
+    delay: node.commandDelay
   }))
-
-  if (node.sendToDeviceAllowed.length === 0) {
-    command = node.bufferCommandList.get(serialUnit).shift()
-    if (command) {
-      node.sendToDeviceAllowed.push(serialUnit) // FSM will reset this with a shift on the list
-      node.queueLog(JSON.stringify({
-        type: 'device sending and wait',
-        unitid: serialUnit,
-        // commandData: command,
-        queueLength: node.bufferCommandList.get(serialUnit).length,
-        sendAllowedForNext: node.sendToDeviceAllowed.length,
-        delay: node.commandDelay
-      }))
-
-      if (node.bufferCommandList.get(serialUnit).length > 0) {
-        node.unitSendingAllowed.push(serialUnit)
-      }
-      noneCommandToSent = false
-      command.callModbus(node, command.msg, command.cb, command.cberr)
-    }
-  }
-
-  return noneCommandToSent
 }
 
 de.biancoroyal.modbus.queue.core.dequeueCommand = function (node) {
@@ -140,63 +86,57 @@ de.biancoroyal.modbus.queue.core.dequeueCommand = function (node) {
   const state = node.actualServiceState
 
   if (node.messageAllowedStates.indexOf(state.value) === -1) {
-    node.queueLog(JSON.stringify({
-      state: state.value,
-      message: 'dequeue command disallowed state',
-      delay: node.commandDelay
-    }))
+    queueCore.dequeueLogEntry(node, state, 'dequeue command disallowed state')
   } else {
-    node.queueLog(JSON.stringify({
-      state: state.value,
-      message: 'dequeue command ' + node.clienttype,
-      delay: node.commandDelay
-    }))
-
     queueCore.sequentialDequeueCommand(node).then(function () {
-      node.queueLog(JSON.stringify({
-        state: state.value,
-        message: 'dequeue command done ' + node.clienttype,
-        delay: node.commandDelay
-      }))
+      queueCore.dequeueLogEntry(node, state, 'dequeue command done')
     }).catch(function (err) {
-      node.queueLog(JSON.stringify({
-        state: state.value,
-        message: 'dequeue command error ' + err.message,
-        delay: node.commandDelay
-      }))
+      queueCore.dequeueLogEntry(node, state, 'dequeue command error ' + err.message)
     })
   }
 }
 
-de.biancoroyal.modbus.queue.core.getQueueNumber = function (node, msg) {
-  const unit = parseInt(msg.payload.unitid)
+de.biancoroyal.modbus.queue.core.getUnitIdToQueue = function (node, msg) {
+  return parseInt(msg.payload.unitid) || parseInt(node.unit_id)
+}
 
-  if (Number.isInteger(unit)) {
-    return node.bufferCommandList.get(unit).length
+de.biancoroyal.modbus.queue.core.isValidUnitId = function (unitId) {
+  return (unitId >= 0 || unitId <= 255)
+}
+
+de.biancoroyal.modbus.queue.core.getQueueLengthByUnitId = function (node, unitId) {
+  if (this.isValidUnitId(unitId)) {
+    return node.bufferCommandList.get(unitId).length
   } else {
-    return node.bufferCommandList.get(node.unit_id).length
+    throw new Error('(0-255) Got A Wrong Unit-Id: ' + unitId)
   }
 }
 
 de.biancoroyal.modbus.queue.core.pushToQueueByUnitId = function (node, callModbus, msg, cb, cberr) {
+  const coreQueue = de.biancoroyal.modbus.queue.core
+
   return new Promise(
     function (resolve, reject) {
-      const unit = parseInt(msg.payload.unitid) || parseInt(node.unit_id)
+      try {
+        const unitId = coreQueue.getUnitIdToQueue(node, msg)
+        const queueLength = coreQueue.getQueueLengthByUnitId(node, unitId)
 
-      if (Number.isInteger(unit)) {
-        msg.queueUnit = unit
+        msg.queueLengthByUnitId = { unitId, queueLength }
+        msg.queueUnitId = unitId
+
+        if (!node.parallelUnitIdsAllowed) {
+          node.unitSendingAllowed.push(unitId)
+        }
+
+        node.bufferCommandList.get(unitId).push({ callModbus: callModbus, msg: msg, cb: cb, cberr: cberr })
         node.queueLog(JSON.stringify({
-          info: 'push to Queue by Unit-Id',
+          info: 'pushed to Queue by Unit-Id',
           message: msg.payload,
-          unit: unit,
-          sendingListLength: node.unitSendingAllowed.length
+          unitId
         }))
-
-        node.unitSendingAllowed.push(unit)
-        node.bufferCommandList.get(unit).push({ callModbus: callModbus, msg: msg, cb: cb, cberr: cberr })
         resolve()
-      } else {
-        reject(new Error('UnitId For Queueing Is Not Valid'))
+      } catch (err) {
+        reject(err)
       }
     })
 }

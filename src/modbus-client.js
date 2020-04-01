@@ -35,7 +35,13 @@ module.exports = function (RED) {
     const logHintText = ' Get More About It By Logging'
 
     this.clienttype = config.clienttype
-    this.bufferCommands = config.bufferCommands
+
+    if (config.parallelUnitIdsAllowed === undefined) {
+      this.bufferCommands = true
+    } else {
+      this.bufferCommands = config.bufferCommands
+    }
+
     this.queueLogEnabled = config.queueLogEnabled
     this.stateLogEnabled = config.stateLogEnabled
 
@@ -56,16 +62,20 @@ module.exports = function (RED) {
     this.clientTimeout = parseInt(config.clientTimeout) || timeoutTimeMS
     this.reconnectTimeout = parseInt(config.reconnectTimeout) || reconnectTimeMS
     this.reconnectOnTimeout = config.reconnectOnTimeout
-    this.parallelUnitIdsAllowed = config.parallelUnitIdsAllowed
+
+    if (config.parallelUnitIdsAllowed === undefined) {
+      this.parallelUnitIdsAllowed = true
+    } else {
+      this.parallelUnitIdsAllowed = config.parallelUnitIdsAllowed
+    }
 
     const node = this
     node.isFirstInitOfConnection = true
     node.closingModbus = false
     node.client = null
     node.bufferCommandList = new Map()
-    node.sendAllowed = new Map()
+    node.sendingAllowed = new Map()
     node.unitSendingAllowed = []
-    node.sendToDeviceAllowed = []
     node.messageAllowedStates = coreModbusClient.messagesAllowedStates
     node.serverInfo = ''
 
@@ -78,18 +88,12 @@ module.exports = function (RED) {
     node.reconnectTimeoutId = 0
 
     node.setUnitIdFromPayload = function (msg) {
-      const unit = parseInt(msg.payload.unitid)
-
-      if (Number.isInteger(unit)) {
-        node.client.setID(unit)
-        msg.queueUnitId = unit
-      } else {
-        if (!coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
-          node.unit_id = defaultUnitId
-        }
-        node.client.setID(node.unit_id)
-        msg.queueUnitId = node.unit_id
+      const unitId = coreModbusClient.getActualUnitId(node, msg)
+      if (!coreModbusClient.checkUnitId(unitId, node.clienttype)) {
+        node.unit_id = defaultUnitId
       }
+      node.client.setID(unitId)
+      msg.unitId = unitId
     }
 
     if (Number.isNaN(node.unit_id) || !coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
@@ -157,7 +161,6 @@ module.exports = function (RED) {
 
       if (state.matches('connected')) {
         node.emit('mbconnected')
-        // node.stateService.send('ACTIVATE')
       }
 
       if (state.matches('activated')) {
@@ -210,16 +213,14 @@ module.exports = function (RED) {
 
       if (state.matches('reconnecting')) {
         node.emit('mbreconnecting')
-        if (!node.reconnectTimeoutId) {
-          if (node.reconnectTimeout <= 0) {
-            node.reconnectTimeout = reconnectTimeMS
-          }
-          verboseWarn('try to reconnect by init in ' + node.reconnectTimeout + ' ms')
-          node.reconnectTimeoutId = setTimeout(() => {
-            node.reconnectTimeoutId = 0
-            node.stateService.send('INIT')
-          }, node.reconnectTimeout)
+        if (node.reconnectTimeout <= 0) {
+          node.reconnectTimeout = reconnectTimeMS
         }
+        verboseWarn('try to reconnect by init in ' + node.reconnectTimeout + ' ms')
+        setTimeout(() => {
+          node.reconnectTimeoutId = 0
+          node.stateService.send('INIT')
+        }, node.reconnectTimeout)
       }
     })
 
@@ -358,17 +359,26 @@ module.exports = function (RED) {
     }
 
     node.modbusTcpErrorHandling = function (err) {
+      if (node.showErrors) {
+        node.error(err)
+      }
+
       if (err.message) {
         coreModbusClient.modbusSerialDebug('modbusTcpErrorHandling:' + err.message)
       } else {
         coreModbusClient.modbusSerialDebug('modbusTcpErrorHandling:' + JSON.stringify(err))
       }
+
       if (err.errno && coreModbusClient.networkErrors.includes(err.errno)) {
         node.stateService.send('BREAK')
       }
     }
 
     node.modbusSerialErrorHandling = function (err) {
+      if (node.showErrors) {
+        node.error(err)
+      }
+
       if (err.message) {
         coreModbusClient.modbusSerialDebug('modbusSerialErrorHandling:' + err.message)
       } else {
@@ -404,25 +414,24 @@ module.exports = function (RED) {
 
       if (node.messageAllowedStates.indexOf(state.value) === -1) {
         cberr(new Error('Client Not Ready To Read At State ' + state.value), msg)
-        return
-      }
-
-      if (node.bufferCommands) {
-        msg.queueNumber = coreModbusQueue.getQueueNumber(node, msg)
-        coreModbusQueue.pushToQueueByUnitId(node, coreModbusClient.readModbus, msg, cb, cberr).then(function () {
-          node.queueLog(JSON.stringify({
-            info: 'queued read msg',
-            message: msg.payload,
-            state: state.value,
-            queueLength: node.bufferCommandList.get(msg.queueUnit).length
-          }))
-        }).catch(function (err) {
-          cberr(err, msg)
-        }).finally(function () {
-          node.stateService.send('QUEUE')
-        })
       } else {
-        coreModbusClient.readModbus(node, msg, cb, cberr)
+        if (node.bufferCommands) {
+          coreModbusQueue.pushToQueueByUnitId(node, coreModbusClient.readModbus, msg, cb, cberr).then(function () {
+            node.queueLog(JSON.stringify({
+              info: 'queued read msg',
+              message: msg.payload,
+              state: state.value,
+              queueLength: node.bufferCommandList.get(msg.queueUnitId).length
+            }))
+          }).catch(function (err) {
+            cberr(err, msg)
+          }).finally(function () {
+            verboseLog('read set state queueing')
+            node.stateService.send('QUEUE')
+          })
+        } else {
+          coreModbusClient.readModbus(node, msg, cb, cberr)
+        }
       }
     })
 
@@ -431,24 +440,24 @@ module.exports = function (RED) {
 
       if (node.messageAllowedStates.indexOf(state.value) === -1) {
         cberr(new Error('Client Not Ready To Write At State ' + state.value), msg)
-        return
-      }
-
-      if (node.bufferCommands) {
-        msg.queueNumber = coreModbusQueue.getQueueNumber(node, msg)
-        coreModbusQueue.pushToQueueByUnitId(node, coreModbusClient.writeModbus, msg, cb, cberr).then(function () {
-          node.queueLog(JSON.stringify({
-            info: 'queued write msg',
-            message: msg.payload,
-            state: state.value,
-            queueLength: node.bufferCommandList.get(msg.queueUnit).length
-          }))
-          node.stateService.send('QUEUE')
-        }).catch(function (err) {
-          cberr(err, msg)
-        })
       } else {
-        coreModbusClient.writeModbus(node, msg, cb, cberr)
+        if (node.bufferCommands) {
+          coreModbusQueue.pushToQueueByUnitId(node, coreModbusClient.writeModbus, msg, cb, cberr).then(function () {
+            node.queueLog(JSON.stringify({
+              info: 'queued write msg',
+              message: msg.payload,
+              state: state.value,
+              queueLength: node.bufferCommandList.get(msg.queueUnitId).length
+            }))
+          }).catch(function (err) {
+            cberr(err, msg)
+          }).finally(function () {
+            verboseLog('write set state queueing')
+            node.stateService.send('QUEUE')
+          })
+        } else {
+          coreModbusClient.writeModbus(node, msg, cb, cberr)
+        }
       }
     })
 
@@ -456,21 +465,19 @@ module.exports = function (RED) {
       return new Promise(
         function (resolve, reject) {
           try {
-            const deviceId = node.sendToDeviceAllowed.shift()
             if (node.bufferCommands) {
-              node.sendAllowed.set(msg.queueUnit, true)
-
               node.queueLog(JSON.stringify({
                 info: 'queue response activate sending',
                 message: msg.payload,
                 queueLength: node.bufferCommandList.length,
-                queueUnit: msg.queueUnit,
-                serialUnitId: deviceId
+                queueUnitId: msg.queueUnitId
               }))
-            }
 
-            if (coreModbusQueue.checkQueuesAreEmpty(node)) {
-              node.stateService.send('EMPTY')
+              if (coreModbusQueue.checkQueuesAreEmpty(node)) {
+                node.stateService.send('EMPTY')
+              } else {
+                node.stateService.send('ACTIVATE')
+              }
             } else {
               node.stateService.send('ACTIVATE')
             }

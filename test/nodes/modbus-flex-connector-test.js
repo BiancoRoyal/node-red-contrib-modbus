@@ -59,6 +59,7 @@ describe('Flex Connector node Testing', function () {
           clienttype: 'tcp',
           bufferCommands: true,
           stateLogEnabled: false,
+          parallelUnitIdsAllowed: true,
           tcpHost: '127.0.0.1',
           tcpPort: '11522',
           tcpType: 'DEFAULT',
@@ -124,6 +125,7 @@ describe('Flex Connector node Testing', function () {
           clienttype: 'tcp',
           bufferCommands: true,
           stateLogEnabled: false,
+          parallelUnitIdsAllowed: true,
           tcpHost: '127.0.0.1',
           tcpPort: '7522',
           tcpType: 'DEFAULT',
@@ -148,7 +150,7 @@ describe('Flex Connector node Testing', function () {
         setTimeout(function () {
           modbusNode.receive({ payload: { connectorType: 'TCP', tcpHost: '127.0.0.1', tcpPort: 8522 } })
         }, 1000)
-        clientNode.on('mbactive', () => {
+        clientNode.on('mbconnected', () => {
           if (clientNode && clientNode.tcpPort === 8522) {
             done()
           }

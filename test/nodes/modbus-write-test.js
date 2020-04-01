@@ -67,6 +67,7 @@ var testSimpleWriteParametersFlow = [{
   clienttype: 'tcp',
   bufferCommands: true,
   stateLogEnabled: false,
+  parallelUnitIdsAllowed: true,
   tcpHost: '127.0.0.1',
   tcpPort: '7502',
   tcpType: 'DEFAULT',
@@ -169,7 +170,10 @@ describe('Write node Testing', function () {
         tcpPort: 8502,
         unit_id: 1,
         clientTimeout: 100,
-        reconnectTimeout: 200
+        reconnectTimeout: 200,
+        bufferCommands: true,
+        stateLogEnabled: false,
+        parallelUnitIdsAllowed: true
       }], function () {
         var inject = helper.getNode('67dded7e.025904')
         inject.should.have.property('name', 'injectTrue')
@@ -270,6 +274,7 @@ describe('Write node Testing', function () {
         clienttype: 'tcp',
         bufferCommands: true,
         stateLogEnabled: false,
+        parallelUnitIdsAllowed: true,
         tcpHost: '127.0.0.1',
         tcpPort: '7502',
         tcpType: 'DEFAULT',

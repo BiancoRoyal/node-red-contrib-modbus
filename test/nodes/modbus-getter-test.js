@@ -90,6 +90,7 @@ var testGetterFlowWithInject = [{
   clienttype: 'tcp',
   bufferCommands: true,
   stateLogEnabled: true,
+  parallelUnitIdsAllowed: true,
   tcpHost: '127.0.0.1',
   tcpPort: '8502',
   tcpType: 'DEFAULT',
@@ -167,6 +168,7 @@ var testGetterFlow = [{
   clienttype: 'tcp',
   bufferCommands: true,
   stateLogEnabled: true,
+  parallelUnitIdsAllowed: true,
   tcpHost: '127.0.0.1',
   tcpPort: '8502',
   tcpType: 'DEFAULT',
@@ -275,7 +277,8 @@ describe('Getter node Testing', function () {
         tcpPort: 8502,
         unit_id: 1,
         clientTimeout: 100,
-        reconnectTimeout: 200
+        reconnectTimeout: 200,
+        parallelUnitIdsAllowed: true
       }], function () {
         const modbusServer = helper.getNode('996023fe.ea04b')
         modbusServer.should.have.property('name', 'modbusServer')
@@ -361,6 +364,7 @@ describe('Getter node Testing', function () {
         clienttype: 'tcp',
         bufferCommands: true,
         stateLogEnabled: true,
+        parallelUnitIdsAllowed: true,
         tcpHost: '127.0.0.1',
         tcpPort: '7502',
         tcpType: 'DEFAULT',

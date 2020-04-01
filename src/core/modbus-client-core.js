@@ -78,6 +78,10 @@ de.biancoroyal.modbus.core.client.createStateMachineService = function () {
   })
 }
 
+de.biancoroyal.modbus.core.client.getActualUnitId = function (node, msg) {
+  return parseInt(msg.payload.unitid) || parseInt(msg.queueUnitId) || parseInt(node.unit_id)
+}
+
 de.biancoroyal.modbus.core.client.startStateService = function (toggleMachine) {
   return this.XStateFSM.interpret(toggleMachine).start()
 }
@@ -99,6 +103,7 @@ de.biancoroyal.modbus.core.client.getLogFunction = function (node) {
 }
 
 de.biancoroyal.modbus.core.client.activateSendingOnSuccess = function (node, cb, cberr, resp, msg) {
+  node.sendingAllowed.set(msg.queueUnitId, true)
   node.activateSending(msg).then(function () {
     cb(resp, msg)
   }).catch(function (err) {
@@ -107,6 +112,7 @@ de.biancoroyal.modbus.core.client.activateSendingOnSuccess = function (node, cb,
 }
 
 de.biancoroyal.modbus.core.client.activateSendingOnFailure = function (node, cberr, err, msg) {
+  node.sendingAllowed.set(msg.queueUnitId, true)
   node.activateSending(msg).then(function () {
     cberr(err, msg)
   }).catch(function (err) {
@@ -177,34 +183,38 @@ de.biancoroyal.modbus.core.client.readModbusByFunctionCode = function (node, msg
       break
   }
 }
+
 de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
+  const coreClient = de.biancoroyal.modbus.core.client
+  const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
+
   if (!node.client) {
+    nodeLog('Client Not Ready As Object On Reading Modbus')
     return
   }
 
   if (!node.bufferCommands) {
-    node.stateService.send('READ')
+    if (node.clienttype !== 'tcp') {
+      node.stateService.send('READ')
+    }
+  } else {
+    node.queueLog(JSON.stringify({
+      info: 'read msg via Modbus',
+      message: msg.payload,
+      queueUnitId: msg.queueUnitId,
+      timeout: node.client.getTimeout(),
+      state: node.actualServiceState.value
+    }))
   }
 
   node.setUnitIdFromPayload(msg)
   node.client.setTimeout(node.clientTimeout)
 
-  const coreClient = de.biancoroyal.modbus.core.client
-  const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
-
-  node.queueLog(JSON.stringify({
-    info: 'read msg',
-    message: msg.payload,
-    unitid: msg.queueUnitId,
-    timeout: node.client.getTimeout(),
-    state: node.actualServiceState.value
-  }))
-
   try {
     coreClient.readModbusByFunctionCode(node, msg, cb, cberr)
   } catch (err) {
-    coreClient.activateSendingOnFailure(node, cberr, err, msg)
     nodeLog(err.message)
+    coreClient.activateSendingOnFailure(node, cberr, err, msg)
     node.modbusErrorHandling(err)
   }
 }
@@ -266,27 +276,30 @@ de.biancoroyal.modbus.core.client.writeModbusByFunctionCodeSixteen = function (n
 }
 
 de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) {
+  const coreClient = de.biancoroyal.modbus.core.client
+  const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
+
   if (!node.client) {
+    nodeLog('Client Not Ready As Object On Writing Modbus')
     return
   }
 
   if (!node.bufferCommands) {
-    node.stateService.send('WRITE')
+    if (node.clienttype !== 'tcp') {
+      node.stateService.send('WRITE')
+    }
+  } else {
+    node.queueLog(JSON.stringify({
+      info: 'write msg',
+      message: msg.payload,
+      queueUnitId: msg.queueUnitId,
+      timeout: node.client.getTimeout(),
+      state: node.actualServiceState.value
+    }))
   }
 
   node.setUnitIdFromPayload(msg)
   node.client.setTimeout(node.clientTimeout)
-
-  const coreClient = de.biancoroyal.modbus.core.client
-  const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
-
-  node.queueLog(JSON.stringify({
-    info: 'write msg',
-    message: msg.payload,
-    unitid: msg.queueUnitId,
-    timeout: node.client.getTimeout(),
-    state: node.actualServiceState.value
-  }))
 
   try {
     switch (parseInt(msg.payload.fc)) {
@@ -308,8 +321,8 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
         break
     }
   } catch (err) {
-    coreClient.activateSendingOnFailure(node, cberr, err, msg)
     nodeLog(err.message)
+    coreClient.activateSendingOnFailure(node, cberr, err, msg)
     node.modbusErrorHandling(err)
   }
 }

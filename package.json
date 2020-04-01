@@ -62,7 +62,7 @@
   },
   "homepage": "https://github.com/sponsors/biancode/",
   "scripts": {
-    "test": "standard --fix && mocha test/* --reporter dot --timeout 5000",
+    "test": "standard --fix && mocha test --recursive --reporter dot --timeout 5000",
     "test-with-coverage": "istanbul cover _mocha --report lcovonly -- --recursive --timeout 5000 -R spec && cat ./coverage/lcov.info | codacy-coverage --token a047b284d2124df78f999c27ae874e9c && rm -rf ./coverage",
     "coverage": "standard --fix && gulp build && npm test && istanbul cover _mocha -- --recursive --timeout 5000",
     "build": "standard --fix && gulp",
