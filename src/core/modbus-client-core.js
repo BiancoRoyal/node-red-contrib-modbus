@@ -59,6 +59,7 @@ de.biancoroyal.modbus.core.client.createStateMachineService = function () {
       queueing: {
         on: {
           ACTIVATE: 'activated',
+          SEND: 'sending',
           READ: 'reading',
           WRITE: 'writing',
           EMPTY: 'empty',
@@ -69,6 +70,7 @@ de.biancoroyal.modbus.core.client.createStateMachineService = function () {
         }
       },
       empty: { on: { QUEUE: 'queueing', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', STOP: 'stopped' } },
+      sending: { on: { ACTIVATE: 'activated', READ: 'reading', WRITE: 'writing', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' } },
       reading: { on: { ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' } },
       writing: { on: { ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' } },
       closed: { on: { FAILURE: 'failed', BREAK: 'broken', CONNECT: 'connected', RECONNECT: 'reconnecting', INIT: 'init', STOP: 'stopped' } },
@@ -107,6 +109,8 @@ de.biancoroyal.modbus.core.client.activateSendingOnSuccess = function (node, cb,
     cb(resp, msg)
   }).catch(function (err) {
     cberr(err, msg)
+  }).finally(function () {
+    node.stateService.send('ACTIVATE')
   })
 }
 
@@ -115,6 +119,8 @@ de.biancoroyal.modbus.core.client.activateSendingOnFailure = function (node, cbe
     cberr(err, msg)
   }).catch(function (err) {
     cberr(err, msg)
+  }).finally(function () {
+    node.stateService.send('ACTIVATE')
   })
 }
 
@@ -212,8 +218,8 @@ de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
     coreClient.readModbusByFunctionCode(node, msg, cb, cberr)
   } catch (err) {
     nodeLog(err.message)
-    coreClient.activateSendingOnFailure(node, cberr, err, msg)
     node.modbusErrorHandling(err)
+    coreClient.activateSendingOnFailure(node, cberr, err, msg)
   }
 }
 
@@ -241,8 +247,7 @@ de.biancoroyal.modbus.core.client.writeModbusByFunctionCodeFifteen = function (n
     node.client.writeCoils(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
       coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
     }).catch(function (err) {
-      node.activateSending(msg)
-      cberr(err, msg)
+      coreClient.activateSendingOnFailure(node, cberr, err, msg)
       node.modbusErrorHandling(err)
     })
   }
@@ -397,6 +402,6 @@ de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
   return true
 }
 
-de.biancoroyal.modbus.core.client.messagesAllowedStates = ['activated', 'queueing', 'empty', 'connected']
+de.biancoroyal.modbus.core.client.messagesAllowedStates = ['activated', 'queueing', 'sending', 'empty', 'connected']
 
 module.exports = de.biancoroyal.modbus.core.client
