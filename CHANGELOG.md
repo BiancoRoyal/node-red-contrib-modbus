@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.5.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.5.0...v5.5.1) (2020-04-01)
+
+
+### Bug Fixes
+
+* serial lock toggle for issue [#175](https://github.com/biancoroyal/node-red-contrib-modbus/issues/175) ([45e4be8](https://github.com/biancoroyal/node-red-contrib-modbus/commit/45e4be85710eb6db18cb4cbc7d3a21e62a3eea68))
+* serial multiple UnitIds issue [#175](https://github.com/biancoroyal/node-red-contrib-modbus/issues/175) ([2f6fedf](https://github.com/biancoroyal/node-red-contrib-modbus/commit/2f6fedfb7a815f92434f22ee9110bf1b6a5fa68a))
+
 ## [5.5.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.5.0-beta.2...v5.5.0) (2020-04-01)
 
 
