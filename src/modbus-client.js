@@ -173,6 +173,7 @@ module.exports = function (RED) {
       }
 
       if (state.matches('queueing')) {
+        node.stateService.send('SEND')
         setTimeout(() => {
           coreModbusQueue.dequeueCommand(node)
         }, node.commandDelay)
@@ -469,18 +470,15 @@ module.exports = function (RED) {
             if (node.bufferCommands) {
               node.queueLog(JSON.stringify({
                 info: 'queue response activate sending',
-                message: msg.payload,
                 queueLength: node.bufferCommandList.length,
+                sendingAllowed: node.sendingAllowed.get(msg.queueUnitId),
+                serialSendingAllowed: node.serialSendingAllowed,
                 queueUnitId: msg.queueUnitId
               }))
 
               if (coreModbusQueue.checkQueuesAreEmpty(node)) {
                 node.stateService.send('EMPTY')
-              } else {
-                node.stateService.send('ACTIVATE')
               }
-            } else {
-              node.stateService.send('ACTIVATE')
             }
             resolve()
           } catch (err) {

@@ -25,11 +25,11 @@ de.biancoroyal.modbus.queue.core.initQueue = function (node) {
 }
 
 de.biancoroyal.modbus.queue.core.checkQueuesAreEmpty = function (node) {
-  let queueAreEmpty = true
+  let queuesAreEmpty = true
   for (let step = 0; step <= 255; step++) {
-    queueAreEmpty &= (node.bufferCommandList.get(step).length === 0)
+    queuesAreEmpty &= (node.bufferCommandList.get(step).length === 0)
   }
-  return queueAreEmpty
+  return queuesAreEmpty
 }
 
 de.biancoroyal.modbus.queue.core.sequentialDequeueCommand = function (node) {
@@ -43,11 +43,24 @@ de.biancoroyal.modbus.queue.core.sequentialDequeueCommand = function (node) {
         }
       } else {
         const unitId = node.unitSendingAllowed.shift()
+
+        node.queueLog(JSON.stringify({
+          type: 'sequential dequeue command',
+          unitId,
+          isValidUnitId: queueCore.isValidUnitId(unitId),
+          sendingAllowed: node.sendingAllowed.get(unitId),
+          serialSendingAllowed: node.serialSendingAllowed
+        }))
+
         if (node.serialSendingAllowed &&
           queueCore.isValidUnitId(unitId) &&
           node.sendingAllowed.get(unitId)) {
           node.serialSendingAllowed = false
           queueCore.sendQueueDataToModbus(node, unitId)
+        } else {
+          // if (node.showErrors) {
+          node.warn('sequential dequeue command not possible')
+          // }
         }
       }
       resolve()
@@ -56,23 +69,22 @@ de.biancoroyal.modbus.queue.core.sequentialDequeueCommand = function (node) {
 
 de.biancoroyal.modbus.queue.core.sendQueueDataToModbus = function (node, unitId) {
   const queueLength = node.bufferCommandList.get(unitId).length
-  if (!queueLength) {
-    return
-  }
-
   node.queueLog(JSON.stringify({
-    type: 'queue sending data to Modbus',
+    type: 'send queue data to Modbus',
     unitId,
     queueLength,
-    sendingAllowed: node.sendingAllowed.get(unitId)
+    sendingAllowed: node.sendingAllowed.get(unitId),
+    serialSendingAllowed: node.serialSendingAllowed
   }))
 
-  const command = node.bufferCommandList.get(unitId).shift()
-  if (command) {
-    node.sendingAllowed.set(unitId, false)
-    command.callModbus(node, command.msg, command.cb, command.cberr)
-  } else {
-    throw new Error('Command On Send Not Valid')
+  if (queueLength) {
+    const command = node.bufferCommandList.get(unitId).shift()
+    if (command) {
+      node.sendingAllowed.set(unitId, false)
+      command.callModbus(node, command.msg, command.cb, command.cberr)
+    } else {
+      throw new Error('Command On Send Not Valid')
+    }
   }
 }
 
