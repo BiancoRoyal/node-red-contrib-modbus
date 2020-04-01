@@ -53,17 +53,19 @@ module.exports = function (RED) {
       if (node.showErrors) {
         node.error(err, msg)
       }
+
       if (err && err.message) {
         msg.error = err
       } else {
         msg.error = new Error(err)
       }
       msg.error.nodeStatus = node.statusText
+
       if (node.emptyMsgOnFail) {
-        node.send({ payload: '', error: err, status: node.statusText, msg })
-      } else {
-        node.send(msg)
+        msg.payload = ''
       }
+
+      node.send(msg)
     }
 
     node.on('input', function (msg) {
