@@ -9,7 +9,8 @@
       "highHighLevel": "High high level",
       "server": "Server",
       "errorOnHighLevel": "Error on high level",
-      "showActivities": "Show Activities"
+      "showActivities": "Show Activities",
+      "updateOnAllQueueChanges": "Show All Updates"
     }
   }
 }

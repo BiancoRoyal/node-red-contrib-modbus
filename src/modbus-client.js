@@ -167,8 +167,6 @@ module.exports = function (RED) {
         node.emit('mbactive')
         if (node.bufferCommands && !coreModbusQueue.checkQueuesAreEmpty(node)) {
           node.stateService.send('QUEUE')
-        } else {
-          verboseLog('Queues Are Empty On Activated')
         }
       }
 
@@ -206,7 +204,6 @@ module.exports = function (RED) {
           }
           node.stateService.send('RECONNECT')
         } else {
-          verboseWarn('We stay active on broken state without reconnecting')
           node.stateService.send('ACTIVATE')
         }
       }
@@ -216,7 +213,6 @@ module.exports = function (RED) {
         if (node.reconnectTimeout <= 0) {
           node.reconnectTimeout = reconnectTimeMS
         }
-        verboseWarn('try to reconnect by init in ' + node.reconnectTimeout + ' ms')
         setTimeout(() => {
           node.reconnectTimeoutId = 0
           node.stateService.send('INIT')
@@ -404,7 +400,7 @@ module.exports = function (RED) {
     }
 
     node.onModbusClose = function () {
-      verboseWarn('modbus closed port')
+      verboseWarn('Modbus closed port')
       coreModbusClient.modbusSerialDebug('modbus closed port')
       node.stateService.send('CLOSE')
     }
@@ -426,7 +422,6 @@ module.exports = function (RED) {
           }).catch(function (err) {
             cberr(err, msg)
           }).finally(function () {
-            verboseLog('read set state queueing')
             node.stateService.send('QUEUE')
           })
         } else {
@@ -452,7 +447,6 @@ module.exports = function (RED) {
           }).catch(function (err) {
             cberr(err, msg)
           }).finally(function () {
-            verboseLog('write set state queueing')
             node.stateService.send('QUEUE')
           })
         } else {

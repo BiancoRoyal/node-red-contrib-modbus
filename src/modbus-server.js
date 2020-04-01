@@ -38,6 +38,7 @@ module.exports = function (RED) {
 
     this.showErrors = config.showErrors
     this.internalDebugLog = internalDebugLog
+    this.verboseLogging = RED.settings.verbose
 
     const node = this
 

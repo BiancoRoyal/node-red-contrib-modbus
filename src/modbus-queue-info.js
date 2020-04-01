@@ -31,11 +31,13 @@ module.exports = function (RED) {
     this.errorOnHighLevel = config.errorOnHighLevel
     this.queueReadIntervalTime = config.queueReadIntervalTime || 1000
     this.showStatusActivities = config.showStatusActivities
+    this.updateOnAllQueueChanges = config.updateOnAllQueueChanges
 
     this.internalDebugLog = internalDebugLog
 
     const node = this
     node.queueReadInterval = null
+    node.updateStatusRrunning = false
     mbBasics.setNodeStatusTo('waiting', node)
 
     const modbusClient = RED.nodes.getNode(config.server)
@@ -134,6 +136,10 @@ module.exports = function (RED) {
     }
 
     node.readFromQueue = function () {
+      if (node.updateStatusRrunning) {
+        return
+      }
+      node.updateStatusRrunning = true
       let unit = node.unitid || 1
 
       if (modbusClient.bufferCommands) {
@@ -160,19 +166,16 @@ module.exports = function (RED) {
       } else if (node.showStatusActivities) {
         mbBasics.setNodeStatusTo('active unit ' + unit + ' without queue', node)
       }
+      node.updateStatusRrunning = false
     }
 
-    node.onModbusInit = function () {
-      node.readFromQueue()
+    modbusClient.on('mbinit', node.readFromQueue)
+    modbusClient.on('mbconnected', node.readFromQueue)
+    modbusClient.on('mberror', node.readFromQueue)
+    if (node.updateOnAllQueueChanges) { // more CPU-Load on many requests
+      modbusClient.on('mbactive', node.readFromQueue)
     }
-
-    node.onModbusQueue = function () {
-      node.readFromQueue()
-    }
-
-    modbusClient.on('mbinit', node.onModbusInit)
-    modbusClient.on('failed', node.onModbusQueue)
-    modbusClient.on('closed', node.onModbusQueue)
+    modbusClient.on('mbclosed', node.readFromQueue)
 
     node.queueReadInterval = setInterval(node.readFromQueue, node.queueReadIntervalTime)
 

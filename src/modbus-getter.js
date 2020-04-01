@@ -41,6 +41,7 @@ module.exports = function (RED) {
 
     this.emptyMsgOnFail = config.emptyMsgOnFail
     this.internalDebugLog = internalDebugLog
+    this.verboseLogging = RED.settings.verbose
 
     const node = this
     node.bufferMessageList = new Map()

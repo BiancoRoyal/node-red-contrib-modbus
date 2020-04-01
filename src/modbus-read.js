@@ -49,13 +49,15 @@ module.exports = function (RED) {
     this.logIOActivities = config.logIOActivities
 
     this.internalDebugLog = internalDebugLog
+    this.verboseLogging = RED.settings.verbose
 
     const node = this
     let delayTimerID = null
     let timerID = null
     let timeoutOccurred = false
     node.INPUT_TIMEOUT_MILLISECONDS = 1000
-    mbBasics.setNodeStatusTo('waiting', node)
+    node.statusText = 'waiting'
+    mbBasics.setNodeStatusTo(node.statusText, node)
 
     const modbusClient = RED.nodes.getNode(config.server)
     if (!modbusClient) {
@@ -237,20 +239,27 @@ module.exports = function (RED) {
       }
 
       const statusOptions = mbBasics.setNodeStatusProperties(statusValue, node.showStatusActivities)
+      const statusText = node.statusText
 
       if (statusValue.search('active') !== -1 || statusValue === 'polling') {
+        const newStatusText = statusOptions.status + getTimeInfo()
         timeoutOccurred = false
-        node.status({
-          fill: statusOptions.fill,
-          shape: statusOptions.shape,
-          text: statusOptions.status + getTimeInfo()
-        })
+        if (newStatusText !== statusText) {
+          node.status({
+            fill: statusOptions.fill,
+            shape: statusOptions.shape,
+            text: newStatusText
+          })
+        }
       } else {
-        node.status({
-          fill: statusOptions.fill,
-          shape: statusOptions.shape,
-          text: statusOptions.status
-        })
+        const newStatusText = statusOptions.status
+        if (newStatusText !== statusText) {
+          node.status({
+            fill: statusOptions.fill,
+            shape: statusOptions.shape,
+            text: newStatusText
+          })
+        }
       }
     }
 

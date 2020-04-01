@@ -33,9 +33,11 @@ module.exports = function (RED) {
     this.quantity = config.quantity
 
     this.internalDebugLog = internalDebugLog
+    this.verboseLogging = RED.settings.verbose
 
     const node = this
     node.bufferMessageList = new Map()
+
     mbBasics.setNodeStatusTo('waiting', node)
 
     const modbusClient = RED.nodes.getNode(config.server)

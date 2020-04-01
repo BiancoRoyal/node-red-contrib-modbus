@@ -81,8 +81,6 @@
 
         switch (clientTypeSelector.val()) {
           case 'tcp':
-            $('#node-config-input-parallelUnitIdsAllowed').prop('checked', true)
-
             inputsSerialExtras.hide()
             inputsSerial.hide()
             inputsTCP.show()
@@ -111,8 +109,6 @@
             break
           case 'serial':
           case 'simpleser':
-            $('#node-config-input-parallelUnitIdsAllowed').prop('checked', false)
-
             if (clientTypeSelector.val() === 'simpleser') {
               inputsSerialExtras.hide()
               node.serialDatabits.value = 8

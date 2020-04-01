@@ -42,6 +42,7 @@ module.exports = function (RED) {
     this.funcSetRegister = new VMScript(config.funcSetRegister).compile()
 
     this.internalDebugLog = internalDebugLog
+    this.verboseLogging = RED.settings.verbose
 
     const node = this
     node.bufferFactor = 8

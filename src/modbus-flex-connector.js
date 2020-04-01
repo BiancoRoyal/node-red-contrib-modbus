@@ -28,6 +28,7 @@ module.exports = function (RED) {
     this.connection = null
 
     this.internalDebugLog = internalDebugLog
+    this.verboseLogging = RED.settings.verbose
 
     const node = this
     mbBasics.setNodeStatusTo('waiting', node)
@@ -52,11 +53,15 @@ module.exports = function (RED) {
       if (node.showErrors) {
         node.error(err, msg)
       }
-
-      if (node.emptyMsgOnFail) {
-        node.send({ payload: '', error: err, status: node.status, msg })
-      } else {
+      if (err && err.message) {
         msg.error = err
+      } else {
+        msg.error = new Error(err)
+      }
+      msg.error.nodeStatus = node.statusText
+      if (node.emptyMsgOnFail) {
+        node.send({ payload: '', error: err, status: node.statusText, msg })
+      } else {
         node.send(msg)
       }
     }
@@ -79,9 +84,9 @@ module.exports = function (RED) {
         msg.payload.emptyQueue = node.emptyQueue
         modbusClient.emit('dynamicReconnect', msg, node.onConfigDone, node.onConfigError)
       } else {
-        const errorMessage = 'Payload Not Valid - Connector Type'
-        node.error(new Error(errorMessage), msg)
-        msg.error = errorMessage
+        const error = new Error('Payload Not Valid - Connector Type')
+        node.error(error, msg)
+
         node.send(msg)
       }
     })

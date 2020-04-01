@@ -208,20 +208,21 @@ de.biancoroyal.modbus.basics.setModbusError = function (node, modbusClient, err,
         this.internalDebug(err.message)
         if (node.showErrors) {
           this.setNodeStatusTo('error ' + err.message, node)
-          node.error(err, msg)
         }
     }
   }
 }
 
 de.biancoroyal.modbus.basics.setNodeStatusTo = function (statusValue, node) {
-  const statusOptions = this.setNodeStatusProperties(statusValue, node.showStatusActivities)
-
-  node.status({
-    fill: statusOptions.fill,
-    shape: statusOptions.shape,
-    text: statusOptions.status
-  })
+  if (node.showStatusActivities && statusValue !== node.statusText) {
+    const statusOptions = this.setNodeStatusProperties(statusValue, node.showStatusActivities)
+    node.statusText = statusValue
+    node.status({
+      fill: statusOptions.fill,
+      shape: statusOptions.shape,
+      text: statusOptions.status
+    })
+  }
 }
 
 de.biancoroyal.modbus.basics.onModbusInit = function (node) {
@@ -267,12 +268,13 @@ de.biancoroyal.modbus.basics.invalidPayloadIn = function (msg) {
 de.biancoroyal.modbus.basics.emptyMsgOnFail = function (node, err, msg) {
   if (node.emptyMsgOnFail) {
     msg.payload = ''
+
     if (err && err.message) {
       msg.error = err
     } else {
       msg.error = new Error(err)
     }
-    msg.error.nodeStatus = node.status
+    msg.error.nodeStatus = node.statusText
 
     node.send([msg, msg])
   }
