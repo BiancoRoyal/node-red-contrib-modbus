@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.5.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.5.0-beta.2...v5.5.0) (2020-04-01)
+
+
+### Bug Fixes
+
+* GUI problems and performance while verbose mode is active ([9453fcc](https://github.com/biancoroyal/node-red-contrib-modbus/commit/9453fcc4afd81177c7bc46a9a20f28ba8c91b271))
+* issue [#175](https://github.com/biancoroyal/node-red-contrib-modbus/issues/175) less update queue info node on queue-changes ([45eae4e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/45eae4e405fa788e5189d19c1c55d828b03b52b1))
+* similar empty msg structure ([cfbd834](https://github.com/biancoroyal/node-red-contrib-modbus/commit/cfbd8345cc489d2766708a2413d6c5b14f5bc021))
+
 ## [5.5.0-beta.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.5.0-beta.0...v5.5.0-beta.2) (2020-04-01)
 
 
