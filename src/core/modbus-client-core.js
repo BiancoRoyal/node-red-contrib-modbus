@@ -34,7 +34,7 @@ de.biancoroyal.modbus.core.client.createStateMachineService = function () {
         on: { INIT: 'init', STOP: 'stopped', FAILURE: 'failed', ACTIVATE: 'activated', RECONNECT: 'reconnecting' }
       },
       reconnecting: {
-        on: { INIT: 'init', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' }
+        on: { INIT: 'init', STOP: 'stopped' }
       },
       init: {
         on: { OPENSERIAL: 'opened', CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' }
