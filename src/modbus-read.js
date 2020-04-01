@@ -132,8 +132,8 @@ module.exports = function (RED) {
     modbusClient.on('mbinit', node.onModbusInit)
     modbusClient.on('mbconnected', node.onModbusConnect)
     modbusClient.on('mbactive', node.onModbusActive)
+    modbusClient.on('mbqueue', node.onModbusActive)
     modbusClient.on('mberror', node.onModbusError)
-    modbusClient.on('mbbroken', node.onModbusBroken)
     modbusClient.on('mbclosed', node.onModbusClose)
 
     node.modbusPollingRead = function () {

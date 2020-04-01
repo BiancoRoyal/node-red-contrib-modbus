@@ -88,7 +88,7 @@ const simpleReadWithClient = [
     unit_id: '1',
     commandDelay: '1',
     clientTimeout: '100',
-    reconnectTimeout: '250',
+    reconnectTimeout: 200,
     reconnectOnTimeout: true
   }
 ]
@@ -137,7 +137,7 @@ describe('Client node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: '250',
+        reconnectTimeout: 200,
         reconnectOnTimeout: true
       },
       {
@@ -189,7 +189,7 @@ describe('Client node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: '250',
+        reconnectTimeout: 200,
         reconnectOnTimeout: true
       },
       {
@@ -241,7 +241,7 @@ describe('Client node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: '250',
+        reconnectTimeout: 200,
         reconnectOnTimeout: true
       },
       {
@@ -293,7 +293,7 @@ describe('Client node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: '250',
+        reconnectTimeout: 200,
         reconnectOnTimeout: true
       },
       {
@@ -345,7 +345,7 @@ describe('Client node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: '250',
+        reconnectTimeout: 200,
         reconnectOnTimeout: true
       },
       {
@@ -397,7 +397,7 @@ describe('Client node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: '250',
+        reconnectTimeout: 200,
         reconnectOnTimeout: true
       },
       {
@@ -449,7 +449,7 @@ describe('Client node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: '250',
+        reconnectTimeout: 200,
         reconnectOnTimeout: true
       },
       {

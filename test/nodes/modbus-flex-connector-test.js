@@ -73,7 +73,7 @@ describe('Flex Connector node Testing', function () {
           unit_id: '1',
           commandDelay: '100',
           clientTimeout: '100',
-          reconnectTimeout: '200',
+          reconnectTimeout: 200,
           reconnectOnTimeout: true
         }
       ], function () {
@@ -84,7 +84,7 @@ describe('Flex Connector node Testing', function () {
       })
     })
 
-    it('should change the Port of the client from 7522 to 8522', function (done) {
+    it('should change the TCP-Port of the client from 7522 to 8522', function (done) {
       this.timeout(3000)
       helper.load([serverNode, nodeUnderTest, nodeClient], [
         {
@@ -152,6 +152,60 @@ describe('Flex Connector node Testing', function () {
         }, 1000)
         clientNode.on('mbconnected', () => {
           if (clientNode && clientNode.tcpPort === 8522) {
+            done()
+          }
+        })
+      })
+    })
+
+    it('should change the Serial-Port of the client from /dev/ttyUSB to /dev/ttyUSB0', function (done) {
+      this.timeout(3000)
+      helper.load([nodeUnderTest, nodeClient], [
+        {
+          id: '40ddaabb.fd44d4',
+          type: 'modbus-flex-connector',
+          name: 'FlexConnector',
+          maxReconnectsPerMinute: 4,
+          emptyQueue: true,
+          showStatusActivities: false,
+          showErrors: false,
+          server: '2a253153.fae3ef',
+          wires: []
+        },
+        {
+          id: '2a253153.fae3ef',
+          type: 'modbus-client',
+          name: '',
+          clienttype: 'serial',
+          bufferCommands: true,
+          stateLogEnabled: false,
+          parallelUnitIdsAllowed: true,
+          tcpHost: '127.0.0.1',
+          tcpPort: '7522',
+          tcpType: 'DEFAULT',
+          serialPort: '/dev/ttyUSB',
+          serialType: 'RTU-BUFFERD',
+          serialBaudrate: '0',
+          serialDatabits: '8',
+          serialStopbits: '1',
+          serialParity: 'none',
+          serialConnectionDelay: '100',
+          unit_id: '1',
+          commandDelay: '100',
+          clientTimeout: '100',
+          reconnectTimeout: '200',
+          reconnectOnTimeout: true
+        }
+      ], function () {
+        var modbusNode = helper.getNode('40ddaabb.fd44d4')
+        var clientNode = helper.getNode('2a253153.fae3ef')
+        modbusNode.should.have.property('name', 'FlexConnector')
+        modbusNode.should.have.property('emptyQueue', true)
+        setTimeout(function () {
+          modbusNode.receive({ payload: { connectorType: 'SERIAL', serialPort: '/dev/ttyUSB0', serialBaudrate: '9600' } })
+        }, 1000)
+        clientNode.on('mbinit', () => {
+          if (clientNode && clientNode.serialBaudrate === 9600 && clientNode.serialPort === '/dev/ttyUSB0') {
             done()
           }
         })

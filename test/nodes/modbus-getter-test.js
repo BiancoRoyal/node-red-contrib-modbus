@@ -104,7 +104,7 @@ var testGetterFlowWithInject = [{
   unit_id: '1',
   commandDelay: '1',
   clientTimeout: '100',
-  reconnectTimeout: '250'
+  reconnectTimeout: 200
 },
 {
   id: 'e0519b16.5fcdd',
@@ -182,7 +182,7 @@ var testGetterFlow = [{
   unit_id: '1',
   commandDelay: '1',
   clientTimeout: '100',
-  reconnectTimeout: '250'
+  reconnectTimeout: 200
 },
 {
   id: 'e0519b16.5fcdd',
@@ -378,7 +378,7 @@ describe('Getter node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: '250'
+        reconnectTimeout: 200
       }
       ], function () {
         const h1 = helper.getNode('h1')

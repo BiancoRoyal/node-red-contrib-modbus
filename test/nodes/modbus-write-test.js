@@ -81,7 +81,7 @@ var testSimpleWriteParametersFlow = [{
   unit_id: '1',
   commandDelay: '1',
   clientTimeout: '100',
-  reconnectTimeout: '250'
+  reconnectTimeout: 200
 }
 ]
 
@@ -288,7 +288,7 @@ describe('Write node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: '250'
+        reconnectTimeout: 200
       }
       ], function () {
         const modbusWrite = helper.getNode('1ed908da.427ecf')

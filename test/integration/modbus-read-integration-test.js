@@ -108,7 +108,7 @@ const testFlowReading = [
     commandDelay: '1',
     clientTimeout: '1000',
     reconnectOnTimeout: true,
-    reconnectTimeout: '2000',
+    reconnectTimeout: 200,
     parallelUnitIdsAllowed: true
   }
 ]
