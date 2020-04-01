@@ -283,7 +283,7 @@ describe('Response Filter node Testing', function () {
           unit_id: '1',
           commandDelay: '1',
           clientTimeout: '100',
-          reconnectTimeout: '200'
+          reconnectTimeout: 200
         },
         {
           id: '7417947e.da6c3c',

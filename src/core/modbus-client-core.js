@@ -384,7 +384,7 @@ de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
       break
 
     case 'SERIAL':
-      coreClient.setNewSerialNodeSettings()
+      coreClient.setNewSerialNodeSettings(node, msg)
       nodeLog('New Connection Serial Settings ' + node.serialPort + ' ' + node.serialBaudrate + ' ' + node.serialType)
       break
 

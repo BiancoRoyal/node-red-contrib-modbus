@@ -97,7 +97,7 @@ var testFlexGetterFlowWithInject = [{
   unit_id: '1',
   commandDelay: '1',
   clientTimeout: '100',
-  reconnectTimeout: '250'
+  reconnectTimeout: 200
 }
 ]
 
@@ -161,7 +161,7 @@ var testFlexGetterFlow = [{
   unit_id: '1',
   commandDelay: '1',
   clientTimeout: '100',
-  reconnectTimeout: '250'
+  reconnectTimeout: 200
 }
 ]
 
@@ -269,7 +269,7 @@ describe('Flex Getter node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: '250'
+        reconnectTimeout: 200
       }], function () {
         const modbusServer = helper.getNode('996023fe.ea04b')
         modbusServer.should.have.property('name', 'modbusServer')

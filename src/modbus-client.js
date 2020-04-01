@@ -161,6 +161,7 @@ module.exports = function (RED) {
       }
 
       if (state.matches('connected')) {
+        node.serialSendingAllowed = true
         node.emit('mbconnected')
       }
 
