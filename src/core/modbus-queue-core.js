@@ -181,7 +181,7 @@ de.biancoroyal.modbus.queue.core.getQueueNumber = function (node, msg) {
 de.biancoroyal.modbus.queue.core.pushToQueueByUnitId = function (node, callModbus, msg, cb, cberr) {
   return new Promise(
     function (resolve, reject) {
-      const unit = parseInt(msg.payload.unitid)
+      const unit = parseInt(msg.payload.unitid) || parseInt(node.unit_id)
 
       if (Number.isInteger(unit)) {
         msg.queueUnit = unit
@@ -194,22 +194,10 @@ de.biancoroyal.modbus.queue.core.pushToQueueByUnitId = function (node, callModbu
 
         node.unitSendingAllowed.push(unit)
         node.bufferCommandList.get(unit).push({ callModbus: callModbus, msg: msg, cb: cb, cberr: cberr })
+        resolve()
       } else {
-        msg.queueUnit = node.unit_id
-        node.queueLog(JSON.stringify({
-          info: 'push to Queue by default Unit-Id',
-          message: msg.payload,
-          unit: node.unit_id,
-          sendingListLength: node.unitSendingAllowed.length
-        }))
-
-        if (node.unitSendingAllowed.indexOf(node.unit_id) === -1) {
-          node.unitSendingAllowed.push(node.unit_id)
-        }
-
-        node.bufferCommandList.get(node.unit_id).push({ callModbus: callModbus, msg: msg, cb: cb, cberr: cberr })
+        reject(new Error('UnitId For Queueing Is Not Valid'))
       }
-      resolve()
     })
 }
 

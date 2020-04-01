@@ -73,13 +73,25 @@ function releaseJSContent (cb) {
   cb)
 }
 
+function codeJSContent (cb) {
+  const anchor = '// SOURCE-MAP-REQUIRED'
+
+  pump([
+    src('src/**/*.js')
+      .pipe(sourcemaps.init({ loadMaps: true }))
+      .pipe(replace(anchor, 'require(\'source-map-support\').install()'))
+      .pipe(babel({ presets: ['@babel/env'] }))
+      .pipe(sourcemaps.write('maps')), dest('code')],
+  cb)
+}
+
 function doc (cb) {
   src(['README.md', 'src/**/*.js'], { read: false })
     .pipe(jsdoc(cb))
 }
 
-exports.default = series(cleanProject, releaseWebContent, releaseJSContent, releaseLocal, releasePublicData, releaseIcons, doc, docIcons, docImages)
+exports.default = series(cleanProject, releaseWebContent, releaseJSContent, codeJSContent, releaseLocal, releasePublicData, releaseIcons, doc, docIcons, docImages)
 exports.clean = cleanProject
-exports.build = series(cleanProject, releaseWebContent, releaseJSContent, releaseLocal)
+exports.build = series(cleanProject, releaseWebContent, releaseJSContent, releaseLocal, codeJSContent)
 exports.buildDocs = series(doc, docIcons, docImages)
-exports.publish = series(cleanProject, releaseWebContent, releaseJSContent, releaseLocal, releasePublicData, releaseIcons, doc, docIcons, docImages)
+exports.publish = series(cleanProject, releaseWebContent, releaseJSContent, releaseLocal, codeJSContent, releasePublicData, releaseIcons, doc, docIcons, docImages)

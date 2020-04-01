@@ -43,7 +43,7 @@ de.biancoroyal.modbus.core.client.createStateMachineService = function () {
         on: { CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', STOP: 'stopped' }
       },
       connected: {
-        on: { CLOSE: 'closed', ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' }
+        on: { CLOSE: 'closed', ACTIVATE: 'activated', QUEUE: 'queueing', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' }
       },
       activated: {
         on: {
@@ -386,6 +386,6 @@ de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
   return true
 }
 
-de.biancoroyal.modbus.core.client.messagesAllowedStates = ['activated', 'queueing', 'empty']
+de.biancoroyal.modbus.core.client.messagesAllowedStates = ['activated', 'queueing', 'empty', 'connected']
 
 module.exports = de.biancoroyal.modbus.core.client

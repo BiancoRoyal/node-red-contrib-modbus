@@ -76,7 +76,6 @@ module.exports = function (RED) {
     node.actualServiceStateBefore = node.actualServiceState
     node.stateService = coreModbusClient.startStateService(node.stateMachine)
     node.reconnectTimeoutId = 0
-    node.clientTimeoutsList = []
 
     node.setUnitIdFromPayload = function (msg) {
       const unit = parseInt(msg.payload.unitid)
@@ -144,10 +143,10 @@ module.exports = function (RED) {
           if (node.isFirstInitOfConnection) {
             node.isFirstInitOfConnection = false
             verboseWarn('init in ' + serialConnectionDelayTimeMS + ' ms')
-            node.clientTimeoutsList.push(setTimeout(node.connectClient, serialConnectionDelayTimeMS))
+            setTimeout(node.connectClient, serialConnectionDelayTimeMS)
           } else {
             verboseWarn('init in ' + node.reconnectTimeout + ' ms')
-            node.clientTimeoutsList.push(setTimeout(node.connectClient, node.reconnectTimeout))
+            setTimeout(node.connectClient, node.reconnectTimeout)
           }
         } catch (err) {
           node.error(err, { payload: 'client connection error ' + logHintText })
@@ -158,7 +157,7 @@ module.exports = function (RED) {
 
       if (state.matches('connected')) {
         node.emit('mbconnected')
-        node.stateService.send('ACTIVATE')
+        // node.stateService.send('ACTIVATE')
       }
 
       if (state.matches('activated')) {
@@ -171,9 +170,9 @@ module.exports = function (RED) {
       }
 
       if (state.matches('queueing')) {
-        node.clientTimeoutsList.push(setTimeout(() => {
+        setTimeout(() => {
           coreModbusQueue.dequeueCommand(node)
-        }, node.commandDelay))
+        }, node.commandDelay)
         node.emit('mbqueue')
       }
 
@@ -217,9 +216,9 @@ module.exports = function (RED) {
           }
           verboseWarn('try to reconnect by init in ' + node.reconnectTimeout + ' ms')
           node.reconnectTimeoutId = setTimeout(() => {
+            node.reconnectTimeoutId = 0
             node.stateService.send('INIT')
           }, node.reconnectTimeout)
-          node.clientTimeoutsList.push(node.reconnectTimeoutId)
         }
       }
     })
@@ -344,7 +343,7 @@ module.exports = function (RED) {
 
     node.setSerialConnectionOptions = function () {
       node.stateService.send('OPENSERIAL')
-      node.clientTimeoutsList.push(setTimeout(node.openSerialClient, parseInt(node.serialConnectionDelay)))
+      setTimeout(node.openSerialClient, parseInt(node.serialConnectionDelay))
     }
 
     node.modbusErrorHandling = function (err) {
@@ -417,9 +416,10 @@ module.exports = function (RED) {
             state: state.value,
             queueLength: node.bufferCommandList.get(msg.queueUnit).length
           }))
-          node.stateService.send('QUEUE')
         }).catch(function (err) {
           cberr(err, msg)
+        }).finally(function () {
+          node.stateService.send('QUEUE')
         })
       } else {
         coreModbusClient.readModbus(node, msg, cb, cberr)
@@ -503,15 +503,10 @@ module.exports = function (RED) {
       node.stateService.send('CLOSE')
     })
 
-    node.cleanModbusTimeouts = function () {
-      node.clientTimeoutsList.forEach(timerId => clearTimeout(timerId))
-    }
-
     node.on('close', function (done) {
       node.closingModbus = true
       verboseLog('stop fsm on close ' + node.name)
       node.stateService.send('STOP')
-      node.cleanModbusTimeouts()
       verboseLog('close node ' + node.name)
       if (node.client) {
         if (node.client.isOpen) {
