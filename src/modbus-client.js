@@ -86,6 +86,7 @@ module.exports = function (RED) {
     node.actualServiceStateBefore = node.actualServiceState
     node.stateService = coreModbusClient.startStateService(node.stateMachine)
     node.reconnectTimeoutId = 0
+    node.serialSendingAllowed = false
 
     node.setUnitIdFromPayload = function (msg) {
       const unitId = coreModbusClient.getActualUnitId(node, msg)
@@ -178,6 +179,7 @@ module.exports = function (RED) {
       }
 
       if (state.matches('opened')) {
+        node.serialSendingAllowed = true
         node.emit('mbopen')
       }
 
@@ -209,6 +211,7 @@ module.exports = function (RED) {
       }
 
       if (state.matches('reconnecting')) {
+        node.serialSendingAllowed = false
         node.emit('mbreconnecting')
         if (node.reconnectTimeout <= 0) {
           node.reconnectTimeout = reconnectTimeMS
@@ -456,6 +459,9 @@ module.exports = function (RED) {
     })
 
     node.activateSending = function (msg) {
+      node.sendingAllowed.set(msg.queueUnitId, true)
+      node.serialSendingAllowed = true
+
       return new Promise(
         function (resolve, reject) {
           try {

@@ -103,7 +103,6 @@ de.biancoroyal.modbus.core.client.getLogFunction = function (node) {
 }
 
 de.biancoroyal.modbus.core.client.activateSendingOnSuccess = function (node, cb, cberr, resp, msg) {
-  node.sendingAllowed.set(msg.queueUnitId, true)
   node.activateSending(msg).then(function () {
     cb(resp, msg)
   }).catch(function (err) {
@@ -112,7 +111,6 @@ de.biancoroyal.modbus.core.client.activateSendingOnSuccess = function (node, cb,
 }
 
 de.biancoroyal.modbus.core.client.activateSendingOnFailure = function (node, cberr, err, msg) {
-  node.sendingAllowed.set(msg.queueUnitId, true)
   node.activateSending(msg).then(function () {
     cberr(err, msg)
   }).catch(function (err) {
