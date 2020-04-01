@@ -456,6 +456,9 @@ module.exports = function (RED) {
     })
 
     node.activateSending = function (msg) {
+      node.sendingAllowed.set(msg.queueUnitId, true)
+      node.serialSendingAllowed = true
+
       return new Promise(
         function (resolve, reject) {
           try {

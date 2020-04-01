@@ -43,7 +43,10 @@ de.biancoroyal.modbus.queue.core.sequentialDequeueCommand = function (node) {
         }
       } else {
         const unitId = node.unitSendingAllowed.shift()
-        if (queueCore.isValidUnitId(unitId) && node.sendingAllowed.get(unitId)) {
+        if (node.serialSendingAllowed &&
+          queueCore.isValidUnitId(unitId) &&
+          node.sendingAllowed.get(unitId)) {
+          node.serialSendingAllowed = false
           queueCore.sendQueueDataToModbus(node, unitId)
         }
       }
