@@ -166,17 +166,13 @@ module.exports = function (RED) {
       node.readFromQueue()
     }
 
-    node.onModbusActive = function () {
-      node.readFromQueue()
-    }
-
     node.onModbusQueue = function () {
       node.readFromQueue()
     }
 
     modbusClient.on('mbinit', node.onModbusInit)
-    modbusClient.on('mbqueue', node.onModbusQueue)
-    modbusClient.on('mbactive', node.onModbusActive)
+    modbusClient.on('failed', node.onModbusQueue)
+    modbusClient.on('closed', node.onModbusQueue)
 
     node.queueReadInterval = setInterval(node.readFromQueue, node.queueReadIntervalTime)
 
