@@ -1,3 +1,15 @@
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [5.8.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.7.0...v5.8.0) (2020-04-02)
+
+
+### Features
+
+* keep the whole msg and add data for tcp request answers ([74271d3](https://github.com/biancoroyal/node-red-contrib-modbus/commit/74271d3be55f4719e83e8a044b956be64c20ca57))
+* new server write concept via input msg and Uint8 list ([ad485ea](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ad485ea07e1d0be139b32e035344fa043f3b1e99))
+
 # [5.7.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.4.0...v5.7.0) (2020-04-01)
 
 
@@ -167,6 +179,3 @@
 
 
 # 1.0.0 (2017-01-18)
-
-
-
