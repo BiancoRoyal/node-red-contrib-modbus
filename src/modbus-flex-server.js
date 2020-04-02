@@ -15,6 +15,7 @@ module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
   const ModbusRTU = require('modbus-serial')
+  const coreServer = require('./core/modbus-server-core')
   const mbBasics = require('./modbus-basics')
   const internalDebugLog = require('debug')('contribModbus:flex:server')
 
@@ -45,10 +46,9 @@ module.exports = function (RED) {
     this.verboseLogging = RED.settings.verbose
 
     const node = this
-    node.bufferFactor = 8
 
-    node.coilsBufferSize = parseInt(config.coilsBufferSize * node.bufferFactor)
-    node.registersBufferSize = parseInt(config.registersBufferSize * node.bufferFactor)
+    node.coilsBufferSize = parseInt(config.coilsBufferSize * coreServer.bufferFactor)
+    node.registersBufferSize = parseInt(config.registersBufferSize * coreServer.bufferFactor)
 
     node.coils = Buffer.alloc(node.coilsBufferSize, 0)
     node.registers = Buffer.alloc(node.registersBufferSize, 0)
@@ -130,43 +130,28 @@ module.exports = function (RED) {
     node.startServer()
 
     node.on('input', function (msg) {
-      if (msg.payload.register === 'holding' ||
-            msg.payload.register === 'coils' ||
-            msg.payload.register === 'input' ||
-            msg.payload.register === 'discrete') {
-        if (!(Number.isInteger(msg.payload.address) &&
-                  msg.payload.address >= 0 &&
-                  msg.payload.address <= 65535)) {
-          node.error('Address Not Valid', msg)
-          return
+      if (coreServer.isValidMemoryMessage(msg)) {
+        coreServer.writeToServerMemory(node, msg, node)
+        if (msg.payload.disableMsgOutput !== 1) {
+          node.send(buildMessage(msg))
         }
-        switch (msg.payload.register) {
-          case 'holding':
-            node.registers.writeUInt16BE(msg.payload.value, (msg.payload.address + node.splitAddress) * node.bufferFactor)
-            break
-          case 'coils':
-            node.coils.writeUInt8(msg.payload.value, msg.payload.address * node.bufferFactor)
-            break
-          case 'input':
-            node.registers.writeUInt16BE(msg.payload.value, msg.payload.address * node.bufferFactor)
-            break
-          case 'discrete':
-            node.coils.writeUInt8(msg.payload.value, (msg.payload.address + node.splitAddress) * node.bufferFactor)
-            break
+      } else {
+        if (node.showErrors) {
+          node.error('Is Not A Valid Memory Write Message To Server', msg)
         }
-      }
-
-      if (msg.payload.disablemsg !== 1) {
-        node.send(buildMessage(msg))
+        if (!msg.payload.disableMsgOutput) {
+          node.send(buildMessage(msg))
+        }
       }
     })
 
     function buildMessage (msg) {
       return [
-        { type: 'holding', message: msg, payload: node.registers.slice(node.splitAddress * node.bufferFactor) },
-        { type: 'coils', message: msg, payload: node.coils.slice(0, node.splitAddress * node.bufferFactor) },
-        { type: 'input', message: msg, payload: node.registers.slice(0, node.splitAddress * node.bufferFactor) },
-        { type: 'discrete', message: msg, payload: node.coils.slice(node.splitAddress * node.bufferFactor) }
+        { type: 'holding', message: msg, payload: node.registers.slice(node.splitAddress * coreServer.bufferFactor) },
+        { type: 'coils', message: msg, payload: node.coils.slice(0, node.splitAddress * coreServer.bufferFactor) },
+        { type: 'input', message: msg, payload: node.registers.slice(0, node.splitAddress * coreServer.bufferFactor) },
+        { type: 'discrete', message: msg, payload: node.coils.slice(node.splitAddress * coreServer.bufferFactor) },
+        { payload: 'request', type: 'message', message: msg }
       ]
     }
 

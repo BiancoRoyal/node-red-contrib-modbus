@@ -66,7 +66,7 @@ de.biancoroyal.modbus.core.buildMessage = function (messageList, values, respons
   origMsg.payload = values
   origMsg.topic = msg.topic
   origMsg.responseBuffer = response
-  origMsg.input = msg
+  origMsg.input = Object.assign({}, msg)
 
   const rawMsg = Object.assign({}, origMsg)
   rawMsg.payload = response

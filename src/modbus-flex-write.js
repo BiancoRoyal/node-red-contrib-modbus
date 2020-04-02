@@ -116,18 +116,17 @@ module.exports = function (RED) {
     }
 
     node.buildNewMessageObject = function (node, msg) {
-      return {
-        topic: msg.topic || node.id,
-        payload: {
-          value: msg.payload.value || msg.value,
-          unitid: msg.payload.unitid,
-          fc: msg.payload.fc,
-          address: msg.payload.address,
-          quantity: msg.payload.quantity,
-          messageId: msg.messageId
-        },
-        _msgid: msg._msgid
+      const newMsg = Object.assign({}, msg)
+      newMsg.topic = msg.topic || node.id
+      newMsg.payload = {
+        value: msg.payload.value || msg.value,
+        unitid: msg.payload.unitid,
+        fc: msg.payload.fc,
+        address: msg.payload.address,
+        quantity: msg.payload.quantity,
+        messageId: msg.messageId
       }
+      return newMsg
     }
 
     node.on('input', function (msg) {

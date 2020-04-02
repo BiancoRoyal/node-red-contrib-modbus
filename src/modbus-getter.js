@@ -71,6 +71,20 @@ module.exports = function (RED) {
       mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg))
     }
 
+    node.buildNewMessageObject = function (node, msg) {
+      const newMsg = Object.assign({}, msg)
+      newMsg.topic = msg.topic || node.id
+      newMsg.payload = {
+        value: msg.payload.value || msg.payload,
+        unitid: node.unitid,
+        fc: mbCore.functionCodeModbusRead(node.dataType),
+        address: node.adr,
+        quantity: node.quantity,
+        messageId: msg.messageId
+      }
+      return newMsg
+    }
+
     node.on('input', function (msg) {
       if (mbBasics.invalidPayloadIn(msg)) {
         return
@@ -82,20 +96,7 @@ module.exports = function (RED) {
 
       msg.messageId = mbCore.getObjectId()
       node.bufferMessageList.set(msg.messageId, msg)
-
-      msg = {
-        topic: msg.topic || node.id,
-        payload: {
-          value: msg.payload.value || msg.payload,
-          unitid: node.unitid,
-          fc: mbCore.functionCodeModbusRead(node.dataType),
-          address: node.adr,
-          quantity: node.quantity,
-          messageId: msg.messageId
-        },
-        _msgid: msg._msgid
-      }
-
+      msg = node.buildNewMessageObject(node, msg)
       modbusClient.emit('readModbus', msg, node.onModbusCommandDone, node.onModbusCommandError)
 
       if (node.showStatusActivities) {
