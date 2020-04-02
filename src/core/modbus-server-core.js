@@ -33,7 +33,7 @@ de.biancoroyal.modbus.core.server.isValidMemoryMessage = function (msg) {
 }
 
 de.biancoroyal.modbus.core.server.copyToModbusFlexBuffer = function (node, msg) {
-  switch (msg.payload.register.toLowerCase()) {
+  switch (msg.payload.register) {
     case 'holding':
       msg.bufferData.copy(node.registers, msg.bufferSplitAddress)
       break
@@ -53,7 +53,7 @@ de.biancoroyal.modbus.core.server.copyToModbusFlexBuffer = function (node, msg) 
 }
 
 de.biancoroyal.modbus.core.server.writeToModbusFlexBuffer = function (node, msg) {
-  switch (msg.payload.register.toLowerCase()) {
+  switch (msg.payload.register) {
     case 'holding':
       node.registers.writeUInt16BE(msg.bufferPayload, msg.bufferSplitAddress)
       break
@@ -100,7 +100,7 @@ de.biancoroyal.modbus.core.server.convertInputForBufferWrite = function (msg) {
 }
 
 de.biancoroyal.modbus.core.server.copyToModbusBuffer = function (node, msg) {
-  switch (msg.payload.register.toLowerCase()) {
+  switch (msg.payload.register) {
     case 'holding':
       msg.bufferData.copy(node.modbusServer.holding, msg.bufferAddress)
       break
@@ -120,7 +120,7 @@ de.biancoroyal.modbus.core.server.copyToModbusBuffer = function (node, msg) {
 }
 
 de.biancoroyal.modbus.core.server.writeToModbusBuffer = function (node, msg) {
-  switch (msg.payload.register.toLowerCase()) {
+  switch (msg.payload.register) {
     case 'holding':
       node.modbusServer.holding.writeUInt16BE(msg.bufferPayload, msg.bufferAddress)
       break
@@ -151,13 +151,23 @@ de.biancoroyal.modbus.core.server.writeModbusServerMemory = function (node, msg)
 
 de.biancoroyal.modbus.core.server.writeToServerMemory = function (node, msg) {
   const coreServer = de.biancoroyal.modbus.core.server
+  msg.payload.register = msg.payload.register.toLowerCase()
   try {
     if (coreServer.memoryTypes.includes(msg.payload.register)) {
-      if (node.modbusServer) {
-        coreServer.writeModbusServerMemory(node, msg)
-      } else {
-        coreServer.writeModbusFlexServerMemory(node, msg)
-      }
+      coreServer.writeModbusServerMemory(node, msg)
+    }
+  } catch (err) {
+    msg.error = err
+    node.error(err)
+  }
+}
+
+de.biancoroyal.modbus.core.server.writeToFlexServerMemory = function (node, msg) {
+  const coreServer = de.biancoroyal.modbus.core.server
+  msg.payload.register = msg.payload.register.toLowerCase()
+  try {
+    if (coreServer.memoryTypes.includes(msg.payload.register)) {
+      coreServer.writeModbusFlexServerMemory(node, msg)
     }
   } catch (err) {
     msg.error = err

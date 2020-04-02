@@ -46,6 +46,7 @@ module.exports = function (RED) {
     this.verboseLogging = RED.settings.verbose
 
     const node = this
+    node.bufferFactor = coreServer.bufferFactor
 
     node.coilsBufferSize = parseInt(config.coilsBufferSize * coreServer.bufferFactor)
     node.registersBufferSize = parseInt(config.registersBufferSize * coreServer.bufferFactor)
@@ -131,7 +132,7 @@ module.exports = function (RED) {
 
     node.on('input', function (msg) {
       if (coreServer.isValidMemoryMessage(msg)) {
-        coreServer.writeToServerMemory(node, msg, node)
+        coreServer.writeToFlexServerMemory(node, msg)
         if (msg.payload.disableMsgOutput !== 1) {
           node.send(buildMessage(msg))
         }

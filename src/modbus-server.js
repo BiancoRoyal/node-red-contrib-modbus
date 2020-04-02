@@ -87,7 +87,7 @@ module.exports = function (RED) {
 
     node.on('input', function (msg) {
       if (coreServer.isValidMemoryMessage(msg)) {
-        coreServer.writeToServerMemory(node, msg, node.modbusServer)
+        coreServer.writeToServerMemory(node, msg)
         if (!msg.payload.disableMsgOutput) {
           node.send(buildMessage(msg))
         }
