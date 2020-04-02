@@ -13,6 +13,67 @@
 const assert = require('assert')
 const coreServerUnderTest = require('../../../src/core/modbus-server-core')
 
+const defaultBufferSize = 1024
+
+const modbusFlexServerNode = {
+  coils: Buffer.alloc(defaultBufferSize, 0),
+  registers: Buffer.alloc(defaultBufferSize, 0)
+}
+
+const modbusServerNode = {
+  modbusServer: {
+    coils: Buffer.alloc(defaultBufferSize, 0),
+    holding: Buffer.alloc(defaultBufferSize, 0),
+    input: Buffer.alloc(defaultBufferSize, 0),
+    discrete: Buffer.alloc(defaultBufferSize, 0)
+  }
+}
+
+const msgWriteInput = {
+  payload: {
+    value: 255,
+    register: 'input',
+    address: 0,
+    disableMsgOutput: 0
+  }
+}
+
+const msgMulipleWriteInput = {
+  payload: {
+    value: [101, 201, 102, 202, 103, 203, 104, 204, 105, 205, 106, 206],
+    register: 'input',
+    address: 0,
+    disableMsgOutput: 0
+  }
+}
+
+const msgWriteCoils = {
+  payload: {
+    value: true,
+    register: 'coils',
+    address: 0,
+    disableMsgOutput: 0
+  }
+}
+
+const msgWriteHolding = {
+  payload: {
+    value: 234,
+    register: 'holding',
+    address: 0,
+    disableMsgOutput: 0
+  }
+}
+
+const msgWriteDiscrete = {
+  payload: {
+    value: true,
+    register: 'discrete',
+    address: 0,
+    disableMsgOutput: 0
+  }
+}
+
 const serverJsModbusFlow = [
   {
     id: 'd411a49f.e9ffd8',
@@ -126,6 +187,125 @@ describe('Core Server Testing', function () {
       const node = { internalDebugLog: true }
       assert.strict.equal(coreServerUnderTest.getLogFunction(node), node.internalDebugLog)
       done()
+    })
+    describe('Core Server Validates', function () {
+      it('should validate an input memory msg', function (done) {
+        const msg = {
+          payload: {
+            value: [1, 1, 1],
+            register: 'input',
+            address: 0,
+            disableMsgOutput: 0
+          }
+        }
+        assert.strict.equal(coreServerUnderTest.isValidMemoryMessage(msg), true)
+        done()
+      })
+      it('should validate an coils memory msg', function (done) {
+        const msg = {
+          payload: {
+            value: [1, 1, 1],
+            register: 'coils',
+            address: 0,
+            disableMsgOutput: 0
+          }
+        }
+        assert.strict.equal(coreServerUnderTest.isValidMemoryMessage(msg), true)
+        done()
+      })
+      it('should validate an holding memory msg', function (done) {
+        const msg = {
+          payload: {
+            value: [1, 1, 1],
+            register: 'holding',
+            address: 0,
+            disableMsgOutput: 0
+          }
+        }
+        assert.strict.equal(coreServerUnderTest.isValidMemoryMessage(msg), true)
+        done()
+      })
+      it('should validate an discrete memory msg', function (done) {
+        const msg = {
+          payload: {
+            value: [1, 1, 1],
+            register: 'discrete',
+            address: 0,
+            disableMsgOutput: 0
+          }
+        }
+        assert.strict.equal(coreServerUnderTest.isValidMemoryMessage(msg), true)
+        done()
+      })
+      it('should validate an memory msg with wrong register text', function (done) {
+        const msg = {
+          payload: {
+            value: [1, 1, 1],
+            register: 'discerete',
+            address: 0,
+            disableMsgOutput: 0
+          }
+        }
+        assert.strict.equal(coreServerUnderTest.isValidMemoryMessage(msg), true)
+        done()
+      })
+      it('should validate an memory msg as wrong missing register', function (done) {
+        const msg = {
+          payload: {
+            value: [1, 1, 1],
+            address: 0,
+            disableMsgOutput: 0
+          }
+        }
+        assert.strict.equal(coreServerUnderTest.isValidMemoryMessage(msg), undefined)
+        done()
+      })
+      it('should validate an discrete memory msg with wrong address', function (done) {
+        const msg = {
+          payload: {
+            value: [1, 1, 1],
+            register: 'discrete',
+            address: -1,
+            disableMsgOutput: 0
+          }
+        }
+        assert.strict.equal(coreServerUnderTest.isValidMemoryMessage(msg), false)
+        done()
+      })
+    })
+
+    describe('Core Modbus Server', function () {
+      it('should write buffer to input', function (done) {
+        assert.strict.equal(coreServerUnderTest.writeModbusServerMemory(modbusServerNode, msgWriteInput), true)
+        assert.strict.equal(modbusServerNode.modbusServer.input.readUInt16BE(0), 255)
+        done()
+      })
+
+      it('should write multiple buffers to input', function (done) {
+        assert.strict.equal(coreServerUnderTest.writeModbusServerMemory(modbusServerNode, msgMulipleWriteInput), true)
+        assert.strict.equal(modbusServerNode.modbusServer.input.readUInt8(0), 101)
+        assert.strict.equal(modbusServerNode.modbusServer.input.readUInt8(1), 201)
+        assert.strict.equal(modbusServerNode.modbusServer.input.readUInt8(2), 102)
+        assert.strict.equal(modbusServerNode.modbusServer.input.readUInt8(3), 202)
+        done()
+      })
+    })
+
+    describe('Core Modbus Flex Server', function () {
+      it('should write buffer to input', function (done) {
+        assert.strict.equal(coreServerUnderTest.writeModbusFlexServerMemory(modbusFlexServerNode, msgWriteInput), true)
+        assert.strict.equal(modbusFlexServerNode.registers.readUInt16BE(0), 255)
+        done()
+      })
+
+      it('should write multiple buffer to input', function (done) {
+        assert.strict.equal(coreServerUnderTest.writeModbusFlexServerMemory(modbusFlexServerNode, msgMulipleWriteInput), true)
+        assert.strict.equal(modbusFlexServerNode.registers.readUInt8(0), 101)
+        assert.strict.equal(modbusFlexServerNode.registers.readUInt8(1), 201)
+        assert.strict.equal(modbusFlexServerNode.registers.readUInt8(2), 102)
+        assert.strict.equal(modbusFlexServerNode.registers.readUInt8(3), 202)
+        done()
+      })
     })
   })
 })

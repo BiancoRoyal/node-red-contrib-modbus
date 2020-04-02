@@ -16,7 +16,7 @@ module.exports = function (RED) {
   // SOURCE-MAP-REQUIRED
   const modbus = require('jsmodbus')
   const net = require('net')
-
+  const coreServer = require('./core/modbus-server-core')
   const mbBasics = require('./modbus-basics')
   const internalDebugLog = require('debug')('contribModbus:server')
 
@@ -86,7 +86,19 @@ module.exports = function (RED) {
     }
 
     node.on('input', function (msg) {
-      node.send(buildMessage(msg))
+      if (coreServer.isValidMemoryMessage(msg)) {
+        coreServer.writeToServerMemory(node, msg, node.modbusServer)
+        if (!msg.payload.disableMsgOutput) {
+          node.send(buildMessage(msg))
+        }
+      } else {
+        if (node.showErrors) {
+          node.error('Is Not A Valid Memory Write Message To Server', msg)
+        }
+        if (!msg.payload.disableMsgOutput) {
+          node.send(buildMessage(msg))
+        }
+      }
     })
 
     function buildMessage (msg) {
@@ -94,7 +106,8 @@ module.exports = function (RED) {
         { type: 'holding', message: msg, payload: node.modbusServer.holding },
         { type: 'coils', message: msg, payload: node.modbusServer.coils },
         { type: 'input', message: msg, payload: node.modbusServer.input },
-        { type: 'discrete', message: msg, payload: node.modbusServer.discrete }
+        { type: 'discrete', message: msg, payload: node.modbusServer.discrete },
+        { payload: 'request', type: 'message', message: msg }
       ]
     }
 

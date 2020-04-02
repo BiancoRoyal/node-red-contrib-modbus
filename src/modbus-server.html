@@ -27,7 +27,7 @@
       showErrors: {value: false}
     },
     inputs: 1,
-    outputs: 4,
+    outputs: 5,
     align: "right",
     icon: 'modbus.png',
     paletteLabel: 'Modbus-Server',
@@ -102,5 +102,30 @@
     <p>Output 2: coils Buffer, type, msg</p>
     <p>Output 3: input Buffer, type, msg</p>
     <p>Output 4: discrete Buffer, type, msg</p>
+    <br>
+    <p>Input:
+        On injecting a special payload, you can write directly to any register.
+        This should only be used if you want to simulate a Modbus client.
+        <code>
+            msg.payload = {
+                'value': msg.payload,
+                'register': 'holding',
+                'address': 1 ,
+                'disableMsgOutput' : 0
+            };
+            return msg;
+        </code>
+    </p>
+    <p>The value could also be a list of UInt8 numbers and they will be written to the buffer.</p>
+    <p>
+        Valid registers are:
+        <ul>
+            <li>holding
+            <li>coils
+            <li>input
+            <li>discrete
+        </ul>
+        Set disableMsgOutput if you want to disable the Server outputs when injecting.
+    </p>
 
 </script>
