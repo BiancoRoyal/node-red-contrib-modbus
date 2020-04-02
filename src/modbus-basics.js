@@ -269,10 +269,10 @@ de.biancoroyal.modbus.basics.emptyMsgOnFail = function (node, err, msg) {
   if (node.emptyMsgOnFail) {
     msg.payload = ''
 
-    if (err && err.message) {
+    if (err && err.message && err.name) {
       msg.error = err
     } else {
-      msg.error = new Error(err)
+      msg.error = Error(err)
     }
     msg.error.nodeStatus = node.statusText
 
