@@ -93,6 +93,7 @@ de.biancoroyal.modbus.basics.setNodeStatusProperties = function (statusValue, sh
       break
 
     case 'initialized':
+    case 'init':
       fillValue = 'yellow'
       shapeValue = 'dot'
       break
@@ -104,6 +105,8 @@ de.biancoroyal.modbus.basics.setNodeStatusProperties = function (statusValue, sh
       break
 
     case 'connected':
+    case 'queueing':
+    case 'queue':
       fillValue = 'green'
       shapeValue = 'ring'
       break
@@ -163,6 +166,7 @@ de.biancoroyal.modbus.basics.setNodeStatusByResponseTo = function (statusValue, 
 
   switch (statusValue) {
     case 'initialized':
+    case 'queue':
       fillValue = 'green'
       shapeValue = 'ring'
       break
@@ -248,16 +252,24 @@ de.biancoroyal.modbus.basics.onModbusClose = function (node) {
   this.setNodeStatusTo('closed', node)
 }
 
+de.biancoroyal.modbus.basics.onModbusQueue = function (node) {
+  this.setNodeStatusTo('queueing', node)
+}
+
 de.biancoroyal.modbus.basics.onModbusBroken = function (node, modbusClient) {
   this.setNodeStatusTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.', node)
 }
 
 de.biancoroyal.modbus.basics.initModbusClientEvents = function (node, modbusClient) {
-  modbusClient.on('mbinit', () => { this.onModbusInit(node) })
-  modbusClient.on('mbconnected', () => { this.onModbusConnect(node) })
+  if (node.showStatusActivities) {
+    modbusClient.on('mbinit', () => { this.onModbusInit(node) })
+    modbusClient.on('mbqueue', () => { this.onModbusQueue(node) })
+    modbusClient.on('mbconnected', () => { this.onModbusConnect(node) })
+    modbusClient.on('mbbroken', () => { this.onModbusBroken(node, modbusClient) })
+  }
+
   modbusClient.on('mbactive', () => { this.onModbusActive(node) })
   modbusClient.on('mberror', (failureMsg) => { this.onModbusError(node, failureMsg) })
-  modbusClient.on('mbbroken', () => { this.onModbusBroken(node, modbusClient) })
   modbusClient.on('mbclosed', () => { this.onModbusClose(node) })
 }
 
