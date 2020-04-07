@@ -171,10 +171,13 @@ module.exports = function (RED) {
 
     modbusClient.on('mbinit', node.readFromQueue)
     modbusClient.on('mbconnected', node.readFromQueue)
-    modbusClient.on('mberror', node.readFromQueue)
+
     if (node.updateOnAllQueueChanges) { // more CPU-Load on many requests
       modbusClient.on('mbactive', node.readFromQueue)
+      modbusClient.on('mbqueue', node.readFromQueue)
     }
+
+    modbusClient.on('mberror', node.readFromQueue)
     modbusClient.on('mbclosed', node.readFromQueue)
 
     node.queueReadInterval = setInterval(node.readFromQueue, node.queueReadIntervalTime)
