@@ -94,13 +94,17 @@ module.exports = function (RED) {
         return
       }
 
-      msg.messageId = mbCore.getObjectId()
-      node.bufferMessageList.set(msg.messageId, msg)
-      msg = node.buildNewMessageObject(node, msg)
-      modbusClient.emit('readModbus', msg, node.onModbusCommandDone, node.onModbusCommandError)
+      try {
+        msg.messageId = mbCore.getObjectId()
+        node.bufferMessageList.set(msg.messageId, msg)
+        msg = node.buildNewMessageObject(node, msg)
+        modbusClient.emit('readModbus', msg, node.onModbusCommandDone, node.onModbusCommandError)
 
-      if (node.showStatusActivities) {
-        mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
+        if (node.showStatusActivities) {
+          mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
+        }
+      } catch (err) {
+        mbBasics.emptyMsgOnFail(node, err, msg)
       }
     })
 
