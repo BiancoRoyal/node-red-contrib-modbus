@@ -107,7 +107,7 @@ module.exports = function (RED) {
     node.on('close', function (done) {
       mbBasics.setNodeStatusTo('closed', node)
       node.bufferMessageList.clear()
-      modbusClient.deregisterForModbus(node, done)
+      modbusClient.deregisterForModbus(node.id, done)
     })
   }
 

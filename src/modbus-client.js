@@ -537,8 +537,8 @@ module.exports = function (RED) {
     // handle using as config node
     node.registeredNodeList = {}
 
-    node.registerForModbus = function (modbusNode) {
-      node.registeredNodeList[modbusNode.id] = modbusNode
+    node.registerForModbus = function (clientUserNodeId) {
+      node.registeredNodeList[clientUserNodeId] = clientUserNodeId
       if (Object.keys(node.registeredNodeList).length === 1) {
         node.closingModbus = false
         node.stateService.send('NEW')
@@ -568,12 +568,16 @@ module.exports = function (RED) {
       }
     }
 
-    node.deregisterForModbus = function (modbusNode, done) {
-      delete node.registeredNodeList[modbusNode.id]
-      if (node.closingModbus) {
-        done()
-      } else {
-        node.closeConnectionWithoutRegisteredNodes(done)
+    node.deregisterForModbus = function (clientUserNodeId, done) {
+      try {
+          delete node.registeredNodeList[clientUserNodeId]
+          if (node.closingModbus) {
+            done()
+          } else {
+            node.closeConnectionWithoutRegisteredNodes(done)
+          }
+      } catch (err) {
+        done(err)
       }
     }
   }

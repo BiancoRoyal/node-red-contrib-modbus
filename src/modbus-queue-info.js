@@ -227,7 +227,7 @@ module.exports = function (RED) {
         clearInterval(node.queueReadInterval)
       }
       node.queueReadInterval = null
-      modbusClient.deregisterForModbus(node, done)
+      modbusClient.deregisterForModbus(node.id, done)
     })
   }
 

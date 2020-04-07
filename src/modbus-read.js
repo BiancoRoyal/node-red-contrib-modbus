@@ -183,7 +183,7 @@ module.exports = function (RED) {
       }
       timerID = null
       mbBasics.setNodeStatusTo('closed', node)
-      modbusClient.deregisterForModbus(node, done)
+      modbusClient.deregisterForModbus(node.id, done)
     })
 
     function sendMessage (values, response, msg) {
