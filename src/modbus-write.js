@@ -32,6 +32,7 @@ module.exports = function (RED) {
     this.adr = Number(config.adr)
     this.quantity = config.quantity
 
+    this.emptyMsgOnFail = config.emptyMsgOnFail
     this.internalDebugLog = internalDebugLog
     this.verboseLogging = RED.settings.verbose
 
@@ -60,18 +61,12 @@ module.exports = function (RED) {
       if (node.showErrors) {
         node.error(err, msg)
       }
+
+      mbBasics.emptyMsgOnFail(node, err, msg)
       mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg))
     }
 
-    node.on('input', function (msg) {
-      if (mbBasics.invalidPayloadIn(msg)) {
-        return
-      }
-
-      if (!modbusClient.client) {
-        return
-      }
-
+    node.setMsgPayloadFromHTTPRequests = function (msg) {
       /* HTTP requests for boolean and multiple data string [1,2,3,4,5] */
       if (Object.prototype.hasOwnProperty.call(msg.payload, 'value') &&
         typeof msg.payload.value === 'string') {
@@ -83,26 +78,44 @@ module.exports = function (RED) {
           }
         }
       }
+      return msg
+    }
 
-      msg.messageId = mbCore.getObjectId()
-      node.bufferMessageList.set(msg.messageId, msg)
+    node.buildNewMessageObject = function (node, msg) {
+      const newMsg = Object.assign({}, msg)
+      newMsg.topic = msg.topic || node.id
+      newMsg.payload = {
+        value: msg.payload.value || msg.payload,
+        unitid: node.unitid,
+        fc: mbCore.functionCodeModbusWrite(node.dataType),
+        address: node.adr,
+        quantity: node.quantity,
+        messageId: msg.messageId
+      }
+      return newMsg
+    }
 
-      msg = {
-        payload: {
-          value: msg.payload.value || msg.payload,
-          unitid: node.unitid,
-          fc: mbCore.functionCodeModbusWrite(node.dataType),
-          address: node.adr,
-          quantity: node.quantity,
-          messageId: msg.messageId
-        },
-        _msgid: msg._msgid
+    node.on('input', function (msg) {
+      if (mbBasics.invalidPayloadIn(msg)) {
+        return
       }
 
-      modbusClient.emit('writeModbus', msg, node.onModbusWriteDone, node.onModbusWriteError)
+      if (!modbusClient.client) {
+        return
+      }
 
-      if (node.showStatusActivities) {
-        mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
+      try {
+        msg = node.setMsgPayloadFromHTTPRequests(msg)
+        msg.messageId = mbCore.getObjectId()
+        node.bufferMessageList.set(msg.messageId, msg)
+        msg = node.buildNewMessageObject(node, msg)
+        modbusClient.emit('writeModbus', msg, node.onModbusWriteDone, node.onModbusWriteError)
+
+        if (node.showStatusActivities) {
+          mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
+        }
+      } catch (err) {
+        mbBasics.emptyMsgOnFail(node, err, msg)
       }
     })
 
