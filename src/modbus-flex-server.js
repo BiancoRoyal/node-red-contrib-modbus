@@ -111,6 +111,10 @@ module.exports = function (RED) {
             mbBasics.setNodeStatusTo('active', node)
           })
         }
+
+        if (!node.showStatusActivities) {
+          mbBasics.setNodeDefaultStatus(node)
+        }
       } catch (err) {
         internalDebugLog(err.message)
         if (node.showErrors) {

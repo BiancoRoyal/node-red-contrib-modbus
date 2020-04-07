@@ -77,6 +77,10 @@ module.exports = function (RED) {
         internalDebugLog('Modbus Server listening on modbus://' + node.hostname + ':' + node.serverPort)
         mbBasics.setNodeStatusTo('initialized', node)
       })
+
+      if (!node.showStatusActivities) {
+        mbBasics.setNodeDefaultStatus(node)
+      }
     } catch (err) {
       internalDebugLog(err.message)
       if (node.showErrors) {

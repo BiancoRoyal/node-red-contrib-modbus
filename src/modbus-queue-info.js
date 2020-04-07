@@ -232,6 +232,10 @@ module.exports = function (RED) {
       node.queueReadInterval = null
       modbusClient.deregisterForModbus(node.id, done)
     })
+
+    if (!node.showStatusActivities) {
+      mbBasics.setNodeDefaultStatus(node)
+    }
   }
 
   RED.nodes.registerType('modbus-queue-info', ModbusQueueInfo)

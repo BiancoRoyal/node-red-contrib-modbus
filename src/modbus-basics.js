@@ -218,14 +218,18 @@ de.biancoroyal.modbus.basics.setModbusError = function (node, modbusClient, err,
 }
 
 de.biancoroyal.modbus.basics.setNodeStatusTo = function (statusValue, node) {
-  if (node.showStatusActivities && statusValue !== node.statusText) {
-    const statusOptions = this.setNodeStatusProperties(statusValue, node.showStatusActivities)
-    node.statusText = statusValue
-    node.status({
-      fill: statusOptions.fill,
-      shape: statusOptions.shape,
-      text: statusOptions.status
-    })
+  if (node.showStatusActivities) {
+    if (statusValue !== node.statusText) {
+      const statusOptions = this.setNodeStatusProperties(statusValue, node.showStatusActivities)
+      node.statusText = statusValue
+      node.status({
+        fill: statusOptions.fill,
+        shape: statusOptions.shape,
+        text: statusOptions.status
+      })
+    } else {
+      this.setNodeDefaultStatus()
+    }
   }
 }
 
@@ -260,17 +264,22 @@ de.biancoroyal.modbus.basics.onModbusBroken = function (node, modbusClient) {
   this.setNodeStatusTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.', node)
 }
 
+de.biancoroyal.modbus.basics.setNodeDefaultStatus = function (node) {
+  node.status({ fill: 'green', shape: 'ring', text: 'active' })
+}
+
 de.biancoroyal.modbus.basics.initModbusClientEvents = function (node, modbusClient) {
   if (node.showStatusActivities) {
     modbusClient.on('mbinit', () => { this.onModbusInit(node) })
     modbusClient.on('mbqueue', () => { this.onModbusQueue(node) })
     modbusClient.on('mbconnected', () => { this.onModbusConnect(node) })
     modbusClient.on('mbbroken', () => { this.onModbusBroken(node, modbusClient) })
+    modbusClient.on('mbactive', () => { this.onModbusActive(node) })
+    modbusClient.on('mberror', (failureMsg) => { this.onModbusError(node, failureMsg) })
+    modbusClient.on('mbclosed', () => { this.onModbusClose(node) })
+  } else {
+    this.setNodeDefaultStatus(node)
   }
-
-  modbusClient.on('mbactive', () => { this.onModbusActive(node) })
-  modbusClient.on('mberror', (failureMsg) => { this.onModbusError(node, failureMsg) })
-  modbusClient.on('mbclosed', () => { this.onModbusClose(node) })
 }
 
 de.biancoroyal.modbus.basics.invalidPayloadIn = function (msg) {

@@ -124,6 +124,10 @@ module.exports = function (RED) {
       node.bufferMessageList.clear()
       modbusClient.deregisterForModbus(node.id, done)
     })
+
+    if (!node.showStatusActivities) {
+      mbBasics.setNodeDefaultStatus(node)
+    }
   }
 
   RED.nodes.registerType('modbus-write', ModbusWrite)

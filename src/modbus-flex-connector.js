@@ -92,6 +92,10 @@ module.exports = function (RED) {
         node.send(msg)
       }
     })
+
+    if (!node.showStatusActivities) {
+      mbBasics.setNodeDefaultStatus(node)
+    }
   }
 
   RED.nodes.registerType('modbus-flex-connector', ModbusFlexConnector)
