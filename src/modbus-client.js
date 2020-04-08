@@ -593,7 +593,9 @@ module.exports = function (RED) {
           node.closeConnectionWithoutRegisteredNodes(done)
         }
       } catch (err) {
-        done(err)
+        verboseWarn(err.message + ' on de-register node ' + clientUserNodeId)
+        node.error(err)
+        done()
       }
     }
   }

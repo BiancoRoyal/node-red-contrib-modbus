@@ -57,17 +57,16 @@ module.exports = function (RED) {
     let timeoutOccurred = false
     node.INPUT_TIMEOUT_MILLISECONDS = 1000
     node.statusText = 'waiting'
-    mbBasics.setNodeStatusTo(node.statusText, node)
+    setNodeStatusWithTimeTo(node.statusText)
 
     const modbusClient = RED.nodes.getNode(config.server)
     if (!modbusClient) {
       return
     }
     modbusClient.registerForModbus(node)
-    mbBasics.initModbusClientEvents(node, modbusClient)
 
     node.onModbusInit = function () {
-      mbBasics.setNodeStatusTo('initialize', node)
+      setNodeStatusWithTimeTo('initialized')
     }
 
     node.onModbusConnect = function () {
@@ -103,7 +102,7 @@ module.exports = function (RED) {
     }
 
     node.onModbusError = function (failureMsg) {
-      mbBasics.setNodeStatusTo('failure', node)
+      setNodeStatusWithTimeTo('failure')
       if (modbusClient.reconnectOnTimeout) {
         node.resetIntervalToRead()
       }
@@ -113,7 +112,7 @@ module.exports = function (RED) {
     }
 
     node.onModbusClose = function () {
-      mbBasics.setNodeStatusTo('closed', node)
+      setNodeStatusWithTimeTo('closed')
       node.resetIntervalToRead()
     }
 
@@ -125,9 +124,9 @@ module.exports = function (RED) {
     }
 
     node.onModbusBroken = function () {
-      mbBasics.setNodeStatusTo('broken', node)
+      setNodeStatusWithTimeTo('broken')
       if (modbusClient.reconnectOnTimeout) {
-        mbBasics.setNodeStatusTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.', node)
+        setNodeStatusWithTimeTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.')
         node.resetIntervalToRead()
       }
     }
@@ -186,7 +185,7 @@ module.exports = function (RED) {
 
     node.on('close', function (done) {
       node.resetIntervalToRead()
-      mbBasics.setNodeStatusTo('closed', node)
+      setNodeStatusWithTimeTo('closed')
       modbusClient.deregisterForModbus(node.id, done)
     })
 
