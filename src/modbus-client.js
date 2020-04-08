@@ -172,7 +172,7 @@ module.exports = function (RED) {
       }
 
       if (state.matches('connected')) {
-        verboseWarn('fsm connected after state' + node.actualServiceStateBefore.value + logHintText)
+        verboseWarn('fsm connected after state ' + node.actualServiceStateBefore.value + logHintText)
         node.serialSendingAllowed = true
         node.emit('mbconnected')
       }

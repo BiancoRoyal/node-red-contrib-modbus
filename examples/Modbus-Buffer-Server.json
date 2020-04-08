@@ -1,0 +1,387 @@
+[
+  {
+    "id": "937cb040.d8e16",
+    "type": "tab",
+    "label": "Modbus Buffer Servers",
+    "disabled": false,
+    "info": "simple flows to show what you \ncan do with the package\n\nthink about organization of reads and \nwrites and try to simplify these flows"
+  },
+  {
+    "id": "f65b48e5.d5474",
+    "type": "modbus-server",
+    "z": "937cb040.d8e16",
+    "name": "",
+    "logEnabled": false,
+    "hostname": "",
+    "serverPort": "10512",
+    "responseDelay": "50",
+    "delayUnit": "ms",
+    "coilsBufferSize": "2048",
+    "holdingBufferSize": "2048",
+    "inputBufferSize": "2048",
+    "discreteBufferSize": "2048",
+    "showErrors": true,
+    "x": 295,
+    "y": 80,
+    "wires": [
+      [
+        "18336ed.bd8a491"
+      ],
+      [
+        "18336ed.bd8a491"
+      ],
+      [
+        "18336ed.bd8a491"
+      ],
+      [
+        "18336ed.bd8a491"
+      ],
+      [
+        "18336ed.bd8a491"
+      ]
+    ],
+    "l": false
+  },
+  {
+    "id": "65a38b53.0f29b4",
+    "type": "inject",
+    "z": "937cb040.d8e16",
+    "name": "",
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": "",
+    "x": 135,
+    "y": 80,
+    "wires": [
+      [
+        "f65b48e5.d5474"
+      ]
+    ],
+    "icon": "font-awesome/fa-bug",
+    "l": false
+  },
+  {
+    "id": "18336ed.bd8a491",
+    "type": "debug",
+    "z": "937cb040.d8e16",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "x": 375,
+    "y": 80,
+    "wires": [],
+    "l": false
+  },
+  {
+    "id": "a58ce8e2.9210d8",
+    "type": "debug",
+    "z": "937cb040.d8e16",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "x": 375,
+    "y": 180,
+    "wires": [],
+    "l": false
+  },
+  {
+    "id": "6c3e6f27.502e18",
+    "type": "comment",
+    "z": "937cb040.d8e16",
+    "name": "Information",
+    "info": "The Modbus Server and Modbus Flex Server \nworking with all reading and writing nodes.\n\nThese are two different servers \nfrom different libraries.\n\nThe simple examples hold \nthe same functions for both servers.\n",
+    "x": 570,
+    "y": 140,
+    "wires": []
+  },
+  {
+    "id": "6f6a3d7f.febcc4",
+    "type": "modbus-flex-server",
+    "z": "937cb040.d8e16",
+    "name": "",
+    "logEnabled": false,
+    "serverAddress": "0.0.0.0",
+    "serverPort": "11512",
+    "responseDelay": 100,
+    "unitId": 1,
+    "delayUnit": "ms",
+    "coilsBufferSize": 20000,
+    "registersBufferSize": 20000,
+    "minAddress": 0,
+    "splitAddress": 10000,
+    "funcGetCoil": "function getFlexCoil(addr, unitID) {\n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\treturn node.coils.readUInt8(addr * node.bufferFactor) \n\t}  \n}",
+    "funcGetDiscreteInput": "function getFlexDiscreteInput(addr, unitID) {\n\tif (unitID === node.unitId && \n\t\taddr > node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.coils.readUInt8(addr * node.bufferFactor) \n\t}  \n}",
+    "funcGetInputRegister": "function getFlexInputRegister(addr, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}",
+    "funcGetHoldingRegister": "function getFlexHoldingRegsiter(addr, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr > node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}",
+    "funcSetCoil": "function setFlexCoil(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\tnode.coils.writeUInt8(value, addr * node.bufferFactor)  \n\t} \n}",
+    "funcSetRegister": "function setFlexRegister(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\tnode.registers.writeUInt16BE(value, addr * node.bufferFactor)  \n\t} \n}",
+    "showErrors": true,
+    "x": 295,
+    "y": 180,
+    "wires": [
+      [
+        "a58ce8e2.9210d8"
+      ],
+      [
+        "a58ce8e2.9210d8"
+      ],
+      [
+        "a58ce8e2.9210d8"
+      ],
+      [
+        "a58ce8e2.9210d8"
+      ],
+      [
+        "a58ce8e2.9210d8"
+      ]
+    ],
+    "l": false
+  },
+  {
+    "id": "d6a5dd3e.6e2f8",
+    "type": "function",
+    "z": "937cb040.d8e16",
+    "name": "",
+    "func": "msg.payload = {\n    'value': [1,1,1], \n    'register': 'input', \n    'address': 0 , \n    'disableMsgOutput' : 0 \n}; \nreturn msg;\n\n",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 215,
+    "y": 280,
+    "wires": [
+      [
+        "1caf5383.ecd054"
+      ]
+    ],
+    "l": false
+  },
+  {
+    "id": "e75975bb.e98128",
+    "type": "inject",
+    "z": "937cb040.d8e16",
+    "name": "",
+    "topic": "",
+    "payload": "true",
+    "payloadType": "bool",
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "x": 135,
+    "y": 280,
+    "wires": [
+      [
+        "d6a5dd3e.6e2f8"
+      ]
+    ],
+    "l": false
+  },
+  {
+    "id": "b4397fad.8ffaa",
+    "type": "function",
+    "z": "937cb040.d8e16",
+    "name": "",
+    "func": "msg.payload = {\n    'value': [233,234,235], \n    'register': 'holding', \n    'address': 0 , \n    'disableMsgOutput' : 0 \n}; \nreturn msg;\n\n",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 215,
+    "y": 320,
+    "wires": [
+      [
+        "1caf5383.ecd054"
+      ]
+    ],
+    "l": false
+  },
+  {
+    "id": "2676e2cd.f34d36",
+    "type": "inject",
+    "z": "937cb040.d8e16",
+    "name": "",
+    "topic": "",
+    "payload": "true",
+    "payloadType": "bool",
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "x": 135,
+    "y": 320,
+    "wires": [
+      [
+        "b4397fad.8ffaa"
+      ]
+    ],
+    "l": false
+  },
+  {
+    "id": "cbee0647.5cb71",
+    "type": "function",
+    "z": "937cb040.d8e16",
+    "name": "",
+    "func": "msg.payload = {\n    'value': [true,true,true], \n    'register': 'coils', \n    'address': 0 , \n    'disableMsgOutput' : 0 \n}; \nreturn msg;\n\n",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 215,
+    "y": 360,
+    "wires": [
+      [
+        "1caf5383.ecd054"
+      ]
+    ],
+    "l": false
+  },
+  {
+    "id": "1f92d036.c8f418",
+    "type": "inject",
+    "z": "937cb040.d8e16",
+    "name": "",
+    "topic": "",
+    "payload": "true",
+    "payloadType": "bool",
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "x": 135,
+    "y": 360,
+    "wires": [
+      [
+        "cbee0647.5cb71"
+      ]
+    ],
+    "l": false
+  },
+  {
+    "id": "6561bf00.a24e9",
+    "type": "function",
+    "z": "937cb040.d8e16",
+    "name": "",
+    "func": "msg.payload = {\n    'value': [true,true,true], \n    'register': 'discrete', \n    'address': 0 , \n    'disableMsgOutput' : 0 \n}; \nreturn msg;\n\n",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 215,
+    "y": 400,
+    "wires": [
+      [
+        "1caf5383.ecd054"
+      ]
+    ],
+    "l": false
+  },
+  {
+    "id": "6309b3fc.cd9294",
+    "type": "inject",
+    "z": "937cb040.d8e16",
+    "name": "",
+    "topic": "",
+    "payload": "true",
+    "payloadType": "bool",
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "x": 135,
+    "y": 400,
+    "wires": [
+      [
+        "6561bf00.a24e9"
+      ]
+    ],
+    "l": false
+  },
+  {
+    "id": "1caf5383.ecd054",
+    "type": "link out",
+    "z": "937cb040.d8e16",
+    "name": "",
+    "links": [
+      "7328d10f.1b78"
+    ],
+    "x": 295,
+    "y": 340,
+    "wires": []
+  },
+  {
+    "id": "7328d10f.1b78",
+    "type": "link in",
+    "z": "937cb040.d8e16",
+    "name": "",
+    "links": [
+      "1caf5383.ecd054"
+    ],
+    "x": 195,
+    "y": 140,
+    "wires": [
+      [
+        "f65b48e5.d5474",
+        "6f6a3d7f.febcc4"
+      ]
+    ]
+  },
+  {
+    "id": "f9e611ca.64c348",
+    "type": "catch",
+    "z": "937cb040.d8e16",
+    "name": "",
+    "scope": null,
+    "uncaught": false,
+    "x": 535,
+    "y": 280,
+    "wires": [
+      [
+        "f8090829.87c3c"
+      ]
+    ],
+    "l": false
+  },
+  {
+    "id": "f8090829.87c3c",
+    "type": "debug",
+    "z": "937cb040.d8e16",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "x": 595,
+    "y": 280,
+    "wires": [],
+    "l": false
+  },
+  {
+    "id": "694e164.bc8cfe8",
+    "type": "inject",
+    "z": "937cb040.d8e16",
+    "name": "",
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": "",
+    "x": 135,
+    "y": 180,
+    "wires": [
+      [
+        "6f6a3d7f.febcc4"
+      ]
+    ],
+    "icon": "font-awesome/fa-bug",
+    "l": false
+  }
+]
