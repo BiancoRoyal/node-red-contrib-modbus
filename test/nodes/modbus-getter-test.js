@@ -395,6 +395,7 @@ describe('Getter node Testing', function () {
     })
 
     it('should work as simple flow with inject and IO', function (done) {
+      this.timeout(3000)
       helper.load(testGetterNodes, testGetterFlowWithInject, function () {
         const modbusGetter = helper.getNode('cea01c8.36f8f6')
         const h1 = helper.getNode('h1')

@@ -194,6 +194,7 @@ describe('Write node Testing', function () {
     })
 
     it('simple flow with boolean injects and write should be loaded', function (done) {
+      this.timeout(3000)
       helper.load([injectNode, clientNode, serverNode, nodeUnderTest], [{
         id: '445454e4.968564',
         type: 'modbus-server',
