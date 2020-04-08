@@ -10,6 +10,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6cbeb40ab5604b3ab99e6badc9469e8a)](https://www.codacy.com/gh/BiancoRoyal/node-red-contrib-modbus?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=BiancoRoyal/node-red-contrib-modbus&amp;utm_campaign=Badge_Grade)
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/biancode/node-red-contrib-modbus.svg)](http://isitmaintained.com/project/biancode/node-red-contrib-modbus "Percentage of issues still open")
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/biancode/node-red-contrib-modbus.svg)](http://isitmaintained.com/project/biancode/node-red-contrib-modbus "Average time to resolve an issue")
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/BiancoRoyal/node-red-contrib-modbus)
 
 # node-red-contrib-modbus
 
