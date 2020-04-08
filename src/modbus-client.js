@@ -530,6 +530,7 @@ module.exports = function (RED) {
       verboseLog('stop fsm on close ' + nodeIdentifierName)
       node.stateService.send('STOP')
       verboseLog('close node ' + nodeIdentifierName)
+      node.removeAllListeners()
       if (node.client) {
         if (node.client.isOpen) {
           node.client.close(function (err) {

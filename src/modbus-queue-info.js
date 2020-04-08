@@ -45,7 +45,6 @@ module.exports = function (RED) {
       return
     }
     modbusClient.registerForModbus(node)
-    mbBasics.initModbusClientEvents(node, modbusClient)
 
     node.resetStates = function () {
       node.lowLowLevelReached = true
