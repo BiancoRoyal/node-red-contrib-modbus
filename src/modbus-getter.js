@@ -67,22 +67,22 @@ module.exports = function (RED) {
         node.error(err, msg)
       }
 
-      mbBasics.emptyMsgOnFail(node, err, msg)
+      mbBasics.sendEmptyMsgOnFail(node, err, msg)
       mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg))
     }
 
     node.buildNewMessageObject = function (node, msg) {
-      const newMsg = Object.assign({}, msg)
-      newMsg.topic = msg.topic || node.id
-      newMsg.payload = {
-        value: msg.payload.value || msg.payload,
-        unitid: node.unitid,
-        fc: mbCore.functionCodeModbusRead(node.dataType),
-        address: node.adr,
-        quantity: node.quantity,
-        messageId: msg.messageId
+      return {
+        topic: msg.topic || node.id,
+        payload: {
+          value: msg.payload.value || msg.payload,
+          unitid: node.unitid,
+          fc: mbCore.functionCodeModbusRead(node.dataType),
+          address: node.adr,
+          quantity: node.quantity,
+          messageId: msg.messageId
+        }
       }
-      return newMsg
     }
 
     node.on('input', function (msg) {
@@ -94,6 +94,7 @@ module.exports = function (RED) {
         return
       }
 
+      const origMsgInput = Object.assign({}, msg)
       try {
         msg.messageId = mbCore.getObjectId()
         node.bufferMessageList.set(msg.messageId, msg)
@@ -104,7 +105,7 @@ module.exports = function (RED) {
           mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
         }
       } catch (err) {
-        mbBasics.emptyMsgOnFail(node, err, msg)
+        mbBasics.sendEmptyMsgOnFail(node, err, origMsgInput)
       }
     })
 
