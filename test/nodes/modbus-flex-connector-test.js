@@ -85,7 +85,7 @@ describe('Flex Connector node Testing', function () {
     })
 
     it('should change the TCP-Port of the client from 7522 to 8522', function (done) {
-      this.timeout(3000)
+      this.timeout(5000)
       helper.load([serverNode, nodeUnderTest, nodeClient], [
         {
           id: '445454e4.968564',
