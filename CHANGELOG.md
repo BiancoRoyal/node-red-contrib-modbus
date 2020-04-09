@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.9.0-beta.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.8.0...v5.9.0-beta.0) (2020-04-09)
+
+
+### Features
+
+* **getter:** empty msg on catch error ([c8ac4a6](https://github.com/biancoroyal/node-red-contrib-modbus/commit/c8ac4a675ce17ca1992a1018ad113652cd5b97a4))
+* **write:** empty msg on fail as the other node ([d6fd30b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/d6fd30b20cf638b824852cad4a66ef42de6a07da))
+* new status update concept for nodes with less traffic ([eb2afba](https://github.com/biancoroyal/node-red-contrib-modbus/commit/eb2afbabac913eaa3d017735dc7a11eb9d02d60f))
+
+
+### Bug Fixes
+
+* FSM double take on running in the same states with multiple consumer ([5072e40](https://github.com/biancoroyal/node-red-contrib-modbus/commit/5072e407961ba5145ea9d50bc742c7494ba482b4))
+* improve register and de-register for issue  [#165](https://github.com/biancoroyal/node-red-contrib-modbus/issues/165)  ([c68d59b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/c68d59b41a8081bb9a345165098e360b787e2336))
+* read node should not use basic status handling cause of the own interval ([dea606f](https://github.com/biancoroyal/node-red-contrib-modbus/commit/dea606f8d7bcf15c385f0b9336d195e82100126a))
+* remove all listeners was lost in code ([92ada63](https://github.com/biancoroyal/node-red-contrib-modbus/commit/92ada63499a9bd0683817308cbb3f3c27393e4bb))
+* test timeout passing ([0dcf966](https://github.com/biancoroyal/node-red-contrib-modbus/commit/0dcf966d021d7abc7726976bec8be84d7d1b968b))
+
 ## [5.8.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.7.0...v5.8.0) (2020-04-02)
 
 
