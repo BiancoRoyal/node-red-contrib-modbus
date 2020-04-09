@@ -53,8 +53,9 @@ module.exports = function (RED) {
 
     const node = this
     let delayTimerID = null
-    let timerID = null
+    let intervalTimerId = null
     let timeoutOccurred = false
+    node.modbusReadNodeInit = true
     node.INPUT_TIMEOUT_MILLISECONDS = 1000
     node.statusText = 'waiting'
     setNodeStatusWithTimeTo(node.statusText)
@@ -69,31 +70,37 @@ module.exports = function (RED) {
       setNodeStatusWithTimeTo('initialized')
     }
 
-    node.onModbusConnect = function () {
+    node.initializeReadingTimer = function () {
+      node.modbusReadNodeInit = false
       if (node.delayOnStart) {
-        if (!delayTimerID) {
-          delayTimerID = setTimeout(node.startIntervalReading, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)
-        } else {
+        if (delayTimerID) {
           clearTimeout(delayTimerID)
-          delayTimerID = setTimeout(node.startIntervalReading, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)
         }
+        delayTimerID = setTimeout(node.startIntervalReading, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)
       } else {
         if (delayTimerID) {
           clearTimeout(delayTimerID)
         }
         node.startIntervalReading()
       }
+    }
 
+    node.onModbusConnect = function () {
+      node.initializeReadingTimer()
       setNodeStatusWithTimeTo('connected')
     }
 
     node.startIntervalReading = function () {
-      if (!timerID) {
-        timerID = setInterval(node.modbusPollingRead, mbBasics.calc_rateByUnit(node.rate, node.rateUnit))
+      node.resetIntervalToRead()
+      if (!intervalTimerId) {
+        intervalTimerId = setInterval(node.modbusPollingRead, mbBasics.calc_rateByUnit(node.rate, node.rateUnit))
       }
     }
 
     node.onModbusActive = function () {
+      if (node.modbusReadNodeInit) {
+        node.initializeReadingTimer() // partial deploys
+      }
       setNodeStatusWithTimeTo('active')
     }
 
@@ -117,10 +124,10 @@ module.exports = function (RED) {
     }
 
     node.resetIntervalToRead = function () {
-      if (timerID) {
-        clearInterval(timerID)
+      if (intervalTimerId) {
+        clearInterval(intervalTimerId)
       }
-      timerID = null
+      intervalTimerId = null
     }
 
     node.onModbusBroken = function () {
