@@ -93,6 +93,7 @@ de.biancoroyal.modbus.basics.setNodeStatusProperties = function (statusValue, sh
       break
 
     case 'initialized':
+    case 'init':
       fillValue = 'yellow'
       shapeValue = 'dot'
       break
@@ -104,6 +105,8 @@ de.biancoroyal.modbus.basics.setNodeStatusProperties = function (statusValue, sh
       break
 
     case 'connected':
+    case 'queueing':
+    case 'queue':
       fillValue = 'green'
       shapeValue = 'ring'
       break
@@ -163,6 +166,7 @@ de.biancoroyal.modbus.basics.setNodeStatusByResponseTo = function (statusValue, 
 
   switch (statusValue) {
     case 'initialized':
+    case 'queue':
       fillValue = 'green'
       shapeValue = 'ring'
       break
@@ -214,14 +218,18 @@ de.biancoroyal.modbus.basics.setModbusError = function (node, modbusClient, err,
 }
 
 de.biancoroyal.modbus.basics.setNodeStatusTo = function (statusValue, node) {
-  if (node.showStatusActivities && statusValue !== node.statusText) {
-    const statusOptions = this.setNodeStatusProperties(statusValue, node.showStatusActivities)
-    node.statusText = statusValue
-    node.status({
-      fill: statusOptions.fill,
-      shape: statusOptions.shape,
-      text: statusOptions.status
-    })
+  if (node.showStatusActivities) {
+    if (statusValue !== node.statusText) {
+      const statusOptions = this.setNodeStatusProperties(statusValue, node.showStatusActivities)
+      node.statusText = statusValue
+      node.status({
+        fill: statusOptions.fill,
+        shape: statusOptions.shape,
+        text: statusOptions.status
+      })
+    } else {
+      this.setNodeDefaultStatus()
+    }
   }
 }
 
@@ -248,24 +256,37 @@ de.biancoroyal.modbus.basics.onModbusClose = function (node) {
   this.setNodeStatusTo('closed', node)
 }
 
+de.biancoroyal.modbus.basics.onModbusQueue = function (node) {
+  this.setNodeStatusTo('queueing', node)
+}
+
 de.biancoroyal.modbus.basics.onModbusBroken = function (node, modbusClient) {
   this.setNodeStatusTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.', node)
 }
 
+de.biancoroyal.modbus.basics.setNodeDefaultStatus = function (node) {
+  node.status({ fill: 'green', shape: 'ring', text: 'active' })
+}
+
 de.biancoroyal.modbus.basics.initModbusClientEvents = function (node, modbusClient) {
-  modbusClient.on('mbinit', () => { this.onModbusInit(node) })
-  modbusClient.on('mbconnected', () => { this.onModbusConnect(node) })
-  modbusClient.on('mbactive', () => { this.onModbusActive(node) })
-  modbusClient.on('mberror', (failureMsg) => { this.onModbusError(node, failureMsg) })
-  modbusClient.on('mbbroken', () => { this.onModbusBroken(node, modbusClient) })
-  modbusClient.on('mbclosed', () => { this.onModbusClose(node) })
+  if (node.showStatusActivities) {
+    modbusClient.on('mbinit', () => { this.onModbusInit(node) })
+    modbusClient.on('mbqueue', () => { this.onModbusQueue(node) })
+    modbusClient.on('mbconnected', () => { this.onModbusConnect(node) })
+    modbusClient.on('mbbroken', () => { this.onModbusBroken(node, modbusClient) })
+    modbusClient.on('mbactive', () => { this.onModbusActive(node) })
+    modbusClient.on('mberror', (failureMsg) => { this.onModbusError(node, failureMsg) })
+    modbusClient.on('mbclosed', () => { this.onModbusClose(node) })
+  } else {
+    this.setNodeDefaultStatus(node)
+  }
 }
 
 de.biancoroyal.modbus.basics.invalidPayloadIn = function (msg) {
   return !(msg && Object.prototype.hasOwnProperty.call(msg, 'payload'))
 }
 
-de.biancoroyal.modbus.basics.emptyMsgOnFail = function (node, err, msg) {
+de.biancoroyal.modbus.basics.sendEmptyMsgOnFail = function (node, err, msg) {
   if (node.emptyMsgOnFail) {
     msg.payload = ''
 

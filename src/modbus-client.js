@@ -139,7 +139,18 @@ module.exports = function (RED) {
       node.actualServiceState = state
       stateLog(state.value)
 
+      if (!state.value || node.actualServiceState.value === undefined) {
+        // verboseWarn('fsm ignore invalid state')
+        return
+      }
+
+      if (node.actualServiceStateBefore.value === node.actualServiceState.value) {
+        // verboseWarn('fsm ignore equal state ' + node.actualServiceState.value + ' after ' + node.actualServiceStateBefore.value)
+        return
+      }
+
       if (state.matches('init')) {
+        verboseWarn('fsm init state after ' + node.actualServiceStateBefore.value)
         node.updateServerinfo()
         coreModbusQueue.initQueue(node)
         node.reconnectTimeoutId = 0
@@ -147,10 +158,10 @@ module.exports = function (RED) {
         try {
           if (node.isFirstInitOfConnection) {
             node.isFirstInitOfConnection = false
-            verboseWarn('init in ' + serialConnectionDelayTimeMS + ' ms')
+            verboseWarn('first fsm init in ' + serialConnectionDelayTimeMS + ' ms')
             setTimeout(node.connectClient, serialConnectionDelayTimeMS)
           } else {
-            verboseWarn('init in ' + node.reconnectTimeout + ' ms')
+            verboseWarn('fsm init in ' + node.reconnectTimeout + ' ms')
             setTimeout(node.connectClient, node.reconnectTimeout)
           }
         } catch (err) {
@@ -161,6 +172,7 @@ module.exports = function (RED) {
       }
 
       if (state.matches('connected')) {
+        verboseWarn('fsm connected after state ' + node.actualServiceStateBefore.value + logHintText)
         node.serialSendingAllowed = true
         node.emit('mbconnected')
       }
@@ -196,11 +208,13 @@ module.exports = function (RED) {
       }
 
       if (state.matches('failed')) {
+        verboseWarn('fsm failed state after ' + node.actualServiceStateBefore.value + logHintText)
         node.emit('mberror', 'Modbus Failure On State ' + node.actualServiceStateBefore.value + logHintText)
         node.stateService.send('BREAK')
       }
 
       if (state.matches('broken')) {
+        verboseWarn('fsm broken state after ' + node.actualServiceStateBefore.value + logHintText)
         node.emit('mbbroken', 'Modbus Broken On State ' + node.actualServiceStateBefore.value + logHintText)
         if (node.reconnectOnTimeout) {
           if (node.reconnectTimeout <= 0) {
@@ -213,6 +227,7 @@ module.exports = function (RED) {
       }
 
       if (state.matches('reconnecting')) {
+        verboseWarn('fsm reconnect state after ' + node.actualServiceStateBefore.value + logHintText)
         node.serialSendingAllowed = false
         node.emit('mbreconnecting')
         if (node.reconnectTimeout <= 0) {
@@ -510,26 +525,28 @@ module.exports = function (RED) {
     })
 
     node.on('close', function (done) {
+      const nodeIdentifierName = node.name || node.id
       node.closingModbus = true
-      verboseLog('stop fsm on close ' + node.name)
+      verboseLog('stop fsm on close ' + nodeIdentifierName)
       node.stateService.send('STOP')
-      verboseLog('close node ' + node.name)
+      verboseLog('close node ' + nodeIdentifierName)
+      node.removeAllListeners()
       if (node.client) {
         if (node.client.isOpen) {
           node.client.close(function (err) {
             if (err) {
-              verboseLog('Connection closed with error ' + node.name)
+              verboseLog('Connection closed with error ' + nodeIdentifierName)
             } else {
-              verboseLog('Connection closed well ' + node.name)
+              verboseLog('Connection closed well ' + nodeIdentifierName)
             }
             done()
           })
         } else {
-          verboseLog('connection was closed ' + node.name)
+          verboseLog('connection was closed ' + nodeIdentifierName)
           done()
         }
       } else {
-        verboseLog('Connection closed simple ' + node.name)
+        verboseLog('Connection closed simple ' + nodeIdentifierName)
         done()
       }
     })
@@ -537,8 +554,8 @@ module.exports = function (RED) {
     // handle using as config node
     node.registeredNodeList = {}
 
-    node.registerForModbus = function (modbusNode) {
-      node.registeredNodeList[modbusNode.id] = modbusNode
+    node.registerForModbus = function (clientUserNodeId) {
+      node.registeredNodeList[clientUserNodeId] = clientUserNodeId
       if (Object.keys(node.registeredNodeList).length === 1) {
         node.closingModbus = false
         node.stateService.send('NEW')
@@ -568,12 +585,18 @@ module.exports = function (RED) {
       }
     }
 
-    node.deregisterForModbus = function (modbusNode, done) {
-      delete node.registeredNodeList[modbusNode.id]
-      if (node.closingModbus) {
+    node.deregisterForModbus = function (clientUserNodeId, done) {
+      try {
+        delete node.registeredNodeList[clientUserNodeId]
+        if (node.closingModbus) {
+          done()
+        } else {
+          node.closeConnectionWithoutRegisteredNodes(done)
+        }
+      } catch (err) {
+        verboseWarn(err.message + ' on de-register node ' + clientUserNodeId)
+        node.error(err)
         done()
-      } else {
-        node.closeConnectionWithoutRegisteredNodes(done)
       }
     }
   }

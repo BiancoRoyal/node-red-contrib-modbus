@@ -67,22 +67,22 @@ module.exports = function (RED) {
         node.error(err, msg)
       }
 
-      mbBasics.emptyMsgOnFail(node, err, msg)
+      mbBasics.sendEmptyMsgOnFail(node, err, msg)
       mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg))
     }
 
     node.buildNewMessageObject = function (node, msg) {
-      const newMsg = Object.assign({}, msg)
-      newMsg.topic = msg.topic || node.id
-      newMsg.payload = {
-        value: msg.payload.value || msg.payload,
-        unitid: node.unitid,
-        fc: mbCore.functionCodeModbusRead(node.dataType),
-        address: node.adr,
-        quantity: node.quantity,
-        messageId: msg.messageId
+      return {
+        topic: msg.topic || node.id,
+        payload: {
+          value: msg.payload.value || msg.payload,
+          unitid: node.unitid,
+          fc: mbCore.functionCodeModbusRead(node.dataType),
+          address: node.adr,
+          quantity: node.quantity,
+          messageId: msg.messageId
+        }
       }
-      return newMsg
     }
 
     node.on('input', function (msg) {
@@ -94,21 +94,30 @@ module.exports = function (RED) {
         return
       }
 
-      msg.messageId = mbCore.getObjectId()
-      node.bufferMessageList.set(msg.messageId, msg)
-      msg = node.buildNewMessageObject(node, msg)
-      modbusClient.emit('readModbus', msg, node.onModbusCommandDone, node.onModbusCommandError)
+      const origMsgInput = Object.assign({}, msg)
+      try {
+        msg.messageId = mbCore.getObjectId()
+        node.bufferMessageList.set(msg.messageId, msg)
+        msg = node.buildNewMessageObject(node, msg)
+        modbusClient.emit('readModbus', msg, node.onModbusCommandDone, node.onModbusCommandError)
 
-      if (node.showStatusActivities) {
-        mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
+        if (node.showStatusActivities) {
+          mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
+        }
+      } catch (err) {
+        mbBasics.sendEmptyMsgOnFail(node, err, origMsgInput)
       }
     })
 
     node.on('close', function (done) {
       mbBasics.setNodeStatusTo('closed', node)
       node.bufferMessageList.clear()
-      modbusClient.deregisterForModbus(node, done)
+      modbusClient.deregisterForModbus(node.id, done)
     })
+
+    if (!node.showStatusActivities) {
+      mbBasics.setNodeDefaultStatus(node)
+    }
   }
 
   RED.nodes.registerType('modbus-getter', ModbusGetter)

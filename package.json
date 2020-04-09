@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-modbus",
-  "version": "5.8.0",
+  "version": "5.9.0",
   "private": false,
   "description": "The all in one Modbus TCP and Serial contribution package for Node-RED.",
   "dependencies": {
@@ -66,7 +66,7 @@
     "test-with-coverage": "istanbul cover _mocha --report lcovonly -- --recursive --timeout 5000 -R spec && cat ./coverage/lcov.info | codacy-coverage --token a047b284d2124df78f999c27ae874e9c && rm -rf ./coverage",
     "coverage": "standard --fix && gulp build && npm test && istanbul cover _mocha -- --recursive --timeout 5000",
     "build": "standard --fix && gulp",
-    "prepublishOnly": "standard --fix && npm run build && npm test && mocha test --recursive --timeout 5000 --reporter dot && istanbul cover _mocha -- --recursive --timeout 5000",
+    "prepublishOnly": "standard --fix && npm run build && npm run rewrite-changelog && npm test && mocha test --recursive --timeout 5000 --reporter dot && istanbul cover _mocha -- --recursive --timeout 5000",
     "ci-publish": "ci-publish",
     "release": "standard-version -a",
     "release:beta": "standard-version --prerelease beta",

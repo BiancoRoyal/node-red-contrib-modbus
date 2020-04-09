@@ -53,58 +53,65 @@ module.exports = function (RED) {
 
     const node = this
     let delayTimerID = null
-    let timerID = null
+    let intervalTimerId = null
     let timeoutOccurred = false
+    node.modbusReadNodeInit = true
     node.INPUT_TIMEOUT_MILLISECONDS = 1000
     node.statusText = 'waiting'
-    mbBasics.setNodeStatusTo(node.statusText, node)
+    setNodeStatusWithTimeTo(node.statusText)
 
     const modbusClient = RED.nodes.getNode(config.server)
     if (!modbusClient) {
       return
     }
     modbusClient.registerForModbus(node)
-    mbBasics.initModbusClientEvents(node, modbusClient)
 
     node.onModbusInit = function () {
-      mbBasics.setNodeStatusTo('initialize', node)
+      setNodeStatusWithTimeTo('initialized')
     }
 
-    node.onModbusConnect = function () {
+    node.initializeReadingTimer = function () {
+      node.modbusReadNodeInit = false
       if (node.delayOnStart) {
-        if (!delayTimerID) {
-          delayTimerID = setTimeout(node.startIntervalReading, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)
-        } else {
+        if (delayTimerID) {
           clearTimeout(delayTimerID)
-          delayTimerID = setTimeout(node.startIntervalReading, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)
         }
+        delayTimerID = setTimeout(node.startIntervalReading, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)
       } else {
         if (delayTimerID) {
           clearTimeout(delayTimerID)
         }
         node.startIntervalReading()
       }
+    }
 
+    node.onModbusConnect = function () {
+      node.initializeReadingTimer()
       setNodeStatusWithTimeTo('connected')
     }
 
     node.startIntervalReading = function () {
-      if (!timerID) {
-        timerID = setInterval(node.modbusPollingRead, mbBasics.calc_rateByUnit(node.rate, node.rateUnit))
+      node.resetIntervalToRead()
+      if (!intervalTimerId) {
+        intervalTimerId = setInterval(node.modbusPollingRead, mbBasics.calc_rateByUnit(node.rate, node.rateUnit))
       }
     }
 
     node.onModbusActive = function () {
+      if (node.modbusReadNodeInit) {
+        node.initializeReadingTimer() // partial deploys
+      }
       setNodeStatusWithTimeTo('active')
     }
 
+    node.onModbusQueue = function () {
+      setNodeStatusWithTimeTo('queue')
+    }
+
     node.onModbusError = function (failureMsg) {
-      mbBasics.setNodeStatusTo('failure', node)
+      setNodeStatusWithTimeTo('failure')
       if (modbusClient.reconnectOnTimeout) {
-        if (timerID) {
-          clearInterval(timerID) // clear Timer from events
-        }
-        timerID = null
+        node.resetIntervalToRead()
       }
       if (node.showErrors) {
         node.warn(failureMsg)
@@ -112,29 +119,35 @@ module.exports = function (RED) {
     }
 
     node.onModbusClose = function () {
-      mbBasics.setNodeStatusTo('closed', node)
-      if (timerID) {
-        clearInterval(timerID) // clear Timer from events
+      setNodeStatusWithTimeTo('closed')
+      node.resetIntervalToRead()
+    }
+
+    node.resetIntervalToRead = function () {
+      if (intervalTimerId) {
+        clearInterval(intervalTimerId)
       }
-      timerID = null
+      intervalTimerId = null
     }
 
     node.onModbusBroken = function () {
+      setNodeStatusWithTimeTo('broken')
       if (modbusClient.reconnectOnTimeout) {
-        mbBasics.setNodeStatusTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.', node)
-        if (timerID) {
-          clearInterval(timerID) // clear Timer from events
-        }
-        timerID = null
+        setNodeStatusWithTimeTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.')
+        node.resetIntervalToRead()
       }
     }
 
-    modbusClient.on('mbinit', node.onModbusInit)
+    if (node.showStatusActivities) {
+      modbusClient.on('mbinit', node.onModbusInit)
+      modbusClient.on('mbqueue', node.onModbusQueue)
+    }
+
     modbusClient.on('mbconnected', node.onModbusConnect)
     modbusClient.on('mbactive', node.onModbusActive)
-    modbusClient.on('mbqueue', node.onModbusActive)
     modbusClient.on('mberror', node.onModbusError)
     modbusClient.on('mbclosed', node.onModbusClose)
+    modbusClient.on('mbbroken', node.onModbusBroken)
 
     node.modbusPollingRead = function () {
       if (!modbusClient.client) {
@@ -178,12 +191,9 @@ module.exports = function (RED) {
     }
 
     node.on('close', function (done) {
-      if (timerID) {
-        clearInterval(timerID)
-      }
-      timerID = null
-      mbBasics.setNodeStatusTo('closed', node)
-      modbusClient.deregisterForModbus(node, done)
+      node.resetIntervalToRead()
+      setNodeStatusWithTimeTo('closed')
+      modbusClient.deregisterForModbus(node.id, done)
     })
 
     function sendMessage (values, response, msg) {

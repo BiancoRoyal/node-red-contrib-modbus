@@ -45,7 +45,6 @@ module.exports = function (RED) {
       return
     }
     modbusClient.registerForModbus(node)
-    mbBasics.initModbusClientEvents(node, modbusClient)
 
     node.resetStates = function () {
       node.lowLowLevelReached = true
@@ -171,10 +170,13 @@ module.exports = function (RED) {
 
     modbusClient.on('mbinit', node.readFromQueue)
     modbusClient.on('mbconnected', node.readFromQueue)
-    modbusClient.on('mberror', node.readFromQueue)
+
     if (node.updateOnAllQueueChanges) { // more CPU-Load on many requests
       modbusClient.on('mbactive', node.readFromQueue)
+      modbusClient.on('mbqueue', node.readFromQueue)
     }
+
+    modbusClient.on('mberror', node.readFromQueue)
     modbusClient.on('mbclosed', node.readFromQueue)
 
     node.queueReadInterval = setInterval(node.readFromQueue, node.queueReadIntervalTime)
@@ -227,8 +229,12 @@ module.exports = function (RED) {
         clearInterval(node.queueReadInterval)
       }
       node.queueReadInterval = null
-      modbusClient.deregisterForModbus(node, done)
+      modbusClient.deregisterForModbus(node.id, done)
     })
+
+    if (!node.showStatusActivities) {
+      mbBasics.setNodeDefaultStatus(node)
+    }
   }
 
   RED.nodes.registerType('modbus-queue-info', ModbusQueueInfo)

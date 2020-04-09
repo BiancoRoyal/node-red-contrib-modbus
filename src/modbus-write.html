@@ -19,7 +19,8 @@
       dataType: {value: '', required: true},
       adr: {value: '', required: true, validate: RED.validators.number()},
       quantity: {value: '', required: true, validate: RED.validators.number()},
-      server: {type: 'modbus-client', required: true}
+      server: {type: 'modbus-client', required: true},
+      emptyMsgOnFail: {value: false}
     },
     inputs: 1,
     outputs: 2,
@@ -92,6 +93,11 @@
         <input type="text" id="node-input-server">
     </div>
     <hr>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-input-emptyMsgOnFail"><i class="fa fa-th"></i> <span
+        data-i18n="modbus-contrib.label.emptyMsgOnFail"></span></label>
+        <input type="checkbox" id="node-input-emptyMsgOnFail" style="max-width:30px">
+    </div>
     <div class="form-row">
         <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
         data-i18n="modbus-contrib.label.showActivities"></span></label>

@@ -61,7 +61,7 @@ module.exports = function (RED) {
         node.error(err, msg)
       }
 
-      mbBasics.emptyMsgOnFail(node, err, msg)
+      mbBasics.sendEmptyMsgOnFail(node, err, msg)
       mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg))
     }
 
@@ -108,18 +108,18 @@ module.exports = function (RED) {
     }
 
     node.buildNewMessageObject = function (node, msg) {
-      const newMsg = Object.assign({}, msg)
-      newMsg.topic = msg.topic || node.id
-      newMsg.payload = {
-        value: msg.payload.value || msg.value,
-        unitid: msg.payload.unitid,
-        fc: msg.payload.fc,
-        address: msg.payload.address,
-        quantity: msg.payload.quantity,
-        messageId: msg.messageId,
-        emptyMsgOnFail: node.emptyMsgOnFail
+      return {
+        topic: msg.topic || node.id,
+        payload: {
+          value: msg.payload.value || msg.value,
+          unitid: msg.payload.unitid,
+          fc: msg.payload.fc,
+          address: msg.payload.address,
+          quantity: msg.payload.quantity,
+          messageId: msg.messageId,
+          emptyMsgOnFail: node.emptyMsgOnFail
+        }
       }
-      return newMsg
     }
 
     node.on('input', function (msg) {
@@ -127,8 +127,9 @@ module.exports = function (RED) {
         return
       }
 
+      const origMsgInput = Object.assign({}, msg)
       try {
-        msg = node.prepareMsg(msg)
+        msg = node.prepareMsg(origMsgInput)
         if (node.isValidModbusMsg(msg)) {
           msg.messageId = mbCore.getObjectId()
           node.bufferMessageList.set(msg.messageId, msg)
@@ -141,7 +142,7 @@ module.exports = function (RED) {
           node.error(err, msg)
         }
 
-        mbBasics.emptyMsgOnFail(node, err, msg)
+        mbBasics.sendEmptyMsgOnFail(node, err, origMsgInput)
       }
 
       if (node.showStatusActivities) {
@@ -152,8 +153,12 @@ module.exports = function (RED) {
     node.on('close', function (done) {
       mbBasics.setNodeStatusTo('closed', node)
       node.bufferMessageList.clear()
-      modbusClient.deregisterForModbus(node, done)
+      modbusClient.deregisterForModbus(node.id, done)
     })
+
+    if (!node.showStatusActivities) {
+      mbBasics.setNodeDefaultStatus(node)
+    }
   }
 
   RED.nodes.registerType('modbus-flex-getter', ModbusFlexGetter)
