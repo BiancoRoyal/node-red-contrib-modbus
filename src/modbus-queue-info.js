@@ -156,7 +156,7 @@ module.exports = function (RED) {
         node.status({
           fill: node.getStatusSituationFillColor(node.unitid),
           shape: 'ring',
-          text: (bufferCommandListLength) ? 'active unit ' + unit + ' queue items: ' + bufferCommandListLength : 'active (Unit-Id: ' + unit + ')'
+          text: (bufferCommandListLength) ? 'active unit ' + unit + ' queue items: ' + bufferCommandListLength : 'active (Unit-Id: ' + unit + ') empty'
         })
       }
     }
@@ -190,7 +190,7 @@ module.exports = function (RED) {
 
     node.checkQueueStates = function (bufferCommandListLength, unit) {
       const unitWithQueue = node.unitsWithQueue.get(unit)
-      if ((!unitWithQueue.lowLowLevelReached && bufferCommandListLength < node.lowLowLevel)) {
+      if (!unitWithQueue.lowLowLevelReached && bufferCommandListLength < node.lowLowLevel) {
         node.resetStates(unit)
       }
       node.checkLowLevelReached(node, bufferCommandListLength, unit)
@@ -238,9 +238,18 @@ module.exports = function (RED) {
       node.queueReadInterval = setInterval(eventCallback, node.queueReadIntervalTime)
     }
 
+    node.removeModbusQueueActionsFromNode = function (eventCallback) {
+      modbusClient.removeListener('mbqueue', eventCallback)
+      modbusClient.removeListener('mbactive', eventCallback)
+      modbusClient.removeListener('mbinit', eventCallback)
+      modbusClient.removeListener('mbconnected', eventCallback)
+      modbusClient.removeListener('mberror', eventCallback)
+      modbusClient.removeListener('mbclosed', eventCallback)
+    }
+
     if (node.updateOnAllUnitQueues) {
       node.registerModbusQueueActionsToNode(node.readFromAllUnitQueues)
-      mbBasics.setNodeStatusTo('active', node)
+      mbBasics.setNodeStatusTo('active for all queues', node)
     } else {
       node.registerModbusQueueActionsToNode(node.readFromQueue)
     }
@@ -299,6 +308,11 @@ module.exports = function (RED) {
     })
 
     node.on('close', function (done) {
+      if (node.updateOnAllUnitQueues) {
+        node.removeModbusQueueActionsFromNode(node.readFromAllUnitQueues)
+      } else {
+        node.removeModbusQueueActionsFromNode(node.readFromQueue)
+      }
       mbBasics.setNodeStatusTo('closed', node)
       if (node.queueReadInterval) {
         clearInterval(node.queueReadInterval)
