@@ -21,7 +21,8 @@
       server: {type: 'modbus-client', required: true},
       errorOnHighLevel: {value: false},
       showStatusActivities: {value: true},
-      updateOnAllQueueChanges: {value: false}
+      updateOnAllQueueChanges: {value: false},
+      updateOnAllUnitQueues: {value: false}
     },
     inputs: 1,
     outputs: 1,
@@ -80,6 +81,11 @@
         data-i18n="modbus-contrib.label.updateOnAllQueueChanges"></span></label>
         <input type="checkbox" id="node-input-updateOnAllQueueChanges" style="max-width:30px">
     </div>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-input-updateOnAllUnitQueues"><i class="fa fa-th"></i> <span
+        data-i18n="modbus-contrib.label.updateOnAllUnitQueues"></span></label>
+        <input type="checkbox" id="node-input-updateOnAllUnitQueues" style="max-width:30px">
+    </div>
     <hr>
     <div class="form-row">
         <label style="min-width:160px" for="node-input-errorOnHighLevel"><i class="fa fa-th"></i> <span
@@ -110,16 +116,23 @@
       <p>Reset on high level to connect with the catch node</p>
       <p><pre>
         [{"id":"430f76bf.9de2d8","type":"function","z":"b245d3e4.b52de","name":"reset on High",
-        "func":"if(\"high level reached\" === msg.state) {\n    msg.resetQueue = true;\n    return msg;\n}\n",
+        "func":"if(\"high level reached\" === msg.state) {\n    msg.payload.resetQueue = true;\n    return msg;\n}\n",
         "outputs":1,"noerr":0,"x":410,"y":140,"wires":[["64cca59a.dc295c"]]}]
       </pre></p>
 
       <p>Reset on high high level to connect with the catch node</p>
-      <p><pre>
-        [{"id":"fc74491.2ddc9b8","type":"function","z":"b245d3e4.b52de","name":"reset on HighHigh",
-        "func":"if(\"high high level reached\" === msg.state) {\n    msg.resetQueue = true;\n    return msg;\n}\n",
-        "outputs":1,"noerr":0,"x":430,"y":180,"wires":[["64cca59a.dc295c"]]}]
-      </pre></p>
+      <p>
+          <pre>
+            [{"id":"fc74491.2ddc9b8","type":"function","z":"b245d3e4.b52de","name":"reset on HighHigh",
+            "func":"if(\"high high level reached\" === msg.state) {\n    msg.payload.resetQueue = true;\n    return msg;\n}\n",
+            "outputs":1,"noerr":0,"x":430,"y":180,"wires":[["64cca59a.dc295c"]]}]
+          </pre>
+      </p>
+
+     <p>
+        An update of all unit queues can be watched by checking the option.
+        Use just a single queue info per client if you activate that option.
+     </p>
 
      <p>"Error on high level" with that option the node sends
      an error if high level is reached and on high high level.</p>

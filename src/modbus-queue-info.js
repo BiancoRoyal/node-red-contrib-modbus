@@ -23,7 +23,7 @@ module.exports = function (RED) {
 
     this.name = config.name
     this.topic = config.topic
-    this.unitid = parseInt(config.unitid)
+    this.unitid = parseInt(config.unitid) || 1
     this.lowLowLevel = parseInt(config.lowLowLevel)
     this.lowLevel = parseInt(config.lowLevel)
     this.highLevel = parseInt(config.highLevel)
@@ -32,12 +32,14 @@ module.exports = function (RED) {
     this.queueReadIntervalTime = config.queueReadIntervalTime || 1000
     this.showStatusActivities = config.showStatusActivities
     this.updateOnAllQueueChanges = config.updateOnAllQueueChanges
+    this.updateOnAllUnitQueues = config.updateOnAllUnitQueues
 
     this.internalDebugLog = internalDebugLog
 
     const node = this
     node.queueReadInterval = null
     node.updateStatusRrunning = false
+    node.unitsWithQueue = new Map()
     mbBasics.setNodeStatusTo('waiting', node)
 
     const modbusClient = RED.nodes.getNode(config.server)
@@ -46,42 +48,53 @@ module.exports = function (RED) {
     }
     modbusClient.registerForModbus(node)
 
-    node.resetStates = function () {
-      node.lowLowLevelReached = true
-      node.lowLevelReached = false
-      node.highLevelReached = false
-      node.highHighLevelReached = false
+    node.initUnitQueueStates = function () {
+      for (let unit = 0; unit < 256; unit += 1) {
+        node.unitsWithQueue.set(unit, {})
+        node.resetStates(unit)
+      }
     }
 
-    node.resetStates()
+    node.resetStates = function (unit) {
+      const unitWithQueue = node.unitsWithQueue.get(unit)
+      unitWithQueue.lowLowLevelReached = true
+      unitWithQueue.lowLevelReached = false
+      unitWithQueue.highLevelReached = false
+      unitWithQueue.highHighLevelReached = false
+    }
 
-    node.checkLowLevelReached = function (node, items, unit) {
-      if (!node.lowLevelReached && items > node.lowLowLevel && items < node.lowLevel) {
-        node.lowLevelReached = true
+    node.initUnitQueueStates()
+
+    node.checkLowLevelReached = function (node, bufferCommandListLength, unit) {
+      const unitWithQueue = node.unitsWithQueue.get(unit)
+      if (!unitWithQueue.lowLevelReached && bufferCommandListLength > node.lowLowLevel && bufferCommandListLength < node.lowLevel) {
+        unitWithQueue.lowLevelReached = true
         const msg = {
           payload: Date.now(),
           topic: node.topic,
           state: 'low level reached',
           unitid: unit,
           modbusClientName: modbusClient.name,
-          items: items
+          bufferCommandListLength: bufferCommandListLength
         }
-
         node.send(msg)
       }
     }
 
-    node.checkHighLevelReached = function (node, items, unit) {
-      if (!node.highLevelReached && items > node.lowLevel && items > node.highLevel) {
-        node.highLevelReached = true
+    node.checkHighLevelReached = function (node, bufferCommandListLength, unit) {
+      const unitWithQueue = node.unitsWithQueue.get(unit)
+      if (!unitWithQueue.highLevelReached &&
+        bufferCommandListLength > node.lowLevel &&
+        bufferCommandListLength > node.highLevel) {
+        unitWithQueue.highLevelReached = true
         const msg = {
           payload: Date.now(),
           topic: node.topic,
           state: 'high level reached',
           unitid: unit,
-          modbusClientName: modbusClient.name,
+          modbusClientName: modbusClient.name || modbusClient.id,
           highLevel: node.highLevel,
-          items: items
+          bufferCommandListLength: bufferCommandListLength
         }
 
         if (node.errorOnHighLevel) {
@@ -94,32 +107,36 @@ module.exports = function (RED) {
       }
     }
 
-    node.checkHighHighLevelReached = function (node, items, unit) {
-      if (!node.highHighLevelReached && items > node.highLevel && items > node.highHighLevel) {
-        node.highHighLevelReached = true
+    node.checkHighHighLevelReached = function (node, bufferCommandListLength, unit) {
+      const unitWithQueue = node.unitsWithQueue.get(unit)
+      if (!unitWithQueue.highHighLevelReached &&
+        bufferCommandListLength > node.highLevel &&
+        bufferCommandListLength > node.highHighLevel) {
+        unitWithQueue.highHighLevelReached = true
         const msg = {
           payload: Date.now(),
           topic: node.topic,
           state: 'high high level reached',
           unitid: unit,
-          modbusClientName: modbusClient.name,
+          modbusClientName: modbusClient.name || modbusClient.id,
           highLevel: node.highLevel,
           highHighLevel: node.highHighLevel,
-          items: items
+          bufferCommandListLength: bufferCommandListLength
         }
         node.error(new Error('Queue High High Level Reached'), msg)
         node.send(msg)
       }
     }
 
-    node.getStatusSituationFillColor = function () {
+    node.getStatusSituationFillColor = function (unit) {
+      const unitWithQueue = node.unitsWithQueue.get(unit)
       let fillColor = 'blue'
 
-      if (node.lowLevelReached) {
+      if (unitWithQueue.lowLevelReached) {
         fillColor = 'green'
       }
 
-      if (node.highLevelReached) {
+      if (unitWithQueue.highLevelReached) {
         if (node.errorOnHighLevel) {
           fillColor = 'red'
         } else {
@@ -127,88 +144,155 @@ module.exports = function (RED) {
         }
       }
 
-      if (node.highHighLevelReached) {
+      if (unitWithQueue.highHighLevelReached) {
         fillColor = 'red'
       }
 
       return fillColor
     }
 
+    node.setNodeStatusByActivity = function (bufferCommandListLength, unit) {
+      if (node.showStatusActivities) {
+        node.status({
+          fill: node.getStatusSituationFillColor(node.unitid),
+          shape: 'ring',
+          text: (bufferCommandListLength) ? 'active unit ' + unit + ' queue items: ' + bufferCommandListLength : 'active (Unit-Id: ' + unit + ') empty'
+        })
+      }
+    }
+
     node.readFromQueue = function () {
       if (node.updateStatusRrunning) {
         return
       }
-      node.updateStatusRrunning = true
-      let unit = node.unitid || 1
+      const unit = ((node.unitid < 1 || node.unitid > 255)) ? 1 : node.unitid
+      if (modbusClient.bufferCommands) {
+        return new Promise(
+          function (resolve, reject) {
+            try {
+              node.updateStatusRrunning = true
+              const bufferCommandListLength = modbusClient.bufferCommandList.get(unit).length
+              node.checkQueueStates(bufferCommandListLength, unit)
+              node.setNodeStatusByActivity(bufferCommandListLength, unit)
+              node.updateStatusRrunning = false
+              resolve()
+            } catch (err) {
+              node.updateStatusRrunning = false
+              reject(err)
+            }
+          })
+      } else {
+        if (node.showStatusActivities) {
+          node.setNodeStatusByActivity(null, unit)
+        }
+      }
+    }
+
+    node.checkQueueStates = function (bufferCommandListLength, unit) {
+      const unitWithQueue = node.unitsWithQueue.get(unit)
+      if (!unitWithQueue.lowLowLevelReached && bufferCommandListLength < node.lowLowLevel) {
+        node.resetStates(unit)
+      }
+      node.checkLowLevelReached(node, bufferCommandListLength, unit)
+      node.checkHighLevelReached(node, bufferCommandListLength, unit)
+      node.checkHighHighLevelReached(node, bufferCommandListLength, unit)
+    }
+
+    node.readFromAllUnitQueues = function () {
+      if (node.updateStatusRrunning) {
+        return
+      }
 
       if (modbusClient.bufferCommands) {
-        if (unit < 1 || unit > 255) {
-          unit = 1
-        }
-
-        const items = modbusClient.bufferCommandList.get(unit).length
-        if (!items || (!node.lowLowLevelReached && items < node.lowLowLevel)) {
-          node.resetStates()
-        }
-
-        node.checkLowLevelReached(node, items, unit)
-        node.checkHighLevelReached(node, items, unit)
-        node.checkHighHighLevelReached(node, items, unit)
-
-        if (node.showStatusActivities) {
-          node.status({
-            fill: node.getStatusSituationFillColor(),
-            shape: 'ring',
-            text: 'active unit ' + unit + ' queue items: ' + items
+        return new Promise(
+          function (resolve, reject) {
+            try {
+              node.updateStatusRrunning = true
+              let bufferCommandListLength = 0
+              for (let unit = 0; unit < 256; unit += 1) {
+                bufferCommandListLength = modbusClient.bufferCommandList.get(unit).length
+                if (!bufferCommandListLength) {
+                  continue
+                }
+                node.checkQueueStates(bufferCommandListLength, unit)
+              }
+              node.updateStatusRrunning = false
+              resolve()
+            } catch (err) {
+              node.updateStatusRrunning = false
+              reject(err)
+            }
           })
-        }
-      } else if (node.showStatusActivities) {
-        mbBasics.setNodeStatusTo('active unit ' + unit + ' without queue', node)
       }
-      node.updateStatusRrunning = false
     }
 
-    modbusClient.on('mbinit', node.readFromQueue)
-    modbusClient.on('mbconnected', node.readFromQueue)
-
-    if (node.updateOnAllQueueChanges) { // more CPU-Load on many requests
-      modbusClient.on('mbactive', node.readFromQueue)
-      modbusClient.on('mbqueue', node.readFromQueue)
+    node.registerModbusQueueActionsToNode = function (eventCallback) {
+      if (node.updateOnAllQueueChanges) { // much more CPU-Load on many parallel requests to the client
+        modbusClient.on('mbqueue', eventCallback) // en-queue
+      }
+      modbusClient.on('mbactive', eventCallback) // de-queue
+      modbusClient.on('mbinit', eventCallback)
+      modbusClient.on('mbconnected', eventCallback)
+      modbusClient.on('mberror', eventCallback)
+      modbusClient.on('mbclosed', eventCallback)
+      node.queueReadInterval = setInterval(eventCallback, node.queueReadIntervalTime)
     }
 
-    modbusClient.on('mberror', node.readFromQueue)
-    modbusClient.on('mbclosed', node.readFromQueue)
+    node.removeModbusQueueActionsFromNode = function (eventCallback) {
+      modbusClient.removeListener('mbqueue', eventCallback)
+      modbusClient.removeListener('mbactive', eventCallback)
+      modbusClient.removeListener('mbinit', eventCallback)
+      modbusClient.removeListener('mbconnected', eventCallback)
+      modbusClient.removeListener('mberror', eventCallback)
+      modbusClient.removeListener('mbclosed', eventCallback)
+    }
 
-    node.queueReadInterval = setInterval(node.readFromQueue, node.queueReadIntervalTime)
+    if (node.updateOnAllUnitQueues) {
+      node.registerModbusQueueActionsToNode(node.readFromAllUnitQueues)
+      mbBasics.setNodeStatusTo('active for all queues', node)
+    } else {
+      node.registerModbusQueueActionsToNode(node.readFromQueue)
+    }
 
     node.on('input', function (msg) {
-      msg.queueEnabled = modbusClient.bufferCommands
-
-      if (Number.isInteger(node.unitid)) {
-        msg.queue = modbusClient.bufferCommandList.get(node.unitid)
-        msg.unitid = node.unitid
+      let msgUnitId = node.unitid
+      if (msg.payload.resetQueue) {
+        msgUnitId = parseInt(msg.payload.unitId)
       } else {
-        msg.queues = modbusClient.bufferCommandList
+        msgUnitId = parseInt(msg.payload) || node.unitid
+      }
+      msg.payload = {}
+      msg.payload.queueEnabled = modbusClient.bufferCommands
+
+      if (node.updateOnAllUnitQueues) {
+        msg.payload.allQueueData = true
+        msg.payload.queues = modbusClient.bufferCommandList
+      } else {
+        msg.payload.allQueueData = false
+        msg.payload.unitid = msgUnitId
+        msg.payload.queue = modbusClient.bufferCommandList.get(msgUnitId)
       }
 
-      msg.queueOptions = {
+      msg.payload.queueOptions = {
         date: Date.now(),
         state: 'queue request',
-        modbusClientName: modbusClient.name,
+        modbusClientName: modbusClient.name || modbusClient.id,
         lowlowLevel: node.lowlowLevel,
+        unitId: msgUnitId,
         lowLevel: node.lowLevel,
         highLevel: node.highLevel,
         highHighLevel: node.highHighLevel
       }
 
-      if (msg && msg.resetQueue && modbusClient.bufferCommands) {
+      const msgQueueReset = msg.payload.resetQueue || msg.resetQueue
+      if (msgQueueReset && modbusClient.bufferCommands) {
         coreModbusQueue.initQueue(modbusClient)
         if (RED.settings.verbose) {
           const infoText = 'Init Queue By External Node'
           modbusClient.warn(infoText)
           internalDebugLog(infoText)
         }
-        node.resetStates()
+        node.initUnitQueueStates()
 
         if (node.showStatusActivities) {
           node.status({
@@ -217,13 +301,18 @@ module.exports = function (RED) {
             text: 'active empty unit queue'
           })
         }
-        msg.queueOptions.state = 'queue reset done'
+        msg.payload.queueOptions.state = 'queue reset done'
       }
 
       node.send(msg)
     })
 
     node.on('close', function (done) {
+      if (node.updateOnAllUnitQueues) {
+        node.removeModbusQueueActionsFromNode(node.readFromAllUnitQueues)
+      } else {
+        node.removeModbusQueueActionsFromNode(node.readFromQueue)
+      }
       mbBasics.setNodeStatusTo('closed', node)
       if (node.queueReadInterval) {
         clearInterval(node.queueReadInterval)

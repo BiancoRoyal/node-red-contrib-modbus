@@ -561,27 +561,31 @@ module.exports = function (RED) {
         node.stateService.send('NEW')
         node.stateService.send('INIT')
       }
+      node.emit('mbregister', clientUserNodeId)
     }
 
-    node.closeConnectionWithoutRegisteredNodes = function (done) {
+    node.setStoppedState = function (clientUserNodeId, done) {
+      node.stateService.send('STOP')
+      node.emit('mbderegister', clientUserNodeId)
+      done()
+    }
+
+    node.closeConnectionWithoutRegisteredNodes = function (clientUserNodeId, done) {
       if (Object.keys(node.registeredNodeList).length === 0) {
         node.closingModbus = true
         if (node.client && node.actualServiceState.value !== 'stopped') {
           if (node.client.isOpen) {
             node.client.close(function () {
-              node.stateService.send('STOP')
-              done()
+              node.setStoppedState(clientUserNodeId, done)
             })
           } else {
-            node.stateService.send('STOP')
-            done()
+            node.setStoppedState(clientUserNodeId, done)
           }
         } else {
-          node.stateService.send('STOP')
-          done()
+          node.setStoppedState(clientUserNodeId, done)
         }
       } else {
-        done()
+        node.setStoppedState(clientUserNodeId, done)
       }
     }
 
@@ -590,8 +594,9 @@ module.exports = function (RED) {
         delete node.registeredNodeList[clientUserNodeId]
         if (node.closingModbus) {
           done()
+          node.emit('mbderegister', clientUserNodeId)
         } else {
-          node.closeConnectionWithoutRegisteredNodes(done)
+          node.closeConnectionWithoutRegisteredNodes(clientUserNodeId, done)
         }
       } catch (err) {
         verboseWarn(err.message + ' on de-register node ' + clientUserNodeId)
