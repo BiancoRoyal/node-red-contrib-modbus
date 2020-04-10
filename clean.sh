@@ -15,3 +15,5 @@ npm i
 npm i --only=dev
 
 npm run build
+
+npm run rewrite-changelog
