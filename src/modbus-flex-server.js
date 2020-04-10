@@ -29,9 +29,9 @@ module.exports = function (RED) {
     this.serverPort = parseInt(config.serverPort)
     this.responseDelay = parseInt(config.responseDelay)
     this.delayUnit = config.delayUnit
-    this.unitId = config.unitId
-    this.minAddress = config.minAddress
-    this.splitAddress = config.splitAddress
+    this.unitId = parseInt(config.unitId) || 1
+    this.minAddress = parseInt(config.minAddress) || 0
+    this.splitAddress = parseInt(config.splitAddress) || 10000
     this.showErrors = config.showErrors
 
     this.funcGetCoil = new VMScript(config.funcGetCoil).compile()

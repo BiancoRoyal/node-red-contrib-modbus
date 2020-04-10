@@ -12,7 +12,7 @@
     defaults: {
       name: {value: ''},
       topic: {value: ''},
-      unitid: {value: ''},
+      unitid: {value: 1, validate: RED.validators.number()},
       queueReadIntervalTime: {value: 1000, validate: RED.validators.number()},
       lowLowLevel: {value: 25, validate: RED.validators.number()},
       lowLevel: {value: 75, validate: RED.validators.number()},

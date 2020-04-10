@@ -11,7 +11,7 @@
     color: '#E9967A',
     defaults: {
       name: {value: ''},
-      maxReconnectsPerMinute: {value: 4},
+      maxReconnectsPerMinute: {value: 4, required: true, validate: RED.validators.number()},
       emptyQueue: {value: false},
       showStatusActivities: {value: false},
       showErrors: {value: false},
