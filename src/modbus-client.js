@@ -197,6 +197,11 @@ module.exports = function (RED) {
         node.emit('mbopen')
       }
 
+      if (state.matches('switch')) {
+        node.emit('mbswitch')
+        node.stateService.send('CLOSE')
+      }
+
       if (state.matches('closed')) {
         node.emit('mbclosed')
         node.stateService.send('RECONNECT')
@@ -521,7 +526,7 @@ module.exports = function (RED) {
         cberr(new Error('Message Or Payload Not Valid'), msg)
       }
       coreModbusClient.internalDebug('Dynamic Reconnect Starts on actual state ' + node.actualServiceState.value)
-      node.stateService.send('CLOSE')
+      node.stateService.send('SWITCH')
     })
 
     node.on('close', function (done) {

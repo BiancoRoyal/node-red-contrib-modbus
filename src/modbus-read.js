@@ -58,8 +58,14 @@ module.exports = function (RED) {
     node.delayTimerReading = false
     node.intervalTimerIdReading = false
     setNodeStatusWithTimeTo(node.statusText)
-    node.warn('open node ' + node.id)
 
+    function verboseWarn (logMessage) {
+      if (RED.settings.verbose) {
+        node.warn('Client -> ' + logMessage + node.serverInfo)
+      }
+    }
+
+    verboseWarn('open node ' + node.id)
     const modbusClient = RED.nodes.getNode(config.server)
     if (!modbusClient) {
       return
@@ -161,7 +167,7 @@ module.exports = function (RED) {
 
     node.resetDelayTimerToRead = function (node) {
       if (node.delayTimerReading) {
-        node.warn('resetDelayTimerToRead node ' + node.id)
+        verboseWarn('resetDelayTimerToRead node ' + node.id)
         clearTimeout(node.delayTimerReading)
       }
       node.delayTimerReading = null
@@ -169,7 +175,7 @@ module.exports = function (RED) {
 
     node.resetIntervalToRead = function (node) {
       if (node.intervalTimerIdReading) {
-        node.warn('resetIntervalToRead node ' + node.id)
+        verboseWarn('resetIntervalToRead node ' + node.id)
         clearInterval(node.intervalTimerIdReading)
       }
       node.intervalTimerIdReading = null
@@ -184,7 +190,7 @@ module.exports = function (RED) {
 
     node.startIntervalReading = function () {
       if (!node.intervalTimerIdReading) {
-        node.warn('startIntervalReading node ' + node.id)
+        verboseWarn('startIntervalReading node ' + node.id)
         node.intervalTimerIdReading = setInterval(node.modbusPollingRead, mbBasics.calc_rateByUnit(node.rate, node.rateUnit))
       }
     }
@@ -192,7 +198,7 @@ module.exports = function (RED) {
     node.initializeReadingTimer = function () {
       node.resetAllReadingTimer()
       if (node.delayOnStart) {
-        node.warn('initializeReadingTimer delay timer node ' + node.id)
+        verboseWarn('initializeReadingTimer delay timer node ' + node.id)
         node.delayTimerReading = setTimeout(node.startIntervalReading, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)
       } else {
         node.startIntervalReading()
@@ -215,7 +221,7 @@ module.exports = function (RED) {
       node.resetAllReadingTimer()
       node.removeNodeListenerFromModbusClient()
       setNodeStatusWithTimeTo('closed')
-      node.warn('close node ' + node.id)
+      verboseWarn('close node ' + node.id)
       modbusClient.deregisterForModbus(node.id, done)
     })
 

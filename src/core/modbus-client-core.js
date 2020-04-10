@@ -37,13 +37,13 @@ de.biancoroyal.modbus.core.client.createStateMachineService = function () {
         on: { INIT: 'init', STOP: 'stopped' }
       },
       init: {
-        on: { OPENSERIAL: 'opened', CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' }
+        on: { OPENSERIAL: 'opened', CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' }
       },
       opened: {
-        on: { CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', STOP: 'stopped' }
+        on: { CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', STOP: 'stopped', SWITCH: 'switch' }
       },
       connected: {
-        on: { CLOSE: 'closed', ACTIVATE: 'activated', QUEUE: 'queueing', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' }
+        on: { CLOSE: 'closed', ACTIVATE: 'activated', QUEUE: 'queueing', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' }
       },
       activated: {
         on: {
@@ -53,7 +53,8 @@ de.biancoroyal.modbus.core.client.createStateMachineService = function () {
           BREAK: 'broken',
           CLOSE: 'closed',
           FAILURE: 'failed',
-          STOP: 'stopped'
+          STOP: 'stopped',
+          SWITCH: 'switch'
         }
       },
       queueing: {
@@ -66,15 +67,17 @@ de.biancoroyal.modbus.core.client.createStateMachineService = function () {
           BREAK: 'broken',
           CLOSE: 'closed',
           FAILURE: 'failed',
-          STOP: 'stopped'
+          STOP: 'stopped',
+          SWITCH: 'switch'
         }
       },
-      empty: { on: { QUEUE: 'queueing', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', STOP: 'stopped' } },
-      sending: { on: { ACTIVATE: 'activated', READ: 'reading', WRITE: 'writing', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' } },
+      empty: { on: { QUEUE: 'queueing', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', STOP: 'stopped', SWITCH: 'switch' } },
+      sending: { on: { ACTIVATE: 'activated', READ: 'reading', WRITE: 'writing', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' } },
       reading: { on: { ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' } },
       writing: { on: { ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' } },
-      closed: { on: { FAILURE: 'failed', BREAK: 'broken', CONNECT: 'connected', RECONNECT: 'reconnecting', INIT: 'init', STOP: 'stopped' } },
-      failed: { on: { CLOSE: 'closed', BREAK: 'broken', STOP: 'stopped' } },
+      closed: { on: { FAILURE: 'failed', BREAK: 'broken', CONNECT: 'connected', RECONNECT: 'reconnecting', INIT: 'init', STOP: 'stopped', SWITCH: 'switch' } },
+      failed: { on: { CLOSE: 'closed', BREAK: 'broken', STOP: 'stopped', SWITCH: 'switch' } },
+      switch: { on: { CLOSE: 'closed', BREAK: 'broken', STOP: 'stopped' } },
       stopped: { on: { NEW: 'new', STOP: 'stopped' } }
     }
   })
