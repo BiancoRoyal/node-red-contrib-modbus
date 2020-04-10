@@ -1,3 +1,14 @@
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [5.10.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.10.0...v5.10.1) (2020-04-10)
+
+
+### Bug Fixes
+
+* nodejs 13 fsm problem dynamic reconnect  ([919db9b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/919db9bad7edbb0532783b893a969d8725a44eb6))
+
 # [5.8.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.7.0...v5.8.0) (2020-04-02)
 
 
@@ -177,6 +188,3 @@
 
 
 # 1.0.0 (2017-01-18)
-
-
-
