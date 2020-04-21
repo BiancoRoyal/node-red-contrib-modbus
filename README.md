@@ -1,6 +1,6 @@
 ![Platform Node-RED](http://b.repl.ca/v1/Platform-Node--RED-red.png)
 ![Node-RED Modbus](http://b.repl.ca/v1/Node--RED-Modbus-orange.png)
-[![NPM version](https://badge.fury.io/js/node-red-contrib-modbus.png)](https://www.npmjs.com/package/node-red-contrib-modbus)
+[![Financial Contributors on Open Collective](https://opencollective.com/node-red-contrib-modbus/all/badge.svg?label=financial+contributors)](https://opencollective.com/node-red-contrib-modbus) [![NPM version](https://badge.fury.io/js/node-red-contrib-modbus.png)](https://www.npmjs.com/package/node-red-contrib-modbus)
 ![ES_Sourdce_Version](http://b.repl.ca/v1/JS_Source-ES6-yellow.png)
 ![ES_Deploy_Version](http://b.repl.ca/v1/JS_Deploy-ES2015-yellow.png)
 ![NodeJS_Version](http://b.repl.ca/v1/NodeJS-LTS-green.png)
@@ -154,3 +154,33 @@ since April 2016 by [Klaus Landsdorf][4]
 [12]:https://github.com/BiancoRoyal/node-red-contrib-modbus
 [13]:https://www.npmjs.com/package/jsmodbus
 [14]:https://www.npmjs.com/package/serialport
+
+## Contributors
+
+### Code Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/BiancoRoyal/node-red-contrib-modbus/graphs/contributors"><img src="https://opencollective.com/node-red-contrib-modbus/contributors.svg?width=890&button=false" /></a>
+
+### Financial Contributors
+
+Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/node-red-contrib-modbus/contribute)]
+
+#### Individuals
+
+<a href="https://opencollective.com/node-red-contrib-modbus"><img src="https://opencollective.com/node-red-contrib-modbus/individuals.svg?width=890"></a>
+
+#### Organizations
+
+Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/node-red-contrib-modbus/contribute)]
+
+<a href="https://opencollective.com/node-red-contrib-modbus/organization/0/website"><img src="https://opencollective.com/node-red-contrib-modbus/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/node-red-contrib-modbus/organization/1/website"><img src="https://opencollective.com/node-red-contrib-modbus/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/node-red-contrib-modbus/organization/2/website"><img src="https://opencollective.com/node-red-contrib-modbus/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/node-red-contrib-modbus/organization/3/website"><img src="https://opencollective.com/node-red-contrib-modbus/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/node-red-contrib-modbus/organization/4/website"><img src="https://opencollective.com/node-red-contrib-modbus/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/node-red-contrib-modbus/organization/5/website"><img src="https://opencollective.com/node-red-contrib-modbus/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/node-red-contrib-modbus/organization/6/website"><img src="https://opencollective.com/node-red-contrib-modbus/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/node-red-contrib-modbus/organization/7/website"><img src="https://opencollective.com/node-red-contrib-modbus/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/node-red-contrib-modbus/organization/8/website"><img src="https://opencollective.com/node-red-contrib-modbus/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/node-red-contrib-modbus/organization/9/website"><img src="https://opencollective.com/node-red-contrib-modbus/organization/9/avatar.svg"></a>
