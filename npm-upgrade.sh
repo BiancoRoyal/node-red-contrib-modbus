@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
 
-npm cache verify
+# you need to install: npm i -g npm-check-updates
 
-# npm install -g npm-check-updates
+rm package-lock.json
+
+npm cache verify
 
 npm outdated --depth=0
 
 ncu -u
 
-npm i
+npm install
+
+npm run build
+
+npm test

@@ -10,7 +10,7 @@ rm package-lock.json
 
 npm cache verify
 
-npm i
+npm install
 
 npm i --only=dev
 
