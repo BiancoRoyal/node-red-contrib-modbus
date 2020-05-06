@@ -29,6 +29,7 @@ module.exports = function (RED) {
     const unlimitedListeners = 0
     const minCommandDelayMilliseconds = 1
     const defaultUnitId = 1
+    const defaultTcpUnitId = 0
     const serialConnectionDelayTimeMS = 500
     const timeoutTimeMS = 1000
     const reconnectTimeMS = 2000
@@ -57,7 +58,7 @@ module.exports = function (RED) {
     this.serialType = config.serialType
     this.serialConnectionDelay = parseInt(config.serialConnectionDelay) || serialConnectionDelayTimeMS
 
-    this.unit_id = parseInt(config.unit_id) || (this.clienttype === 'tcp') ? 0 : defaultUnitId
+    this.unit_id = parseInt(config.unit_id)
     this.commandDelay = parseInt(config.commandDelay) || minCommandDelayMilliseconds
     this.clientTimeout = parseInt(config.clientTimeout) || timeoutTimeMS
     this.reconnectTimeout = parseInt(config.reconnectTimeout) || reconnectTimeMS
@@ -88,17 +89,25 @@ module.exports = function (RED) {
     node.reconnectTimeoutId = 0
     node.serialSendingAllowed = false
 
+    node.setDefaultUnitId = function () {
+      if (this.clienttype === 'tcp') {
+        node.unit_id = defaultTcpUnitId
+      } else {
+        node.unit_id = defaultUnitId
+      }
+    }
+
     node.setUnitIdFromPayload = function (msg) {
       const unitId = coreModbusClient.getActualUnitId(node, msg)
       if (!coreModbusClient.checkUnitId(unitId, node.clienttype)) {
-        node.unit_id = defaultUnitId
+        node.setDefaultUnitId()
       }
       node.client.setID(unitId)
       msg.unitId = unitId
     }
 
     if (Number.isNaN(node.unit_id) || !coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
-      node.unit_id = defaultUnitId
+      node.setDefaultUnitId()
     }
 
     node.updateServerinfo = function () {

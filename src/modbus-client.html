@@ -282,7 +282,7 @@
 	<hr>
     <div class="form-row">
         <label for="node-config-input-unit_id"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.unitId"></span></label>
-        <input type="text" id="node-config-input-unit_id" placeholder="1" style="max-width:80px">
+        <input type="text" id="node-config-input-unit_id" style="max-width:80px">
     </div>
     <div class="form-row">
         <label for="node-config-input-clientTimeout"><i class="icon-time"></i> <span data-i18n="modbus-contrib.label.timeout"></span></label>
@@ -359,7 +359,7 @@
             <li>Queue commands (true/false) - with true it buffers incoming Modbus commands and send them with
             delay</li>
             <li>Queue Work Delay (default 0 ms) - ms interval to delay sending commands from queue (sumOfWaiting=requestsPerCycle*delay)</li>
-            <li>Unit-ID (default 1) - to set one Unit-ID for all nodes without Unit-ID.
+            <li>Unit-ID (default 1 [serial] or 0 [tcp]) - to set one Unit-ID for all nodes without Unit-ID.
             Set the Unit-ID of the Read/Write/Getter node's to empty for using this ID</li>
             <li>Timeout (default 1000 ms) - ms for the command timeout on ModbusRTU command</li>
             <li>Reconnect timeout (default 2000 ms) - time to wait on reconnect before next sending</li>
