@@ -301,4 +301,10 @@ de.biancoroyal.modbus.basics.sendEmptyMsgOnFail = function (node, err, msg) {
   }
 }
 
+de.biancoroyal.modbus.basics.logMsgError = function (node, err, msg) {
+  if (node.showErrors) {
+    node.error(err, msg)
+  }
+}
+
 module.exports = de.biancoroyal.modbus.basics

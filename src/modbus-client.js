@@ -57,7 +57,7 @@ module.exports = function (RED) {
     this.serialType = config.serialType
     this.serialConnectionDelay = parseInt(config.serialConnectionDelay) || serialConnectionDelayTimeMS
 
-    this.unit_id = parseInt(config.unit_id) || defaultUnitId
+    this.unit_id = parseInt(config.unit_id) || (this.clienttype === 'tcp') ? 0 : defaultUnitId
     this.commandDelay = parseInt(config.commandDelay) || minCommandDelayMilliseconds
     this.clientTimeout = parseInt(config.clientTimeout) || timeoutTimeMS
     this.reconnectTimeout = parseInt(config.reconnectTimeout) || reconnectTimeMS

@@ -56,13 +56,14 @@ module.exports = function (RED) {
       node.send(mbCore.buildMessage(node.bufferMessageList, msg.payload, resp, msg))
     }
 
-    node.onModbusWriteError = function (err, msg) {
+    node.errorProtocolMsg = function (err, msg) {
       internalDebugLog(err.message)
-      if (node.showErrors) {
-        node.error(err, msg)
-      }
-
+      mbBasics.logMsgError(node, err, msg)
       mbBasics.sendEmptyMsgOnFail(node, err, msg)
+    }
+
+    node.onModbusWriteError = function (err, msg) {
+      node.errorProtocolMsg(err, msg)
       mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg))
     }
 
@@ -117,7 +118,7 @@ module.exports = function (RED) {
           mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
         }
       } catch (err) {
-        mbBasics.sendEmptyMsgOnFail(node, err, origMsgInput)
+        node.errorProtocolMsg(err, origMsgInput)
       }
     })
 
