@@ -421,7 +421,7 @@ describe('Getter node Testing', function () {
       helper.load(testGetterNodes, testGetterFlowWithInject, function () {
         const modbusGetter = helper.getNode('cea01c8.36f8f6')
         let counter = 0
-        modbusGetter.on('modbusDone', function (msg) {
+        modbusGetter.on('modbusGetterNodeDone', function (msg) {
           counter++
           if (modbusGetter.bufferMessageList.size === 0 && counter === 1) {
             done()

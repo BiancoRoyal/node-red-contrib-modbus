@@ -310,7 +310,7 @@ describe('Flex Getter node Testing', function () {
       helper.load(testFlexGetterNodes, testFlexGetterFlowWithInject, function () {
         const modbusGetter = helper.getNode('bc5a61b6.a3972')
         let counter = 0
-        modbusGetter.on('modbusDone', function (msg) {
+        modbusGetter.on('modbusFlexGetterNodeDone', function (msg) {
           counter++
           if (modbusGetter.bufferMessageList.size === 0 && counter === 1) {
             done()

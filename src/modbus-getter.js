@@ -60,19 +60,20 @@ module.exports = function (RED) {
         mbBasics.setNodeStatusTo('reading done', node)
       }
       node.send(mbIOCore.buildMessageWithIO(node, resp.data, resp, msg))
-      node.emit('modbusDone')
+      node.emit('modbusGetterNodeDone')
     }
 
     node.errorProtocolMsg = function (err, msg) {
-      node.internalDebugLog(err.message)
       mbBasics.logMsgError(node, err, msg)
       mbBasics.sendEmptyMsgOnFail(node, err, msg)
     }
 
     node.onModbusCommandError = function (err, msg) {
-      node.errorProtocolMsg(err, msg)
-      mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg))
-      node.emit('modbusError')
+      node.internalDebugLog(err.message)
+      const origMsg = mbCore.getOriginalMessage(node.bufferMessageList, msg)
+      node.errorProtocolMsg(err, origMsg)
+      mbBasics.setModbusError(node, modbusClient, err, origMsg)
+      node.emit('modbusGetterNodeError')
     }
 
     node.buildNewMessageObject = function (node, msg) {
@@ -101,10 +102,9 @@ module.exports = function (RED) {
       }
 
       const origMsgInput = Object.assign({}, msg) // keep it origin
-      let newMsg = Object.assign({}, msg)
       try {
-        newMsg = mbBasics.buildNewMessage(node, newMsg)
-        node.bufferMessageList.set(newMsg.messageId, newMsg)
+        const newMsg = node.buildNewMessageObject(node, origMsgInput)
+        node.bufferMessageList.set(newMsg.messageId, mbBasics.buildNewMessage(node.keepMsgProperties, origMsgInput, newMsg))
         modbusClient.emit('readModbus', newMsg, node.onModbusCommandDone, node.onModbusCommandError)
 
         if (node.showStatusActivities) {

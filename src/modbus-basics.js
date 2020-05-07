@@ -307,11 +307,11 @@ de.biancoroyal.modbus.basics.logMsgError = function (node, err, msg) {
   }
 }
 
-de.biancoroyal.modbus.basics.buildNewMessage = function (node, msg) {
-  if (node.keepMsgProperties) {
-    return Object.assign(msg, node.buildNewMessageObject(node, msg))
+de.biancoroyal.modbus.basics.buildNewMessage = function (keepMsgProperties, msg, minMsg) {
+  if (keepMsgProperties) {
+    return Object.assign(msg, minMsg)
   } else {
-    return node.buildNewMessageObject(node, msg)
+    return minMsg
   }
 }
 

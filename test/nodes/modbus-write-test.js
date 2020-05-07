@@ -351,7 +351,7 @@ describe('Write node Testing', function () {
           modbusWrite.receive({ payload: { value: 'true', fc: 5, unitid: 1, address: 0, quantity: 1 } })
         }, 800)
         const h1 = helper.getNode('h1')
-        modbusWrite.on('modbusDone', function (msg) {
+        modbusWrite.on('modbusWriteNodeDone', function (msg) {
           if (modbusWrite.bufferMessageList.size === 0) {
             done()
           }
