@@ -73,7 +73,7 @@ var testGetterFlowWithInject = [{
   topic: '',
   payload: '',
   payloadType: 'date',
-  repeat: '2',
+  repeat: '1.2',
   crontab: '',
   once: true,
   onceDelay: 0.1,
@@ -401,6 +401,22 @@ describe('Getter node Testing', function () {
         const h1 = helper.getNode('h1')
         let counter = 0
         h1.on('input', function (msg) {
+          counter++
+          if (modbusGetter.bufferMessageList.size === 0 && counter === 1) {
+            done()
+          }
+        })
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
+    it('should work as simple flow with inject and IO with read done', function (done) {
+      this.timeout(3000)
+      helper.load(testGetterNodes, testGetterFlowWithInject, function () {
+        const modbusGetter = helper.getNode('cea01c8.36f8f6')
+        let counter = 0
+        modbusGetter.on('modbusDone', function (msg) {
           counter++
           if (modbusGetter.bufferMessageList.size === 0 && counter === 1) {
             done()

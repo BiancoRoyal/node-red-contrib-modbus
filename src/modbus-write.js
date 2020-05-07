@@ -33,6 +33,7 @@ module.exports = function (RED) {
     this.quantity = config.quantity
 
     this.emptyMsgOnFail = config.emptyMsgOnFail
+    this.keepMsgProperties = config.keepMsgProperties
     this.internalDebugLog = internalDebugLog
     this.verboseLogging = RED.settings.verbose
 
@@ -54,6 +55,7 @@ module.exports = function (RED) {
       }
 
       node.send(mbCore.buildMessage(node.bufferMessageList, msg.payload, resp, msg))
+      node.emit('modbusDone')
     }
 
     node.errorProtocolMsg = function (err, msg) {
@@ -65,6 +67,7 @@ module.exports = function (RED) {
     node.onModbusWriteError = function (err, msg) {
       node.errorProtocolMsg(err, msg)
       mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg))
+      node.emit('modbusError')
     }
 
     node.setMsgPayloadFromHTTPRequests = function (msg) {
@@ -83,15 +86,17 @@ module.exports = function (RED) {
     }
 
     node.buildNewMessageObject = function (node, msg) {
+      const messageId = mbCore.getObjectId()
       return {
         topic: msg.topic || node.id,
+        messageId,
         payload: {
           value: msg.payload.value || msg.payload,
           unitid: node.unitid,
           fc: mbCore.functionCodeModbusWrite(node.dataType),
           address: node.adr,
           quantity: node.quantity,
-          messageId: msg.messageId
+          messageId
         }
       }
     }
@@ -108,11 +113,11 @@ module.exports = function (RED) {
       }
 
       try {
-        msg = node.setMsgPayloadFromHTTPRequests(origMsgInput)
-        msg.messageId = mbCore.getObjectId()
-        node.bufferMessageList.set(msg.messageId, msg)
-        msg = node.buildNewMessageObject(node, msg)
-        modbusClient.emit('writeModbus', msg, node.onModbusWriteDone, node.onModbusWriteError)
+        let newMsg = Object.assign({}, origMsgInput)
+        newMsg = node.setMsgPayloadFromHTTPRequests(newMsg)
+        newMsg = mbBasics.buildNewMessage(node, newMsg)
+        node.bufferMessageList.set(newMsg.messageId, newMsg)
+        modbusClient.emit('writeModbus', newMsg, node.onModbusWriteDone, node.onModbusWriteError)
 
         if (node.showStatusActivities) {
           mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)

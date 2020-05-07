@@ -40,6 +40,7 @@ module.exports = function (RED) {
     this.logIOActivities = config.logIOActivities
 
     this.emptyMsgOnFail = config.emptyMsgOnFail
+    this.keepMsgProperties = config.keepMsgProperties
     this.internalDebugLog = internalDebugLog
     this.verboseLogging = RED.settings.verbose
 
@@ -59,10 +60,11 @@ module.exports = function (RED) {
         mbBasics.setNodeStatusTo('reading done', node)
       }
       node.send(mbIOCore.buildMessageWithIO(node, resp.data, resp, msg))
+      node.emit('modbusDone')
     }
 
     node.errorProtocolMsg = function (err, msg) {
-      internalDebugLog(err.message)
+      node.internalDebugLog(err.message)
       mbBasics.logMsgError(node, err, msg)
       mbBasics.sendEmptyMsgOnFail(node, err, msg)
     }
@@ -70,18 +72,21 @@ module.exports = function (RED) {
     node.onModbusCommandError = function (err, msg) {
       node.errorProtocolMsg(err, msg)
       mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg))
+      node.emit('modbusError')
     }
 
     node.buildNewMessageObject = function (node, msg) {
+      const messageId = mbCore.getObjectId()
       return {
         topic: msg.topic || node.id,
+        messageId,
         payload: {
           value: msg.payload.value || msg.payload,
           unitid: node.unitid,
           fc: mbCore.functionCodeModbusRead(node.dataType),
           address: node.adr,
           quantity: node.quantity,
-          messageId: msg.messageId
+          messageId
         }
       }
     }
@@ -95,12 +100,12 @@ module.exports = function (RED) {
         return
       }
 
-      const origMsgInput = Object.assign({}, msg)
+      const origMsgInput = Object.assign({}, msg) // keep it origin
+      let newMsg = Object.assign({}, msg)
       try {
-        msg.messageId = mbCore.getObjectId()
-        node.bufferMessageList.set(msg.messageId, msg)
-        msg = node.buildNewMessageObject(node, msg)
-        modbusClient.emit('readModbus', msg, node.onModbusCommandDone, node.onModbusCommandError)
+        newMsg = mbBasics.buildNewMessage(node, newMsg)
+        node.bufferMessageList.set(newMsg.messageId, newMsg)
+        modbusClient.emit('readModbus', newMsg, node.onModbusCommandDone, node.onModbusCommandError)
 
         if (node.showStatusActivities) {
           mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)

@@ -26,6 +26,7 @@ module.exports = function (RED) {
     this.showErrors = config.showErrors
 
     this.emptyMsgOnFail = config.emptyMsgOnFail
+    this.keepMsgProperties = config.keepMsgProperties
     this.internalDebugLog = internalDebugLog
     this.verboseLogging = RED.settings.verbose
 
@@ -46,6 +47,7 @@ module.exports = function (RED) {
       }
 
       node.send(mbCore.buildMessage(node.bufferMessageList, msg.payload, resp, msg))
+      node.emit('modbusDone')
     }
 
     node.errorProtocolMsg = function (err, msg) {
@@ -57,6 +59,7 @@ module.exports = function (RED) {
     node.onModbusWriteError = function (err, msg) {
       node.errorProtocolMsg(err, msg)
       mbBasics.setModbusError(node, modbusClient, err, mbCore.getOriginalMessage(node.bufferMessageList, msg))
+      node.emit('modbusError')
     }
 
     node.prepareMsg = function (msg) {
@@ -117,15 +120,17 @@ module.exports = function (RED) {
     }
 
     node.buildNewMessageObject = function (node, msg) {
+      const messageId = mbCore.getObjectId()
       return {
         topic: msg.topic || node.id,
+        messageId,
         payload: {
           value: msg.payload.value || msg.value,
           unitid: msg.payload.unitid,
           fc: msg.payload.fc,
           address: msg.payload.address,
           quantity: msg.payload.quantity,
-          messageId: msg.messageId
+          messageId
         }
       }
     }
@@ -137,12 +142,11 @@ module.exports = function (RED) {
 
       const origMsgInput = Object.assign({}, msg)
       try {
-        msg = node.prepareMsg(origMsgInput)
-        if (node.isValidModbusMsg(msg)) {
-          msg = node.setMsgPayloadFromHTTPRequests(msg)
-          msg.messageId = mbCore.getObjectId()
-          node.bufferMessageList.set(msg.messageId, msg)
-          const newMsg = node.buildNewMessageObject(node, msg)
+        let newMsg = node.prepareMsg(origMsgInput)
+        if (node.isValidModbusMsg(newMsg)) {
+          newMsg = node.setMsgPayloadFromHTTPRequests(newMsg)
+          newMsg = mbBasics.buildNewMessage(node, newMsg)
+          node.bufferMessageList.set(newMsg.messageId, newMsg)
           modbusClient.emit('writeModbus', newMsg, node.onModbusWriteDone, node.onModbusWriteError)
         }
       } catch (err) {

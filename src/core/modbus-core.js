@@ -17,7 +17,7 @@ de.biancoroyal.modbus.core.getObjectId = function () {
 }
 
 de.biancoroyal.modbus.core.getOriginalMessage = function (messageList, msg) {
-  let origMsg = messageList.get(msg.payload.messageId)
+  let origMsg = messageList.get(msg.payload.messageId || msg.messageId)
 
   if (origMsg && origMsg.messageId) {
     if (!messageList.delete(origMsg.messageId)) {

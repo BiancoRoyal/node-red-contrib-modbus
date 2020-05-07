@@ -307,4 +307,12 @@ de.biancoroyal.modbus.basics.logMsgError = function (node, err, msg) {
   }
 }
 
+de.biancoroyal.modbus.basics.buildNewMessage = function (node, msg) {
+  if (node.keepMsgProperties) {
+    return Object.assign(msg, node.buildNewMessageObject(node, msg))
+  } else {
+    return node.buildNewMessageObject(node, msg)
+  }
+}
+
 module.exports = de.biancoroyal.modbus.basics

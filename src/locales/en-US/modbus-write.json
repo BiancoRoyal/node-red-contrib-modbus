@@ -9,7 +9,8 @@
       "quantity": "Quantity",
       "simpleNegatives": "Negative UInt",
       "server": "Server",
-      "emptyMsgOnFail": "Empty msg on fail"
+      "emptyMsgOnFail": "Empty msg on fail",
+      "keepMsgProperties": "Keep Msg Properties"
     }
   }
 }

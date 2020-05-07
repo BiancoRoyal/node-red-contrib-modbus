@@ -338,6 +338,23 @@ describe('Write node Testing', function () {
       })
     })
 
+    it('simple flow with string true http inject and write should be loaded and write done', function (done) {
+      helper.load(testSimpleWriteParametersNodes, testSimpleWriteParametersFlow, function () {
+        const modbusWrite = helper.getNode('1ed908da.427ecf')
+        setTimeout(function () {
+          modbusWrite.receive({ payload: { value: 'true', fc: 5, unitid: 1, address: 0, quantity: 1 } })
+        }, 800)
+        const h1 = helper.getNode('h1')
+        modbusWrite.on('modbusDone', function (msg) {
+          if (modbusWrite.bufferMessageList.size === 0) {
+            done()
+          }
+        })
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
     it('simple flow with string with array of values input from http should be parsed and written', function (done) {
       helper.load(testSimpleWriteParametersNodes, testSimpleWriteParametersFlow, function () {
         const h1 = helper.getNode('h1')
