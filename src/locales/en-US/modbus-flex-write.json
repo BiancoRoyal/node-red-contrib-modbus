@@ -4,7 +4,8 @@
       "showActivities": "Show Activities",
       "showErrors": "Show Errors",
       "server": "Server",
-      "emptyMsgOnFail": "Empty msg on fail"
+      "emptyMsgOnFail": "Empty msg on fail",
+      "keepMsgProperties": "Keep Msg Properties"
     }
   }
 }

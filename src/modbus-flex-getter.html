@@ -18,7 +18,8 @@
       useIOFile: {value: false},
       ioFile: {value: '', type: 'modbus-io-config', required: false},
       useIOForPayload: {value: false},
-      emptyMsgOnFail: {value: false}
+      emptyMsgOnFail: {value: false},
+      keepProperties: {value: false}
     },
     inputs: 1,
     outputs: 2,
@@ -83,6 +84,11 @@
                 <label style="min-width:160px" for="node-input-emptyMsgOnFail"><i class="fa fa-th"></i> <span
                 data-i18n="modbus-contrib.label.emptyMsgOnFail"></span></label>
                 <input type="checkbox" id="node-input-emptyMsgOnFail" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-keepMsgProperties"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.keepMsgProperties"></span></label>
+                <input type="checkbox" id="node-input-keepMsgProperties" style="max-width:30px">
             </div>
             <div class="form-row">
                 <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span

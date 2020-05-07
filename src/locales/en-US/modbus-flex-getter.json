@@ -8,7 +8,8 @@
       "useIOFile": "Using IO-File",
       "ioFile": "IO-File",
       "useIOForPayload": "IO's As Payload",
-      "emptyMsgOnFail": "Empty msg on fail"
+      "emptyMsgOnFail": "Empty msg on fail",
+      "keepMsgProperties": "Keep Msg Properties"
     },
     "tabs-label": {
       "settings": "Settings",
