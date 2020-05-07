@@ -63,6 +63,7 @@ var testWriteParametersFlow = [
     showErrors: true,
     server: '80aeec4c.0cb9e8',
     emptyMsgOnFail: false,
+    keepMsgProperties: false,
     wires: [
       ['h1'],
       []
@@ -139,6 +140,7 @@ describe('Flex Write node Testing', function () {
           showStatusActivities: true,
           showErrors: false,
           emptyMsgOnFail: false,
+          keepMsgProperties: false,
           server: '',
           wires: [
             [],
@@ -162,6 +164,7 @@ describe('Flex Write node Testing', function () {
           showStatusActivities: true,
           showErrors: false,
           emptyMsgOnFail: false,
+          keepMsgProperties: false,
           server: '80aeec4c.0cb9e8',
           wires: [
             [],
@@ -230,6 +233,7 @@ describe('Flex Write node Testing', function () {
           showStatusActivities: false,
           showErrors: false,
           emptyMsgOnFail: false,
+          keepMsgProperties: false,
           server: '80aeec4c.0cb9e8',
           wires: [
             ['h1'],

@@ -51,6 +51,8 @@ var testSimpleWriteParametersFlow = [{
   adr: '64',
   quantity: '1',
   server: 'aef203cf.a23dc',
+  emptyMsgOnFail: false,
+  keepMsgProperties: false,
   wires: [
     [
       'h1'
@@ -148,6 +150,8 @@ describe('Write node Testing', function () {
         adr: '0',
         quantity: '1',
         server: 'dc764ad7.580238',
+        emptyMsgOnFail: false,
+        keepMsgProperties: false,
         wires: [[], []]
       }, {
         id: '67dded7e.025904',
@@ -226,6 +230,8 @@ describe('Write node Testing', function () {
         adr: '64',
         quantity: '1',
         server: 'aef203cf.a23dc',
+        emptyMsgOnFail: false,
+        keepMsgProperties: false,
         wires: [
           [
             'h1'

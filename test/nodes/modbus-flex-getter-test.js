@@ -51,6 +51,7 @@ var testFlexGetterFlowWithInject = [{
   ioFile: '',
   useIOForPayload: false,
   emptyMsgOnFail: false,
+  keepMsgProperties: false,
   wires: [
     [
       'h1'
@@ -132,6 +133,7 @@ var testFlexGetterFlow = [{
   ioFile: '',
   useIOForPayload: false,
   emptyMsgOnFail: false,
+  keepMsgProperties: false,
   wires: [
     [
       'h1'
@@ -199,6 +201,7 @@ describe('Flex Getter node Testing', function () {
         ioFile: '',
         useIOForPayload: false,
         emptyMsgOnFail: false,
+        keepMsgProperties: false,
         wires: [
           [],
           []
@@ -225,6 +228,7 @@ describe('Flex Getter node Testing', function () {
         ioFile: '',
         useIOForPayload: false,
         emptyMsgOnFail: false,
+        keepMsgProperties: false,
         wires: [
           [],
           []
