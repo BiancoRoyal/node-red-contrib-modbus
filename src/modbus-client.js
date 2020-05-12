@@ -319,7 +319,7 @@ module.exports = function (RED) {
         }
       } else {
         if (!coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
-          node.error(new Error('wrong unit-id serial (1..247)'), { payload: node.unit_id })
+          node.error(new Error('wrong unit-id serial (0..247)'), { payload: node.unit_id })
           node.stateService.send('FAILURE')
           return
         }

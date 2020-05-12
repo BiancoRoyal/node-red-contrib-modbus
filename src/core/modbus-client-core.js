@@ -84,7 +84,13 @@ de.biancoroyal.modbus.core.client.createStateMachineService = function () {
 }
 
 de.biancoroyal.modbus.core.client.getActualUnitId = function (node, msg) {
-  return parseInt(msg.payload.unitid) || parseInt(msg.queueUnitId) || parseInt(node.unit_id)
+  if (msg.payload.unitid) {
+    return parseInt(msg.payload.unitid)
+  } else if (msg.queueUnitId) {
+    return parseInt(msg.queueUnitId)
+  } else {
+    return parseInt(node.unit_id)
+  }
 }
 
 de.biancoroyal.modbus.core.client.startStateService = function (toggleMachine) {
@@ -95,7 +101,7 @@ de.biancoroyal.modbus.core.client.checkUnitId = function (unitid, clientType) {
   if (clientType === 'tcp') {
     return unitid >= 0 && unitid <= 255
   } else {
-    return unitid >= 1 && unitid <= 247
+    return unitid >= 0 && unitid <= 247
   }
 }
 
@@ -236,8 +242,16 @@ de.biancoroyal.modbus.core.client.writeModbusByFunctionCodeFive = function (node
   node.client.writeCoil(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
     coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
   }).catch(function (err) {
-    coreClient.activateSendingOnFailure(node, cberr, err, msg)
-    node.modbusErrorHandling(err)
+    if (node.client.getID() === 0) {
+      const resp = {
+        address: parseInt(msg.payload.address),
+        value: parseInt(msg.payload.value)
+      }
+      coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+    } else {
+      coreClient.activateSendingOnFailure(node, cberr, err, msg)
+      node.modbusErrorHandling(err)
+    }
   })
 }
 
@@ -250,8 +264,16 @@ de.biancoroyal.modbus.core.client.writeModbusByFunctionCodeFifteen = function (n
     node.client.writeCoils(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
       coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
     }).catch(function (err) {
-      coreClient.activateSendingOnFailure(node, cberr, err, msg)
-      node.modbusErrorHandling(err)
+      if (node.client.getID() === 0) {
+        const resp = {
+          address: parseInt(msg.payload.address),
+          value: parseInt(msg.payload.value)
+        }
+        coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+      } else {
+        coreClient.activateSendingOnFailure(node, cberr, err, msg)
+        node.modbusErrorHandling(err)
+      }
     })
   }
 }
@@ -261,8 +283,16 @@ de.biancoroyal.modbus.core.client.writeModbusByFunctionCodeSix = function (node,
   node.client.writeRegister(parseInt(msg.payload.address), parseInt(msg.payload.value)).then(function (resp) {
     coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
   }).catch(function (err) {
-    coreClient.activateSendingOnFailure(node, cberr, err, msg)
-    node.modbusErrorHandling(err)
+    if (node.client.getID() === 0) {
+      const resp = {
+        address: parseInt(msg.payload.address),
+        value: parseInt(msg.payload.value)
+      }
+      coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+    } else {
+      coreClient.activateSendingOnFailure(node, cberr, err, msg)
+      node.modbusErrorHandling(err)
+    }
   })
 }
 
@@ -275,8 +305,16 @@ de.biancoroyal.modbus.core.client.writeModbusByFunctionCodeSixteen = function (n
     node.client.writeRegisters(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
       coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
     }).catch(function (err) {
-      coreClient.activateSendingOnFailure(node, cberr, err, msg)
-      node.modbusErrorHandling(err)
+      if (node.client.getID() === 0) {
+        const resp = {
+          address: parseInt(msg.payload.address),
+          value: parseInt(msg.payload.value)
+        }
+        coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+      } else {
+        coreClient.activateSendingOnFailure(node, cberr, err, msg)
+        node.modbusErrorHandling(err)
+      }
     })
   }
 }
