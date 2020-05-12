@@ -34,9 +34,7 @@ Node-RED v0.x versions:
 * Node.JS  6.x is supported with v2.x
 * Node.JS  4.x is supported with v1.x
 
-If you like that contributor's package for Modbus, then please give us your star at [GitHub][12] !
-
-**[You could help as a backer of the project.][11]**
+If you like that contributor's package for Modbus, then please **give us your star at [GitHub][12]** !
 
 ## Install
 
@@ -126,7 +124,20 @@ Let's work together!
 Please read and in best case accept [CONTRIBUTING](.github/CONTRIBUTING.md) by your sign and send it via E-Mail.
 You could also send just a pull request or issues while testing, please!
 
-**[Click here if you want to back the project!][2]**
+## For Developers
+
+See the scripts of the package and the additional Shell scripts to clean, update, or upgrade this NPM package.
+
+* dev-link (local testing with Node-RED)
+* testing (unit, integration)
+* coverage
+* docs generation
+* standard-version alpha, beta, release
+* git-flow
+
+## For Testers
+
+Report issues, share your experiences, write Wiki articles and Blogs to share more about this package, please!
 
 ## Authors
 
