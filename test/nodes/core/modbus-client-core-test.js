@@ -60,13 +60,8 @@ describe ('Core Client Testing', function () {
         done()
       })
 
-      it('should check with failure the Serial UnitId 0', function (done) {
-        assert.strict.equal(coreClientUnderTest.checkUnitId(0, 'serial'), false)
-        done()
-      })
-
-      it('should check with success the Serial UnitId 1', function (done) {
-        assert.strict.equal(coreClientUnderTest.checkUnitId(1, 'serial'), true)
+      it('should check with success the Serial UnitId 0', function (done) {
+        assert.strict.equal(coreClientUnderTest.checkUnitId(0, 'serial'), true)
         done()
       })
 

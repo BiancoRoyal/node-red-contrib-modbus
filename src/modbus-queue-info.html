@@ -6,33 +6,33 @@
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
 -->
 <script type="text/javascript">
-  RED.nodes.registerType('modbus-queue-info', {
-    category: 'modbus',
-    color: '#E9967A',
-    defaults: {
-      name: {value: ''},
-      topic: {value: ''},
-      unitid: {value: 1, validate: RED.validators.number()},
-      queueReadIntervalTime: {value: 1000, validate: RED.validators.number()},
-      lowLowLevel: {value: 25, validate: RED.validators.number()},
-      lowLevel: {value: 75, validate: RED.validators.number()},
-      highLevel: {value: 150, validate: RED.validators.number()},
-      highHighLevel: {value: 300, validate: RED.validators.number()},
-      server: {type: 'modbus-client', required: true},
-      errorOnHighLevel: {value: false},
-      showStatusActivities: {value: true},
-      updateOnAllQueueChanges: {value: false},
-      updateOnAllUnitQueues: {value: false}
-    },
-    inputs: 1,
-    outputs: 1,
-    align: "right",
-    icon: 'modbus.png',
-    paletteLabel: 'Modbus-Queue-Info',
-    label: function () {
-      return this.name || 'Modbus Queue Info'
-    }
-  })
+    RED.nodes.registerType('modbus-queue-info', {
+        category: 'modbus',
+        color: '#E9967A',
+        defaults: {
+            name: { value: '' },
+            topic: { value: '' },
+            unitid: { value: 1, validate: RED.validators.number() },
+            queueReadIntervalTime: { value: 1000, validate: RED.validators.number() },
+            lowLowLevel: { value: 25, validate: RED.validators.number() },
+            lowLevel: { value: 75, validate: RED.validators.number() },
+            highLevel: { value: 150, validate: RED.validators.number() },
+            highHighLevel: { value: 300, validate: RED.validators.number() },
+            server: { type: 'modbus-client', required: true },
+            errorOnHighLevel: { value: false },
+            showStatusActivities: { value: true },
+            updateOnAllQueueChanges: { value: false },
+            updateOnAllUnitQueues: { value: false }
+        },
+        inputs: 1,
+        outputs: 1,
+        align: "right",
+        icon: 'modbus.png',
+        paletteLabel: 'Modbus-Queue-Info',
+        label: function () {
+            return this.name || 'Modbus Queue Info'
+        }
+    })
 </script>
 
 
