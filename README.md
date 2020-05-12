@@ -1,5 +1,5 @@
 ![Platform Node-RED](http://b.repl.ca/v1/Platform-Node--RED-red.png)
-![Node-RED Modbus](http://b.repl.ca/v1/Node--RED-Modbus-orange.png)
+![Contribution Modbus](http://b.repl.ca/v1/Contribution-Modbus-orange.png)
 [![Financial Contributors on Open Collective](https://opencollective.com/node-red-contrib-modbus/all/badge.svg?label=financial+contributors)](https://opencollective.com/node-red-contrib-modbus) [![NPM version](https://badge.fury.io/js/node-red-contrib-modbus.png)](https://www.npmjs.com/package/node-red-contrib-modbus)
 ![ES_Sourdce_Version](http://b.repl.ca/v1/JS_Source-ES6-yellow.png)
 ![ES_Deploy_Version](http://b.repl.ca/v1/JS_Deploy-ES2015-yellow.png)
@@ -36,9 +36,7 @@ Node-RED v0.x versions:
 * Node.JS  6.x is supported with v2.x
 * Node.JS  4.x is supported with v1.x
 
-If you like that contributor's package for Modbus, then please give us your star at [GitHub][12] !
-
-**[You could help as a backer of the project.][11]**
+If you like that contributor's package for Modbus, then please **give us your star at [GitHub][12]** !
 
 ## Install
 
@@ -128,7 +126,16 @@ Let's work together!
 Please read and in best case accept [CONTRIBUTING](.github/CONTRIBUTING.md) by your sign and send it via E-Mail.
 You could also send just a pull request or issues while testing, please!
 
-**[Click here if you want to back the project!][2]**
+# For Developers
+
+See the scripts of the package and the additional Shell scripts to clean, update, or upgrade this NPM package.
+
+* dev-link (local testing with Node-RED)
+* testing (unit, integration)
+* coverage
+* docs generation
+* standard-version alpha, beta, release
+* git-flow
 
 ## Authors
 
