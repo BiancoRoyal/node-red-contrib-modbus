@@ -24,7 +24,7 @@ Based on [modbus-serial][2] with TCP, C701, Telnet, Serial, RTU buffered, and AS
 * works with queueing per unit and round robin scheduling
 
 Node-RED v1.x versions:
-* Node.JS 13.x is beta supported with v5.x
+* Node.JS 14.x is beta supported with v5.x
 * Node.JS 12.x is supported with v5.x
 * Node.JS 10.x is supported with v5.x
 
@@ -137,7 +137,8 @@ See the scripts of the package and the additional Shell scripts to clean, update
 
 ## For Testers
 
-Report issues, share your experiences, write Wiki articles and Blogs to share more about this package, please!
+Report issues, share your experiences, record tutorials,
+write Wiki articles and Blogs to share more about this package, please!
 
 ## Authors
 
