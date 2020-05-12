@@ -1,3 +1,21 @@
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [5.11.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.10.1...v5.11.0) (2020-05-12)
+
+
+### Features
+
+* **msg:** keep msg properties ([3c4738e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/3c4738e66ac621a6a963b59383ac37541035738d))
+* **msg:** keep msg properties with testing it ([46cb858](https://github.com/biancoroyal/node-red-contrib-modbus/commit/46cb858d4a4eded594cfa5dc09cc30a02b0cdce7))
+
+
+### Bug Fixes
+
+* HTTP msg requests ([685f788](https://github.com/biancoroyal/node-red-contrib-modbus/commit/685f788b4a250e03e4690d0f1a5d356387517712))
+* **tcp:** allow 0 for uintId ([0086b5c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/0086b5c8e72088c12ac4a7cdec80eeef9d0b5f71))
+
 # [5.11.0-alpha.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.10.1...v5.11.0-alpha.0) (2020-05-12)
 
 
@@ -218,6 +236,3 @@
 
 
 # 1.0.0 (2017-01-18)
-
-
-
