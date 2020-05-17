@@ -108,7 +108,8 @@
 
     <p>Modbus TCP/Serial queue information node.</p>
 
-     <p>Unit-Id (0..255 tcp | 1..247 serial)</p>
+     <p>Unit-Id (0..255 tcp | 0..247 serial)</p>
+     <p>Unit-Id 0 is for broadcasting Modbus messages.</p>
 
      <p>Use inject of <pre>msg.resetQueue = true</pre> to
       reset the queue.</p>
@@ -130,8 +131,10 @@
       </p>
 
      <p>
-        An update of all unit queues can be watched by checking the option.
-        Use just a single queue info per client if you activate that option.
+        An update of all unit queues can be watched by checking the option "All Queues (0-255)".
+        With that option it sends out messages per queue event with the queue number and info.
+        Use just a single queue info node per client configuration if you activate that option!
+        A reset input will reset all queues (0-255) in that mode.
      </p>
 
      <p>"Error on high level" with that option the node sends

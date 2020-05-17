@@ -11,7 +11,7 @@
       "errorOnHighLevel": "Error on high level",
       "showActivities": "Show Activities",
       "updateOnAllQueueChanges": "Show All Updates",
-      "updateOnAllUnitQueues": "All Queues (1-255)"
+      "updateOnAllUnitQueues": "All Queues (0-255)"
     }
   }
 }
