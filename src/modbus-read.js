@@ -132,11 +132,14 @@ module.exports = function (RED) {
       sendMessage(resp.data, resp, msg)
     }
 
+    node.errorProtocolMsg = function (err, msg) {
+      mbBasics.logMsgError(node, err, msg)
+      mbBasics.sendEmptyMsgOnFail(node, err, msg)
+    }
+
     node.onModbusReadError = function (err, msg) {
-      internalDebugLog(err.message)
-      if (node.showErrors) {
-        node.error(err, msg)
-      }
+      node.internalDebugLog(err.message)
+      node.errorProtocolMsg(err, msg)
       mbBasics.setModbusError(node, modbusClient, err, msg)
     }
 
@@ -226,6 +229,7 @@ module.exports = function (RED) {
     })
 
     function sendMessage (values, response, msg) {
+      const topic = msg.topic || node.topic
       if (node.useIOFile && node.ioFile.lastUpdatedAt) {
         if (node.logIOActivities) {
           mbIOCore.internalDebug('node.adr:' + node.adr + ' node.quantity:' + node.quantity)
@@ -235,7 +239,7 @@ module.exports = function (RED) {
         const valueNames = mbIOCore.filterValueNames(node, allValueNames, mbCore.functionCodeModbusRead(node.dataType), node.adr, node.quantity)
 
         const origMsg = {
-          topic: msg.topic,
+          topic,
           responseBuffer: response,
           input: msg,
           sendingNodeId: node.id
@@ -252,6 +256,7 @@ module.exports = function (RED) {
         node.send([
           origMsg,
           {
+            topic,
             payload: response,
             values: values,
             input: msg,
@@ -261,12 +266,14 @@ module.exports = function (RED) {
       } else {
         node.send([
           {
+            topic,
             payload: values,
             responseBuffer: response,
             input: msg,
             sendingNodeId: node.id
           },
           {
+            topic,
             payload: response,
             values: values,
             input: msg,
