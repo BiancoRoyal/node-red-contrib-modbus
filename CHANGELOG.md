@@ -1,3 +1,19 @@
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [5.12.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.11.0...v5.12.0) (2020-05-17)
+
+
+### Features
+
+* **reader:** empty msg on error ([15a8e01](https://github.com/biancoroyal/node-red-contrib-modbus/commit/15a8e012f92e8df5d76223a4287f594b14a87881))
+
+
+### Bug Fixes
+
+* **reader:** issue [#200](https://github.com/biancoroyal/node-red-contrib-modbus/issues/200) missing topic in msg ([b099b1f](https://github.com/biancoroyal/node-red-contrib-modbus/commit/b099b1f6e95a60504658d3f9ce9945d719cba934))
+
 # [5.11.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.10.1...v5.11.0) (2020-05-12)
 
 
@@ -218,6 +234,3 @@
 
 
 # 1.0.0 (2017-01-18)
-
-
-
