@@ -18,6 +18,80 @@ var ioConfigNode = require('../../src/modbus-io-config')
 var helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
+const readMsgFlow = [
+  {
+    id: '445454e4.968564',
+    type: 'modbus-server',
+    name: '',
+    logEnabled: true,
+    hostname: '127.0.0.1',
+    serverPort: '7502',
+    responseDelay: 100,
+    delayUnit: 'ms',
+    coilsBufferSize: 10000,
+    holdingBufferSize: 10000,
+    inputBufferSize: 10000,
+    discreteBufferSize: 10000,
+    showErrors: false,
+    wires: [
+      [],
+      [],
+      []
+    ]
+  },
+  {
+    id: '90922127.397cb8',
+    type: 'modbus-read',
+    name: 'Modbus Read With IO',
+    topic: '',
+    showStatusActivities: false,
+    showErrors: false,
+    unitid: '',
+    dataType: 'Coil',
+    adr: '0',
+    quantity: '10',
+    rate: '500',
+    rateUnit: 'ms',
+    delayOnStart: false,
+    startDelayTime: '',
+    server: '92e7bf63.2efd7',
+    useIOFile: false,
+    ioFile: '',
+    useIOForPayload: false,
+    emptyMsgOnFail: false,
+    wires: [
+      [
+        'h1'
+      ],
+      []
+    ]
+  },
+  { id: 'h1', type: 'helper' },
+  {
+    id: '92e7bf63.2efd7',
+    type: 'modbus-client',
+    name: 'ModbusServer',
+    clienttype: 'tcp',
+    bufferCommands: true,
+    stateLogEnabled: true,
+    parallelUnitIdsAllowed: true,
+    tcpHost: '127.0.0.1',
+    tcpPort: '7502',
+    tcpType: 'DEFAULT',
+    serialPort: '/dev/ttyUSB',
+    serialType: 'RTU-BUFFERD',
+    serialBaudrate: '9600',
+    serialDatabits: '8',
+    serialStopbits: '1',
+    serialParity: 'none',
+    serialConnectionDelay: '100',
+    unit_id: '1',
+    commandDelay: '1',
+    clientTimeout: '100',
+    reconnectTimeout: 200
+  }
+]
+
 describe('Read node Testing', function () {
   before(function (done) {
     helper.startServer(function () {
@@ -60,6 +134,7 @@ describe('Read node Testing', function () {
         useIOFile: false,
         ioFile: '',
         useIOForPayload: false,
+        emptyMsgOnFail: false,
         wires: [[], []]
       }
       ], function () {
@@ -111,6 +186,7 @@ describe('Read node Testing', function () {
         useIOFile: false,
         ioFile: '',
         useIOForPayload: false,
+        emptyMsgOnFail: false,
         wires: [
           [
             'd2840baa.d986b8'
@@ -157,84 +233,30 @@ describe('Read node Testing', function () {
       })
     })
 
-    it('simple Node should send message', function (done) {
-      helper.load([clientNode, serverNode, readNode], [
-        {
-          id: '445454e4.968564',
-          type: 'modbus-server',
-          name: '',
-          logEnabled: true,
-          hostname: '127.0.0.1',
-          serverPort: '7502',
-          responseDelay: 100,
-          delayUnit: 'ms',
-          coilsBufferSize: 10000,
-          holdingBufferSize: 10000,
-          inputBufferSize: 10000,
-          discreteBufferSize: 10000,
-          showErrors: false,
-          wires: [
-            [],
-            [],
-            []
-          ]
-        },
-        {
-          id: '90922127.397cb8',
-          type: 'modbus-read',
-          name: 'Modbus Read With IO',
-          topic: '',
-          showStatusActivities: false,
-          showErrors: false,
-          unitid: '',
-          dataType: 'Coil',
-          adr: '0',
-          quantity: '10',
-          rate: '500',
-          rateUnit: 'ms',
-          delayOnStart: false,
-          startDelayTime: '',
-          server: '92e7bf63.2efd7',
-          useIOFile: false,
-          ioFile: '',
-          useIOForPayload: false,
-          wires: [
-            [
-              'h1'
-            ],
-            []
-          ]
-        },
-        { id: 'h1', type: 'helper' },
-        {
-          id: '92e7bf63.2efd7',
-          type: 'modbus-client',
-          name: 'ModbusServer',
-          clienttype: 'tcp',
-          bufferCommands: true,
-          stateLogEnabled: true,
-          parallelUnitIdsAllowed: true,
-          tcpHost: '127.0.0.1',
-          tcpPort: '7502',
-          tcpType: 'DEFAULT',
-          serialPort: '/dev/ttyUSB',
-          serialType: 'RTU-BUFFERD',
-          serialBaudrate: '9600',
-          serialDatabits: '8',
-          serialStopbits: '1',
-          serialParity: 'none',
-          serialConnectionDelay: '100',
-          unit_id: '1',
-          commandDelay: '1',
-          clientTimeout: '100',
-          reconnectTimeout: 200
-        }
-      ], function () {
+    it('simple Node should send message with empty topic', function (done) {
+      readMsgFlow[1].topic = ''
+      helper.load([clientNode, serverNode, readNode], readMsgFlow, function () {
         const h1 = helper.getNode('h1')
         let counter = 0
         h1.on('input', function (msg) {
           counter++
-          if (counter === 1) {
+          if (counter === 1 && msg.topic === 'polling') {
+            done()
+          }
+        })
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
+    it('simple Node should send message with own topic', function (done) {
+      readMsgFlow[1].topic = 'myTopic'
+      helper.load([clientNode, serverNode, readNode], readMsgFlow, function () {
+        const h1 = helper.getNode('h1')
+        let counter = 0
+        h1.on('input', function (msg) {
+          counter++
+          if (counter === 1 && msg.topic === 'myTopic') {
             done()
           }
         })
@@ -285,6 +307,7 @@ describe('Read node Testing', function () {
           ioFile: 'e0519b16.5fcdd',
           useIOForPayload: false,
           logIOActivities: true,
+          emptyMsgOnFail: false,
           wires: [
             [
               'h1'
@@ -380,6 +403,7 @@ describe('Read node Testing', function () {
           ioFile: 'e0519b16.5fcdd',
           useIOForPayload: true,
           logIOActivities: true,
+          emptyMsgOnFail: false,
           wires: [
             [
               'h1'
@@ -483,6 +507,7 @@ describe('Read node Testing', function () {
         useIOFile: false,
         ioFile: '',
         useIOForPayload: false,
+        emptyMsgOnFail: false,
         wires: [
           [
             'd2840baa.d986b8'
