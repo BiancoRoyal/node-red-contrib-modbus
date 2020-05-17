@@ -48,6 +48,7 @@ module.exports = function (RED) {
     this.useIOForPayload = config.useIOForPayload
     this.logIOActivities = config.logIOActivities
 
+    this.emptyMsgOnFail = config.emptyMsgOnFail
     this.internalDebugLog = internalDebugLog
     this.verboseLogging = RED.settings.verbose
 
