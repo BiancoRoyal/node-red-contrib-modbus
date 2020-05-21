@@ -89,6 +89,8 @@ module.exports = function (RED) {
     node.reconnectTimeoutId = 0
     node.serialSendingAllowed = false
 
+    coreModbusQueue.queueSerialLockCommand(node)
+
     node.setDefaultUnitId = function () {
       if (this.clienttype === 'tcp') {
         node.unit_id = defaultTcpUnitId
@@ -182,12 +184,13 @@ module.exports = function (RED) {
 
       if (state.matches('connected')) {
         verboseWarn('fsm connected after state ' + node.actualServiceStateBefore.value + logHintText)
-        node.serialSendingAllowed = true
+        coreModbusQueue.queueSerialUnlockCommand(node)
         node.emit('mbconnected')
       }
 
       if (state.matches('activated')) {
         node.emit('mbactive')
+        coreModbusQueue.queueSerialUnlockCommand(node)
         if (node.bufferCommands && !coreModbusQueue.checkQueuesAreEmpty(node)) {
           node.stateService.send('QUEUE')
         }
@@ -202,7 +205,7 @@ module.exports = function (RED) {
       }
 
       if (state.matches('opened')) {
-        node.serialSendingAllowed = true
+        coreModbusQueue.queueSerialUnlockCommand(node)
         node.emit('mbopen')
       }
 
@@ -231,9 +234,6 @@ module.exports = function (RED) {
         verboseWarn('fsm broken state after ' + node.actualServiceStateBefore.value + logHintText)
         node.emit('mbbroken', 'Modbus Broken On State ' + node.actualServiceStateBefore.value + logHintText)
         if (node.reconnectOnTimeout) {
-          if (node.reconnectTimeout <= 0) {
-            node.reconnectTimeout = reconnectTimeMS
-          }
           node.stateService.send('RECONNECT')
         } else {
           node.stateService.send('ACTIVATE')
@@ -242,7 +242,7 @@ module.exports = function (RED) {
 
       if (state.matches('reconnecting')) {
         verboseWarn('fsm reconnect state after ' + node.actualServiceStateBefore.value + logHintText)
-        node.serialSendingAllowed = false
+        coreModbusQueue.queueSerialLockCommand(node)
         node.emit('mbreconnecting')
         if (node.reconnectTimeout <= 0) {
           node.reconnectTimeout = reconnectTimeMS
@@ -491,7 +491,7 @@ module.exports = function (RED) {
 
     node.activateSending = function (msg) {
       node.sendingAllowed.set(msg.queueUnitId, true)
-      node.serialSendingAllowed = true
+      coreModbusQueue.queueSerialUnlockCommand(node)
 
       return new Promise(
         function (resolve, reject) {

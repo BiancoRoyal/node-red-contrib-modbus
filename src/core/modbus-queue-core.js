@@ -32,6 +32,14 @@ de.biancoroyal.modbus.queue.core.checkQueuesAreEmpty = function (node) {
   return queuesAreEmpty
 }
 
+de.biancoroyal.modbus.queue.core.queueSerialUnlockCommand = function (node) {
+  node.serialSendingAllowed = true
+}
+
+de.biancoroyal.modbus.queue.core.queueSerialLockCommand = function (node) {
+  node.serialSendingAllowed = false
+}
+
 de.biancoroyal.modbus.queue.core.sequentialDequeueCommand = function (node) {
   return new Promise(
     function (resolve, reject) {
@@ -55,12 +63,10 @@ de.biancoroyal.modbus.queue.core.sequentialDequeueCommand = function (node) {
         if (node.serialSendingAllowed &&
           queueCore.isValidUnitId(unitId) &&
           node.sendingAllowed.get(unitId)) {
-          node.serialSendingAllowed = false
+          queueCore.queueSerialLockCommand(node)
           queueCore.sendQueueDataToModbus(node, unitId)
         } else {
-          // if (node.showErrors) {
           node.warn('sequential dequeue command not possible')
-          // }
         }
       }
       resolve()

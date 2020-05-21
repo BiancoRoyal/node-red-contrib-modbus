@@ -96,33 +96,13 @@ Debug will be activated by starting Node-RED with debug mode:
 
     DEBUG=contribModbus:{option},contribModbus:{option},...
 
-### Options
-
- * core
-    * core:client
-    * core:client:fsm
- * io
-    * io:core
- * basics
- * read
- * write
- * server
- * response
- * flex
-    * flex:getter
-    * flex:write
-    * flex:connector
-    * flex:server
- * modbus-serial
- 
-
 see [Wiki][10] pages to get more options in detail
 
 ## Contributing
 
-Let's work together!
-Please read and in best case accept [CONTRIBUTING](.github/CONTRIBUTING.md) by your sign and send it via E-Mail.
-You could also send just a pull request or issues while testing, please!
+Let's work together! Contributors are welcome.
+Please, for the repo and send your pull requests from your repo 
+to our develop branch or open issues while you're testing!
 
 ## For Developers
 
@@ -142,7 +122,7 @@ write Wiki articles and Blogs to share more about this package, please!
 
 ## Authors
 
-since April 2016 by [Klaus Landsdorf][4]
+since April 2016 by [Klaus Landsdorf][4] and Community Driven
 
 ### History
 
@@ -159,7 +139,7 @@ since April 2016 by [Klaus Landsdorf][4]
 [7]:https://github.com/jayharper
 [8]:http://www.modbus.org/
 [9]:http://bit.ly/2jzwjqP
-[10]:https://github.com/BiancoRoyal/node-red-contrib-modbus/wiki
+[10]:https://github.com/BiancoRoyal/node-red-contrib-modbus/wiki/DEBUG
 [11]:https://bianco-royal.cloud/supporter/
 [12]:https://github.com/BiancoRoyal/node-red-contrib-modbus
 [13]:https://www.npmjs.com/package/jsmodbus
