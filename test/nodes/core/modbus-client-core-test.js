@@ -13,21 +13,21 @@
 const assert = require('assert')
 const coreClientUnderTest = require('../../../src/core/modbus-client-core')
 
-describe ('Core Client Testing', function () {
-  describe ('Core Client', function () {
-    it ('should give the nodes internalDebugLog', function (done) {
+describe('Core Client Testing', function () {
+  describe('Core Client', function () {
+    it('should give the nodes internalDebugLog', function (done) {
       const node = { internalDebugLog: true }
       assert.strict.equal(coreClientUnderTest.getLogFunction(node), node.internalDebugLog)
       done()
     })
 
-    it ('should give the core internalDebug', function (done) {
+    it('should give the core internalDebug', function (done) {
       const node = { internalDebugLog: false }
       assert.strict.equal(coreClientUnderTest.getLogFunction(node), coreClientUnderTest.internalDebug)
       done()
     })
 
-    describe ('Core Client UnitId TCP', function () {
+    describe('Core Client UnitId TCP', function () {
       it('should check with success the TCP UnitId 1', function (done) {
         assert.strict.equal(coreClientUnderTest.checkUnitId(1, 'tcp'), true)
         done()
@@ -43,6 +43,26 @@ describe ('Core Client Testing', function () {
         done()
       })
 
+      it('should check with success the TCP UnitId 1 from payload', function (done) {
+        assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'tcp', unit_id: 0 }, { payload: { unitid: 1 } }), 1)
+        done()
+      })
+
+      it('should check with success the TCP UnitId 0 from payload', function (done) {
+        assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'tcp', unit_id: 1 }, { payload: { unitid: 0 } }), 0)
+        done()
+      })
+
+      it('should check with success the TCP UnitId 1 from queueid', function (done) {
+        assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'tcp', unit_id: 0 }, { payload: {}, queueUnitId: 1 }), 1)
+        done()
+      })
+
+      it('should check with success the TCP UnitId 0 from queueid', function (done) {
+        assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'tcp', unit_id: 1 }, { queueUnitId: 0 }), 0)
+        done()
+      })
+
       it('should check with success the TCP UnitId 255', function (done) {
         assert.strict.equal(coreClientUnderTest.checkUnitId(255, 'tcp'), true)
         done()
@@ -54,7 +74,7 @@ describe ('Core Client Testing', function () {
       })
     })
 
-    describe ('Core Client UnitId Serial', function () {
+    describe('Core Client UnitId Serial', function () {
       it('should check with success the Serial UnitId 1', function (done) {
         assert.strict.equal(coreClientUnderTest.checkUnitId(1, 'serial'), true)
         done()
@@ -62,6 +82,26 @@ describe ('Core Client Testing', function () {
 
       it('should check with success the Serial UnitId 0', function (done) {
         assert.strict.equal(coreClientUnderTest.checkUnitId(0, 'serial'), true)
+        done()
+      })
+
+      it('should check with success the Serial UnitId 1 from payload', function (done) {
+        assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'serial', unit_id: 0 }, { payload: { unitid: 1 } }), 1)
+        done()
+      })
+
+      it('should check with success the Serial UnitId 0 from payload', function (done) {
+        assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'serial', unit_id: 1 }, { payload: { unitid: 0 } }), 0)
+        done()
+      })
+
+      it('should check with success the Serial UnitId 1 from queueid', function (done) {
+        assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'serial', unit_id: 0 }, { payload: {}, queueUnitId: 1 }), 1)
+        done()
+      })
+
+      it('should check with success the Serial UnitId 0 from queueid', function (done) {
+        assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'serial', unit_id: 1 }, { queueUnitId: 0 }), 0)
         done()
       })
 
@@ -76,7 +116,7 @@ describe ('Core Client Testing', function () {
       })
     })
 
-    describe ('Core Client Modbus Actions', function () {
+    describe('Core Client Modbus Actions', function () {
       it('should call read Modbus with empty node', function (done) {
         coreClientUnderTest.readModbus({})
         done()

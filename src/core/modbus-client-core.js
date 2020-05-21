@@ -84,9 +84,9 @@ de.biancoroyal.modbus.core.client.createStateMachineService = function () {
 }
 
 de.biancoroyal.modbus.core.client.getActualUnitId = function (node, msg) {
-  if (msg.payload.unitid) {
+  if (msg.payload && Number.isInteger(msg.payload.unitid)) {
     return parseInt(msg.payload.unitid)
-  } else if (msg.queueUnitId) {
+  } else if (Number.isInteger(msg.queueUnitId)) {
     return parseInt(msg.queueUnitId)
   } else {
     return parseInt(node.unit_id)
