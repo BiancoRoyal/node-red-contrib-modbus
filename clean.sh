@@ -6,6 +6,10 @@ rm -rf modbus/
 
 rm -rf code/
 
+rm -rf coverage/
+
+rm -rf docs/gen
+
 rm package-lock.json
 
 npm cache verify
