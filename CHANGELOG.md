@@ -1,3 +1,19 @@
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [5.13.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.12.0...v5.13.0) (2020-05-21)
+
+
+### Features
+
+* **broadcast:** [#195](https://github.com/biancoroyal/node-red-contrib-modbus/issues/195) extracting from payload.unitid, msg.queeuid or node UnitId ([11afe1c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/11afe1c07440c9f0006f696385347d909d2c05ff))
+
+
+### Bug Fixes
+
+* **serial:** [#202](https://github.com/biancoroyal/node-red-contrib-modbus/issues/202) locked queue on serial error ([757f341](https://github.com/biancoroyal/node-red-contrib-modbus/commit/757f34192885e7cf157aa438e22266928d477357))
+
 ## [5.12.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.12.0...v5.12.1) (2020-05-21)
 
 
@@ -246,6 +262,3 @@
 
 
 # 1.0.0 (2017-01-18)
-
-
-
