@@ -62,6 +62,7 @@
   },
   "homepage": "https://github.com/sponsors/biancode/",
   "scripts": {
+    "changelog": "npm run rewrite-changelog",
     "test": "standard --fix && mocha test --recursive --reporter dot --timeout 5000",
     "test-with-coverage": "istanbul cover _mocha --report lcovonly -- --recursive --timeout 5000 -R spec && cat ./coverage/lcov.info | codacy-coverage --token a047b284d2124df78f999c27ae874e9c && rm -rf ./coverage",
     "coverage": "standard --fix && gulp build && npm test && istanbul cover _mocha -- --recursive --timeout 5000",
@@ -98,7 +99,7 @@
     "mocha": "^6.2.2",
     "nock": "^12.0.3",
     "node-red": "^1.0.4",
-    "node-red-node-test-helper": "^0.2.3",
+    "node-red-node-test-helper": "^0.2.4",
     "pump": "^3.0.0",
     "path-type": "^3.0.0",
     "should": "^13.2.3",

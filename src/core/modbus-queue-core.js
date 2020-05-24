@@ -33,14 +33,17 @@ de.biancoroyal.modbus.queue.core.checkQueuesAreEmpty = function (node) {
 }
 
 de.biancoroyal.modbus.queue.core.queueSerialUnlockCommand = function (node) {
+  this.internalDebug('queue serial unlock command node ' + node.name)
   node.serialSendingAllowed = true
 }
 
 de.biancoroyal.modbus.queue.core.queueSerialLockCommand = function (node) {
+  this.internalDebug('queue serial lock command node ' + node.name)
   node.serialSendingAllowed = false
 }
 
 de.biancoroyal.modbus.queue.core.sequentialDequeueCommand = function (node) {
+  this.internalDebug('sequential de-queue command')
   return new Promise(
     function (resolve, reject) {
       const queueCore = de.biancoroyal.modbus.queue.core
@@ -51,6 +54,10 @@ de.biancoroyal.modbus.queue.core.sequentialDequeueCommand = function (node) {
         }
       } else {
         const unitId = node.unitSendingAllowed.shift()
+        if (!unitId) {
+          reject(new Error('UnitId is valid from sending allowed list'))
+          return
+        }
 
         node.queueLog(JSON.stringify({
           type: 'sequential dequeue command',
@@ -60,13 +67,29 @@ de.biancoroyal.modbus.queue.core.sequentialDequeueCommand = function (node) {
           serialSendingAllowed: node.serialSendingAllowed
         }))
 
-        if (node.serialSendingAllowed &&
-          queueCore.isValidUnitId(unitId) &&
+        if (queueCore.isValidUnitId(unitId) &&
           node.sendingAllowed.get(unitId)) {
-          queueCore.queueSerialLockCommand(node)
           queueCore.sendQueueDataToModbus(node, unitId)
         } else {
-          node.warn('sequential dequeue command not possible')
+          node.warn('sequential dequeue command not possible for Unit ' + unitId)
+          let infoText = 'sending is allowed for Unit '
+          if (node.sendingAllowed.get(unitId)) {
+            node.warn(infoText + unitId)
+          } else {
+            node.warn('no ' + infoText + unitId)
+          }
+          infoText = 'valid  Unit '
+          if (queueCore.isValidUnitId(unitId)) {
+            node.warn(infoText + unitId)
+          } else {
+            node.warn('no ' + infoText + unitId)
+          }
+          infoText = ' serial sending allowed for Unit '
+          if (node.serialSendingAllowed) {
+            node.warn(node.name + infoText + unitId)
+          } else {
+            node.warn(node.name + ' no' + infoText + unitId)
+          }
         }
       }
       resolve()
@@ -118,7 +141,7 @@ de.biancoroyal.modbus.queue.core.dequeueCommand = function (node) {
 }
 
 de.biancoroyal.modbus.queue.core.getUnitIdToQueue = function (node, msg) {
-  return parseInt(msg.payload.unitid) || parseInt(node.unit_id)
+  return parseInt(msg.payload.unitid) || parseInt(node.unit_id) || 0
 }
 
 de.biancoroyal.modbus.queue.core.isValidUnitId = function (unitId) {
@@ -140,12 +163,16 @@ de.biancoroyal.modbus.queue.core.pushToQueueByUnitId = function (node, callModbu
     function (resolve, reject) {
       try {
         const unitId = coreQueue.getUnitIdToQueue(node, msg)
+        if (!unitId) {
+          reject(new Error('UnitId is valid from msg or node'))
+          return
+        }
         const queueLength = coreQueue.getQueueLengthByUnitId(node, unitId)
 
         msg.queueLengthByUnitId = { unitId, queueLength }
         msg.queueUnitId = unitId
 
-        if (!node.parallelUnitIdsAllowed) {
+        if (!node.parallelUnitIdsAllowed || node.clienttype === 'serial') {
           node.unitSendingAllowed.push(unitId)
         }
 

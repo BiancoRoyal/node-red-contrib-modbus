@@ -190,14 +190,23 @@ module.exports = function (RED) {
 
       if (state.matches('activated')) {
         node.emit('mbactive')
-        coreModbusQueue.queueSerialUnlockCommand(node)
         if (node.bufferCommands && !coreModbusQueue.checkQueuesAreEmpty(node)) {
           node.stateService.send('QUEUE')
         }
       }
 
       if (state.matches('queueing')) {
-        node.stateService.send('SEND')
+        if (node.clienttype === 'tcp') {
+          node.stateService.send('SEND')
+        } else {
+          if (node.serialSendingAllowed) {
+            coreModbusQueue.queueSerialLockCommand(node)
+            node.stateService.send('SEND')
+          }
+        }
+      }
+
+      if (state.matches('sending')) {
         setTimeout(() => {
           coreModbusQueue.dequeueCommand(node)
         }, node.commandDelay)
@@ -378,6 +387,7 @@ module.exports = function (RED) {
     }
 
     node.modbusErrorHandling = function (err) {
+      coreModbusQueue.queueSerialUnlockCommand(node)
       if (err.message) {
         coreModbusClient.modbusSerialDebug('modbusErrorHandling:' + err.message)
       } else {
@@ -389,6 +399,7 @@ module.exports = function (RED) {
     }
 
     node.modbusTcpErrorHandling = function (err) {
+      coreModbusQueue.queueSerialUnlockCommand(node)
       if (node.showErrors) {
         node.error(err)
       }
@@ -405,6 +416,7 @@ module.exports = function (RED) {
     }
 
     node.modbusSerialErrorHandling = function (err) {
+      coreModbusQueue.queueSerialUnlockCommand(node)
       if (node.showErrors) {
         node.error(err)
       }
@@ -434,6 +446,7 @@ module.exports = function (RED) {
     }
 
     node.onModbusClose = function () {
+      coreModbusQueue.queueSerialUnlockCommand(node)
       verboseWarn('Modbus closed port')
       coreModbusClient.modbusSerialDebug('modbus closed port')
       node.stateService.send('CLOSE')
