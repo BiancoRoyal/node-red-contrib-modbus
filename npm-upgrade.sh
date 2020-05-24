@@ -13,6 +13,6 @@ ncu -u -m
 
 npm install
 
-npm run build
-
 npm test
+
+npm run build

@@ -18,6 +18,8 @@ npm install
 
 npm i --only=dev
 
+npm test
+
 npm run build
 
 npm run rewrite-changelog
