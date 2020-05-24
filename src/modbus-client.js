@@ -19,6 +19,7 @@ module.exports = function (RED) {
   const mbBasics = require('./modbus-basics')
   const coreModbusClient = require('./core/modbus-client-core')
   const coreModbusQueue = require('./core/modbus-queue-core')
+  const internalDebugLog = require('debug')('contribModbus:config:client')
 
   function ModbusClientNode (config) {
     RED.nodes.createNode(this, config)
@@ -88,6 +89,7 @@ module.exports = function (RED) {
     node.stateService = coreModbusClient.startStateService(node.stateMachine)
     node.reconnectTimeoutId = 0
     node.serialSendingAllowed = false
+    node.internalDebugLog = internalDebugLog
 
     coreModbusQueue.queueSerialLockCommand(node)
 
@@ -557,6 +559,7 @@ module.exports = function (RED) {
       verboseLog('stop fsm on close ' + nodeIdentifierName)
       node.stateService.send('STOP')
       verboseLog('close node ' + nodeIdentifierName)
+      node.internalDebugLog('close node ' + nodeIdentifierName)
       node.removeAllListeners()
       if (node.client) {
         if (node.client.isOpen) {
