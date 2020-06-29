@@ -228,7 +228,7 @@ de.biancoroyal.modbus.basics.setNodeStatusTo = function (statusValue, node) {
         text: statusOptions.status
       })
     } else {
-      this.setNodeDefaultStatus()
+      this.setNodeDefaultStatus(node)
     }
   }
 }
