@@ -7,3 +7,11 @@ steps:
   commands:
   - npm install
   - npm test
+  environment:
+    USERNAME:
+      from_secret: docker_username
+    PASSWORD:
+      from_secret: docker_password
+  when:
+    branch:
+    - master
