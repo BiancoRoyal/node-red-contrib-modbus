@@ -132,7 +132,7 @@ de.biancoroyal.modbus.core.client.readModbusByFunctionCodeOne = function (node, 
   node.client.readCoils(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
     coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
   }).catch(function (err) {
-    coreClient.activateSendingOnFailure(node, cberr, err, msg)
+    coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
     node.modbusErrorHandling(err)
   })
 }
@@ -142,7 +142,7 @@ de.biancoroyal.modbus.core.client.readModbusByFunctionCodeTwo = function (node, 
   node.client.readDiscreteInputs(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
     coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
   }).catch(function (err) {
-    coreClient.activateSendingOnFailure(node, cberr, err, msg)
+    coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
     node.modbusErrorHandling(err)
   })
 }
@@ -152,7 +152,7 @@ de.biancoroyal.modbus.core.client.readModbusByFunctionCodeThree = function (node
   node.client.readHoldingRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
     coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
   }).catch(function (err) {
-    coreClient.activateSendingOnFailure(node, cberr, err, msg)
+    coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
     node.modbusErrorHandling(err)
   })
 }
@@ -162,7 +162,7 @@ de.biancoroyal.modbus.core.client.readModbusByFunctionCodeFour = function (node,
   node.client.readInputRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
     coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
   }).catch(function (err) {
-    coreClient.activateSendingOnFailure(node, cberr, err, msg)
+    coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
     node.modbusErrorHandling(err)
   })
 }
