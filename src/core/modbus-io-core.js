@@ -9,6 +9,7 @@
 'use strict'
 // SOURCE-MAP-REQUIRED
 
+// eslint-disable-next-line no-var
 var de = de || { biancoroyal: { modbus: { io: { core: {} } } } } // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.io.core.internalDebug = de.biancoroyal.modbus.io.core.internalDebug || require('debug')('contribModbus:io:core') // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.io.core.LineByLineReader = de.biancoroyal.modbus.io.core.LineByLineReader || require('line-by-line') // eslint-disable-line no-use-before-define
