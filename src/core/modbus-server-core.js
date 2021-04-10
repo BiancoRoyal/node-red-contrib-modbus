@@ -8,6 +8,7 @@
 'use strict'
 // SOURCE-MAP-REQUIRED
 
+// eslint-disable-next-line no-var
 var de = de || { biancoroyal: { modbus: { core: { server: { } } } } } // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.core.server.internalDebug = de.biancoroyal.modbus.core.server.internalDebug || require('debug')('contribModbus:core:server') // eslint-disable-line no-use-before-define
 

@@ -16,7 +16,7 @@ module.exports = function (RED) {
   // SOURCE-MAP-REQUIRED
   const mbCore = require('./core/modbus-core')
   const mbBasics = require('./modbus-basics')
-  var modbusIOFileValuNames = []
+  let modbusIOFileValuNames = []
 
   function ModbusResponseFilter (config) {
     RED.nodes.createNode(this, config)

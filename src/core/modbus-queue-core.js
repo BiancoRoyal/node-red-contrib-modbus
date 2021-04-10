@@ -9,6 +9,7 @@
 'use strict'
 // SOURCE-MAP-REQUIRED
 
+// eslint-disable-next-line no-var
 var de = de || { biancoroyal: { modbus: { queue: { core: {} } } } } // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.queue.core.internalDebug = de.biancoroyal.modbus.queue.core.internalDebug || require('debug')('contribModbus:queue:core') // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.queue.core.core = de.biancoroyal.modbus.queue.core.core || require('./modbus-core') // eslint-disable-line no-use-before-define
