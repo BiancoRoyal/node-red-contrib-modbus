@@ -9,7 +9,11 @@ npm cache verify
 
 npm outdated --depth=0
 
-ncu -u -m
+ncu -u
+
+npm i
+
+npm i --only=dev
 
 npm install
 
