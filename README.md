@@ -24,7 +24,7 @@ Based on [modbus-serial][2] with TCP, C701, Telnet, Serial, RTU buffered, and AS
 * works with queueing per unit and round robin scheduling
 
 Node-RED v1.x versions:
-* Node.JS 14.x is beta supported with v5.x
+* Node.JS 14.x is supported with v5.14.+
 * Node.JS 12.x is supported with v5.x
 * Node.JS 10.x is supported with v5.x
 
@@ -140,7 +140,7 @@ since April 2016 by [Klaus Landsdorf][4] and Community Driven
 [8]:http://www.modbus.org/
 [9]:http://bit.ly/2jzwjqP
 [10]:https://github.com/BiancoRoyal/node-red-contrib-modbus/wiki/DEBUG
-[11]:https://bianco-royal.cloud/supporter/
+[11]:https://bianco-royal.space/supporter/
 [12]:https://github.com/BiancoRoyal/node-red-contrib-modbus
 [13]:https://www.npmjs.com/package/jsmodbus
 [14]:https://www.npmjs.com/package/serialport
