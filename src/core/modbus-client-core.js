@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018,2019,2020 Klaus Landsdorf (https://bianco-royal.com/)
+ Copyright (c) 2016,2017,2018,2019,2020,2021 Klaus Landsdorf (https://bianco-royal.space/)
  All rights reserved.
  node-red-contrib-modbus
 
