@@ -61,14 +61,32 @@
         type: 'modbus-client',
         required: true
       },
-      showStatusActivities: {value: false},
-      showErrors: {value: false},
-      logIOActivities: {value: false},
-      useIOFile: {value: false},
-      ioFile: {value: '', type: 'modbus-io-config', required: false},
-      useIOForPayload: {value: false},
-      emptyMsgOnFail: {value: false},
-      keepMsgProperties: {value: false}
+      showStatusActivities: {
+        value: false
+      },
+      showErrors: {
+        value: false
+      },
+      logIOActivities: {
+        value: false
+      },
+      useIOFile: {
+        value: false
+      },
+      ioFile: {
+        value: '',
+        type: 'modbus-io-config',
+        required: false
+      },
+      useIOForPayload: {
+        value: false
+      },
+      emptyMsgOnFail: {
+        value: false
+      },
+      keepMsgProperties: {
+        value: false
+      }
     },
     inputs: 1,
     outputs: 2,
@@ -123,7 +141,7 @@
 
       */
 
-      $('#node-input-sequences-container').css('min-height', '250px').css('min-width', '450px').editableList({
+      $('#node-input-sequences-container').css('min-width', '450px').editableList({
         addItem: function (row, index, data) {
           var sequence = data;
 
@@ -275,38 +293,16 @@
       });
     },
     oneditresize: function (size) {
-      var rows = $("#dialog-form>div:not(.node-input-sequences-container-row)");
+      
       var height = size.height;
-      for (var i = 0; i < rows.length; i++) {
-        height -= $(rows[i]).outerHeight(true);
-      }
-      var editorRow = $("#dialog-form>div.node-input-sequences-container-row");
-      height -= (parseInt(editorRow.css("marginTop")) + parseInt(editorRow.css("marginBottom")));
-      height += 16;
-      $("#node-input-sequences-container").editableList('height', height);
+      $('#node-input-sequences-container').css("height", (height - 145) + "px");
+      
     }
   })
 </script>
 
-<script type="text/x-red" data-template-name="modbus-flex-sequencer">
-  <style>
-    .node-input-modbus-tabs-row {
-        margin-bottom: 0;
-    }
-    #modbus-settings-tab .red-ui-editableList-container {
-        padding: 0px;
-    }
-    #modbus-settings-tab .red-ui-editableList-container li {
-        padding:5px;
-    }
-    #modbus-settings-tab .red-ui-editableList-item-remove {
-        right: 5px;
-    }
 
-</style>
-
-
-
+<script type="text/html" data-template-name="modbus-flex-sequencer">
   <div class="form-row">
     <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
     <input type="text" id="node-input-name" placeholder="Name">
@@ -316,16 +312,20 @@
     <ul style="min-width: 600px; margin-bottom: 20px;" id="node-input-modbus-tabs"></ul>
   </div>
 
-  <div id="node-input-tabs-content" style="min-height: calc(100% - 95px);">
-    <div id="modbus-settings-tab" style="display:none" class="form-row node-input-sequences-container-row">
-      <ol id="node-input-sequences-container"></ol>
-    </div>
-    <div id="modbus-options-tab" style="display:none">
+  <div id="node-input-tabs-content">
+
+    <div id="modbus-settings-tab" style="display:none">
       <div class="form-row">
         <label for="node-input-server"><i class="icon-globe"></i> <span
             data-i18n="modbus-contrib.label.server"></span></label>
         <input type="text" id="node-input-server">
       </div>
+      <div class="form-row node-input-sequences-container-row">
+        <ol id="node-input-sequences-container"></ol>
+      </div>
+    </div>
+
+    <div id="modbus-options-tab" style="display:none">
       <div class="form-row">
         <label style="min-width:160px" for="node-input-emptyMsgOnFail"><i class="fa fa-th"></i> <span
             data-i18n="modbus-contrib.label.emptyMsgOnFail"></span></label>
@@ -371,8 +371,7 @@
       </div>
     </div>
   </div>
-
-  </script>
+</script>
 
 
 <script type="text/x-red" data-help-name="modbus-flex-sequencer">
