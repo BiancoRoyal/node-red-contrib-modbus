@@ -287,6 +287,10 @@ de.biancoroyal.modbus.basics.invalidPayloadIn = function (msg) {
   return !(msg && Object.prototype.hasOwnProperty.call(msg, 'payload'))
 }
 
+de.biancoroyal.modbus.basics.invalidSequencesIn = function (msg) {
+  return !(msg && Object.prototype.hasOwnProperty.call(msg, 'sequences'))
+}
+
 de.biancoroyal.modbus.basics.sendEmptyMsgOnFail = function (node, err, msg) {
   if (node.emptyMsgOnFail) {
     msg.payload = ''

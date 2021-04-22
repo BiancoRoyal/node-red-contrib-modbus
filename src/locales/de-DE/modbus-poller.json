@@ -1,0 +1,10 @@
+{
+    "modbus-contrib": {
+      "label": {
+        "showActivities": "Aktivitäten anzeigen",
+        "showErrors": "Fehler anzeigen",
+        "address": "Adresse",
+        "quantity": "Anzahl"
+      }
+    }
+  }

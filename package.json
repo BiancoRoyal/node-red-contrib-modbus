@@ -4,18 +4,18 @@
   "private": false,
   "description": "The all in one Modbus TCP and Serial contribution package for Node-RED.",
   "dependencies": {
+    "@xstate/fsm": "~1.6.0",
     "bson": "~4.3.0",
     "debug": "~4.3.1",
     "jsmodbus": "~4.0.5",
     "line-by-line": "~0.1.6",
     "modbus-serial": "~8.0.1",
     "source-map-support": "~0.5.19",
-    "vm2": "~3.9.3",
-    "@xstate/fsm": "~1.6.0"
+    "vm2": "~3.9.3"
   },
   "optionalDependencies": {
-    "serialport": "~9.0.7",
-    "@serialport/list": "~9.0.7"
+    "@serialport/list": "~9.0.7",
+    "serialport": "~9.0.7"
   },
   "keywords": [
     "node-red",
@@ -45,7 +45,8 @@
       "Modbus-Queue-Info": "modbus/modbus-queue-info.js",
       "Modbus-Flex-Connector": "modbus/modbus-flex-connector.js",
       "Modbus-IO-Config": "modbus/modbus-io-config.js",
-      "Modbus-Response-Filter": "modbus/modbus-response-filter.js"
+      "Modbus-Response-Filter": "modbus/modbus-response-filter.js",
+      "Modbus-Flex-Sequencer": "modbus/modbus-flex-sequencer.js"
     }
   },
   "author": "Klaus Landsdorf <klaus.landsdorf@bianco-royal.de>",
