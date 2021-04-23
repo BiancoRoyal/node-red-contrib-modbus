@@ -96,11 +96,11 @@ module.exports = function (RED) {
             if (node.showErrors) {
               node.warn(err)
             }
-            mbBasics.setNodeStatusTo('error', node)
+            /*mbBasics.setNodeStatusTo('error', node)
 
             node.modbusServer.close(function () {
               node.startServer()
-            })
+            })*/
           })
 
           node.modbusServer._server.on('connection', function (sock) {
