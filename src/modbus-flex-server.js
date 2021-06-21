@@ -165,6 +165,9 @@ module.exports = function (RED) {
       if (node.modbusServer._server) {
         node.modbusServer._server.close()
       }
+     if(node.modbusServer){
+        node.modbusServer.close();
+      }
       node.modbusServer = null
     })
   }
