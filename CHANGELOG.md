@@ -1,36 +1,26 @@
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [5.14.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.14.0...v5.14.1) (2021-08-07)
+
 # [5.14.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.13.3...v5.14.0) (2021-04-10)
 
 
 ### Bug Fixes
 
 * **basics:** [#210](https://github.com/biancoroyal/node-red-contrib-modbus/issues/210) missing parameter node ([806f944](https://github.com/biancoroyal/node-red-contrib-modbus/commit/806f944d3acdb46750611b74497940224463acfa))
-
-
-
-## [5.13.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.13.1...v5.13.2) (2020-05-26)
-
-
-### Bug Fixes
-
 * **msg:** modbus request data in msg object [#203](https://github.com/biancoroyal/node-red-contrib-modbus/issues/203) ([380357f](https://github.com/biancoroyal/node-red-contrib-modbus/commit/380357f825ebe0b3648b1d146bad136f1a195d89))
 
 
 
-## [5.13.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.13.0...v5.13.1) (2020-05-24)
-
-
-### Bug Fixes
-
-* **serial:** queue serial sequenced sending [#202](https://github.com/biancoroyal/node-red-contrib-modbus/issues/202) ([e11cb49](https://github.com/biancoroyal/node-red-contrib-modbus/commit/e11cb492037e0d91eb13f82596cbecbc87c6e24d))
-
-
-
-# [5.13.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.12.0...v5.13.0) (2020-05-21)
+## [5.13.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.12.0...v5.13.1) (2020-05-24)
 
 
 ### Bug Fixes
 
 * **serial:** [#202](https://github.com/biancoroyal/node-red-contrib-modbus/issues/202) locked queue on serial error ([757f341](https://github.com/biancoroyal/node-red-contrib-modbus/commit/757f34192885e7cf157aa438e22266928d477357))
+* **serial:** queue serial sequenced sending [#202](https://github.com/biancoroyal/node-red-contrib-modbus/issues/202) ([e11cb49](https://github.com/biancoroyal/node-red-contrib-modbus/commit/e11cb492037e0d91eb13f82596cbecbc87c6e24d))
 
 
 ### Features
@@ -136,7 +126,7 @@
 
 
 
-# [5.2.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/5.1.0-0...v5.2.0) (2019-12-08)
+# [5.2.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v4.1.3...v5.2.0) (2019-12-08)
 
 
 ### Bug Fixes
@@ -150,14 +140,6 @@
 ### Features
 
 * [#161](https://github.com/biancoroyal/node-red-contrib-modbus/issues/161) multiple RTU devices via UnitID ([b0b5011](https://github.com/biancoroyal/node-red-contrib-modbus/commit/b0b5011be4ab5e7c06ab44fd9df7b0ff5ddd0fd8))
-
-
-
-# [5.1.0-0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v4.1.3...5.1.0-0) (2019-11-24)
-
-
-### Features
-
 * new state machine from xstate ([57aef99](https://github.com/biancoroyal/node-red-contrib-modbus/commit/57aef9956187ee9d70e862b226f3a3ef5e091528))
 
 
@@ -273,6 +255,3 @@
 
 
 # 1.0.0 (2017-01-18)
-
-
-

@@ -1,0 +1,379 @@
+<!--
+ Copyright (c) 2016,2017,2018,2019,2020,2021 Klaus Landsdorf (https://bianco-royal.space/)
+ All rights reserved.
+ node-red-contrib-modbus - The BSD 3-Clause License
+
+ @author <a>Andrea Verardi</a> (Anversoft)
+-->
+<script type="text/javascript">
+  //Modbus sequences
+  var functions = [{
+      v: "FC1",
+      t: "FC 1: Read Coil Status"
+    },
+    {
+      v: "FC2",
+      t: "FC 2: Read Input Status"
+    },
+    {
+      v: "FC3",
+      t: "FC 3: Read Holding Registers"
+    },
+    {
+      v: "FC4",
+      t: "FC 4: Read Input Registers"
+    },
+  ];
+
+
+  RED.nodes.registerType('modbus-flex-sequencer', {
+    category: 'modbus',
+    color: '#E9967A',
+    defaults: {
+      name: {
+        value: ''
+      },
+      sequences: {
+        value: [{
+          name: null,
+          unitid: null,
+          fc: functions[0].v,
+          address: null,
+          quantity: null
+        }],
+        validate: function (sequences) {
+          if (!sequences || sequences.length === 0) {
+            return false;
+          }
+
+          for (var i = 0; i < sequences.length; i++) {
+            var r = sequences[i];
+            if (!r.unitid || isNaN(parseInt(r.unitid, 10)) || !r.address || isNaN(parseInt(r.address, 10)) || !r
+              .quantity || isNaN(parseInt(r.quantity, 10))) {
+              return false;
+            }
+          }
+
+          return true;
+        }
+      },
+      server: {
+        type: 'modbus-client',
+        required: true
+      },
+      showStatusActivities: {
+        value: false
+      },
+      showErrors: {
+        value: false
+      },
+      logIOActivities: {
+        value: false
+      },
+      useIOFile: {
+        value: false
+      },
+      ioFile: {
+        value: '',
+        type: 'modbus-io-config',
+        required: false
+      },
+      useIOForPayload: {
+        value: false
+      },
+      emptyMsgOnFail: {
+        value: false
+      },
+      keepMsgProperties: {
+        value: false
+      }
+    },
+    inputs: 1,
+    outputs: 2,
+    align: "left",
+    icon: 'modbus.png',
+    paletteLabel: 'Modbus-Flex-Sequencer',
+    //Node label
+    label: function () {
+      if (this.name) {
+        return this.name
+      } else if (this.sequences) {
+        return "Modbus Flex Sequencer: " + this.sequences.length
+      }
+      return 'Modbus Flex Sequencer';
+    },
+    oneditprepare: function () {
+
+
+      let tabs = RED.tabs.create({
+        id: "node-input-modbus-tabs",
+        onchange: function (tab) {
+          $("#node-input-tabs-content").children().hide()
+          $("#" + tab.id).show()
+        }
+      })
+
+      tabs.addTab({
+        id: "modbus-settings-tab",
+        label: this._("modbus-contrib.tabs-label.settings")
+      })
+
+      tabs.addTab({
+        id: "modbus-options-tab",
+        label: this._("modbus-contrib.tabs-label.options")
+      })
+
+      let useIOFileCheckbox = $('#node-input-useIOFile')
+      let modbusiofileRow = $('#modbusiofile-row')
+
+      useIOFileCheckbox.change(function () {
+        if ($(this).is(':checked')) {
+          modbusiofileRow.show()
+        } else {
+          modbusiofileRow.hide()
+        }
+      })
+
+
+      /*
+             
+          Polling Section
+
+      */
+
+      $('#node-input-sequences-container').css('min-width', '450px').editableList({
+        addItem: function (row, index, data) {
+          var sequence = data;
+
+          if (!sequence.hasOwnProperty('fc')) {
+            sequence = {
+              name: null,
+              unitid: null,
+              fc: functions[0].v,
+              address: null,
+              quantity: null
+            };
+          }
+
+          row.css({
+            overflow: 'hidden',
+            whiteSpace: 'nowrap'
+          });
+
+          let fragment = document.createDocumentFragment();
+          var row0 = $('<div/>', {
+              class: "form-row",
+            })
+            .appendTo(fragment);
+
+          var row1 = $('<div/>', {
+              class: "form-row",
+
+            })
+            .appendTo(fragment);
+
+          var row2 = $('<div/>', {
+              class: "form-row",
+            })
+            .appendTo(fragment);
+
+          var row3 = $('<div/>', {
+              class: "form-row",
+            })
+            .appendTo(fragment);
+
+          var row4 = $('<div/>', {
+              class: "form-row",
+            })
+            .appendTo(fragment);
+
+          $('<label/>')
+            .text("Name")
+            .appendTo(row0);
+
+          var sequenceNameProperty = $('<input/>', {
+              class: "node-input-sequencename",
+              type: "text",
+              placeholder: "Sequence " + index
+            })
+            .appendTo(row0)
+
+          $('<label/>')
+            .text("Function")
+            .appendTo(row1);
+
+          var selectFunctionProperty = $('<select/>', {
+              class: "node-input-function",
+            })
+            .appendTo(row1);
+
+          for (var i = 0; i < 4; i++) {
+            selectFunctionProperty.append($("<option></option>").val(functions[i].v).text(functions[i].t));
+          }
+
+          $('<label/>')
+            .text("Unit ID")
+            .appendTo(row2);
+
+          var unitIdProperty = $('<input/>', {
+              class: "node-input-unitid",
+              type: "text",
+            })
+            .appendTo(row2)
+
+          $('<label/>')
+            .text("Address")
+            .appendTo(row3);
+
+          var addressProperty = $('<input/>', {
+              class: "node-input-address",
+              type: "text",
+              placeholder: "0 - 65535"
+            })
+            .appendTo(row3)
+
+          $('<label/>')
+            .text("Quantity")
+            .appendTo(row4);
+
+          var quantityProperty = $('<input/>', {
+              class: "node-input-quantity",
+              type: "text",
+              placeholder: "0 - 65535"
+            })
+            .appendTo(row4)
+
+          sequenceNameProperty.val(sequence.name);
+          selectFunctionProperty.val(sequence.fc);
+          unitIdProperty.val(sequence.unitid);
+          addressProperty.val(sequence.address);
+          quantityProperty.val(sequence.quantity);
+
+          selectFunctionProperty.change();
+
+          row[0].appendChild(fragment);
+
+        },
+        removable: true,
+        sortable: true
+      })
+
+      if (!this.sequences) {
+        var sequence = {
+          name: null,
+          unitid: null,
+          fc: functions[0].v,
+          address: null,
+          quantity: null
+        };
+
+        this.sequences = [sequence];
+      }
+
+      for (var i = 0; i < this.sequences.length; i++) {
+        var sequence = this.sequences[i];
+        $("#node-input-sequences-container").editableList('addItem', sequence);
+      }
+
+    },
+    oneditsave: function () {
+      var sequences = $("#node-input-sequences-container").editableList('items');
+      var node = this;
+      node.sequences = [];
+      sequences.each(function (i) {
+        var sequence = $(this);
+        var r = {
+          name: sequence.find(".node-input-sequencename").val(),
+          unitid: sequence.find(".node-input-unitid").val(),
+          fc: sequence.find(".node-input-function").val(),
+          address: sequence.find(".node-input-address").val(),
+          quantity: sequence.find(".node-input-quantity").val()
+        };
+        node.sequences.push(r);
+      });
+    },
+    oneditresize: function (size) {
+      
+      var height = size.height;
+      $('#node-input-sequences-container').css("height", (height - 145) + "px");
+      
+    }
+  })
+</script>
+
+
+<script type="text/x-red" data-template-name="modbus-flex-sequencer">
+  <div class="form-row">
+    <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+
+  <div class="form-row node-input-modbus-tabs-row">
+    <ul style="min-width: 600px; margin-bottom: 20px;" id="node-input-modbus-tabs"></ul>
+  </div>
+
+  <div id="node-input-tabs-content">
+
+    <div id="modbus-settings-tab" style="display:none">
+      <div class="form-row">
+        <label for="node-input-server"><i class="icon-globe"></i> <span
+            data-i18n="modbus-contrib.label.server"></span></label>
+        <input type="text" id="node-input-server">
+      </div>
+      <div class="form-row node-input-sequences-container-row">
+        <ol id="node-input-sequences-container"></ol>
+      </div>
+    </div>
+
+    <div id="modbus-options-tab" style="display:none">
+      <div class="form-row">
+        <label style="min-width:160px" for="node-input-emptyMsgOnFail"><i class="fa fa-th"></i> <span
+            data-i18n="modbus-contrib.label.emptyMsgOnFail"></span></label>
+        <input type="checkbox" id="node-input-emptyMsgOnFail" style="max-width:30px">
+      </div>
+      <div class="form-row">
+        <label style="min-width:160px" for="node-input-keepMsgProperties"><i class="fa fa-th"></i> <span
+            data-i18n="modbus-contrib.label.keepMsgProperties"></span></label>
+        <input type="checkbox" id="node-input-keepMsgProperties" style="max-width:30px">
+      </div>
+      <div class="form-row">
+        <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
+            data-i18n="modbus-contrib.label.showActivities"></span></label>
+        <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
+      </div>
+      <div class="form-row">
+        <label style="min-width:160px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
+            data-i18n="modbus-contrib.label.showErrors"></span></label>
+        <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
+      </div>
+      <hr>
+      <div class="form-row">
+        <label style="min-width:160px" for="node-input-useIOFile"><i class="fa fa-file-code-o"></i> <span
+            data-i18n="modbus-contrib.label.useIOFile"></span></label>
+        <input type="checkbox" id="node-input-useIOFile" style="max-width:30px">
+      </div>
+      <div id="modbusiofile-row">
+        <div class="form-row">
+          <label style="min-width:160px" for="node-input-logIOActivities"><i class="fa fa-th"></i> <span
+              data-i18n="modbus-contrib.label.logIOActivities"></span></label>
+          <input type="checkbox" id="node-input-logIOActivities" style="max-width:30px">
+        </div>
+        <div class="form-row">
+          <label style="min-width:160px" for="node-input-useIOForPayload"><i class="fa fa-comment-o"></i> <span
+              data-i18n="modbus-contrib.label.useIOForPayload"></span></label>
+          <input type="checkbox" id="node-input-useIOForPayload" style="max-width:30px">
+        </div>
+        <div class="form-row">
+          <label for="node-input-ioFile"><i class="icon-file"></i> <span
+              data-i18n="modbus-contrib.label.ioFile"></span></label>
+          <input type="text" id="node-input-ioFile">
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+
+<script type="text/x-red" data-help-name="modbus-flex-sequencer">
+  
+  </script>

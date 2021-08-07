@@ -1,0 +1,23 @@
+{
+    "modbus-contrib": {
+      "label": {
+        "showActivities": "Show Activities",
+        "showErrors": "Show Errors",
+        "logIOActivities": "Log IO",
+        "unitId": "Unit-Id",
+        "functioncode": "FC",
+        "address": "Address",
+        "quantity": "Quantity",
+        "server": "Server",
+        "useIOFile": "Using IO-File",
+        "ioFile": "IO-File",
+        "useIOForPayload": "IO's As Payload",
+        "emptyMsgOnFail": "Empty msg on fail",
+        "keepMsgProperties": "Keep Msg Properties"
+      },
+      "tabs-label": {
+        "settings": "Settings",
+        "options": "Optionals"
+      }
+    }
+  }
