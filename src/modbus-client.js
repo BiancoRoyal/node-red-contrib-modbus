@@ -312,7 +312,7 @@ module.exports = function (RED) {
             }).then(node.setTCPConnectionOptions)
               .catch(node.modbusTcpErrorHandling)
             break
-          case 'TPC-RTU-BUFFERED':
+          case 'TCP-RTU-BUFFERED':
             verboseLog('TCP RTU buffered port')
             node.client.connectTcpRTUBuffered(node.tcpHost, {
               port: node.tcpPort,
