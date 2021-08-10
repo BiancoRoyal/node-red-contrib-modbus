@@ -5,6 +5,7 @@
 
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  **/
+
 /**
  * Modbus Read node.
  * @module NodeRedModbusRead
@@ -61,6 +62,11 @@ module.exports = function (RED) {
       unitWithQueue.lowLevelReached = false
       unitWithQueue.highLevelReached = false
       unitWithQueue.highHighLevelReached = false
+    }
+
+    node.errorProtocolMsg = function (err, msg) {
+      mbBasics.logMsgError(node, err, msg)
+      mbBasics.sendEmptyMsgOnFail(node, err, msg)
     }
 
     node.initUnitQueueStates()
@@ -256,11 +262,6 @@ module.exports = function (RED) {
 
     node.on('input', function (msg) {
       let msgUnitId = node.unitid
-      if (msg.payload.resetQueue) {
-        msgUnitId = parseInt(msg.payload.unitId)
-      } else {
-        msgUnitId = parseInt(msg.payload) || node.unitid
-      }
       msg.payload = {}
       msg.payload.queueEnabled = modbusClient.bufferCommands
 
@@ -268,6 +269,16 @@ module.exports = function (RED) {
         msg.payload.allQueueData = true
         msg.payload.queues = modbusClient.bufferCommandList
       } else {
+        try {
+          if (msg.payload.resetQueue) {
+            msgUnitId = parseInt(msg.payload.unitId) || node.unitid
+          } else {
+            msgUnitId = parseInt(msg.payload) || node.unitid
+          }
+        } catch (err) {
+          node.errorProtocolMsg(err, msg)
+          msgUnitId = node.unitid
+        }
         msg.payload.allQueueData = false
         msg.payload.unitid = msgUnitId
         msg.payload.queue = modbusClient.bufferCommandList.get(msgUnitId)
