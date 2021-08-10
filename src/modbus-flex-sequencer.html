@@ -5,6 +5,7 @@
 
  @author <a>Andrea Verardi</a> (Anversoft)
 -->
+
 <script type="text/javascript">
   //Modbus sequences
   var functions = [{
@@ -104,7 +105,6 @@
     },
     oneditprepare: function () {
 
-
       let tabs = RED.tabs.create({
         id: "node-input-modbus-tabs",
         onchange: function (tab) {
@@ -134,11 +134,8 @@
         }
       })
 
-
       /*
-             
           Polling Section
-
       */
 
       $('#node-input-sequences-container').css('min-width', '450px').editableList({
@@ -259,7 +256,7 @@
       })
 
       if (!this.sequences) {
-        var sequence = {
+        let sequenceMsg = {
           name: null,
           unitid: null,
           fc: functions[0].v,
@@ -267,14 +264,12 @@
           quantity: null
         };
 
-        this.sequences = [sequence];
+        this.sequences = [sequenceMsg];
       }
 
       for (var i = 0; i < this.sequences.length; i++) {
-        var sequence = this.sequences[i];
-        $("#node-input-sequences-container").editableList('addItem', sequence);
+        $("#node-input-sequences-container").editableList('addItem', this.sequences[i]);
       }
-
     },
     oneditsave: function () {
       var sequences = $("#node-input-sequences-container").editableList('items');

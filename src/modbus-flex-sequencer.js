@@ -3,10 +3,11 @@
  All rights reserved.
  node-red-contrib-modbus - The BSD 3-Clause License
 
-@author <a>Andrea Verardi</a> (Anversoft)
+ @author <a>Andrea Verardi</a> (Anversoft)
  */
+
 /**
- * Modbus Getter node.
+ * Modbus Sequencer node.
  * @module NodeRedModbusFlexSequencer
  *
  * @param RED
@@ -56,7 +57,7 @@ module.exports = function (RED) {
       }
 
       node.send(mbIOCore.buildMessageWithIO(node, resp.data, resp, msg))
-      node.emit('modbusFlexGetterNodeDone')
+      node.emit('modbusFlexSequencerNodeDone')
     }
 
     node.errorProtocolMsg = function (err, msg) {
@@ -69,7 +70,7 @@ module.exports = function (RED) {
       const origMsg = mbCore.getOriginalMessage(node.bufferMessageList, msg)
       node.errorProtocolMsg(err, origMsg)
       mbBasics.setModbusError(node, modbusClient, err, origMsg)
-      node.emit('modbusFlexGetterNodeError')
+      node.emit('modbusFlexSequencerNodeError')
     }
 
     node.prepareMsg = function (msg) {
@@ -147,25 +148,22 @@ module.exports = function (RED) {
     }
 
     node.on('input', function (msg) {
-      // Se il client è nullo non eseguire niente
       if (!modbusClient.client) {
         return
       }
-      // Copia le sequenze in una costante, se msg contiene sequences allora esegui l'override
-      const seq = mbBasics.invalidSequencesIn(msg) ? node.sequences : msg.sequences
 
-      // Mantieni l'origine
       const origMsgInput = Object.assign({}, msg)
+      const sequences = mbBasics.invalidSequencesIn(msg) ? node.sequences : msg.sequences
 
       try {
-        for (const m in seq) {
-          const inputMsg = node.prepareMsg(seq[m])
+        sequences.forEach(msg => {
+          const inputMsg = node.prepareMsg(msg)
           if (node.isValidModbusMsg(inputMsg)) {
             const newMsg = node.buildNewMessageObject(node, inputMsg)
             node.bufferMessageList.set(newMsg.messageId, mbBasics.buildNewMessage(node.keepMsgProperties, inputMsg, newMsg))
             modbusClient.emit('readModbus', newMsg, node.onModbusReadDone, node.onModbusReadError)
           }
-        }
+        })
       } catch (err) {
         node.errorProtocolMsg(err, origMsgInput)
       }
