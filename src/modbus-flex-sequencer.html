@@ -375,5 +375,78 @@
 
 
 <script type="text/x-red" data-help-name="modbus-flex-sequencer">
-  
+<p>
+  Modbus TCP/Serial flexible input triggered auto-sequence read node with connection input parameters.
+</p>
+<p>
+   Connects to a Modbus TPC or serial to read coils/inputs/registers automatically in sequence.
+</p>
+<p>
+  Use any input to trigger the request but you can override the list using:
+</p>
+<code>
+  msg.sequences
+</code>
+<p>
+  <strong>Function codes (1:4) currently supported include:</strong>
+
+    <ul>
+      <li>FC 1: Read Coil Status</li>
+      <li>FC 2: Read Input Status</li>
+      <li>FC 3: Read Holding Registers</li>
+      <li>FC 4: Read Input Registers</li>
+    </ul>
+    </p>
+ <p>
+     <strong>Input parameter for connecting Modbus</strong>
+     <ul>
+         <li>(mixed)  fc ('FC1', 'FC2', 'FC3', 'FC4' - Or - 1:4) - Function Code</li>
+         <li>(integer) unitid (0..255 tcp | 0..247 serial) - Unit-ID</li>        
+         <li>(integer) address (0:65535) - The starting address</li>
+         <li>(integer) quantity (1:65535) - The quantity of coils/inputs/registers to be read from the starting address</li>
+     </ul>
+ </p>
+
+ <p>Output 1: data Array (PDU), modbus response Buffer, input message</p>
+ <p>Output 2: modbus response Buffer, data Array (PDU), input message</p>
+
+ <p>Function node code example for single input:</p>
+ <code>
+  msg.sequences = [
+  {
+      name : "Foo",
+      fc : 1,
+      address : 1,
+      unitid: 2,
+      quantity : 6,
+  }]
+ return msg;
+ </code>
+
+ <p>Function node code example for multiple inputs:</p>
+ <code>
+  msg.sequences = [
+  {
+      name : "Foo",
+      fc : 1,
+      address : 1,
+      unitid: 2,
+      quantity : 6,
+  },
+  {
+      name : "Bar",
+      fc : 3,
+      address : 0,
+      unitid: 1,
+      quantity : 10
+  },
+  {
+    name : "Baz",
+    fc : 'FC4',
+    address : 10,
+    unitid: 3,
+    quantity : 46
+  }]
+ return msg;
+ </code>
   </script>
