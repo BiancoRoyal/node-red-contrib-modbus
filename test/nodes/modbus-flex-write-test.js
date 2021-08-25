@@ -105,7 +105,8 @@ var testWriteParametersFlow = [
     unit_id: '1',
     commandDelay: '1',
     clientTimeout: '100',
-    reconnectTimeout: 200
+    reconnectDelay: 200,
+    connectionTimeout: 10000
   }
 ]
 
@@ -192,7 +193,8 @@ describe('Flex Write node Testing', function () {
           unit_id: '1',
           commandDelay: '1',
           clientTimeout: '100',
-          reconnectTimeout: 200
+          reconnectDelay: 200,
+          connectionTimeout: 10000
         }
       ], function () {
         const modbusFlexWrite = helper.getNode('c02b6d1.d419c1')
@@ -293,7 +295,8 @@ describe('Flex Write node Testing', function () {
           unit_id: '1',
           commandDelay: '1',
           clientTimeout: '100',
-          reconnectTimeout: 200
+          reconnectDelay: 200,
+          connectionTimeout: 10000
         }
       ], function () {
         const h1 = helper.getNode('h1')

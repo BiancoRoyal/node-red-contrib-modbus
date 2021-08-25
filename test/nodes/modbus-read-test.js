@@ -88,7 +88,8 @@ const readMsgFlow = [
     unit_id: '1',
     commandDelay: '1',
     clientTimeout: '100',
-    reconnectTimeout: 200
+    reconnectDelay: 200,
+    connectionTimeout: 10000
   }
 ]
 
@@ -215,7 +216,8 @@ describe('Read node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: 200
+        reconnectDelay: 200,
+        connectionTimeout: 10000
       }
       ], function () {
         var modbusServer = helper.getNode('e54529b9.952ea8')
@@ -337,7 +339,8 @@ describe('Read node Testing', function () {
           unit_id: '1',
           commandDelay: '1',
           clientTimeout: '100',
-          reconnectTimeout: 200
+          reconnectDelay: 200,
+          connectionTimeout: 10000
         },
         {
           id: 'e0519b16.5fcdd',
@@ -433,7 +436,8 @@ describe('Read node Testing', function () {
           unit_id: '1',
           commandDelay: '1',
           clientTimeout: '100',
-          reconnectTimeout: 200
+          reconnectDelay: 200,
+          connectionTimeout: 10000
         },
         {
           id: 'e0519b16.5fcdd',
@@ -536,7 +540,8 @@ describe('Read node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: 200
+        reconnectDelay: 200,
+        connectionTimeout: 10000
       }
       ], function () {
         helper.request().post('/modbus/read/inject/8ecaae3e.4b8928').expect(200).end(done)

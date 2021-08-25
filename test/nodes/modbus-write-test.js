@@ -83,7 +83,8 @@ var testSimpleWriteParametersFlow = [{
   unit_id: '1',
   commandDelay: '1',
   clientTimeout: '100',
-  reconnectTimeout: 200
+  reconnectDelay: 200,
+  connectionTimeout: 10000
 }
 ]
 
@@ -174,10 +175,11 @@ describe('Write node Testing', function () {
         tcpPort: 8502,
         unit_id: 1,
         clientTimeout: 100,
-        reconnectTimeout: 200,
+        reconnectDelay: 200,
         bufferCommands: true,
         stateLogEnabled: false,
-        parallelUnitIdsAllowed: true
+        parallelUnitIdsAllowed: true,
+        connectionTimeout: 10000
       }], function () {
         var inject = helper.getNode('67dded7e.025904')
         inject.should.have.property('name', 'injectTrue')
@@ -295,7 +297,8 @@ describe('Write node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: 200
+        reconnectDelay: 200,
+        connectionTimeout: 10000
       }
       ], function () {
         const modbusWrite = helper.getNode('1ed908da.427ecf')

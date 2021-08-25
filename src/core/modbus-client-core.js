@@ -410,8 +410,12 @@ de.biancoroyal.modbus.core.client.setNewNodeOptionalSettings = function (node, m
     node.clientTimeout = parseInt(msg.payload.clientTimeout) || node.clientTimeout
   }
 
-  if (msg.payload.reconnectTimeout) {
-    node.reconnectTimeout = parseInt(msg.payload.reconnectTimeout) || node.reconnectTimeout
+  if (msg.payload.reconnectDelay) {
+    node.reconnectDelay = parseInt(msg.payload.reconnectDelay) || node.reconnectDelay
+  }
+
+  if (msg.payload.connectionTimeout) {
+    node.connectionTimeout = parseInt(msg.payload.connectionTimeout) || node.connectionTimeout
   }
 }
 

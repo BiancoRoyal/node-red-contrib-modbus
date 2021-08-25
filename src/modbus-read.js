@@ -121,7 +121,7 @@ module.exports = function (RED) {
     node.onModbusBroken = function () {
       setNodeStatusWithTimeTo('broken')
       if (modbusClient.reconnectOnTimeout) {
-        setNodeStatusWithTimeTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.')
+        setNodeStatusWithTimeTo('reconnecting after ' + modbusClient.reconnectDelay + ' msec.')
         node.resetAllReadingTimer()
       }
     }

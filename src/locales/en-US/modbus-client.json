@@ -20,8 +20,9 @@
       "commandDelay": "Queue delay (ms)",
       "timeout": "Timeout (ms)",
       "reconnectOnTimeout": "Reconnect on timeout",
-      "reconnectTimeout": "Reconnect timeout (ms)",
-      "parallelUnitIdsAllowed": "UnitId's in parallel"
+      "reconnectDelay": "Reconnect delay (ms)",
+      "parallelUnitIdsAllowed": "UnitId's in parallel",
+      "connectionTimeout": "Connection timeout (ms)"
     }
   }
 }

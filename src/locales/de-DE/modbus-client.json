@@ -19,7 +19,8 @@
       "commandDelay": "Queue Sendeverzögerung (ms)",
       "timeout": "Timeout (ms)",
       "reconnectOnTimeout": "Reconnect bei Timeouts",
-      "reconnectTimeout": "Reconnect-Timeout (ms)"
+      "reconnectDelay": "Reconnect-Delay (ms)",
+      "connectionTimeout": "Connection Timeout (ms)"
     }
   }
 }
