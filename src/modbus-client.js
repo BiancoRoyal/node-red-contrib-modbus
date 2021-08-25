@@ -412,7 +412,8 @@ module.exports = function (RED) {
         coreModbusClient.modbusSerialDebug('modbusTcpErrorHandling:' + JSON.stringify(err))
       }
 
-      if (err.errno && coreModbusClient.networkErrors.includes(err.errno)) {
+      if ((err.errno && coreModbusClient.networkErrors.includes(err.errno)) ||
+      (err.code && coreModbusClient.networkErrors.includes(err.code))) {
         node.stateService.send('BREAK')
       }
     }
