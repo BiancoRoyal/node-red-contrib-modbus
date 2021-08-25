@@ -34,7 +34,8 @@
       commandDelay: {value: 1},
       clientTimeout: {value: 1000},
       reconnectOnTimeout: {value: true},
-      reconnectTimeout: {value: 2000},
+      reconnectDelay: {value: 2000},
+      connectionTimeout: {value: 10000},
       parallelUnitIdsAllowed: {value: true}
     },
     label: function () {
@@ -75,8 +76,12 @@
           node.clientTimeout = parseInt(node.clientTimeout)
         }
 
-        if (node.reconnectTimeout) {
-          node.reconnectTimeout = parseInt(node.reconnectTimeout)
+        if (node.reconnectDelay) {
+          node.reconnectDelay = parseInt(node.reconnectDelay)
+        }
+
+        if (node.connectionTimeout) {
+          node.connectionTimeout = parseInt(node.connectionTimeout)
         }
 
         switch (clientTypeSelector.val()) {
@@ -211,6 +216,13 @@
                 <option value="C701">C701</option>
             </select>
         </div>
+        <div class="form-row">
+          <label for="node-config-input-connectionTimeout">
+              <i class="icon-time"></i>
+              <span data-i18n="modbus-contrib.label.connectionTimeout"></span>
+          </label>
+          <input type="text" id="node-config-input-connectionTimeout" placeholder="10000" style="max-width:80px">
+        </div>
     </div>
     <div id="node-inputs-modbus-serial">
         <div class="form-row">
@@ -294,11 +306,11 @@
         <input type="checkbox" id="node-config-input-reconnectOnTimeout" style="max-width:30px">
     </div>
     <div class="form-row">
-        <label for="node-config-input-reconnectTimeout">
+        <label for="node-config-input-reconnectDelay">
             <i class="icon-time"></i>
-            <span data-i18n="modbus-contrib.label.reconnectTimeout"></span>
+            <span data-i18n="modbus-contrib.label.reconnectDelay"></span>
         </label>
-        <input type="text" id="node-config-input-reconnectTimeout" placeholder="2000" style="max-width:80px">
+        <input type="text" id="node-config-input-reconnectDelay" placeholder="2000" style="max-width:80px">
     </div>
     <div class="form-row">
         <label style="min-width:160px" for="node-config-input-parallelUnitIdsAllowed"><i class="fa fa-th"></i> <span
@@ -362,7 +374,7 @@
             <li>Unit-ID (default 1 [serial] or 0 [tcp]) - to set one Unit-ID for all nodes without Unit-ID.
             Set the Unit-ID of the Read/Write/Getter node's to empty for using this ID</li>
             <li>Timeout (default 1000 ms) - ms for the command timeout on ModbusRTU command</li>
-            <li>Reconnect timeout (default 2000 ms) - time to wait on reconnect before next sending</li>
+            <li>Reconnect delay (default 2000 ms) - time to wait on reconnect before next sending</li>
             <li>Reconnect on timeout - should the client do a reconnect or not on timeouts</li>
             <li>Parallel UnitId's allowed - handle commands in parallel per UnitId or not</li>
         </ul>
@@ -371,6 +383,8 @@
         <ul>
             <li>Host - IP address</li>
             <li>Port (default 502)</li>
+            <li>Connection timeout (default 10000 ms) - time to wait before aborting a connection attempt</li>
+            
         </ul>
 
         <h3>Serial</h3>

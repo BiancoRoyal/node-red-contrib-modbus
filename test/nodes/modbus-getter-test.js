@@ -105,7 +105,8 @@ var testGetterFlowWithInject = [{
   unit_id: '1',
   commandDelay: '1',
   clientTimeout: '100',
-  reconnectTimeout: 200
+  reconnectDelay: 200,
+  connectionTimeout: 10000
 },
 {
   id: 'e0519b16.5fcdd',
@@ -184,7 +185,8 @@ var testGetterFlow = [{
   unit_id: '1',
   commandDelay: '1',
   clientTimeout: '100',
-  reconnectTimeout: 200
+  reconnectDelay: 200,
+  connectionTimeout: 10000
 },
 {
   id: 'e0519b16.5fcdd',
@@ -281,8 +283,9 @@ describe('Getter node Testing', function () {
         tcpPort: 8502,
         unit_id: 1,
         clientTimeout: 100,
-        reconnectTimeout: 200,
-        parallelUnitIdsAllowed: true
+        reconnectDelay: 200,
+        parallelUnitIdsAllowed: true,
+        connectionTimeout: 10000
       }], function () {
         const modbusServer = helper.getNode('996023fe.ea04b')
         modbusServer.should.have.property('name', 'modbusServer')
@@ -383,7 +386,8 @@ describe('Getter node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: 200
+        reconnectDelay: 200,
+        connectionTimeout: 10000
       }
       ], function () {
         const h1 = helper.getNode('h1')

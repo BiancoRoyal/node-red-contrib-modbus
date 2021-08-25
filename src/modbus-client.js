@@ -33,7 +33,8 @@ module.exports = function (RED) {
     const defaultTcpUnitId = 0
     const serialConnectionDelayTimeMS = 500
     const timeoutTimeMS = 1000
-    const reconnectTimeMS = 2000
+    const reconnectDelayTimeMS = 2000
+    const connectionTimeoutTimeMS = 10000
     const logHintText = ' Get More About It By Logging'
 
     this.clienttype = config.clienttype
@@ -62,7 +63,8 @@ module.exports = function (RED) {
     this.unit_id = parseInt(config.unit_id)
     this.commandDelay = parseInt(config.commandDelay) || minCommandDelayMilliseconds
     this.clientTimeout = parseInt(config.clientTimeout) || timeoutTimeMS
-    this.reconnectTimeout = parseInt(config.reconnectTimeout) || reconnectTimeMS
+    this.reconnectDelay = parseInt(config.reconnectDelay) || reconnectDelayTimeMS
+    this.connectionTimeout = parseInt(config.connectionTimeout) || connectionTimeoutTimeMS
     this.reconnectOnTimeout = config.reconnectOnTimeout
 
     if (config.parallelUnitIdsAllowed === undefined) {
@@ -80,6 +82,7 @@ module.exports = function (RED) {
     node.unitSendingAllowed = []
     node.messageAllowedStates = coreModbusClient.messagesAllowedStates
     node.serverInfo = ''
+    node.connectionTimeoutTimer = null
 
     node.stateMachine = null
     node.stateService = null
@@ -87,7 +90,7 @@ module.exports = function (RED) {
     node.actualServiceState = node.stateMachine.initialState
     node.actualServiceStateBefore = node.actualServiceState
     node.stateService = coreModbusClient.startStateService(node.stateMachine)
-    node.reconnectTimeoutId = 0
+    node.reconnectDelayId = 0
     node.serialSendingAllowed = false
     node.internalDebugLog = internalDebugLog
 
@@ -166,7 +169,7 @@ module.exports = function (RED) {
         verboseWarn('fsm init state after ' + node.actualServiceStateBefore.value)
         node.updateServerinfo()
         coreModbusQueue.initQueue(node)
-        node.reconnectTimeoutId = 0
+        node.reconnectDelayId = 0
 
         try {
           if (node.isFirstInitOfConnection) {
@@ -174,8 +177,8 @@ module.exports = function (RED) {
             verboseWarn('first fsm init in ' + serialConnectionDelayTimeMS + ' ms')
             setTimeout(node.connectClient, serialConnectionDelayTimeMS)
           } else {
-            verboseWarn('fsm init in ' + node.reconnectTimeout + ' ms')
-            setTimeout(node.connectClient, node.reconnectTimeout)
+            verboseWarn('fsm init in ' + node.reconnectDelay + ' ms')
+            setTimeout(node.connectClient, node.reconnectDelay)
           }
         } catch (err) {
           node.error(err, { payload: 'client connection error ' + logHintText })
@@ -255,13 +258,13 @@ module.exports = function (RED) {
         verboseWarn('fsm reconnect state after ' + node.actualServiceStateBefore.value + logHintText)
         coreModbusQueue.queueSerialLockCommand(node)
         node.emit('mbreconnecting')
-        if (node.reconnectTimeout <= 0) {
-          node.reconnectTimeout = reconnectTimeMS
+        if (node.reconnectDelay <= 0) {
+          node.reconnectDelay = reconnectDelayTimeMS
         }
         setTimeout(() => {
-          node.reconnectTimeoutId = 0
+          node.reconnectDelayId = 0
           node.stateService.send('INIT')
-        }, node.reconnectTimeout)
+        }, node.reconnectDelay)
       }
     })
 
@@ -283,8 +286,12 @@ module.exports = function (RED) {
         node.clientTimeout = timeoutTimeMS
       }
 
-      if (!node.reconnectTimeout) {
-        node.reconnectTimeout = reconnectTimeMS
+      if (!node.reconnectDelay) {
+        node.reconnectDelay = reconnectDelayTimeMS
+      }
+
+      if (!node.connectionTimeout) {
+        node.connectionTimeout = connectionTimeoutTimeMS
       }
 
       if (node.clienttype === 'tcp') {
@@ -328,6 +335,14 @@ module.exports = function (RED) {
             }).then(node.setTCPConnectionOptions)
               .catch(node.modbusTcpErrorHandling)
         }
+
+        node.connectionTimeoutTimer = setTimeout(() => {
+          node.client.destroy(function () {
+            verboseLog('connection attempt timed out')
+            node.stateService.send('FAILURE')
+          })
+        }, node.connectionTimeout)
+
       } else {
         if (!coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
           node.error(new Error('wrong unit-id serial (0..247)'), { payload: node.unit_id })
@@ -374,6 +389,7 @@ module.exports = function (RED) {
     }
 
     node.setTCPConnectionOptions = function () {
+      clearTimeout(node.connectionTimeoutTimer)
       node.client.setID(node.unit_id)
       node.client.setTimeout(node.clientTimeout)
       node.stateService.send('CONNECT')
@@ -401,6 +417,7 @@ module.exports = function (RED) {
     }
 
     node.modbusTcpErrorHandling = function (err) {
+      clearTimeout(node.connectionTimeoutTimer)
       coreModbusQueue.queueSerialUnlockCommand(node)
       if (node.showErrors) {
         node.error(err)

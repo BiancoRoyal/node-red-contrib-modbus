@@ -119,7 +119,8 @@ describe('Queue Info node Testing', function () {
           unit_id: '1',
           commandDelay: '1',
           clientTimeout: '100',
-          reconnectTimeout: 200
+          reconnectDelay: 200,
+          connectionTimeout: 10000
         }
       ], function () {
         const modbusServer = helper.getNode('389153e.cb648ac')
@@ -216,7 +217,8 @@ describe('Queue Info node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: 200
+        reconnectDelay: 200,
+        connectionTimeout: 10000
       }], function () {
         const h1 = helper.getNode('h1')
         h1.on('input', function (msg) {
@@ -308,7 +310,8 @@ describe('Queue Info node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: 200
+        reconnectDelay: 200,
+        connectionTimeout: 10000
       }], function () {
         const h1 = helper.getNode('h1')
         h1.on('input', function (msg) {
@@ -426,7 +429,8 @@ describe('Queue Info node Testing', function () {
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '100',
-        reconnectTimeout: 200
+        reconnectDelay: 200,
+        connectionTimeout: 10000
       }], function () {
         const h1 = helper.getNode('h1')
         let countMsg = 0
