@@ -58,6 +58,7 @@ module.exports = function (RED) {
     this.serialParity = config.serialParity
     this.serialType = config.serialType
     this.serialConnectionDelay = parseInt(config.serialConnectionDelay) || serialConnectionDelayTimeMS
+    this.serialAsciiResponseStartDelimiter = config.serialAsciiResponseStartDelimiter
 
     this.unit_id = parseInt(config.unit_id)
     this.commandDelay = parseInt(config.commandDelay) || minCommandDelayMilliseconds
@@ -356,6 +357,7 @@ module.exports = function (RED) {
         switch (node.serialType) {
           case 'ASCII':
             verboseLog('ASCII port serial')
+            serialPortOptions.startOfSlaveFrameChar = parseInt(node.serialAsciiResponseStartDelimiter)
             node.client.connectAsciiSerial(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
               .catch(node.modbusSerialErrorHandling)
             break

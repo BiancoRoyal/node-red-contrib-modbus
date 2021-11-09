@@ -29,6 +29,7 @@
       serialStopbits: {value: 1, required: true, validate: RED.validators.number()},
       serialParity: {value: 'none', required: true},
       serialConnectionDelay: {value: 100},
+      serialAsciiResponseStartDelimiter: {value: 0x3A, validate: RED.validators.number()},
 
       unit_id: {value: 1},
       commandDelay: {value: 1},
@@ -51,8 +52,10 @@
       let node = this
       node.ports = []
       let clientTypeSelector = $('#node-config-input-clienttype')
+      let serialTypeSelector = $('#node-config-input-serialType')
       let inputsSerial = $('#node-inputs-modbus-serial')
       let inputsSerialExtras = $('#node-inputs-modbus-serial-extras')
+      let serialAsciiResponseStartDelimiter = $('node-config-input-serialAsciiResponseStartDelimiter')
       let inputsTCP = $('#node-inputs-modbus-tcp')
 
       clientTypeSelector.on('focus', function () {
@@ -77,6 +80,10 @@
 
         if (node.reconnectTimeout) {
           node.reconnectTimeout = parseInt(node.reconnectTimeout)
+        }
+
+        if (serialAsciiResponseStartDelimiter) {
+          node.serialAsciiResponseStartDelimiter = parseInt(serialAsciiResponseStartDelimiter, 16)
         }
 
         switch (clientTypeSelector.val()) {
@@ -120,6 +127,13 @@
 
             inputsSerial.show()
             inputsTCP.hide()
+
+            
+            if (serialTypeSelector.val() === 'ASCII') {
+              serialAsciiResponseStartDelimiter.show()
+            } else {
+              serialAsciiResponseStartDelimiter.hide()
+            }
 
 
             if (node.tcpHost) {
@@ -277,6 +291,10 @@
                 <span data-i18n="modbus-contrib.label.serialconnectiondelay"></span>
             </label>
             <input type="text" id="node-config-input-serialConnectionDelay" style="max-width:80px" placeholder="500">
+        </div>
+        <div class="form-row">
+          <label for="node-config-input-serialAsciiResponseStartDelimiter"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.serialAsciiResponseStartDelimiter"></span></label>
+          <input type="text" id="node-config-input-serialAsciiResponseStartDelimiter" style="max-width:80px" placeholder="0x3A (:)">
         </div>
 	</div>
 	<hr>
