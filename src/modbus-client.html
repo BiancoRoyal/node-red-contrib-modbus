@@ -29,7 +29,7 @@
       serialStopbits: {value: 1, required: true, validate: RED.validators.number()},
       serialParity: {value: 'none', required: true},
       serialConnectionDelay: {value: 100},
-      serialAsciiResponseStartDelimiter: {value: 0x3A, validate: RED.validators.number()},
+      serialAsciiResponseStartDelimiter: {value: 0x3A},
 
       unit_id: {value: 1},
       commandDelay: {value: 1},
@@ -55,7 +55,7 @@
       let serialTypeSelector = $('#node-config-input-serialType')
       let inputsSerial = $('#node-inputs-modbus-serial')
       let inputsSerialExtras = $('#node-inputs-modbus-serial-extras')
-      let serialAsciiResponseStartDelimiter = $('#node-config-input-serialAsciiResponseStartDelimiter')
+      let serialAsciiFormRow = $('#serialAsciiFormRow')
       let inputsTCP = $('#node-inputs-modbus-tcp')
 
       clientTypeSelector.on('focus', function () {
@@ -83,7 +83,7 @@
         }
 
         if (node.serialAsciiResponseStartDelimiter) {
-          node.serialAsciiResponseStartDelimiter = parseInt(serialAsciiResponseStartDelimiter, 16)
+          node.serialAsciiResponseStartDelimiter = parseInt(node.serialAsciiResponseStartDelimiter, 16)
         }
 
         switch (clientTypeSelector.val()) {
@@ -123,11 +123,6 @@
               node.serialParity.value = 'none'
             } else {
               inputsSerialExtras.show()
-              if (serialTypeSelector.val() === 'ASCII') {
-                serialAsciiResponseStartDelimiter.show()
-              } else {
-                serialAsciiResponseStartDelimiter.hide()
-              }
             }
 
             inputsSerial.show()
@@ -157,6 +152,14 @@
             break
           default:
             break
+        }
+      })
+
+      serialTypeSelector.on('focus').change(function () {
+        if (serialTypeSelector.val() === 'ASCII') {
+          serialAsciiFormRow.show()
+        } else {
+          serialAsciiFormRow.hide()
         }
       })
 
@@ -289,7 +292,7 @@
             </label>
             <input type="text" id="node-config-input-serialConnectionDelay" style="max-width:80px" placeholder="500">
         </div>
-        <div class="form-row">
+        <div class="form-row" id="serialAsciiFormRow">
           <label for="node-config-input-serialAsciiResponseStartDelimiter"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.serialAsciiResponseStartDelimiter"></span></label>
           <input type="text" id="node-config-input-serialAsciiResponseStartDelimiter" style="max-width:80px" placeholder="0x3A (:)">
         </div>
