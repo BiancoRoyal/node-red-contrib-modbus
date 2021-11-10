@@ -55,7 +55,7 @@
       let serialTypeSelector = $('#node-config-input-serialType')
       let inputsSerial = $('#node-inputs-modbus-serial')
       let inputsSerialExtras = $('#node-inputs-modbus-serial-extras')
-      let serialAsciiFormRow = $('#serialAsciiFormRow')
+      let inputsAsciiExtras = $('#node-inputs-ascii-extras')
       let inputsTCP = $('#node-inputs-modbus-tcp')
 
       clientTypeSelector.on('focus', function () {
@@ -157,9 +157,9 @@
 
       serialTypeSelector.on('focus').change(function () {
         if (serialTypeSelector.val() === 'ASCII') {
-          serialAsciiFormRow.show()
+          inputsAsciiExtras.show()
         } else {
-          serialAsciiFormRow.hide()
+          inputsAsciiExtras.hide()
         }
       })
 
@@ -292,11 +292,13 @@
             </label>
             <input type="text" id="node-config-input-serialConnectionDelay" style="max-width:80px" placeholder="500">
         </div>
-        <div class="form-row" id="serialAsciiFormRow">
-          <label for="node-config-input-serialAsciiResponseStartDelimiter"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.serialAsciiResponseStartDelimiter"></span></label>
-          <input type="text" id="node-config-input-serialAsciiResponseStartDelimiter" style="max-width:80px" placeholder="0x3A (:)">
-        </div>
 	</div>
+  <div id="node-inputs-ascii-extras">
+    <div class="form-row">
+      <label for="node-config-input-serialAsciiResponseStartDelimiter"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.serialAsciiResponseStartDelimiter"></span></label>
+      <input type="text" id="node-config-input-serialAsciiResponseStartDelimiter" style="max-width:80px" placeholder="0x3A (:)">
+    </div>
+  </div>
 	<hr>
     <div class="form-row">
         <label for="node-config-input-unit_id"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.unitId"></span></label>
