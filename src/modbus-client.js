@@ -357,7 +357,8 @@ module.exports = function (RED) {
         switch (node.serialType) {
           case 'ASCII':
             verboseLog('ASCII port serial')
-            serialPortOptions.startOfSlaveFrameChar = parseInt(node.serialAsciiResponseStartDelimiter)
+            serialPortOptions.startOfSlaveFrameChar = parseInt(node.serialAsciiResponseStartDelimiter, 16)
+            verboseLog('Using response delimiter: 0x' + serialPortOptions.startOfSlaveFrameChar.toString(16))
             node.client.connectAsciiSerial(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
               .catch(node.modbusSerialErrorHandling)
             break

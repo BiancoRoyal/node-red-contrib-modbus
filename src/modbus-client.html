@@ -55,7 +55,7 @@
       let serialTypeSelector = $('#node-config-input-serialType')
       let inputsSerial = $('#node-inputs-modbus-serial')
       let inputsSerialExtras = $('#node-inputs-modbus-serial-extras')
-      let serialAsciiResponseStartDelimiter = $('node-config-input-serialAsciiResponseStartDelimiter')
+      let serialAsciiResponseStartDelimiter = $('#node-config-input-serialAsciiResponseStartDelimiter')
       let inputsTCP = $('#node-inputs-modbus-tcp')
 
       clientTypeSelector.on('focus', function () {
@@ -82,7 +82,7 @@
           node.reconnectTimeout = parseInt(node.reconnectTimeout)
         }
 
-        if (serialAsciiResponseStartDelimiter) {
+        if (node.serialAsciiResponseStartDelimiter) {
           node.serialAsciiResponseStartDelimiter = parseInt(serialAsciiResponseStartDelimiter, 16)
         }
 
@@ -123,18 +123,15 @@
               node.serialParity.value = 'none'
             } else {
               inputsSerialExtras.show()
+              if (serialTypeSelector.val() === 'ASCII') {
+                serialAsciiResponseStartDelimiter.show()
+              } else {
+                serialAsciiResponseStartDelimiter.hide()
+              }
             }
 
             inputsSerial.show()
             inputsTCP.hide()
-
-            
-            if (serialTypeSelector.val() === 'ASCII') {
-              serialAsciiResponseStartDelimiter.show()
-            } else {
-              serialAsciiResponseStartDelimiter.hide()
-            }
-
 
             if (node.tcpHost) {
               node.tcpHost.required = false
