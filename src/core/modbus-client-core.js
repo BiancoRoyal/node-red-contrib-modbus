@@ -117,10 +117,8 @@ de.biancoroyal.modbus.core.client.getLogFunction = function (node) {
 de.biancoroyal.modbus.core.client.activateSendingOnSuccess = function (node, cb, cberr, resp, msg) {
   node.activateSending(msg).then(function () {
     cb(resp, msg)
-    console.log('******** CB EXECUTED *************')
   }).catch(function (err) {
     cberr(err, msg)
-    console.log('************* CB ERR **************')
   }).finally(function () {
     node.stateService.send('ACTIVATE')
   })
@@ -158,10 +156,10 @@ de.biancoroyal.modbus.core.client.readModbusByFunctionCodeTwo = function (node, 
 
 de.biancoroyal.modbus.core.client.readModbusByFunctionCodeThree = function (node, msg, cb, cberr) {
   const coreClient = de.biancoroyal.modbus.core.client
+  console.log(node, msg)
   node.client.readHoldingRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
     coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
   }).catch(function (err) {
-    console.log('******** ERROR READ *******')
     coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
     node.modbusErrorHandling(err)
   })

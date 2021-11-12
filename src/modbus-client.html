@@ -29,7 +29,7 @@
       serialStopbits: {value: 1, required: true, validate: RED.validators.number()},
       serialParity: {value: 'none', required: true},
       serialConnectionDelay: {value: 100},
-      serialAsciiResponseStartDelimiter: {value: 0x3A},
+      serialAsciiResponseStartDelimiter: {value: '0x3A'},
 
       unit_id: {value: 1},
       commandDelay: {value: 1},
@@ -80,10 +80,6 @@
 
         if (node.reconnectTimeout) {
           node.reconnectTimeout = parseInt(node.reconnectTimeout)
-        }
-
-        if (node.serialAsciiResponseStartDelimiter) {
-          node.serialAsciiResponseStartDelimiter = parseInt(node.serialAsciiResponseStartDelimiter, 16)
         }
 
         switch (clientTypeSelector.val()) {
@@ -158,6 +154,10 @@
       serialTypeSelector.on('focus').change(function () {
         if (serialTypeSelector.val() === 'ASCII') {
           inputsAsciiExtras.show()
+
+          if (node.serialAsciiResponseStartDelimiter) {
+            node.serialAsciiResponseStartDelimiter = parseInt(node.serialAsciiResponseStartDelimiter, 16)
+          }
         } else {
           inputsAsciiExtras.hide()
         }
