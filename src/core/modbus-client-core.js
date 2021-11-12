@@ -156,7 +156,6 @@ de.biancoroyal.modbus.core.client.readModbusByFunctionCodeTwo = function (node, 
 
 de.biancoroyal.modbus.core.client.readModbusByFunctionCodeThree = function (node, msg, cb, cberr) {
   const coreClient = de.biancoroyal.modbus.core.client
-  console.log(node, msg)
   node.client.readHoldingRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
     coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
   }).catch(function (err) {
