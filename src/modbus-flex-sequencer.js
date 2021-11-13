@@ -104,7 +104,7 @@ module.exports = function (RED) {
       let isValid = true
 
       if (!(Number.isInteger(msg.unitid) &&
-          msg.unitid >= 1 &&
+          msg.unitid >= 0 &&
           msg.unitid <= 255)) {
         node.error('Unit ID Not Valid', msg)
         isValid &= false
