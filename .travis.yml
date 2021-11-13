@@ -6,11 +6,14 @@ matrix:
     - node_js: 12
     - node_js: 10
   allow_failures:
-    - node_js: 16
+    - node_js: "lts/*"
     - node_js: 10
 before_install:
+  - sudo add-apt-repository ppa:deadsnakes/ppa
   - sudo apt-get update
-  - sudo apt-get -y install python
+  - sudo apt-get -y install python3.9
+  - sudo update-alternatives --config python3
+  - python3 -V
 install:
   - npm install
   - npm install --only=dev
