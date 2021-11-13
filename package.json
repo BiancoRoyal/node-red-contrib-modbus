@@ -1,21 +1,21 @@
 {
   "name": "node-red-contrib-modbus",
-  "version": "5.14.1",
+  "version": "5.15.0",
   "private": false,
   "description": "The all in one Modbus TCP and Serial contribution package for Node-RED.",
   "dependencies": {
-    "@xstate/fsm": "~1.6.0",
+    "@xstate/fsm": "~1.6.2",
     "bson": "~4.3.0",
-    "debug": "~4.3.1",
-    "jsmodbus": "~4.0.5",
+    "debug": "~4.3.2",
+    "jsmodbus": "~4.0.6",
     "line-by-line": "~0.1.6",
     "modbus-serial": "~8.0.5",
-    "source-map-support": "~0.5.19",
-    "vm2": "~3.9.3"
+    "source-map-support": "~0.5.20",
+    "vm2": "~3.9.5"
   },
   "optionalDependencies": {
-    "@serialport/list": "~9.0.7",
-    "serialport": "~9.0.7"
+    "@serialport/list": "~9.0.8",
+    "serialport": "~9.0.8"
   },
   "keywords": [
     "node-red",
