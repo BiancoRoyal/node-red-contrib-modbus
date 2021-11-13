@@ -29,6 +29,7 @@
       serialStopbits: {value: 1, required: true, validate: RED.validators.number()},
       serialParity: {value: 'none', required: true},
       serialConnectionDelay: {value: 100},
+      serialAsciiResponseStartDelimiter: {value: '0x3A'},
 
       unit_id: {value: 1},
       commandDelay: {value: 1},
@@ -51,8 +52,10 @@
       let node = this
       node.ports = []
       let clientTypeSelector = $('#node-config-input-clienttype')
+      let serialTypeSelector = $('#node-config-input-serialType')
       let inputsSerial = $('#node-inputs-modbus-serial')
       let inputsSerialExtras = $('#node-inputs-modbus-serial-extras')
+      let inputsAsciiExtras = $('#node-inputs-ascii-extras')
       let inputsTCP = $('#node-inputs-modbus-tcp')
 
       clientTypeSelector.on('focus', function () {
@@ -121,7 +124,6 @@
             inputsSerial.show()
             inputsTCP.hide()
 
-
             if (node.tcpHost) {
               node.tcpHost.required = false
               node.tcpPort.required = false
@@ -146,6 +148,18 @@
             break
           default:
             break
+        }
+      })
+
+      serialTypeSelector.on('focus').change(function () {
+        if (serialTypeSelector.val() === 'ASCII') {
+          inputsAsciiExtras.show()
+
+          if (node.serialAsciiResponseStartDelimiter) {
+            node.serialAsciiResponseStartDelimiter = node.serialAsciiResponseStartDelimiter
+          }
+        } else {
+          inputsAsciiExtras.hide()
         }
       })
 
@@ -279,6 +293,12 @@
             <input type="text" id="node-config-input-serialConnectionDelay" style="max-width:80px" placeholder="500">
         </div>
 	</div>
+  <div id="node-inputs-ascii-extras">
+    <div class="form-row">
+      <label for="node-config-input-serialAsciiResponseStartDelimiter"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.serialAsciiResponseStartDelimiter"></span></label>
+      <input type="text" id="node-config-input-serialAsciiResponseStartDelimiter" style="max-width:80px" placeholder="0x3A (:)">
+    </div>
+  </div>
 	<hr>
     <div class="form-row">
         <label for="node-config-input-unit_id"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.unitId"></span></label>
@@ -382,6 +402,7 @@
             <li>Serial Parity</li>
             <li>Serial Type</li>
             <li>Serial Connection delay (default 500 ms) - time to delay first command sending after reconnect</li>
+            <li>ASCII start delimiter (default 0x3A, colon) - Delemiter used to identify start of slave response</li>
         </ul>
     </p>
 

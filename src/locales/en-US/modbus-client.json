@@ -21,7 +21,8 @@
       "timeout": "Timeout (ms)",
       "reconnectOnTimeout": "Reconnect on timeout",
       "reconnectTimeout": "Reconnect timeout (ms)",
-      "parallelUnitIdsAllowed": "UnitId's in parallel"
+      "parallelUnitIdsAllowed": "UnitId's in parallel",
+      "serialAsciiResponseStartDelimiter": "ASCII response start delimiter"
     }
   }
 }
