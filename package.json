@@ -25,7 +25,7 @@
     "biancoroyal"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=10 <15"
   },
   "repository": {
     "type": "git",
