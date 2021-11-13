@@ -6,7 +6,7 @@
 ![NodeJS_Version](http://b.repl.ca/v1/NodeJS-LTS-green.png)
 [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 [![NPM download](https://img.shields.io/npm/dm/node-red-contrib-modbus.svg)](http://www.npm-stats.com/~packages/node-red-contrib-modbus)
-[![Build Status](https://travis-ci.org/BiancoRoyal/node-red-contrib-modbus.svg?branch=master)](https://travis-ci.org/BiancoRoyal/node-red-contrib-modbus)
+[![Build Status](https://app.travis-ci.com/biancode/node-red-contrib-modbus.svg?branch=master)](https://app.travis-ci.com/biancode/node-red-contrib-modbus)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6cbeb40ab5604b3ab99e6badc9469e8a)](https://www.codacy.com/gh/BiancoRoyal/node-red-contrib-modbus?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=BiancoRoyal/node-red-contrib-modbus&amp;utm_campaign=Badge_Grade)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/BiancoRoyal/node-red-contrib-modbus)
 
@@ -24,6 +24,7 @@ Based on [modbus-serial][2] with TCP, C701, Telnet, Serial, RTU buffered, and AS
 * works with queueing per unit and round robin scheduling
 
 Node-RED v1.x versions:
+* Node.JS 16.x will be supported with v6.+
 * Node.JS 14.x is supported with v5.14.+
 * Node.JS 12.x is supported with v5.x
 * Node.JS 10.x is supported with v5.x

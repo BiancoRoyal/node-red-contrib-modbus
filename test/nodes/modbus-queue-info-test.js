@@ -11,6 +11,7 @@
 'use strict'
 
 var injectNode = require('@node-red/nodes/core/common/20-inject.js')
+var functionNode = require('@node-red/nodes/core/function/10-function.js')
 var clientNode = require('../../src/modbus-client.js')
 var readNode = require('../../src/modbus-read.js')
 var serverNode = require('../../src/modbus-server.js')
@@ -49,7 +50,7 @@ describe('Queue Info node Testing', function () {
           name: 'modbusServer',
           logEnabled: false,
           hostname: '0.0.0.0',
-          serverPort: '6502',
+          serverPort: '6503',
           responseDelay: 100,
           delayUnit: 'ms',
           coilsBufferSize: 10000,
@@ -107,7 +108,7 @@ describe('Queue Info node Testing', function () {
           stateLogEnabled: false,
           parallelUnitIdsAllowed: true,
           tcpHost: '127.0.0.1',
-          tcpPort: '6502',
+          tcpPort: '6503',
           tcpType: 'DEFAULT',
           serialPort: '/dev/ttyUSB',
           serialType: 'RTU-BUFFERD',
@@ -144,7 +145,7 @@ describe('Queue Info node Testing', function () {
         name: '',
         logEnabled: true,
         hostname: '127.0.0.1',
-        serverPort: '7502',
+        serverPort: '7503',
         responseDelay: 100,
         delayUnit: 'ms',
         coilsBufferSize: 10000,
@@ -204,7 +205,7 @@ describe('Queue Info node Testing', function () {
         stateLogEnabled: true,
         parallelUnitIdsAllowed: true,
         tcpHost: '127.0.0.1',
-        tcpPort: '7502',
+        tcpPort: '7503',
         tcpType: 'DEFAULT',
         serialPort: '/dev/ttyUSB',
         serialType: 'RTU-BUFFERD',
@@ -236,7 +237,7 @@ describe('Queue Info node Testing', function () {
         name: '',
         logEnabled: true,
         hostname: '127.0.0.1',
-        serverPort: '7502',
+        serverPort: '7503',
         responseDelay: 100,
         delayUnit: 'ms',
         coilsBufferSize: 10000,
@@ -296,7 +297,7 @@ describe('Queue Info node Testing', function () {
         stateLogEnabled: true,
         parallelUnitIdsAllowed: true,
         tcpHost: '127.0.0.1',
-        tcpPort: '7502',
+        tcpPort: '7503',
         tcpType: 'DEFAULT',
         serialPort: '/dev/ttyUSB',
         serialType: 'RTU-BUFFERD',
@@ -328,7 +329,7 @@ describe('Queue Info node Testing', function () {
         name: '',
         logEnabled: true,
         hostname: '127.0.0.1',
-        serverPort: '8502',
+        serverPort: '8503',
         responseDelay: 10,
         delayUnit: 'ms',
         coilsBufferSize: 10000,
@@ -414,7 +415,7 @@ describe('Queue Info node Testing', function () {
         stateLogEnabled: false,
         parallelUnitIdsAllowed: true,
         tcpHost: '127.0.0.1',
-        tcpPort: '8502',
+        tcpPort: '8503',
         tcpType: 'DEFAULT',
         serialPort: '/dev/ttyUSB',
         serialType: 'RTU-BUFFERD',
@@ -438,6 +439,123 @@ describe('Queue Info node Testing', function () {
         })
         const queueNode = helper.getNode('5fffb0bc.0b8a5')
         queueNode.receive({ payload: '', resetQueue: true })
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
+    it('simple flow with reset function for queue', function (done) {
+      helper.load([injectNode, functionNode, clientNode, serverNode, nodeUnderTest], [
+        {
+          "id": "445454e4.968564",
+          "type": "modbus-server",
+          "name": "",
+          "logEnabled": true,
+          "hostname": "127.0.0.1",
+          "serverPort": "9503",
+          "responseDelay": 100,
+          "delayUnit": "ms",
+          "coilsBufferSize": 10000,
+          "holdingBufferSize": 10000,
+          "inputBufferSize": 10000,
+          "discreteBufferSize": 10000,
+          "showErrors": false,
+          "wires": [
+            [],
+            [],
+            [],
+            [],
+            []
+          ]
+        },
+        {
+          "id": "5fffb0bc.0b8a5",
+          "type": "modbus-queue-info",
+          "name": "QueueInfo",
+          "topic": "",
+          "unitid": "1",
+          "queueReadIntervalTime": 100,
+          "lowLowLevel": 1,
+          "lowLevel": 2,
+          "highLevel": 3,
+          "highHighLevel": 4,
+          "server": "1e3ac4ea.86fa7b",
+          "errorOnHighLevel": false,
+          "showStatusActivities": true,
+          "updateOnAllQueueChanges": false,
+          "updateOnAllUnitQueues": false,
+          "wires": [
+            ['h1']
+          ]
+        },
+        {
+          "id": "ae473c43.3e7938",
+          "type": "inject",
+          "name": "",
+          "props": [
+            {
+              "p": "payload"
+            },
+            {
+              "p": "topic",
+              "vt": "str"
+            }
+          ],
+          "repeat": 2,
+          "crontab": "",
+          "once": false,
+          "onceDelay": 1,
+          "topic": "",
+          "payloadType": "date",
+          "wires": [
+            [
+              "430f76bf.9de2d8"
+            ]
+          ]
+        },
+        {
+          "id": "430f76bf.9de2d8",
+          "type": "function",
+          "name": "reset on High",
+          "func": "if(\"high level reached\" === msg.state) {\n    msg.payload.resetQueue = true;\n    return msg;\n}\n",
+          "outputs": 1,
+          "noerr": 0,
+          "wires": [
+            [
+              "5fffb0bc.0b8a5"
+            ]
+          ]
+        },
+        { id: 'h1', type: 'helper' },
+        {
+          "id": "1e3ac4ea.86fa7b",
+          "type": "modbus-client",
+          "name": "ModbsuFlexServer",
+          "clienttype": "tcp",
+          "bufferCommands": true,
+          "stateLogEnabled": true,
+          "tcpHost": "127.0.0.1",
+          "tcpPort": "9503",
+          "tcpType": "DEFAULT",
+          "serialPort": "/dev/ttyUSB",
+          "serialType": "RTU-BUFFERD",
+          "serialBaudrate": "9600",
+          "serialDatabits": "8",
+          "serialStopbits": "1",
+          "serialParity": "none",
+          "serialConnectionDelay": "100",
+          "unit_id": "1",
+          "commandDelay": "1",
+          "clientTimeout": "100",
+          "reconnectTimeout": 200,
+          "parallelUnitIdsAllowed": true
+        }], function () {
+        const h1 = helper.getNode('h1')
+        h1.on('input', function (msg) {
+          done()
+        })
+        const queueNode = helper.getNode('5fffb0bc.0b8a5')
+        queueNode.receive({ payload: { resetQueue: true } })
       }, function () {
         helper.log('function callback')
       })
