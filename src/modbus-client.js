@@ -35,6 +35,7 @@ module.exports = function (RED) {
     const timeoutTimeMS = 1000
     const reconnectTimeMS = 2000
     const logHintText = ' Get More About It By Logging'
+    const serialAsciiResponseStartDelimiter = '0x3A'
 
     this.clienttype = config.clienttype
 
@@ -58,7 +59,7 @@ module.exports = function (RED) {
     this.serialParity = config.serialParity
     this.serialType = config.serialType
     this.serialConnectionDelay = parseInt(config.serialConnectionDelay) || serialConnectionDelayTimeMS
-    this.serialAsciiResponseStartDelimiter = config.serialAsciiResponseStartDelimiter
+    this.serialAsciiResponseStartDelimiter = config.serialAsciiResponseStartDelimiter || serialAsciiResponseStartDelimiter
 
     this.unit_id = parseInt(config.unit_id)
     this.commandDelay = parseInt(config.commandDelay) || minCommandDelayMilliseconds
@@ -357,8 +358,14 @@ module.exports = function (RED) {
         switch (node.serialType) {
           case 'ASCII':
             verboseLog('ASCII port serial')
-            serialPortOptions.startOfSlaveFrameChar = parseInt(node.serialAsciiResponseStartDelimiter, 16)
+            // Make sure is parsed when string, otherwise just assign.
+            if (node.serialAsciiResponseStartDelimiter && typeof node.serialAsciiResponseStartDelimiter === 'string') {
+              serialPortOptions.startOfSlaveFrameChar = parseInt(node.serialAsciiResponseStartDelimiter, 16)
+            } else {
+              serialPortOptions.startOfSlaveFrameChar = node.serialAsciiResponseStartDelimiter
+            }
             verboseLog('Using response delimiter: 0x' + serialPortOptions.startOfSlaveFrameChar.toString(16))
+
             node.client.connectAsciiSerial(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
               .catch(node.modbusSerialErrorHandling)
             break
