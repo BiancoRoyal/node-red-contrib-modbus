@@ -398,7 +398,6 @@ de.biancoroyal.modbus.core.client.setNewSerialNodeSettings = function (node, msg
   } else {
     node.serialAsciiResponseStartDelimiter = msg.payload.serialAsciiResponseStartDelimiter || node.serialAsciiResponseStartDelimiter
   }
-  
 
   if (msg.payload.serialConnectionDelay) {
     node.serialConnectionDelay = parseInt(msg.payload.serialConnectionDelay) || node.serialConnectionDelay
