@@ -392,6 +392,13 @@ de.biancoroyal.modbus.core.client.setNewSerialNodeSettings = function (node, msg
   node.serialParity = msg.payload.serialParity || node.serialParity
   node.serialType = msg.payload.serialType || node.serialType
 
+  // Make sure is parsed when string, otherwise just assign.
+  if (msg.payload.serialAsciiResponseStartDelimiter && typeof msg.payload.serialAsciiResponseStartDelimiter === 'string') {
+    node.serialAsciiResponseStartDelimiter = parseInt(msg.payload.serialAsciiResponseStartDelimiter, 16)
+  } else {
+    node.serialAsciiResponseStartDelimiter = msg.payload.serialAsciiResponseStartDelimiter || node.serialAsciiResponseStartDelimiter
+  }
+
   if (msg.payload.serialConnectionDelay) {
     node.serialConnectionDelay = parseInt(msg.payload.serialConnectionDelay) || node.serialConnectionDelay
   }
