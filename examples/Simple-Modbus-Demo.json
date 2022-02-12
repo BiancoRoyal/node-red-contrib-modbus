@@ -35,6 +35,13 @@
     "info": ""
   },
   {
+    "id": "f0cfd0c1.8a4f48",
+    "type": "tab",
+    "label": "Modbus Sequencer",
+    "disabled": false,
+    "info": ""
+  },
+  {
     "id": "a9050e37.a6f618",
     "type": "modbus-client",
     "name": "Modbus Flex Server",
@@ -2409,6 +2416,107 @@
     "complete": "true",
     "targetType": "full",
     "x": 590,
+    "y": 120,
+    "wires": []
+  },
+  {
+    "id": "b5762218.8300d8",
+    "type": "modbus-flex-sequencer",
+    "z": "f0cfd0c1.8a4f48",
+    "name": "",
+    "sequences": [
+      {
+        "name": "",
+        "unitid": "1",
+        "fc": "FC1",
+        "address": "1",
+        "quantity": "2"
+      },
+      {
+        "name": "",
+        "unitid": "1",
+        "fc": "FC1",
+        "address": "10",
+        "quantity": "2"
+      }
+    ],
+    "server": "352955bb.be6e6a",
+    "showStatusActivities": false,
+    "showErrors": true,
+    "logIOActivities": false,
+    "useIOFile": false,
+    "ioFile": "",
+    "useIOForPayload": false,
+    "emptyMsgOnFail": true,
+    "keepMsgProperties": true,
+    "x": 400,
+    "y": 120,
+    "wires": [
+      [
+        "14045550.27c8fb"
+      ],
+      [
+        "fee04ce7.992778",
+        "c0bdb056.aad1f"
+      ]
+    ]
+  },
+  {
+    "id": "442061b.228722",
+    "type": "inject",
+    "z": "f0cfd0c1.8a4f48",
+    "name": "Read Sequence",
+    "props": [],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": "",
+    "topic": "",
+    "x": 160,
+    "y": 120,
+    "wires": [
+      [
+        "b5762218.8300d8"
+      ]
+    ]
+  },
+  {
+    "id": "c0bdb056.aad1f",
+    "type": "modbus-response",
+    "z": "f0cfd0c1.8a4f48",
+    "name": "",
+    "registerShowMax": 20,
+    "x": 690,
+    "y": 160,
+    "wires": []
+  },
+  {
+    "id": "14045550.27c8fb",
+    "type": "debug",
+    "z": "f0cfd0c1.8a4f48",
+    "name": "",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "x": 650,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "fee04ce7.992778",
+    "type": "debug",
+    "z": "f0cfd0c1.8a4f48",
+    "name": "",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "x": 650,
     "y": 120,
     "wires": []
   }

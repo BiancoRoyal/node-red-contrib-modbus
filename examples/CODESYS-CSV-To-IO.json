@@ -10,8 +10,8 @@
     "id": "a75f4e61.0bff88",
     "type": "file in",
     "z": "a040a097.85dbf8",
-    "name": "Modbus I/O File devices.csv",
-    "filename": "/Users/Shared/modbus/device.csv",
+    "name": "Modbus I/O File sdm630.csv",
+    "filename": "/Users/Shared/ioFileData/sdm630.csv",
     "format": "utf8",
     "sendError": true,
     "x": 340,
@@ -27,12 +27,12 @@
     "type": "inject",
     "z": "a040a097.85dbf8",
     "name": "",
-    "topic": "",
-    "payload": "",
-    "payloadType": "date",
     "repeat": "",
     "crontab": "",
     "once": false,
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
     "x": 140,
     "y": 100,
     "wires": [
@@ -94,25 +94,27 @@
     "type": "file",
     "z": "a040a097.85dbf8",
     "name": "",
-    "filename": "/Users/Shared/modbus/device.json",
+    "filename": "/Users/Shared/ioFileData/sdm630.json",
     "appendNewline": true,
     "createDir": false,
     "overwriteFile": "false",
-    "x": 1020,
+    "x": 1030,
     "y": 100,
-    "wires": []
+    "wires": [
+      []
+    ]
   },
   {
     "id": "57b3938a.4c5d34",
     "type": "inject",
     "z": "a040a097.85dbf8",
     "name": "",
-    "topic": "",
-    "payload": "",
-    "payloadType": "date",
     "repeat": "",
     "crontab": "",
     "once": false,
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
     "x": 140,
     "y": 60,
     "wires": [
@@ -126,12 +128,14 @@
     "type": "file",
     "z": "a040a097.85dbf8",
     "name": "",
-    "filename": "/Users/Shared/modbus/device.json",
+    "filename": "/Users/Shared/ioFileData/sdm630.json",
     "appendNewline": true,
     "createDir": false,
     "overwriteFile": "delete",
-    "x": 390,
+    "x": 400,
     "y": 60,
-    "wires": []
+    "wires": [
+      []
+    ]
   }
 ]
