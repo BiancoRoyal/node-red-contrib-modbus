@@ -1,0 +1,295 @@
+[
+  {
+    "id": "8330ed18.30445",
+    "type": "tab",
+    "label": "IO Modbus",
+    "disabled": false,
+    "info": ""
+  },
+  {
+    "id": "a7ab3cc0.b54c28",
+    "type": "modbus-response-filter",
+    "z": "8330ed18.30445",
+    "name": "",
+    "filter": "bOperationActive",
+    "registers": "37",
+    "ioFile": "ec18ac32.a8ef5",
+    "filterResponseBuffer": true,
+    "filterValues": true,
+    "filterInput": true,
+    "showStatusActivities": false,
+    "showErrors": true,
+    "x": 690,
+    "y": 260,
+    "wires": [
+      [
+        "81a959cf.9354c"
+      ]
+    ]
+  },
+  {
+    "id": "d7f9ce94.6ef38",
+    "type": "modbus-read",
+    "z": "8330ed18.30445",
+    "name": "",
+    "topic": "",
+    "showStatusActivities": false,
+    "logIOActivities": false,
+    "showErrors": true,
+    "unitid": "1",
+    "dataType": "InputRegister",
+    "adr": "0",
+    "quantity": "30",
+    "rate": "10",
+    "rateUnit": "s",
+    "delayOnStart": false,
+    "startDelayTime": "",
+    "server": "d4da02ed.6574d8",
+    "useIOFile": true,
+    "ioFile": "ec18ac32.a8ef5",
+    "useIOForPayload": true,
+    "emptyMsgOnFail": false,
+    "x": 430,
+    "y": 180,
+    "wires": [
+      [
+        "a7ab3cc0.b54c28",
+        "87dce2d.432b8a"
+      ],
+      [
+        "616b1f05.8d284"
+      ]
+    ]
+  },
+  {
+    "id": "88887884.d1d35",
+    "type": "modbus-server",
+    "z": "8330ed18.30445",
+    "name": "",
+    "logEnabled": false,
+    "hostname": "0.0.0.0",
+    "serverPort": 10502,
+    "responseDelay": 100,
+    "delayUnit": "ms",
+    "coilsBufferSize": 10000,
+    "holdingBufferSize": 10000,
+    "inputBufferSize": 10000,
+    "discreteBufferSize": 10000,
+    "showErrors": false,
+    "x": 430,
+    "y": 80,
+    "wires": [
+      [],
+      [],
+      [],
+      [],
+      []
+    ]
+  },
+  {
+    "id": "81a959cf.9354c",
+    "type": "debug",
+    "z": "8330ed18.30445",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 930,
+    "y": 260,
+    "wires": []
+  },
+  {
+    "id": "bf6cd20f.44ab88",
+    "type": "debug",
+    "z": "8330ed18.30445",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 930,
+    "y": 60,
+    "wires": []
+  },
+  {
+    "id": "db9dfb9.4a55888",
+    "type": "modbus-flex-getter",
+    "z": "8330ed18.30445",
+    "name": "",
+    "showStatusActivities": false,
+    "showErrors": false,
+    "logIOActivities": false,
+    "server": "d4da02ed.6574d8",
+    "useIOFile": true,
+    "ioFile": "ec18ac32.a8ef5",
+    "useIOForPayload": true,
+    "emptyMsgOnFail": false,
+    "keepMsgProperties": true,
+    "x": 400,
+    "y": 260,
+    "wires": [
+      [
+        "a7ab3cc0.b54c28",
+        "87dce2d.432b8a"
+      ],
+      [
+        "616b1f05.8d284"
+      ]
+    ]
+  },
+  {
+    "id": "861e3b8c.957918",
+    "type": "inject",
+    "z": "8330ed18.30445",
+    "name": "",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "{\"fc\":4,\"unitid\":1,\"address\":0,\"quantity\":30}",
+    "payloadType": "json",
+    "x": 190,
+    "y": 260,
+    "wires": [
+      [
+        "db9dfb9.4a55888"
+      ]
+    ]
+  },
+  {
+    "id": "5fb65aa4.bde1ac",
+    "type": "debug",
+    "z": "8330ed18.30445",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 930,
+    "y": 100,
+    "wires": []
+  },
+  {
+    "id": "80642d52.53b",
+    "type": "link in",
+    "z": "8330ed18.30445",
+    "name": "",
+    "links": [
+      "87dce2d.432b8a"
+    ],
+    "x": 815,
+    "y": 60,
+    "wires": [
+      [
+        "bf6cd20f.44ab88"
+      ]
+    ]
+  },
+  {
+    "id": "cdf3f58e.c44bb8",
+    "type": "link in",
+    "z": "8330ed18.30445",
+    "name": "",
+    "links": [
+      "616b1f05.8d284"
+    ],
+    "x": 815,
+    "y": 100,
+    "wires": [
+      [
+        "5fb65aa4.bde1ac"
+      ]
+    ]
+  },
+  {
+    "id": "87dce2d.432b8a",
+    "type": "link out",
+    "z": "8330ed18.30445",
+    "name": "",
+    "links": [
+      "80642d52.53b"
+    ],
+    "x": 615,
+    "y": 160,
+    "wires": []
+  },
+  {
+    "id": "616b1f05.8d284",
+    "type": "link out",
+    "z": "8330ed18.30445",
+    "name": "",
+    "links": [
+      "cdf3f58e.c44bb8"
+    ],
+    "x": 615,
+    "y": 200,
+    "wires": []
+  },
+  {
+    "id": "7fdae227.602384",
+    "type": "comment",
+    "z": "8330ed18.30445",
+    "name": "IO File",
+    "info": "You'll find the IO file example in the ressource folder of the examples.",
+    "x": 180,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "ec18ac32.a8ef5",
+    "type": "modbus-io-config",
+    "name": "Device",
+    "path": "/Users/Shared/modbus/device.json",
+    "format": "utf8",
+    "addressOffset": ""
+  },
+  {
+    "id": "d4da02ed.6574d8",
+    "type": "modbus-client",
+    "name": "",
+    "clienttype": "tcp",
+    "bufferCommands": true,
+    "stateLogEnabled": false,
+    "queueLogEnabled": false,
+    "tcpHost": "127.0.0.1",
+    "tcpPort": "10502",
+    "tcpType": "DEFAULT",
+    "serialPort": "/dev/ttyUSB",
+    "serialType": "RTU-BUFFERD",
+    "serialBaudrate": "9600",
+    "serialDatabits": "8",
+    "serialStopbits": "1",
+    "serialParity": "none",
+    "serialConnectionDelay": "100",
+    "serialAsciiResponseStartDelimiter": "0x3A",
+    "unit_id": "1",
+    "commandDelay": "1",
+    "clientTimeout": "1000",
+    "reconnectOnTimeout": true,
+    "reconnectTimeout": "2000",
+    "parallelUnitIdsAllowed": true
+  }
+]
