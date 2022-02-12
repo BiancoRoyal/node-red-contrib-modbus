@@ -5,8 +5,11 @@ matrix:
     - node_js: 14
     - node_js: 12
   allow_failures:
-    - node_js: 14
+    - node_js: 16
     - node_js: 12
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install python3
 install:
   - npm install
   - npm install --only=dev
