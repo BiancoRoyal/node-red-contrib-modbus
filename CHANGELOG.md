@@ -1,4 +1,4 @@
-# [5.21.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.16.0...v5.21.0) (2022-02-12)
+## [5.21.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.15.0...v5.21.1) (2022-02-15)
 
 
 ### Bug Fixes
@@ -9,6 +9,13 @@
 * ghactions ([ee04b3a](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ee04b3a5e21c6727e16a0bad0dc50d637b2ccbc1))
 * lock ([6fce00e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/6fce00eb10ef62d5eca84e51040f138e9dbbb5f1))
 * remove wire to none existing node of example code  ([be770c4](https://github.com/biancoroyal/node-red-contrib-modbus/commit/be770c4ed8f36ccaeb2a5f614e569a25965fb17f))
+* source-map not optional ([7adac0b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/7adac0b318b067c307a1d9e285dd9237608da659))
+* travis ([d34f5a8](https://github.com/biancoroyal/node-red-contrib-modbus/commit/d34f5a81e9d55cb2a3ffb482641bb48832645e1a))
+
+
+### Features
+
+* IO Modbus examples and node-red version spec in package ([707d572](https://github.com/biancoroyal/node-red-contrib-modbus/commit/707d572f214e8d11728260303784d830b324cbfe))
 
 
 
@@ -22,33 +29,17 @@
 ### Bug Fixes
 
 * **basics:** [#210](https://github.com/biancoroyal/node-red-contrib-modbus/issues/210) missing parameter node ([806f944](https://github.com/biancoroyal/node-red-contrib-modbus/commit/806f944d3acdb46750611b74497940224463acfa))
-
-
-
-## [5.13.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.13.1...v5.13.2) (2020-05-26)
-
-
-### Bug Fixes
-
 * **msg:** modbus request data in msg object [#203](https://github.com/biancoroyal/node-red-contrib-modbus/issues/203) ([380357f](https://github.com/biancoroyal/node-red-contrib-modbus/commit/380357f825ebe0b3648b1d146bad136f1a195d89))
 
 
 
-## [5.13.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.13.0...v5.13.1) (2020-05-24)
-
-
-### Bug Fixes
-
-* **serial:** queue serial sequenced sending [#202](https://github.com/biancoroyal/node-red-contrib-modbus/issues/202) ([e11cb49](https://github.com/biancoroyal/node-red-contrib-modbus/commit/e11cb492037e0d91eb13f82596cbecbc87c6e24d))
-
-
-
-# [5.13.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.12.0...v5.13.0) (2020-05-21)
+## [5.13.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.12.0...v5.13.1) (2020-05-24)
 
 
 ### Bug Fixes
 
 * **serial:** [#202](https://github.com/biancoroyal/node-red-contrib-modbus/issues/202) locked queue on serial error ([757f341](https://github.com/biancoroyal/node-red-contrib-modbus/commit/757f34192885e7cf157aa438e22266928d477357))
+* **serial:** queue serial sequenced sending [#202](https://github.com/biancoroyal/node-red-contrib-modbus/issues/202) ([e11cb49](https://github.com/biancoroyal/node-red-contrib-modbus/commit/e11cb492037e0d91eb13f82596cbecbc87c6e24d))
 
 
 ### Features
