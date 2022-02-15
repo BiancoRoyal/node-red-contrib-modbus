@@ -9,7 +9,7 @@ matrix:
     - node_js: 12
 before_install:
   - sudo apt-get update
-  - sudo apt-get install python3
+  - sudo apt-get install python3.9
 install:
   - npm install
   - npm install --only=dev
