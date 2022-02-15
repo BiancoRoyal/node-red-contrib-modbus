@@ -1,4 +1,4 @@
-## [5.21.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.15.0...v5.21.1) (2022-02-15)
+## [5.21.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.15.0...v5.21.2) (2022-02-15)
 
 
 ### Bug Fixes
@@ -8,6 +8,7 @@
 * [#277](https://github.com/biancoroyal/node-red-contrib-modbus/issues/277), [#253](https://github.com/biancoroyal/node-red-contrib-modbus/issues/253), [#263](https://github.com/biancoroyal/node-red-contrib-modbus/issues/263), [#266](https://github.com/biancoroyal/node-red-contrib-modbus/issues/266) ([920d6d0](https://github.com/biancoroyal/node-red-contrib-modbus/commit/920d6d0e089e27e21fa92b4b6a313a66dad6452b))
 * ghactions ([ee04b3a](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ee04b3a5e21c6727e16a0bad0dc50d637b2ccbc1))
 * lock ([6fce00e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/6fce00eb10ef62d5eca84e51040f138e9dbbb5f1))
+* python 3.9 for travis ([2afdb63](https://github.com/biancoroyal/node-red-contrib-modbus/commit/2afdb63e3b2c384327d6044e40f8d4f519ccedcc))
 * remove wire to none existing node of example code  ([be770c4](https://github.com/biancoroyal/node-red-contrib-modbus/commit/be770c4ed8f36ccaeb2a5f614e569a25965fb17f))
 * source-map not optional ([7adac0b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/7adac0b318b067c307a1d9e285dd9237608da659))
 * travis ([d34f5a8](https://github.com/biancoroyal/node-red-contrib-modbus/commit/d34f5a81e9d55cb2a3ffb482641bb48832645e1a))
