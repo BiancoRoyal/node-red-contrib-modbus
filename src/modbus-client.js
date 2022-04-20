@@ -651,7 +651,7 @@ module.exports = function (RED) {
 
   RED.httpAdmin.get('/modbus/serial/ports', RED.auth.needsPermission('serial.read'), function (req, res) {
     const SerialPort = require('serialport')
-    SerialPort.list().then(ports => {
+    SerialPort.SerialPort.list().then(ports => {
       res.json(ports)
     }).catch(err => {
       res.json([err.message])

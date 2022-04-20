@@ -259,9 +259,9 @@ module.exports = function (RED) {
           {
             topic,
             payload: response,
-            values: values,
+            values,
             input: msg,
-            valueNames: valueNames,
+            valueNames,
             sendingNodeId: node.id
           }])
       } else {
@@ -276,7 +276,7 @@ module.exports = function (RED) {
           {
             topic,
             payload: response,
-            values: values,
+            values,
             input: msg,
             sendingNodeId: node.id
           }

@@ -177,7 +177,7 @@ de.biancoroyal.modbus.queue.core.pushToQueueByUnitId = function (node, callModbu
           node.unitSendingAllowed.push(unitId)
         }
 
-        node.bufferCommandList.get(unitId).push({ callModbus: callModbus, msg: msg, cb: cb, cberr: cberr })
+        node.bufferCommandList.get(unitId).push({ callModbus, msg, cb, cberr })
         node.queueLog(JSON.stringify({
           info: 'pushed to Queue by Unit-Id',
           message: msg.payload,
