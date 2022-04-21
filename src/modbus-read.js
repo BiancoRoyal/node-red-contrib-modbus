@@ -8,6 +8,7 @@
 
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  **/
+
 /**
  * Modbus Read node.
  * @module NodeRedModbusRead
@@ -62,7 +63,7 @@ module.exports = function (RED) {
 
     function verboseWarn (logMessage) {
       if (RED.settings.verbose) {
-        node.warn('Client -> ' + logMessage + node.serverInfo)
+        node.warn('Read -> ' + logMessage + ' address: ' + node.adr)
       }
     }
 
@@ -134,13 +135,15 @@ module.exports = function (RED) {
     }
 
     node.errorProtocolMsg = function (err, msg) {
-      mbBasics.logMsgError(node, err, msg)
-      mbBasics.sendEmptyMsgOnFail(node, err, msg)
+      if (node.showErrors) {
+        mbBasics.logMsgError(node, err, msg)
+      }
     }
 
     node.onModbusReadError = function (err, msg) {
       node.internalDebugLog(err.message)
       node.errorProtocolMsg(err, msg)
+      mbBasics.sendEmptyMsgOnFail(node, err, msg)
       mbBasics.setModbusError(node, modbusClient, err, msg)
     }
 

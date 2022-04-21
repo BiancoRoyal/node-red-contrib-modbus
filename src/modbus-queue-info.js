@@ -65,8 +65,9 @@ module.exports = function (RED) {
     }
 
     node.errorProtocolMsg = function (err, msg) {
-      mbBasics.logMsgError(node, err, msg)
-      mbBasics.sendEmptyMsgOnFail(node, err, msg)
+      if (node.showErrors) {
+        mbBasics.logMsgError(node, err, msg)
+      }
     }
 
     node.initUnitQueueStates()
@@ -277,6 +278,7 @@ module.exports = function (RED) {
           }
         } catch (err) {
           node.errorProtocolMsg(err, msg)
+          mbBasics.sendEmptyMsgOnFail(node, err, msg)
           msgUnitId = node.unitid
         }
         msg.payload.allQueueData = false

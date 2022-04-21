@@ -7,6 +7,7 @@
 
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  */
+
 /**
  * Modbus connection node.
  * @module NodeRedModbusClient
@@ -47,6 +48,7 @@ module.exports = function (RED) {
 
     this.queueLogEnabled = config.queueLogEnabled
     this.stateLogEnabled = config.stateLogEnabled
+    this.failureLogEnabled = config.failureLogEnabled
 
     this.tcpHost = config.tcpHost
     this.tcpPort = parseInt(config.tcpPort) || 502
@@ -127,13 +129,14 @@ module.exports = function (RED) {
 
     function verboseWarn (logMessage) {
       if (RED.settings.verbose) {
-        node.warn('Client -> ' + logMessage + node.serverInfo)
+        node.updateServerinfo()
+        node.warn('Client -> ' + logMessage + ' ' + node.serverInfo)
       }
     }
 
     function verboseLog (logMessage) {
       if (RED.settings.verbose) {
-        coreModbusClient.internalDebug('Client -> ' + logMessage + node.serverInfo)
+        coreModbusClient.internalDebug('Client -> ' + logMessage + ' ' + node.serverInfo)
       }
     }
 
@@ -416,10 +419,12 @@ module.exports = function (RED) {
         node.error(err)
       }
 
-      if (err.message) {
-        coreModbusClient.modbusSerialDebug('modbusTcpErrorHandling:' + err.message)
-      } else {
-        coreModbusClient.modbusSerialDebug('modbusTcpErrorHandling:' + JSON.stringify(err))
+      if (node.failureLogEnabled) {
+        if (err.message) {
+          coreModbusClient.modbusSerialDebug('modbusTcpErrorHandling:' + err.message)
+        } else {
+          coreModbusClient.modbusSerialDebug('modbusTcpErrorHandling:' + JSON.stringify(err))
+        }
       }
 
       if ((err.errno && coreModbusClient.networkErrors.includes(err.errno)) ||
@@ -434,11 +439,14 @@ module.exports = function (RED) {
         node.error(err)
       }
 
-      if (err.message) {
-        coreModbusClient.modbusSerialDebug('modbusSerialErrorHandling:' + err.message)
-      } else {
-        coreModbusClient.modbusSerialDebug('modbusSerialErrorHandling:' + JSON.stringify(err))
+      if (node.failureLogEnabled) {
+        if (err.message) {
+          coreModbusClient.modbusSerialDebug('modbusSerialErrorHandling:' + err.message)
+        } else {
+          coreModbusClient.modbusSerialDebug('modbusSerialErrorHandling:' + JSON.stringify(err))
+        }
       }
+
       node.stateService.send('BREAK')
     }
 
