@@ -24,7 +24,7 @@ Based on [modbus-serial][2] with TCP, C701, Telnet, Serial, RTU buffered, and AS
 * works with queueing per unit and round robin scheduling
 
 Node-RED v2.x versions:
-* Node.JS 17.x will be supported with v6
+* Node.JS 18.x will be supported with v5.22+
 * Node.JS 16.x will be supported with v5.20+
 * Node.JS 14.x is supported with v5.14+
 * Node.JS 12.x is supported with v5.x

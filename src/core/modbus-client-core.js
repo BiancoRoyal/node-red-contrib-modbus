@@ -90,7 +90,7 @@ de.biancoroyal.modbus.core.client.getActualUnitId = function (node, msg) {
   } else if (Number.isInteger(msg.queueUnitId)) {
     return parseInt(msg.queueUnitId)
   } else {
-    return parseInt(node.unit_id)
+    return parseInt(node.unit_id) || 0
   }
 }
 
@@ -373,6 +373,7 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
 }
 
 de.biancoroyal.modbus.core.client.setNewTCPNodeSettings = function (node, msg) {
+  node.clienttype = 'tcp'
   node.tcpHost = msg.payload.tcpHost || node.tcpHost
   node.tcpPort = msg.payload.tcpPort || node.tcpPort
   node.tcpType = msg.payload.tcpType || node.tcpType
@@ -387,6 +388,7 @@ de.biancoroyal.modbus.core.client.setNewSerialNodeSettings = function (node, msg
     node.serialBaudrate = parseInt(msg.payload.serialBaudrate) || node.serialBaudrate
   }
 
+  node.clienttype = 'serial'
   node.serialDatabits = msg.payload.serialDatabits || node.serialDatabits
   node.serialStopbits = msg.payload.serialStopbits || node.serialStopbits
   node.serialParity = msg.payload.serialParity || node.serialParity
@@ -405,8 +407,16 @@ de.biancoroyal.modbus.core.client.setNewSerialNodeSettings = function (node, msg
 }
 
 de.biancoroyal.modbus.core.client.setNewNodeOptionalSettings = function (node, msg) {
-  if (msg.payload.unitId) {
-    node.unit_id = parseInt(msg.payload.unitId) || node.unit_id
+  const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
+
+  try {
+    let unitId = parseInt(msg.payload.unitId)
+    if (!node.checkUnitId(unitId, node.clienttype)) {
+      unitId = node.unit_id
+    }
+    node.unit_id = unitId
+  } catch (err) {
+    nodeLog(err.message)
   }
 
   if (msg.payload.commandDelay) {

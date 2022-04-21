@@ -76,6 +76,7 @@
     "release:alpha": "standard-version --prerelease alpha",
     "rewrite-changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "postinstall": "node ./supporter.js",
+    "clean": "gulp clean",
     "dev-link": "npm i && npm run build && npm link && cd ~/.node-red && npm link node-red-contrib-modbus"
   },
   "devDependencies": {
