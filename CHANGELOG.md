@@ -1,4 +1,4 @@
-## [5.21.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.15.0...v5.21.2) (2022-02-15)
+# [5.22.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.15.0...v5.22.0) (2022-04-21)
 
 
 ### Bug Fixes
@@ -17,6 +17,9 @@
 ### Features
 
 * IO Modbus examples and node-red version spec in package ([707d572](https://github.com/biancoroyal/node-red-contrib-modbus/commit/707d572f214e8d11728260303784d830b324cbfe))
+* less logging switch ([716d17c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/716d17c8aea7a2a9c64518829f526a73f6c9d7ba))
+* unitid 0 allowed and tested ([a5ee552](https://github.com/biancoroyal/node-red-contrib-modbus/commit/a5ee5521163afbb9d8a7dfa5cc7f33f76189f024))
+* upgrade serialport to v10 for ARM ([5e93d11](https://github.com/biancoroyal/node-red-contrib-modbus/commit/5e93d1145686185dfe17d00dd4c0e682fc3354b1))
 
 
 
