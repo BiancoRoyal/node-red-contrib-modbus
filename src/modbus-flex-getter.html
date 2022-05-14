@@ -151,8 +151,8 @@
          </ul>
      </p>
 
-     <p>Output 1: data Array (PDU), modbus response Buffer, input message</p>
-     <p>Output 2: modbus response Buffer, data Array (PDU), input message</p>
+     <p>Output 1: msg.payload (data Array), msg.modbusRequest, msg.responseBuffer containing data Array and buffer</p>
+     <p>Output 2: msg.payload (data Array, response buffer), msg.modbusRequest, input message</p>
 
      <p>Function node code example for single input:</p>
      <code>
