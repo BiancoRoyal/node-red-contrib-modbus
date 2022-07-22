@@ -1477,7 +1477,8 @@
     "unit_id": 1,
     "commandDelay": 1,
     "clientTimeout": 1000,
-    "reconnectTimeout": 2000
+    "reconnectDelay": 2000,
+    "connectionTimeout": 10000
   },
   {
     "id": "883d0976.8296d",
@@ -1500,6 +1501,7 @@
     "unit_id": "1",
     "commandDelay": "1",
     "clientTimeout": "1000",
-    "reconnectTimeout": "2000"
+    "reconnectDelay": "2000",
+    "connectionTimeout": "10000"
   }
 ]

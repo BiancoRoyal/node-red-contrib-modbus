@@ -73,8 +73,9 @@ describe('Flex Connector node Testing', function () {
           unit_id: '1',
           commandDelay: '100',
           clientTimeout: '100',
-          reconnectTimeout: 200,
-          reconnectOnTimeout: true
+          reconnectDelay: 200,
+          reconnectOnTimeout: true,
+          connectionTimeout: 10000
         }
       ], function () {
         var modbusNode = helper.getNode('40ddaabb.fd44d4')
@@ -139,8 +140,9 @@ describe('Flex Connector node Testing', function () {
           unit_id: '1',
           commandDelay: '100',
           clientTimeout: '100',
-          reconnectTimeout: '200',
-          reconnectOnTimeout: true
+          reconnectDelay: '200',
+          reconnectOnTimeout: true,
+          connectionTimeout: 10000
         }
       ], function () {
         var modbusNode = helper.getNode('40ddaabb.fd44d4')
@@ -193,8 +195,9 @@ describe('Flex Connector node Testing', function () {
           unit_id: '1',
           commandDelay: '100',
           clientTimeout: '100',
-          reconnectTimeout: '200',
-          reconnectOnTimeout: true
+          reconnectDelay: '200',
+          reconnectOnTimeout: true,
+          connectionTimeout: 10000
         }
       ], function () {
         var modbusNode = helper.getNode('40ddaabb.fd44d4')

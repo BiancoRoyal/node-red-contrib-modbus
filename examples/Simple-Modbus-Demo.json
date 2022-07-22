@@ -56,8 +56,9 @@
     "commandDelay": 1,
     "clientTimeout": 1000,
     "reconnectOnTimeout": true,
-    "reconnectTimeout": 2000,
-    "parallelUnitIdsAllowed": true
+    "reconnectDelay": 2000,
+    "parallelUnitIdsAllowed": true,
+    "connectionTimeout": 10000
   },
   {
     "id": "352955bb.be6e6a",
@@ -81,8 +82,9 @@
     "commandDelay": "1",
     "clientTimeout": "1000",
     "reconnectOnTimeout": true,
-    "reconnectTimeout": "2000",
-    "parallelUnitIdsAllowed": true
+    "reconnectDelay": "2000",
+    "parallelUnitIdsAllowed": true,
+    "connectionTimeout": "10000"
   },
   {
     "id": "7dd49c19.29e75c",

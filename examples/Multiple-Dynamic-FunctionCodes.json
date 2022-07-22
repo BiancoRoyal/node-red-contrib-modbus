@@ -320,7 +320,8 @@
     "unit_id": "1",
     "commandDelay": "1",
     "clientTimeout": "1000",
-    "reconnectTimeout": "2000"
+    "reconnectDelay": "2000",
+    "connectionTimeout": "10000"
   },
   {
     "id": "d789f1bb.d6ea18",
@@ -343,6 +344,7 @@
     "unit_id": "1",
     "commandDelay": "1",
     "clientTimeout": "1000",
-    "reconnectTimeout": "2000"
+    "reconnectDelay": "2000",
+    "connectionTimeout": "10000"
   }
 ]

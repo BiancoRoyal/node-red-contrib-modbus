@@ -703,7 +703,8 @@
     "commandDelay": "1",
     "clientTimeout": "1000",
     "reconnectOnTimeout": true,
-    "reconnectTimeout": "2000",
-    "parallelUnitIdsAllowed": true
+    "reconnectDelay": "2000",
+    "parallelUnitIdsAllowed": true,
+    "connectionTimeout": "10000"
   }
 ]

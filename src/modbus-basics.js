@@ -262,7 +262,7 @@ de.biancoroyal.modbus.basics.onModbusQueue = function (node) {
 }
 
 de.biancoroyal.modbus.basics.onModbusBroken = function (node, modbusClient) {
-  this.setNodeStatusTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.', node)
+  this.setNodeStatusTo('reconnecting after ' + modbusClient.reconnectDelay + ' msec.', node)
 }
 
 de.biancoroyal.modbus.basics.setNodeDefaultStatus = function (node) {

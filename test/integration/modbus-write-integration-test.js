@@ -113,8 +113,9 @@ const testFlowWriting = [
     commandDelay: '1',
     clientTimeout: '1000',
     reconnectOnTimeout: true,
-    reconnectTimeout: 200,
-    parallelUnitIdsAllowed: true
+    reconnectDelay: 200,
+    parallelUnitIdsAllowed: true,
+    connectionTimeout: 10000
   }
 ]
 
