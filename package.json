@@ -11,7 +11,7 @@
     "line-by-line": "~0.1.6",
     "modbus-serial": "~8.0.5",
     "source-map-support": "~0.5.20",
-    "vm2": "~3.9.5"
+    "vm2": "~3.9.10"
   },
   "optionalDependencies": {
     "@serialport/list": "^9.0.0",
