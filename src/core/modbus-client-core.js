@@ -211,6 +211,7 @@ de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
   if (!node.client._port._client.readable) {
     if (!node.connectClient()) {
       coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg)
+      return
     }
     delayTime = 500
   }
@@ -342,9 +343,11 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
   if (!node.client._port._client.readable) {
     if (!node.connectClient()) {
       coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg)
+      return
     }
     delayTime = 500
   }
+
   setTimeout(function () {
     if (!node.bufferCommands) {
       if (node.clienttype !== 'tcp') {
