@@ -59,7 +59,7 @@ function changelogUpdate () {
     }, {
       // conventional-changelog-writer options go here
     }))
-    .pipe(gulp.dest('./'))
+    .pipe(dest('./'))
 }
 
 function releaseWebContent () {
