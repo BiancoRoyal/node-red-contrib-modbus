@@ -144,21 +144,21 @@ de.biancoroyal.modbus.io.core.buildInputAddressMapping = function (registerName,
     return {
       register: registerName,
       name: mapping.name,
-      addressStart: addressStart,
-      addressOffset: addressOffset,
+      addressStart,
+      addressOffset,
       addressOffsetIO: Number(offset) || 0,
-      addressStartIO: addressStartIO,
+      addressStartIO,
       registerAddress: addressStartIO - Number(readingOffset),
-      coilStart: coilStart,
-      bitAddress: bitAddress,
+      coilStart,
+      bitAddress,
       Bit: (bitAddress) ? (Number(bitAddress[0]) * 8) + Number(bitAddress[1]) : 0,
-      bits: bits,
+      bits,
       dataType: ioCore.getDataTypeFromFirstCharType(type),
       type: 'input'
     }
   }
 
-  return { name: mapping.name, type: type, mapping: mapping, error: 'variable name does not match input mapping' }
+  return { name: mapping.name, type, mapping, error: 'variable name does not match input mapping' }
 }
 
 de.biancoroyal.modbus.io.core.buildOutputAddressMapping = function (registerName, mapping, offset, readingOffset, logging) {
@@ -229,21 +229,21 @@ de.biancoroyal.modbus.io.core.buildOutputAddressMapping = function (registerName
     return {
       register: registerName,
       name: mapping.name,
-      addressStart: addressStart,
-      addressOffset: addressOffset,
+      addressStart,
+      addressOffset,
       addressOffsetIO: Number(offset) || 0,
-      addressStartIO: addressStartIO,
+      addressStartIO,
       registerAddress: addressStartIO - Number(readingOffset),
-      coilStart: coilStart,
-      bitAddress: bitAddress,
+      coilStart,
+      bitAddress,
       Bit: (bitAddress) ? (Number(bitAddress[0]) * 8) + Number(bitAddress[1]) : 0,
-      bits: bits,
+      bits,
       dataType: ioCore.getDataTypeFromFirstCharType(type),
       type: 'output'
     }
   }
 
-  return { name: mapping.name, type: type, mapping: mapping, error: 'variable name does not match output mapping' }
+  return { name: mapping.name, type, mapping, error: 'variable name does not match output mapping' }
 }
 
 de.biancoroyal.modbus.io.core.insertValues = function (valueNames, register, logging) {

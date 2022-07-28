@@ -10,3 +10,4 @@ coverage/
 .coverage/
 pki/
 .vscode/
+.nyc_output/

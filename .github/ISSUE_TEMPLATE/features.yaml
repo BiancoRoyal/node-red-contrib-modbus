@@ -1,0 +1,22 @@
+name: "Feature Request"
+description: Request a new feature
+labels:
+  - feature
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the requested feature
+      description: |
+        Describe the feature you would like to see added.
+        Feel free to attach diagrams or screenshots.
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: |
+        Describe why you would like to see this feature or the use-case for the feature.
+    validations:
+      required: true

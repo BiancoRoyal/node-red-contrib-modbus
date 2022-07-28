@@ -34,12 +34,12 @@ de.biancoroyal.modbus.queue.core.checkQueuesAreEmpty = function (node) {
 }
 
 de.biancoroyal.modbus.queue.core.queueSerialUnlockCommand = function (node) {
-  this.internalDebug('queue serial unlock command node ' + node.name)
+  this.internalDebug('queue serial unlock command node name: ' + node.name + ' id: ' + node.id)
   node.serialSendingAllowed = true
 }
 
 de.biancoroyal.modbus.queue.core.queueSerialLockCommand = function (node) {
-  this.internalDebug('queue serial lock command node ' + node.name)
+  this.internalDebug('queue serial lock command node name: ' + node.name + ' id: ' + node.id)
   node.serialSendingAllowed = false
 }
 
@@ -55,8 +55,8 @@ de.biancoroyal.modbus.queue.core.sequentialDequeueCommand = function (node) {
         }
       } else {
         const unitId = node.unitSendingAllowed.shift()
-        if (!unitId) {
-          reject(new Error('UnitId is valid from sending allowed list'))
+        if (!queueCore.isValidUnitId(unitId)) {
+          reject(new Error('UnitId ' + unitId + ' is not valid from dequeue of sending list'))
           return
         }
 
@@ -79,7 +79,7 @@ de.biancoroyal.modbus.queue.core.sequentialDequeueCommand = function (node) {
           } else {
             node.warn('no ' + infoText + unitId)
           }
-          infoText = 'valid  Unit '
+          infoText = 'valid Unit '
           if (queueCore.isValidUnitId(unitId)) {
             node.warn(infoText + unitId)
           } else {
@@ -146,7 +146,7 @@ de.biancoroyal.modbus.queue.core.getUnitIdToQueue = function (node, msg) {
 }
 
 de.biancoroyal.modbus.queue.core.isValidUnitId = function (unitId) {
-  return (unitId >= 0 || unitId <= 255)
+  return (unitId >= 0 && unitId <= 255)
 }
 
 de.biancoroyal.modbus.queue.core.getQueueLengthByUnitId = function (node, unitId) {
@@ -164,9 +164,15 @@ de.biancoroyal.modbus.queue.core.pushToQueueByUnitId = function (node, callModbu
     function (resolve, reject) {
       try {
         const unitId = coreQueue.getUnitIdToQueue(node, msg)
-        if (!unitId) {
-          reject(new Error('UnitId is valid from msg or node'))
+        if (!coreQueue.isValidUnitId(unitId)) {
+          reject(new Error('UnitId ' + unitId + ' is not valid from msg or node'))
           return
+        } else {
+          node.queueLog(JSON.stringify({
+            info: 'will push to Queue by Unit-Id',
+            message: msg.payload,
+            unitId
+          }))
         }
         const queueLength = coreQueue.getQueueLengthByUnitId(node, unitId)
 
@@ -177,7 +183,7 @@ de.biancoroyal.modbus.queue.core.pushToQueueByUnitId = function (node, callModbu
           node.unitSendingAllowed.push(unitId)
         }
 
-        node.bufferCommandList.get(unitId).push({ callModbus: callModbus, msg: msg, cb: cb, cberr: cberr })
+        node.bufferCommandList.get(unitId).push({ callModbus, msg, cb, cberr })
         node.queueLog(JSON.stringify({
           info: 'pushed to Queue by Unit-Id',
           message: msg.payload,

@@ -5,6 +5,7 @@
 
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  **/
+
 /**
  * Modbus Server node.
  * @module NodeRedModbusServer
@@ -103,12 +104,28 @@ module.exports = function (RED) {
             })
           })
 
+          node.modbusServer.on('error', function (err) {
+            internalDebugLog('Modbus Flex Server error')
+            if (node.showErrors) {
+              node.error(err)
+            }
+            mbBasics.setNodeStatusTo('error', node)
+          })
+
           node.modbusServer._server.on('connection', function (sock) {
             internalDebugLog('Modbus Flex Server client connection')
             if (sock) {
               internalDebugLog('Modbus Flex Server client to ' + JSON.stringify(sock.address()) + ' from ' + sock.remoteAddress + ' ' + sock.remotePort)
             }
             mbBasics.setNodeStatusTo('active', node)
+          })
+
+          node.modbusServer._server.on('error', function (err) {
+            internalDebugLog('Modbus Flex Server client error')
+            if (node.showErrors) {
+              node.error(err)
+            }
+            mbBasics.setNodeStatusTo('error', node)
           })
         }
 

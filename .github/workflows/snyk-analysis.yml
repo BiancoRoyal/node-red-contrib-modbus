@@ -1,0 +1,21 @@
+name: "Snyk Vulnerability Analysis"
+on:
+  push:
+    branches:
+      - 6-additional-github-actions
+      - main
+  pull_request:
+    types:
+      - synchronize
+      - opened
+jobs:
+  snyk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run Snyk vulnerability scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: monitor

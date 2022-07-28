@@ -1,4 +1,4 @@
-## [5.21.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.15.0...v5.21.2) (2022-02-15)
+# [5.22.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.15.0...v5.22.0) (2022-07-28)
 
 
 ### Bug Fixes
@@ -12,11 +12,16 @@
 * remove wire to none existing node of example code  ([be770c4](https://github.com/biancoroyal/node-red-contrib-modbus/commit/be770c4ed8f36ccaeb2a5f614e569a25965fb17f))
 * source-map not optional ([7adac0b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/7adac0b318b067c307a1d9e285dd9237608da659))
 * travis ([d34f5a8](https://github.com/biancoroyal/node-red-contrib-modbus/commit/d34f5a81e9d55cb2a3ffb482641bb48832645e1a))
+* upgrade @xstate/fsm from 1.6.4 to 1.6.5 ([81383f4](https://github.com/biancoroyal/node-red-contrib-modbus/commit/81383f43c2a234c29bdabfe7f0968c17e3427dd2))
 
 
 ### Features
 
 * IO Modbus examples and node-red version spec in package ([707d572](https://github.com/biancoroyal/node-red-contrib-modbus/commit/707d572f214e8d11728260303784d830b324cbfe))
+* less logging switch ([716d17c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/716d17c8aea7a2a9c64518829f526a73f6c9d7ba))
+* npm stats ([1ff2b80](https://github.com/biancoroyal/node-red-contrib-modbus/commit/1ff2b802eed06cf6bb69d3ce8ff96c9dab51efd0))
+* unitid 0 allowed and tested ([a5ee552](https://github.com/biancoroyal/node-red-contrib-modbus/commit/a5ee5521163afbb9d8a7dfa5cc7f33f76189f024))
+* upgrade serialport to v10 for ARM ([5e93d11](https://github.com/biancoroyal/node-red-contrib-modbus/commit/5e93d1145686185dfe17d00dd4c0e682fc3354b1))
 
 
 
@@ -24,7 +29,7 @@
 
 
 
-# [5.14.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.13.3...v5.14.0) (2021-04-10)
+# [5.14.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.13.1...v5.14.0) (2021-04-10)
 
 
 ### Bug Fixes
