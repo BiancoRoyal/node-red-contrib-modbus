@@ -167,6 +167,58 @@ describe('Client node Testing', function () {
       })
     })
 
+    it('should be loaded with wrong TCP', function (done) {
+      helper.load([readNode, nodeUnderTest], [{
+        id: '466860d5.3f6358',
+        type: 'modbus-client',
+        name: 'ModbusClientTCPDefault',
+        clienttype: 'tcp',
+        bufferCommands: true,
+        queueLogEnabled: true,
+        stateLogEnabled: true,
+        tcpHost: '192.168.99.1',
+        tcpPort: '502',
+        tcpType: 'DEFAULT',
+        serialPort: '/dev/ttyUSB',
+        serialType: 'RTU-BUFFERD',
+        serialBaudrate: '9600',
+        serialDatabits: '8',
+        serialStopbits: '1',
+        serialParity: 'none',
+        serialConnectionDelay: '50',
+        unit_id: '1',
+        commandDelay: '1',
+        clientTimeout: '100',
+        reconnectTimeout: 200,
+        reconnectOnTimeout: true
+      },
+      {
+        id: '384fb9f1.e96296',
+        type: 'modbus-read',
+        name: '',
+        topic: '',
+        showStatusActivities: false,
+        showErrors: false,
+        unitid: '',
+        dataType: 'Coil',
+        adr: '0',
+        quantity: '10',
+        rate: '4',
+        rateUnit: 's',
+        delayOnStart: false,
+        startDelayTime: '',
+        server: '466860d5.3f6358',
+        useIOFile: false,
+        ioFile: '',
+        useIOForPayload: false,
+        wires: [[], []]
+      }], function () {
+        var modbusReadNode = helper.getNode('466860d5.3f6358')
+        modbusReadNode.should.have.property('name', 'ModbusClientTCPDefault')
+        setTimeout(done, 1000)
+      })
+    })
+
     it('should be loaded with TCP TELNET', function (done) {
       helper.load([readNode, nodeUnderTest], [{
         id: '466860d5.3f6359',

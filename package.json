@@ -14,8 +14,8 @@
     "vm2": "~3.9.10"
   },
   "optionalDependencies": {
-    "@serialport/list": "^10.0.0",
-    "serialport": "^10.0.0"
+    "@serialport/list": "~10.4.0",
+    "serialport": "~10.4.0"
   },
   "keywords": [
     "node-red",
@@ -80,13 +80,14 @@
     "rewrite-changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "postinstall": "node ./supporter.js",
     "clean": "gulp clean",
-    "dev-link": "npm i && npm run build && npm link && cd ~/.node-red && npm link node-red-contrib-modbus"
+    "dev-link": "npm i && npm run build && npm link",
+    "dev-unlink": "npm unlink node-red-contrib-modbus -g"
   },
   "devDependencies": {
-    "@babel/cli": "^7.17.6",
-    "@babel/core": "^7.17.9",
-    "@babel/preset-env": "^7.16.11",
-    "@node-red/nodes": "^2.2.2",
+    "@babel/cli": "^7.18.9",
+    "@babel/core": "^7.18.9",
+    "@babel/preset-env": "^7.18.9",
+    "@node-red/nodes": "^3.0.0",
     "chai": "^4.3.6",
     "codacy-coverage": "^3.4.0",
     "conventional-changelog-cli": "^2.2.2",

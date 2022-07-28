@@ -202,43 +202,45 @@ de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
   const coreClient = de.biancoroyal.modbus.core.client
   const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
   let delayTime = 1
-  
+
   if (!node.client) {
     nodeLog('Client Not Ready As Object On Reading Modbus')
     return
   }
- 
- if (!node.client._port._client.readable) {
-    node.connectClient()
+
+  if (!node.client._port._client.readable) {
+    if (!node.connectClient()) {
+      coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg)
+    }
     delayTime = 500
   }
- 
- setTimeout(function () {
+
+  setTimeout(function () {
     if (!node.bufferCommands) {
-     if (node.clienttype !== 'tcp') {
-       node.stateService.send('READ')
-     }
-   } else {
-     node.queueLog(JSON.stringify({
-       info: 'read msg via Modbus',
-       message: msg.payload,
-       queueUnitId: msg.queueUnitId,
-       timeout: node.client.getTimeout(),
-       state: node.actualServiceState.value
-     }))
-   }
+      if (node.clienttype !== 'tcp') {
+        node.stateService.send('READ')
+      }
+    } else {
+      node.queueLog(JSON.stringify({
+        info: 'read msg via Modbus',
+        message: msg.payload,
+        queueUnitId: msg.queueUnitId,
+        timeout: node.client.getTimeout(),
+        state: node.actualServiceState.value
+      }))
+    }
 
-   node.setUnitIdFromPayload(msg)
-   node.client.setTimeout(node.clientTimeout)
+    node.setUnitIdFromPayload(msg)
+    node.client.setTimeout(node.clientTimeout)
 
-   try {
-     coreClient.readModbusByFunctionCode(node, msg, cb, cberr)
-   } catch (err) {
-     nodeLog(err.message)
-     node.modbusErrorHandling(err)
-     coreClient.activateSendingOnFailure(node, cberr, err, msg)
-   }
- }, delayTime)
+    try {
+      coreClient.readModbusByFunctionCode(node, msg, cb, cberr)
+    } catch (err) {
+      coreClient.activateSendingOnFailure(node, cberr, err, msg)
+      nodeLog(err.message)
+      node.modbusErrorHandling(err)
+    }
+  }, delayTime)
 }
 
 de.biancoroyal.modbus.core.client.writeModbusByFunctionCodeFive = function (node, msg, cb, cberr) {
@@ -338,52 +340,54 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
   }
 
   if (!node.client._port._client.readable) {
-     node.connectClient()
-     delayTime = 500
-   }
- setTimeout(function () {
-   if (!node.bufferCommands) {
-     if (node.clienttype !== 'tcp') {
-       node.stateService.send('WRITE')
-     }
-   } else {
-     node.queueLog(JSON.stringify({
-       info: 'write msg',
-       message: msg.payload,
-       queueUnitId: msg.queueUnitId,
-       timeout: node.client.getTimeout(),
-       state: node.actualServiceState.value
-     }))
-   }
+    if (!node.connectClient()) {
+      coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg)
+    }
+    delayTime = 500
+  }
+  setTimeout(function () {
+    if (!node.bufferCommands) {
+      if (node.clienttype !== 'tcp') {
+        node.stateService.send('WRITE')
+      }
+    } else {
+      node.queueLog(JSON.stringify({
+        info: 'write msg',
+        message: msg.payload,
+        queueUnitId: msg.queueUnitId,
+        timeout: node.client.getTimeout(),
+        state: node.actualServiceState.value
+      }))
+    }
 
-   node.setUnitIdFromPayload(msg)
-   node.client.setTimeout(node.clientTimeout)
+    node.setUnitIdFromPayload(msg)
+    node.client.setTimeout(node.clientTimeout)
 
-   try {
-     switch (parseInt(msg.payload.fc)) {
-       case 15: // FC: 15
-         coreClient.writeModbusByFunctionCodeFifteen(node, msg, cb, cberr)
-         break
-       case 5: // FC: 5
-         coreClient.writeModbusByFunctionCodeFive(node, msg, cb, cberr)
-         break
-       case 16: // FC: 16
-         coreClient.writeModbusByFunctionCodeSixteen(node, msg, cb, cberr)
-         break
-       case 6: // FC: 6
-         coreClient.writeModbusByFunctionCodeSix(node, msg, cb, cberr)
-         break
-       default:
-         coreClient.activateSendingOnFailure(node, cberr, new Error('Function Code Unknown'), msg)
-         nodeLog('Function Code Unknown %s', msg.payload.fc)
-         break
-     }
-   } catch (err) {
-     nodeLog(err.message)
-     coreClient.activateSendingOnFailure(node, cberr, err, msg)
-     node.modbusErrorHandling(err)
-   }
-  }, delayTime) 
+    try {
+      switch (parseInt(msg.payload.fc)) {
+        case 15: // FC: 15
+          coreClient.writeModbusByFunctionCodeFifteen(node, msg, cb, cberr)
+          break
+        case 5: // FC: 5
+          coreClient.writeModbusByFunctionCodeFive(node, msg, cb, cberr)
+          break
+        case 16: // FC: 16
+          coreClient.writeModbusByFunctionCodeSixteen(node, msg, cb, cberr)
+          break
+        case 6: // FC: 6
+          coreClient.writeModbusByFunctionCodeSix(node, msg, cb, cberr)
+          break
+        default:
+          coreClient.activateSendingOnFailure(node, cberr, new Error('Function Code Unknown'), msg)
+          nodeLog('Function Code Unknown %s', msg.payload.fc)
+          break
+      }
+    } catch (err) {
+      coreClient.activateSendingOnFailure(node, cberr, err, msg)
+      nodeLog(err.message)
+      node.modbusErrorHandling(err)
+    }
+  }, delayTime)
 }
 
 de.biancoroyal.modbus.core.client.setNewTCPNodeSettings = function (node, msg) {

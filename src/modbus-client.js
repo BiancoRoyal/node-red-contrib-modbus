@@ -271,119 +271,162 @@ module.exports = function (RED) {
     })
 
     node.connectClient = function () {
-      if (node.client) {
-        try {
-          node.client.close(function () {
-            verboseLog('connection closed')
-          })
-          verboseLog('connection close sent')
-        } catch (err) {
-          verboseLog(err.message)
+      try {
+        if (node.client) {
+          try {
+            node.client.close(function () {
+              verboseLog('connection closed')
+            })
+            verboseLog('connection close sent')
+          } catch (err) {
+            verboseLog(err.message)
+          }
         }
-      }
-      node.client = null
-      node.client = new ModbusRTU()
+        node.client = null
+        node.client = new ModbusRTU()
 
-      if (!node.clientTimeout) {
-        node.clientTimeout = timeoutTimeMS
-      }
+        node.client.on('error', (err) => {
+          node.modbusErrorHandling(err)
+          mbBasics.setNodeStatusTo('error', node)
+        })
 
-      if (!node.reconnectTimeout) {
-        node.reconnectTimeout = reconnectTimeMS
-      }
-
-      if (node.clienttype === 'tcp') {
-        if (!coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
-          node.error(new Error('wrong unit-id (0..255)'), { payload: node.unit_id })
-          node.stateService.send('FAILURE')
-          return
+        if (!node.clientTimeout) {
+          node.clientTimeout = timeoutTimeMS
         }
 
-        switch (node.tcpType) {
-          case 'C701':
-            verboseLog('C701 port UDP bridge')
-            node.client.connectC701(node.tcpHost, {
-              port: node.tcpPort,
-              autoOpen: true
-            }).then(node.setTCPConnectionOptions)
-              .then(node.setTCPConnected)
-              .catch(node.modbusTcpErrorHandling)
-            break
-          case 'TELNET':
-            verboseLog('Telnet port')
-            node.client.connectTelnet(node.tcpHost, {
-              port: node.tcpPort,
-              autoOpen: true
-            }).then(node.setTCPConnectionOptions)
-              .catch(node.modbusTcpErrorHandling)
-            break
-          case 'TCP-RTU-BUFFERED':
-            verboseLog('TCP RTU buffered port')
-            node.client.connectTcpRTUBuffered(node.tcpHost, {
-              port: node.tcpPort,
-              autoOpen: true
-            }).then(node.setTCPConnectionOptions)
-              .catch(node.modbusTcpErrorHandling)
-            break
-          default:
-            verboseLog('TCP port')
-            node.client.connectTCP(node.tcpHost, {
-              port: node.tcpPort,
-              autoOpen: true
-            }).then(node.setTCPConnectionOptions)
-              .catch(node.modbusTcpErrorHandling)
-        }
-      } else {
-        if (!coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
-          node.error(new Error('wrong unit-id serial (0..247)'), { payload: node.unit_id })
-          node.stateService.send('FAILURE')
-          return
+        if (!node.reconnectTimeout) {
+          node.reconnectTimeout = reconnectTimeMS
         }
 
-        if (!node.serialConnectionDelay) {
-          node.serialConnectionDelay = serialConnectionDelayTimeMS
-        }
+        if (node.clienttype === 'tcp') {
+          if (!coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
+            node.error(new Error('wrong unit-id (0..255)'), { payload: node.unit_id })
+            node.stateService.send('FAILURE')
+            return false
+          }
 
-        if (!node.serialPort) {
-          node.error(new Error('wrong serial port'), { payload: node.serialPort })
-          node.stateService.send('FAILURE')
-          return
-        }
-
-        const serialPortOptions = {
-          baudRate: parseInt(node.serialBaudrate),
-          dataBits: parseInt(node.serialDatabits),
-          stopBits: parseInt(node.serialStopbits),
-          parity: node.serialParity,
-          autoOpen: false
-        }
-
-        switch (node.serialType) {
-          case 'ASCII':
-            verboseLog('ASCII port serial')
-            // Make sure is parsed when string, otherwise just assign.
-            if (node.serialAsciiResponseStartDelimiter && typeof node.serialAsciiResponseStartDelimiter === 'string') {
-              serialPortOptions.startOfSlaveFrameChar = parseInt(node.serialAsciiResponseStartDelimiter, 16)
-            } else {
-              serialPortOptions.startOfSlaveFrameChar = node.serialAsciiResponseStartDelimiter
+          try {
+            switch (node.tcpType) {
+              case 'C701':
+                verboseLog('C701 port UDP bridge')
+                node.client.connectC701(node.tcpHost, {
+                  port: node.tcpPort,
+                  autoOpen: true
+                }).then(node.setTCPConnectionOptions)
+                  .then(node.setTCPConnected)
+                  .catch((err) => {
+                    node.modbusTcpErrorHandling(err)
+                    return false
+                  })
+                break
+              case 'TELNET':
+                verboseLog('Telnet port')
+                node.client.connectTelnet(node.tcpHost, {
+                  port: node.tcpPort,
+                  autoOpen: true
+                }).then(node.setTCPConnectionOptions)
+                  .catch((err) => {
+                    node.modbusTcpErrorHandling(err)
+                    return false
+                  })
+                break
+              case 'TCP-RTU-BUFFERED':
+                verboseLog('TCP RTU buffered port')
+                node.client.connectTcpRTUBuffered(node.tcpHost, {
+                  port: node.tcpPort,
+                  autoOpen: true
+                }).then(node.setTCPConnectionOptions)
+                  .catch((err) => {
+                    node.modbusTcpErrorHandling(err)
+                    return false
+                  })
+                break
+              default:
+                verboseLog('TCP port')
+                node.client.connectTCP(node.tcpHost, {
+                  port: node.tcpPort,
+                  autoOpen: true
+                }).then(node.setTCPConnectionOptions)
+                  .catch((err) => {
+                    node.modbusTcpErrorHandling(err)
+                    return false
+                  })
             }
-            verboseLog('Using response delimiter: 0x' + serialPortOptions.startOfSlaveFrameChar.toString(16))
+          } catch (e) {
+            node.modbusTcpErrorHandling(e)
+            return false
+          }
+        } else {
+          if (!coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
+            node.error(new Error('wrong unit-id serial (0..247)'), { payload: node.unit_id })
+            node.stateService.send('FAILURE')
+            return false
+          }
 
-            node.client.connectAsciiSerial(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
-              .catch(node.modbusSerialErrorHandling)
-            break
-          case 'RTU':
-            verboseLog('RTU port serial')
-            node.client.connectRTU(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
-              .catch(node.modbusSerialErrorHandling)
-            break
-          default:
-            verboseLog('RTU buffered port serial')
-            node.client.connectRTUBuffered(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
-              .catch(node.modbusSerialErrorHandling)
-            break
+          if (!node.serialConnectionDelay) {
+            node.serialConnectionDelay = serialConnectionDelayTimeMS
+          }
+
+          if (!node.serialPort) {
+            node.error(new Error('wrong serial port'), { payload: node.serialPort })
+            node.stateService.send('FAILURE')
+            return false
+          }
+
+          const serialPortOptions = {
+            baudRate: parseInt(node.serialBaudrate),
+            dataBits: parseInt(node.serialDatabits),
+            stopBits: parseInt(node.serialStopbits),
+            parity: node.serialParity,
+            autoOpen: false
+          }
+
+          try {
+            switch (node.serialType) {
+              case 'ASCII':
+                verboseLog('ASCII port serial')
+                // Make sure is parsed when string, otherwise just assign.
+                if (node.serialAsciiResponseStartDelimiter && typeof node.serialAsciiResponseStartDelimiter === 'string') {
+                  serialPortOptions.startOfSlaveFrameChar = parseInt(node.serialAsciiResponseStartDelimiter, 16)
+                } else {
+                  serialPortOptions.startOfSlaveFrameChar = node.serialAsciiResponseStartDelimiter
+                }
+                verboseLog('Using response delimiter: 0x' + serialPortOptions.startOfSlaveFrameChar.toString(16))
+
+                node.client.connectAsciiSerial(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
+                  .catch((err) => {
+                    node.modbusSerialErrorHandling(err)
+                    return false
+                  })
+                break
+              case 'RTU':
+                verboseLog('RTU port serial')
+                node.client.connectRTU(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
+                  .catch((err) => {
+                    node.modbusSerialErrorHandling(err)
+                    return false
+                  })
+                break
+              default:
+                verboseLog('RTU buffered port serial')
+                node.client.connectRTUBuffered(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
+                  .catch((err) => {
+                    node.modbusSerialErrorHandling(err)
+                    return false
+                  })
+                break
+            }
+          } catch (e) {
+            node.modbusSerialErrorHandling(e)
+            return false
+          }
         }
+      } catch (err) {
+        node.modbusErrorHandling(err)
+        return false
       }
+
+      return true
     }
 
     node.setTCPConnectionOptions = function () {
