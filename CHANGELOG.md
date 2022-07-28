@@ -1,4 +1,4 @@
-# [5.22.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.15.0...v5.22.0) (2022-07-22)
+# [5.22.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.15.0...v5.22.0) (2022-07-28)
 
 
 ### Bug Fixes
@@ -12,6 +12,7 @@
 * remove wire to none existing node of example code  ([be770c4](https://github.com/biancoroyal/node-red-contrib-modbus/commit/be770c4ed8f36ccaeb2a5f614e569a25965fb17f))
 * source-map not optional ([7adac0b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/7adac0b318b067c307a1d9e285dd9237608da659))
 * travis ([d34f5a8](https://github.com/biancoroyal/node-red-contrib-modbus/commit/d34f5a81e9d55cb2a3ffb482641bb48832645e1a))
+* upgrade @xstate/fsm from 1.6.4 to 1.6.5 ([81383f4](https://github.com/biancoroyal/node-red-contrib-modbus/commit/81383f43c2a234c29bdabfe7f0968c17e3427dd2))
 
 
 ### Features
