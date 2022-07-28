@@ -1,5 +1,5 @@
 <!--
- Copyright (c) 2016,2017,2018,2019,2020,2021 Klaus Landsdorf (https://bianco-royal.space/)
+ Copyright (c) 2016,2017,2018,2019,2020,2021,2022 Klaus Landsdorf (http://node-red.plus/)
  All rights reserved.
  node-red-contrib-modbus - The BSD 3-Clause License
 
@@ -288,10 +288,10 @@
       });
     },
     oneditresize: function (size) {
-      
+
       var height = size.height;
       $('#node-input-sequences-container').css("height", (height - 145) + "px");
-      
+
     }
   })
 </script>
@@ -396,7 +396,7 @@
      <strong>Input parameter for connecting Modbus</strong>
      <ul>
          <li>(mixed)  fc ('FC1', 'FC2', 'FC3', 'FC4' - Or - 1:4) - Function Code</li>
-         <li>(integer) unitid (0..255 tcp | 0..247 serial) - Unit-ID</li>        
+         <li>(integer) unitid (0..255 tcp | 0..247 serial) - Unit-ID</li>
          <li>(integer) address (0:65535) - The starting address</li>
          <li>(integer) quantity (1:65535) - The quantity of coils/inputs/registers to be read from the starting address</li>
      </ul>
