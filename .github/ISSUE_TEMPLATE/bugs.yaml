@@ -1,0 +1,61 @@
+name: "Bug Report"
+description: Report a bug or unexpected behavior encountered.
+labels:
+  - bug
+body:
+  - type: "input"
+    id: "version"
+    attributes:
+      label: Which node-red-contrib-iiot-opcua version are you using?
+      description: |
+        Please check the `package.json` file in your Node-RED data directory (default: `$HOME/.node-red/`).
+    validations:
+      required: true
+  - type: textarea
+    id: descriptions
+    attributes:
+      label: What happened?
+      description: |
+        Please provide a clear and thorough description of what happened.
+    validations:
+      required: true
+  - type: dropdown
+    id: server
+    attributes:
+      label: Server
+      description: |
+        Which type of OPC UA Server are you connected to?
+      multiple: false
+      options:
+        - OPCUA-IIoT-Server Node
+        - OPCUA-IIoT-Flex-Server Node (Please attach AddressSpaceScript to the next section)
+        - Other/External server
+        - None/This is related to a node that doesn't connect to a server
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: How can this be reproduced?
+      description: |
+        Please provide a step-by-step description of how to reproduce this behavior. 
+        Please attach relevant flows as a `.json` file. (In the top-right menu, click `Export`)
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+      description: |
+        Describe the expected behavior and how the actual behavior differed.
+    validations:
+      required: false
+
+  - type: textarea
+    id: other
+    attributes:
+      label: Other Information
+      description: |
+        Please provide any other information you feel is relevant, such as Node-RED or NodeJS versions.
+    validations:
+      required: false

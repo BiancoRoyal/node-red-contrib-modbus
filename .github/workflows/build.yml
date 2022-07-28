@@ -1,0 +1,45 @@
+name: Build and publish
+on:
+  pull_request:
+    types:
+      - opened
+  push:
+    branches:
+      - develop
+      - development
+      - alpha
+      - beta
+      - master
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        node: [12, 14, 16, 18]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm install
+      - run: npm run build
+      - run: tar -czvf distrib.tar.gz modbus examples extras package.json docs index.js README.md CHANGELOG.md
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build-folders
+          path: distrib.tar.gz
+
+  publish:
+    runs-on: ubuntu-20.04
+    needs: build
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: npm install
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}

@@ -5,13 +5,13 @@
   "description": "The all in one Modbus TCP and Serial contribution package for Node-RED.",
   "dependencies": {
     "@xstate/fsm": "~1.6.5",
-    "bson": "~4.6.1",
-    "debug": "~4.3.2",
+    "bson": "~4.6.4",
+    "debug": "~4.3.4",
     "jsmodbus": "~4.0.6",
     "line-by-line": "~0.1.6",
     "modbus-serial": "~8.0.5",
     "source-map-support": "~0.5.21",
-    "vm2": "~3.9.9"
+    "vm2": "~3.9.10"
   },
   "optionalDependencies": {
     "@serialport/list": "^10.0.0",
@@ -105,8 +105,8 @@
     "js-beautify": "^1.14.3",
     "mocha": "^9.2.2",
     "nock": "^13.2.4",
-    "node-red": "^2.2.2",
-    "node-red-node-test-helper": "^0.2.7",
+    "node-red": "^3.0.1",
+    "node-red-node-test-helper": "^0.3.0",
     "nyc": "^15.1.0",
     "pump": "^3.0.0",
     "should": "^13.2.3",
