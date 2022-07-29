@@ -1,9 +1,9 @@
 /*
  The MIT License
 
- Copyright (c) 2017,2018,2019,2020,2021 - Klaus Landsdorf (https://bianco-royal.space/)
+ Copyright (c) 2017-2022 Klaus Landsdorf (http://node-red.plus/)
  All rights reserved.
- node-red-contrib-iiot-jwt
+ node-red-contrib-modbus
  */
 
 'use strict'

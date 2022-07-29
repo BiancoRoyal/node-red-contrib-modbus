@@ -6,13 +6,13 @@
 ![NodeJS_Version](http://b.repl.ca/v1/NodeJS-LTS-green.png)
 [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 [![NPM download](https://img.shields.io/npm/dm/node-red-contrib-modbus.svg)](https://npm-stat.com/charts.html?package=node-red-contrib-modbus)
-[![Build Status](https://app.travis-ci.com/biancode/node-red-contrib-modbus.svg?branch=master)](https://app.travis-ci.com/biancode/node-red-contrib-modbus)
+[![Build and publish](https://github.com/BiancoRoyal/node-red-contrib-modbus/actions/workflows/build.yml/badge.svg)](https://github.com/BiancoRoyal/node-red-contrib-modbus/actions/workflows/build.yml)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6cbeb40ab5604b3ab99e6badc9469e8a)](https://www.codacy.com/gh/BiancoRoyal/node-red-contrib-modbus?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=BiancoRoyal/node-red-contrib-modbus&amp;utm_campaign=Badge_Grade)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/BiancoRoyal/node-red-contrib-modbus)
 
 # node-red-contrib-modbus
 
-## The all in one Modbus TCP and Serial contribution package for Node-RED
+### The all-in-one Modbus TCP and Serial contribution package for Node-RED
 
 [![nodemodbus64](images/modbus-icon64.png)](https://www.npmjs.com/package/node-red-contrib-modbus)
 
@@ -24,8 +24,9 @@ For an international area, [Iniationware][15] has provided the [Node-RED PLUS In
 
 Für einen deutschsprachigen Bereich hat [Iniationware][15] die Webseite [Node-RED PLUS Germany][17] bereitgestellt.
 
+## Contribution Information
 
-[Node-RED][1] contribution package for [Modbus][8]
+[Node-RED][1] contribution package for [Modbus][8] version overview:
 
 Based on [modbus-serial][2] with TCP, C701, Telnet, Serial, RTU buffered, and ASCII
 

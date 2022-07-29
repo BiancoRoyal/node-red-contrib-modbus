@@ -62,7 +62,7 @@
   "bugs": {
     "url": "https://github.com/biancoroyal/node-red-contrib-modbus/issues/"
   },
-  "homepage": "https://github.com/sponsors/biancode/",
+  "homepage": "https://noderedplus.de/",
   "scripts": {
     "changelog": "npm run rewrite-changelog",
     "test": "standard --fix && mocha test --recursive --reporter dot --timeout 5000",
