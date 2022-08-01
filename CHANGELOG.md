@@ -1,4 +1,4 @@
-# [5.22.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.15.0...v5.22.0) (2022-07-28)
+# [5.23.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.15.0...v5.23.0) (2022-08-01)
 
 
 ### Bug Fixes
@@ -6,6 +6,7 @@
 * [#253](https://github.com/biancoroyal/node-red-contrib-modbus/issues/253) queue info reset ([9ad4531](https://github.com/biancoroyal/node-red-contrib-modbus/commit/9ad45314e874caa2016caf80e5b5102acf29964d))
 * [#274](https://github.com/biancoroyal/node-red-contrib-modbus/issues/274) ([fccd59b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/fccd59be03ec79deae4698e4ce11064f3de825c1))
 * [#277](https://github.com/biancoroyal/node-red-contrib-modbus/issues/277), [#253](https://github.com/biancoroyal/node-red-contrib-modbus/issues/253), [#263](https://github.com/biancoroyal/node-red-contrib-modbus/issues/263), [#266](https://github.com/biancoroyal/node-red-contrib-modbus/issues/266) ([920d6d0](https://github.com/biancoroyal/node-red-contrib-modbus/commit/920d6d0e089e27e21fa92b4b6a313a66dad6452b))
+* **client:** writeable instead readable on write ([2ae4b12](https://github.com/biancoroyal/node-red-contrib-modbus/commit/2ae4b12ff7b328d47bfddcd275435158e7423b39))
 * ghactions ([ee04b3a](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ee04b3a5e21c6727e16a0bad0dc50d637b2ccbc1))
 * lock ([6fce00e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/6fce00eb10ef62d5eca84e51040f138e9dbbb5f1))
 * python 3.9 for travis ([2afdb63](https://github.com/biancoroyal/node-red-contrib-modbus/commit/2afdb63e3b2c384327d6044e40f8d4f519ccedcc))
