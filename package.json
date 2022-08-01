@@ -4,7 +4,7 @@
   "private": false,
   "description": "The all in one Modbus TCP and Serial contribution package for Node-RED.",
   "dependencies": {
-    "@xstate/fsm": "~1.6.5",
+    "@xstate/fsm": "~2.0.0",
     "bson": "~4.6.4",
     "debug": "~4.3.4",
     "jsmodbus": "~4.0.6",
