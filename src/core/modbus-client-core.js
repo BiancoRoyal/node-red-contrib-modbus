@@ -340,7 +340,7 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
     return
   }
 
-  if (!node.client._port._client.readable) {
+  if (!node.client._port._client.writable) {
     if (!node.connectClient()) {
       coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg)
       return
