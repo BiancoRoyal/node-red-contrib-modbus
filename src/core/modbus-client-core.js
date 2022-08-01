@@ -214,9 +214,11 @@ de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
   }
 
   setTimeout(function () {
-    if (!node.bufferCommands && node.clienttype !== 'tcp') {
-      node.stateService.send('READ')
-    } else if (node.bufferCommands) {
+    if (!node.bufferCommands) {
+      if (node.clienttype !== 'tcp') {
+        node.stateService.send('READ')
+      }
+    } else {
       node.queueLog(JSON.stringify({
         info: 'read msg via Modbus',
         message: msg.payload,
@@ -340,9 +342,11 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
   }
 
   setTimeout(function () {
-    if (!node.bufferCommands && node.clienttype !== 'tcp') {
-      node.stateService.send('WRITE')
-    } else if (node.bufferCommands) {
+    if (!node.bufferCommands) {
+      if (node.clienttype !== 'tcp') {
+        node.stateService.send('WRITE')
+      }
+    } else {
       node.queueLog(JSON.stringify({
         info: 'write msg',
         message: msg.payload,
