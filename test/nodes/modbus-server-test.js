@@ -2,7 +2,7 @@
  * Original Work Copyright 2014 IBM Corp.
  * node-red
  *
- * Copyright (c) 2016,2017,2018,2019,2020,2021 Klaus Landsdorf (https://bianco-royal.space/)
+ * Copyright (c) 2016,2017,2018,2019,2020,2021,2022 Klaus Landsdorf (http://node-red.plus/)
  * All rights reserved.
  * node-red-contrib-modbus - The BSD 3-Clause License
  *
@@ -71,6 +71,39 @@ describe('Server node Testing', function () {
       })
     })
 
+    it('simple Node with wrong IP should be loaded', function (done) {
+      helper.load(serverNode, [
+        {
+          id: '178284ea.5055ab',
+          type: 'modbus-server',
+          name: 'modbusServer',
+          logEnabled: false,
+          hostname: '192.168.99.1',
+          serverPort: '5503',
+          responseDelay: '50',
+          delayUnit: 'ms',
+          coilsBufferSize: 1024,
+          holdingBufferSize: 1024,
+          inputBufferSize: 1024,
+          discreteBufferSize: 1024,
+          showErrors: false,
+          wires: [
+            [],
+            [],
+            [],
+            []
+          ]
+        }
+      ], function () {
+        var modbusServer = helper.getNode('178284ea.5055ab')
+        modbusServer.should.have.property('name', 'modbusServer')
+
+        done()
+      }, function () {
+        helper.log('function callback')
+      })
+    })
+
     it('should send data on input', function (done) {
       helper.load([injectNode, serverNode], [
         {
@@ -79,7 +112,7 @@ describe('Server node Testing', function () {
           name: 'modbusServer',
           logEnabled: false,
           hostname: '',
-          serverPort: '5502',
+          serverPort: '5504',
           responseDelay: '50',
           delayUnit: 'ms',
           coilsBufferSize: 1024,

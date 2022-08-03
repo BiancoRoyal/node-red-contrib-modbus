@@ -1,10 +1,11 @@
 /**
- Copyright (c) 2016,2017,2018,2019,2020,2021 Klaus Landsdorf (https://bianco-royal.space/)
+ Copyright (c) 2016,2017,2018,2019,2020,2021,2022 Klaus Landsdorf (http://node-red.plus/)
  All rights reserved.
  node-red-contrib-modbus - The BSD 3-Clause License
 
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  **/
+
 /**
  * Modbus Server node.
  * @module NodeRedModbusServer
@@ -22,6 +23,7 @@ module.exports = function (RED) {
 
   function ModbusServer (config) {
     RED.nodes.createNode(this, config)
+
     const bufferFactor = 8
 
     this.name = config.name
@@ -88,6 +90,14 @@ module.exports = function (RED) {
       }
       mbBasics.setNodeStatusTo('error', node)
     }
+
+    node.netServer.on('error', function (err) {
+      internalDebugLog(err.message)
+      if (node.showErrors) {
+        node.error(err)
+      }
+      mbBasics.setNodeStatusTo('error', node)
+    })
 
     node.on('input', function (msg) {
       if (coreServer.isValidMemoryMessage(msg)) {

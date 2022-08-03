@@ -1,5 +1,5 @@
 <!--
- Copyright (c) 2016,2017,2018,2019,2020,2021 Klaus Landsdorf (https://bianco-royal.space/)
+ Copyright (c) 2016,2017,2018,2019,2020,2021,2022 Klaus Landsdorf (http://node-red.plus/)
  All rights reserved.
  node-red-contrib-modbus - The BSD 3-Clause License
 
@@ -118,7 +118,7 @@
       <p><pre>
         [{"id":"430f76bf.9de2d8","type":"function","z":"b245d3e4.b52de","name":"reset on High",
         "func":"if(\"high level reached\" === msg.state) {\n    msg.payload.resetQueue = true;\n    return msg;\n}\n",
-        "outputs":1,"noerr":0,"x":410,"y":140,"wires":[["64cca59a.dc295c"]]}]
+        "outputs":1,"noerr":0,"x":410,"y":140,"wires":[[]]}]
       </pre></p>
 
       <p>Reset on high high level to connect with the catch node</p>
@@ -126,7 +126,7 @@
           <pre>
             [{"id":"fc74491.2ddc9b8","type":"function","z":"b245d3e4.b52de","name":"reset on HighHigh",
             "func":"if(\"high high level reached\" === msg.state) {\n    msg.payload.resetQueue = true;\n    return msg;\n}\n",
-            "outputs":1,"noerr":0,"x":430,"y":180,"wires":[["64cca59a.dc295c"]]}]
+            "outputs":1,"noerr":0,"x":430,"y":180,"wires":[[]]}]
           </pre>
       </p>
 

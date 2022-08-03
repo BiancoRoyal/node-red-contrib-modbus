@@ -1,5 +1,5 @@
 <!--
- Copyright (c) 2016,2017,2018,2019,2020,2021 Klaus Landsdorf (https://bianco-royal.space/)
+ Copyright (c) 2016,2017,2018,2019,2020,2021,2022 Klaus Landsdorf (http://node-red.plus/)
  Copyright 2016 - Jason D. Harper, Argonne National Laboratory
  Copyright 2015,2016 - Mika Karaila, Valmet Automation Inc.
  All rights reserved.
@@ -17,6 +17,7 @@
       bufferCommands: {value: true},
       stateLogEnabled: {value: false},
       queueLogEnabled: {value: false},
+      failureLogEnabled: {value: true},
 
       tcpHost: {value: '127.0.0.1', required: true},
       tcpPort: {value: 502, required: true, validate: RED.validators.number()},
@@ -29,6 +30,7 @@
       serialStopbits: {value: 1, required: true, validate: RED.validators.number()},
       serialParity: {value: 'none', required: true},
       serialConnectionDelay: {value: 100},
+      serialAsciiResponseStartDelimiter: {value: '0x3A'},
 
       unit_id: {value: 1},
       commandDelay: {value: 1},
@@ -52,8 +54,10 @@
       let node = this
       node.ports = []
       let clientTypeSelector = $('#node-config-input-clienttype')
+      let serialTypeSelector = $('#node-config-input-serialType')
       let inputsSerial = $('#node-inputs-modbus-serial')
       let inputsSerialExtras = $('#node-inputs-modbus-serial-extras')
+      let inputsAsciiExtras = $('#node-inputs-ascii-extras')
       let inputsTCP = $('#node-inputs-modbus-tcp')
 
       clientTypeSelector.on('focus', function () {
@@ -126,7 +130,6 @@
             inputsSerial.show()
             inputsTCP.hide()
 
-
             if (node.tcpHost) {
               node.tcpHost.required = false
               node.tcpPort.required = false
@@ -151,6 +154,18 @@
             break
           default:
             break
+        }
+      })
+
+      serialTypeSelector.on('focus').change(function () {
+        if (serialTypeSelector.val() === 'ASCII') {
+          inputsAsciiExtras.show()
+
+          if (node.serialAsciiResponseStartDelimiter) {
+            node.serialAsciiResponseStartDelimiter = node.serialAsciiResponseStartDelimiter
+          }
+        } else {
+          inputsAsciiExtras.hide()
         }
       })
 
@@ -291,6 +306,12 @@
             <input type="text" id="node-config-input-serialConnectionDelay" style="max-width:80px" placeholder="500">
         </div>
 	</div>
+  <div id="node-inputs-ascii-extras">
+    <div class="form-row">
+      <label for="node-config-input-serialAsciiResponseStartDelimiter"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.serialAsciiResponseStartDelimiter"></span></label>
+      <input type="text" id="node-config-input-serialAsciiResponseStartDelimiter" style="max-width:80px" placeholder="0x3A (:)">
+    </div>
+  </div>
 	<hr>
     <div class="form-row">
         <label for="node-config-input-unit_id"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.unitId"></span></label>
@@ -331,6 +352,13 @@
             <span data-i18n="modbus-contrib.label.queueLogEnabled"></span>
         </label>
         <input type="checkbox" id="node-config-input-queueLogEnabled" style="max-width:30px">
+    </div>
+    <div class="form-row">
+        <label style="min-width:160px" for="node-config-input-failureLogEnabled">
+            <i class="fa fa-th"></i>
+            <span data-i18n="modbus-contrib.label.failureLogEnabled"></span>
+        </label>
+        <input type="checkbox" id="node-config-input-failureLogEnabled" style="max-width:30px">
     </div>
     <div class="form-row">
         <label style="min-width:160px" for="node-config-input-bufferCommands"><i class="fa fa-th"></i> <span
@@ -396,6 +424,7 @@
             <li>Serial Parity</li>
             <li>Serial Type</li>
             <li>Serial Connection delay (default 500 ms) - time to delay first command sending after reconnect</li>
+            <li>ASCII start delimiter (default 0x3A, colon) - Delemiter used to identify start of slave response</li>
         </ul>
     </p>
 

@@ -2,7 +2,7 @@
  * Original Work Copyright 2014 IBM Corp.
  * node-red
  *
- * Copyright (c) 2016,2017,2018,2019,2020,2021 Klaus Landsdorf (https://bianco-royal.space/)
+ * Copyright (c) 2016,2017,2018,2019,2020,2021,2022 Klaus Landsdorf (http://node-red.plus/)
  * All rights reserved.
  * node-red-contrib-modbus - The BSD 3-Clause License
  *
@@ -40,7 +40,7 @@ var testWriteParametersFlow = [
     name: '',
     logEnabled: false,
     hostname: '',
-    serverPort: '7502',
+    serverPort: '7504',
     responseDelay: '50',
     delayUnit: 'ms',
     coilsBufferSize: 1024,
@@ -93,7 +93,7 @@ var testWriteParametersFlow = [
     stateLogEnabled: false,
     parallelUnitIdsAllowed: true,
     tcpHost: '127.0.0.1',
-    tcpPort: '7502',
+    tcpPort: '7504',
     tcpType: 'DEFAULT',
     serialPort: '/dev/ttyUSB',
     serialType: 'RTU-BUFFERD',
@@ -181,7 +181,7 @@ describe('Flex Write node Testing', function () {
           stateLogEnabled: false,
           parallelUnitIdsAllowed: true,
           tcpHost: '127.0.0.1',
-          tcpPort: '6502',
+          tcpPort: '6504',
           tcpType: 'DEFAULT',
           serialPort: '/dev/ttyUSB',
           serialType: 'RTU-BUFFERD',
@@ -213,7 +213,7 @@ describe('Flex Write node Testing', function () {
           name: '',
           logEnabled: false,
           hostname: '',
-          serverPort: '7502',
+          serverPort: '7504',
           responseDelay: '50',
           delayUnit: 'ms',
           coilsBufferSize: 1024,
@@ -283,7 +283,7 @@ describe('Flex Write node Testing', function () {
           stateLogEnabled: false,
           parallelUnitIdsAllowed: true,
           tcpHost: '127.0.0.1',
-          tcpPort: '7502',
+          tcpPort: '7504',
           tcpType: 'DEFAULT',
           serialPort: '/dev/ttyUSB',
           serialType: 'RTU-BUFFERD',

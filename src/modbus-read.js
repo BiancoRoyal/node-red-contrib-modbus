@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018,2019,2020,2021 Klaus Landsdorf (https://bianco-royal.space/)
+ Copyright (c) 2016,2017,2018,2019,2020,2021,2022 Klaus Landsdorf (http://node-red.plus/)
  Copyright 2016 - Jason D. Harper, Argonne National Laboratory
  Copyright 2015,2016 - Mika Karaila, Valmet Automation Inc.
  Copyright 2013, 2016 IBM Corp. (node-red)
@@ -8,6 +8,7 @@
 
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  **/
+
 /**
  * Modbus Read node.
  * @module NodeRedModbusRead
@@ -62,7 +63,7 @@ module.exports = function (RED) {
 
     function verboseWarn (logMessage) {
       if (RED.settings.verbose) {
-        node.warn('Client -> ' + logMessage + node.serverInfo)
+        node.warn('Read -> ' + logMessage + ' address: ' + node.adr)
       }
     }
 
@@ -134,13 +135,15 @@ module.exports = function (RED) {
     }
 
     node.errorProtocolMsg = function (err, msg) {
-      mbBasics.logMsgError(node, err, msg)
-      mbBasics.sendEmptyMsgOnFail(node, err, msg)
+      if (node.showErrors) {
+        mbBasics.logMsgError(node, err, msg)
+      }
     }
 
     node.onModbusReadError = function (err, msg) {
       node.internalDebugLog(err.message)
       node.errorProtocolMsg(err, msg)
+      mbBasics.sendEmptyMsgOnFail(node, err, msg)
       mbBasics.setModbusError(node, modbusClient, err, msg)
     }
 
@@ -259,9 +262,9 @@ module.exports = function (RED) {
           {
             topic,
             payload: response,
-            values: values,
+            values,
             input: msg,
-            valueNames: valueNames,
+            valueNames,
             sendingNodeId: node.id
           }])
       } else {
@@ -276,7 +279,7 @@ module.exports = function (RED) {
           {
             topic,
             payload: response,
-            values: values,
+            values,
             input: msg,
             sendingNodeId: node.id
           }

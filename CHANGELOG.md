@@ -1,10 +1,40 @@
-# Changelog
+## [5.23.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.23.0...v5.23.1) (2022-08-03)
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [5.14.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.14.0...v5.14.1) (2021-08-07)
 
-# [5.14.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.13.3...v5.14.0) (2021-04-10)
+# [5.23.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.15.0...v5.23.0) (2022-08-01)
+
+
+### Bug Fixes
+
+* [#253](https://github.com/biancoroyal/node-red-contrib-modbus/issues/253) queue info reset ([9ad4531](https://github.com/biancoroyal/node-red-contrib-modbus/commit/9ad45314e874caa2016caf80e5b5102acf29964d))
+* [#274](https://github.com/biancoroyal/node-red-contrib-modbus/issues/274) ([fccd59b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/fccd59be03ec79deae4698e4ce11064f3de825c1))
+* [#277](https://github.com/biancoroyal/node-red-contrib-modbus/issues/277), [#253](https://github.com/biancoroyal/node-red-contrib-modbus/issues/253), [#263](https://github.com/biancoroyal/node-red-contrib-modbus/issues/263), [#266](https://github.com/biancoroyal/node-red-contrib-modbus/issues/266) ([920d6d0](https://github.com/biancoroyal/node-red-contrib-modbus/commit/920d6d0e089e27e21fa92b4b6a313a66dad6452b))
+* **client:** writeable instead readable on write ([2ae4b12](https://github.com/biancoroyal/node-red-contrib-modbus/commit/2ae4b12ff7b328d47bfddcd275435158e7423b39))
+* ghactions ([ee04b3a](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ee04b3a5e21c6727e16a0bad0dc50d637b2ccbc1))
+* lock ([6fce00e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/6fce00eb10ef62d5eca84e51040f138e9dbbb5f1))
+* python 3.9 for travis ([2afdb63](https://github.com/biancoroyal/node-red-contrib-modbus/commit/2afdb63e3b2c384327d6044e40f8d4f519ccedcc))
+* remove wire to none existing node of example code  ([be770c4](https://github.com/biancoroyal/node-red-contrib-modbus/commit/be770c4ed8f36ccaeb2a5f614e569a25965fb17f))
+* source-map not optional ([7adac0b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/7adac0b318b067c307a1d9e285dd9237608da659))
+* travis ([d34f5a8](https://github.com/biancoroyal/node-red-contrib-modbus/commit/d34f5a81e9d55cb2a3ffb482641bb48832645e1a))
+* upgrade @xstate/fsm from 1.6.4 to 1.6.5 ([81383f4](https://github.com/biancoroyal/node-red-contrib-modbus/commit/81383f43c2a234c29bdabfe7f0968c17e3427dd2))
+
+
+### Features
+
+* IO Modbus examples and node-red version spec in package ([707d572](https://github.com/biancoroyal/node-red-contrib-modbus/commit/707d572f214e8d11728260303784d830b324cbfe))
+* less logging switch ([716d17c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/716d17c8aea7a2a9c64518829f526a73f6c9d7ba))
+* npm stats ([1ff2b80](https://github.com/biancoroyal/node-red-contrib-modbus/commit/1ff2b802eed06cf6bb69d3ce8ff96c9dab51efd0))
+* unitid 0 allowed and tested ([a5ee552](https://github.com/biancoroyal/node-red-contrib-modbus/commit/a5ee5521163afbb9d8a7dfa5cc7f33f76189f024))
+* upgrade serialport to v10 for ARM ([5e93d11](https://github.com/biancoroyal/node-red-contrib-modbus/commit/5e93d1145686185dfe17d00dd4c0e682fc3354b1))
+
+
+
+## [5.14.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.14.0...v5.14.1) (2021-08-07)
+
+
+
+# [5.14.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.13.1...v5.14.0) (2021-04-10)
 
 
 ### Bug Fixes
@@ -77,9 +107,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
+* **getter:** empty msg on catch error ([c8ac4a6](https://github.com/biancoroyal/node-red-contrib-modbus/commit/c8ac4a675ce17ca1992a1018ad113652cd5b97a4))
 * new status update concept for nodes with less traffic ([eb2afba](https://github.com/biancoroyal/node-red-contrib-modbus/commit/eb2afbabac913eaa3d017735dc7a11eb9d02d60f))
 * queue info can handle all queues from one node issue [#175](https://github.com/biancoroyal/node-red-contrib-modbus/issues/175) ([1a094b2](https://github.com/biancoroyal/node-red-contrib-modbus/commit/1a094b27bf0846118e1db18ea4e567898a788e37))
-* **getter:** empty msg on catch error ([c8ac4a6](https://github.com/biancoroyal/node-red-contrib-modbus/commit/c8ac4a675ce17ca1992a1018ad113652cd5b97a4))
 * **write:** empty msg on fail as the other node ([d6fd30b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/d6fd30b20cf638b824852cad4a66ef42de6a07da))
 
 
@@ -91,11 +121,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 * [#178](https://github.com/biancoroyal/node-red-contrib-modbus/issues/178) debug per node to see where it is not correct or fallback core log ([ff69134](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ff691343ab7c93451642922bf6fa237f777b934f))
 * [#178](https://github.com/biancoroyal/node-red-contrib-modbus/issues/178) too get no crash on internal debug log ([a0389e7](https://github.com/biancoroyal/node-red-contrib-modbus/commit/a0389e7b051d736bc958fee4fbfeb1879cda99e3)), closes [#180](https://github.com/biancoroyal/node-red-contrib-modbus/issues/180)
-* GUI problems and performance while verbose mode is active ([9453fcc](https://github.com/biancoroyal/node-red-contrib-modbus/commit/9453fcc4afd81177c7bc46a9a20f28ba8c91b271))
-* reconnect could just go to init or stopped ([d9e13b9](https://github.com/biancoroyal/node-red-contrib-modbus/commit/d9e13b950a9894061ec447b79ceadcd8d7c07ecf))
-* serial config via flex connector missing parameter ([45e41ee](https://github.com/biancoroyal/node-red-contrib-modbus/commit/45e41ee1a4fe30c87a99355662bdee4b78d29656))
-* **read:** show active again with new state ([ed2eb88](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ed2eb88dd792e46e98f1b5a0166a5951870ab87e))
 * activate sending with promise ([fcb816e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/fcb816e39754ab3f8840a0d481b0831f375e6a3f))
+* **client:** FSM message FSM Reset while failure handling and on unplanned state changes, now it raises only on failures  ([944786c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/944786cdd6f9e8322c3e3264cd1ef8aa4a244118))
+* GUI problems and performance while verbose mode is active ([9453fcc](https://github.com/biancoroyal/node-red-contrib-modbus/commit/9453fcc4afd81177c7bc46a9a20f28ba8c91b271))
 * issue  [#182](https://github.com/biancoroyal/node-red-contrib-modbus/issues/182) to get better information from the FSM ([78be12b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/78be12b72403e6de12d6f8c1ee11f633828ff04e))
 * issue [#175](https://github.com/biancoroyal/node-red-contrib-modbus/issues/175) less update queue info node on queue-changes ([45eae4e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/45eae4e405fa788e5189d19c1c55d828b03b52b1))
 * issue [#179](https://github.com/biancoroyal/node-red-contrib-modbus/issues/179) ([1824032](https://github.com/biancoroyal/node-red-contrib-modbus/commit/18240323cb0b50716987a9dfec2a5de0f9930d12))
@@ -103,13 +131,15 @@ All notable changes to this project will be documented in this file. See [standa
 * less EMPTY switches to the FSM ([29d79bc](https://github.com/biancoroyal/node-red-contrib-modbus/commit/29d79bc7e81a2ef9b890371950045f58a6b9126b))
 * needs new on re-register nodes ([464662b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/464662b711a92ad94691cf266e9ebff5ac0ca4ce))
 * queue problems with issue [#175](https://github.com/biancoroyal/node-red-contrib-modbus/issues/175) ([154c8a0](https://github.com/biancoroyal/node-red-contrib-modbus/commit/154c8a02ac757b0162c654930dda4d09775dded4))
+* **read:** show active again with new state ([ed2eb88](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ed2eb88dd792e46e98f1b5a0166a5951870ab87e))
+* reconnect could just go to init or stopped ([d9e13b9](https://github.com/biancoroyal/node-red-contrib-modbus/commit/d9e13b950a9894061ec447b79ceadcd8d7c07ecf))
 * response delay in server in not available  for now ([4542763](https://github.com/biancoroyal/node-red-contrib-modbus/commit/45427637a5a18a3a345594311e2eae1969fdea2f))
+* serial config via flex connector missing parameter ([45e41ee](https://github.com/biancoroyal/node-red-contrib-modbus/commit/45e41ee1a4fe30c87a99355662bdee4b78d29656))
 * serial lock toggle for issue [#175](https://github.com/biancoroyal/node-red-contrib-modbus/issues/175) ([45e4be8](https://github.com/biancoroyal/node-red-contrib-modbus/commit/45e4be85710eb6db18cb4cbc7d3a21e62a3eea68))
 * serial multiple UnitIds issue [#175](https://github.com/biancoroyal/node-red-contrib-modbus/issues/175) ([2f6fedf](https://github.com/biancoroyal/node-red-contrib-modbus/commit/2f6fedfb7a815f92434f22ee9110bf1b6a5fa68a))
 * similar empty msg structure ([cfbd834](https://github.com/biancoroyal/node-red-contrib-modbus/commit/cfbd8345cc489d2766708a2413d6c5b14f5bc021))
 * testing works with new flaqs and clean code ([65dba5e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/65dba5e744030221c006ce249499e340fafed7a4))
 * the server does not support that feature since jsmodbus is used instead of node-modbus ([abd88d8](https://github.com/biancoroyal/node-red-contrib-modbus/commit/abd88d889e738f1e43e7de6623b9740a3f5ddcfa))
-* **client:** FSM message FSM Reset while failure handling and on unplanned state changes, now it raises only on failures  ([944786c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/944786cdd6f9e8322c3e3264cd1ef8aa4a244118))
 * travis build ([7a7294e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/7a7294e9fd2fa14d54412586af8c81e25d5b30cd))
 
 
@@ -126,7 +156,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [5.2.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v4.1.3...v5.2.0) (2019-12-08)
+# [5.2.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/5.1.0-0...v5.2.0) (2019-12-08)
 
 
 ### Bug Fixes
@@ -140,6 +170,14 @@ All notable changes to this project will be documented in this file. See [standa
 ### Features
 
 * [#161](https://github.com/biancoroyal/node-red-contrib-modbus/issues/161) multiple RTU devices via UnitID ([b0b5011](https://github.com/biancoroyal/node-red-contrib-modbus/commit/b0b5011be4ab5e7c06ab44fd9df7b0ff5ddd0fd8))
+
+
+
+# [5.1.0-0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v4.1.3...5.1.0-0) (2019-11-24)
+
+
+### Features
+
 * new state machine from xstate ([57aef99](https://github.com/biancoroyal/node-red-contrib-modbus/commit/57aef9956187ee9d70e862b226f3a3ef5e091528))
 
 
@@ -149,8 +187,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* modbus flex server ([7d332f0](https://github.com/biancoroyal/node-red-contrib-modbus/commit/7d332f0add6e6912f2dd91e8c92bce751d97e6d7))
 * **log:** remove console logs ([a859d91](https://github.com/biancoroyal/node-red-contrib-modbus/commit/a859d91a9ad8dad56f985457916a5b809b22a586))
+* modbus flex server ([7d332f0](https://github.com/biancoroyal/node-red-contrib-modbus/commit/7d332f0add6e6912f2dd91e8c92bce751d97e6d7))
 
 
 
@@ -255,3 +293,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 # 1.0.0 (2017-01-18)
+
+
+

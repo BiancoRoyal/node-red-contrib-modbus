@@ -5,6 +5,7 @@
       "queueCommands": "Queue commands",
       "queueLogEnabled": "Queue Logging",
       "stateLogEnabled": "Log states changes",
+      "failureLogEnabled": "Log failures",
       "host": "Host",
       "port": "Port",
       "tcpType": "TCP Type",
@@ -20,9 +21,9 @@
       "commandDelay": "Queue delay (ms)",
       "timeout": "Timeout (ms)",
       "reconnectOnTimeout": "Reconnect on timeout",
-      "reconnectDelay": "Reconnect delay (ms)",
+      "reconnectTimeout": "Reconnect timeout (ms)",
       "parallelUnitIdsAllowed": "UnitId's in parallel",
-      "connectionTimeout": "Connection timeout (ms)"
+      "serialAsciiResponseStartDelimiter": "ASCII response start delimiter"
     }
   }
 }

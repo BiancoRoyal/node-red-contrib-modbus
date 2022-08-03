@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018,2019,2020,2021 Klaus Landsdorf (https://bianco-royal.space/)
+ Copyright (c) 2016,2017,2018,2019,2020,2021,2022 Klaus Landsdorf (http://node-red.plus/)
  Copyright 2016 - Jason D. Harper, Argonne National Laboratory
  Copyright 2015,2016 - Mika Karaila, Valmet Automation Inc.
  All rights reserved.
@@ -7,6 +7,7 @@
 
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  */
+
 /**
  * Modbus connection node.
  * @module NodeRedModbusClient
@@ -36,6 +37,7 @@ module.exports = function (RED) {
     const reconnectDelayTimeMS = 2000
     const connectionTimeoutTimeMS = 10000
     const logHintText = ' Get More About It By Logging'
+    const serialAsciiResponseStartDelimiter = '0x3A'
 
     this.clienttype = config.clienttype
 
@@ -47,6 +49,7 @@ module.exports = function (RED) {
 
     this.queueLogEnabled = config.queueLogEnabled
     this.stateLogEnabled = config.stateLogEnabled
+    this.failureLogEnabled = config.failureLogEnabled
 
     this.tcpHost = config.tcpHost
     this.tcpPort = parseInt(config.tcpPort) || 502
@@ -59,6 +62,7 @@ module.exports = function (RED) {
     this.serialParity = config.serialParity
     this.serialType = config.serialType
     this.serialConnectionDelay = parseInt(config.serialConnectionDelay) || serialConnectionDelayTimeMS
+    this.serialAsciiResponseStartDelimiter = config.serialAsciiResponseStartDelimiter || serialAsciiResponseStartDelimiter
 
     this.unit_id = parseInt(config.unit_id)
     this.commandDelay = parseInt(config.commandDelay) || minCommandDelayMilliseconds
@@ -128,13 +132,14 @@ module.exports = function (RED) {
 
     function verboseWarn (logMessage) {
       if (RED.settings.verbose) {
-        node.warn('Client -> ' + logMessage + node.serverInfo)
+        node.updateServerinfo()
+        node.warn('Client -> ' + logMessage + ' ' + node.serverInfo)
       }
     }
 
     function verboseLog (logMessage) {
       if (RED.settings.verbose) {
-        coreModbusClient.internalDebug('Client -> ' + logMessage + node.serverInfo)
+        coreModbusClient.internalDebug('Client -> ' + logMessage + ' ' + node.serverInfo)
       }
     }
 
@@ -269,123 +274,162 @@ module.exports = function (RED) {
     })
 
     node.connectClient = function () {
-      if (node.client) {
-        try {
-          node.client.close(function () {
-            verboseLog('connection closed')
-          })
-          verboseLog('connection close sent')
-        } catch (err) {
-          verboseLog(err.message)
+      try {
+        if (node.client) {
+          try {
+            node.client.close(function () {
+              verboseLog('connection closed')
+            })
+            verboseLog('connection close sent')
+          } catch (err) {
+            verboseLog(err.message)
+          }
         }
-      }
-      node.client = null
-      node.client = new ModbusRTU()
+        node.client = null
+        node.client = new ModbusRTU()
 
-      if (!node.clientTimeout) {
-        node.clientTimeout = timeoutTimeMS
-      }
+        node.client.on('error', (err) => {
+          node.modbusErrorHandling(err)
+          mbBasics.setNodeStatusTo('error', node)
+        })
 
-      if (!node.reconnectDelay) {
-        node.reconnectDelay = reconnectDelayTimeMS
-      }
-
-      if (!node.connectionTimeout) {
-        node.connectionTimeout = connectionTimeoutTimeMS
-      }
-
-      if (node.clienttype === 'tcp') {
-        if (!coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
-          node.error(new Error('wrong unit-id (0..255)'), { payload: node.unit_id })
-          node.stateService.send('FAILURE')
-          return
+        if (!node.clientTimeout) {
+          node.clientTimeout = timeoutTimeMS
         }
 
-        switch (node.tcpType) {
-          case 'C701':
-            verboseLog('C701 port UDP bridge')
-            node.client.connectC701(node.tcpHost, {
-              port: node.tcpPort,
-              autoOpen: true
-            }).then(node.setTCPConnectionOptions)
-              .then(node.setTCPConnected)
-              .catch(node.modbusTcpErrorHandling)
-            break
-          case 'TELNET':
-            verboseLog('Telnet port')
-            node.client.connectTelnet(node.tcpHost, {
-              port: node.tcpPort,
-              autoOpen: true
-            }).then(node.setTCPConnectionOptions)
-              .catch(node.modbusTcpErrorHandling)
-            break
-          case 'TCP-RTU-BUFFERED':
-            verboseLog('TCP RTU buffered port')
-            node.client.connectTcpRTUBuffered(node.tcpHost, {
-              port: node.tcpPort,
-              autoOpen: true
-            }).then(node.setTCPConnectionOptions)
-              .catch(node.modbusTcpErrorHandling)
-            break
-          default:
-            verboseLog('TCP port')
-            node.client.connectTCP(node.tcpHost, {
-              port: node.tcpPort,
-              autoOpen: true
-            }).then(node.setTCPConnectionOptions)
-              .catch(node.modbusTcpErrorHandling)
+        if (!node.reconnectTimeout) {
+          node.reconnectTimeout = reconnectTimeMS
         }
 
-        node.connectionTimeoutTimer = setTimeout(() => {
-          node.client.destroy(function () {
-            verboseLog('connection attempt timed out')
+        if (node.clienttype === 'tcp') {
+          if (!coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
+            node.error(new Error('wrong unit-id (0..255)'), { payload: node.unit_id })
             node.stateService.send('FAILURE')
-          })
-        }, node.connectionTimeout)
+            return false
+          }
 
-      } else {
-        if (!coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
-          node.error(new Error('wrong unit-id serial (0..247)'), { payload: node.unit_id })
-          node.stateService.send('FAILURE')
-          return
-        }
+          try {
+            switch (node.tcpType) {
+              case 'C701':
+                verboseLog('C701 port UDP bridge')
+                node.client.connectC701(node.tcpHost, {
+                  port: node.tcpPort,
+                  autoOpen: true
+                }).then(node.setTCPConnectionOptions)
+                  .then(node.setTCPConnected)
+                  .catch((err) => {
+                    node.modbusTcpErrorHandling(err)
+                    return false
+                  })
+                break
+              case 'TELNET':
+                verboseLog('Telnet port')
+                node.client.connectTelnet(node.tcpHost, {
+                  port: node.tcpPort,
+                  autoOpen: true
+                }).then(node.setTCPConnectionOptions)
+                  .catch((err) => {
+                    node.modbusTcpErrorHandling(err)
+                    return false
+                  })
+                break
+              case 'TCP-RTU-BUFFERED':
+                verboseLog('TCP RTU buffered port')
+                node.client.connectTcpRTUBuffered(node.tcpHost, {
+                  port: node.tcpPort,
+                  autoOpen: true
+                }).then(node.setTCPConnectionOptions)
+                  .catch((err) => {
+                    node.modbusTcpErrorHandling(err)
+                    return false
+                  })
+                break
+              default:
+                verboseLog('TCP port')
+                node.client.connectTCP(node.tcpHost, {
+                  port: node.tcpPort,
+                  autoOpen: true
+                }).then(node.setTCPConnectionOptions)
+                  .catch((err) => {
+                    node.modbusTcpErrorHandling(err)
+                    return false
+                  })
+            }
+          } catch (e) {
+            node.modbusTcpErrorHandling(e)
+            return false
+          }
+        } else {
+          if (!coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
+            node.error(new Error('wrong unit-id serial (0..247)'), { payload: node.unit_id })
+            node.stateService.send('FAILURE')
+            return false
+          }
 
-        if (!node.serialConnectionDelay) {
-          node.serialConnectionDelay = serialConnectionDelayTimeMS
-        }
+          if (!node.serialConnectionDelay) {
+            node.serialConnectionDelay = serialConnectionDelayTimeMS
+          }
 
-        if (!node.serialPort) {
-          node.error(new Error('wrong serial port'), { payload: node.serialPort })
-          node.stateService.send('FAILURE')
-          return
-        }
+          if (!node.serialPort) {
+            node.error(new Error('wrong serial port'), { payload: node.serialPort })
+            node.stateService.send('FAILURE')
+            return false
+          }
 
-        const serialPortOptions = {
-          baudRate: parseInt(node.serialBaudrate),
-          dataBits: parseInt(node.serialDatabits),
-          stopBits: parseInt(node.serialStopbits),
-          parity: node.serialParity,
-          autoOpen: false
-        }
+          const serialPortOptions = {
+            baudRate: parseInt(node.serialBaudrate),
+            dataBits: parseInt(node.serialDatabits),
+            stopBits: parseInt(node.serialStopbits),
+            parity: node.serialParity,
+            autoOpen: false
+          }
 
-        switch (node.serialType) {
-          case 'ASCII':
-            verboseLog('ASCII port serial')
-            node.client.connectAsciiSerial(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
-              .catch(node.modbusSerialErrorHandling)
-            break
-          case 'RTU':
-            verboseLog('RTU port serial')
-            node.client.connectRTU(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
-              .catch(node.modbusSerialErrorHandling)
-            break
-          default:
-            verboseLog('RTU buffered port serial')
-            node.client.connectRTUBuffered(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
-              .catch(node.modbusSerialErrorHandling)
-            break
+          try {
+            switch (node.serialType) {
+              case 'ASCII':
+                verboseLog('ASCII port serial')
+                // Make sure is parsed when string, otherwise just assign.
+                if (node.serialAsciiResponseStartDelimiter && typeof node.serialAsciiResponseStartDelimiter === 'string') {
+                  serialPortOptions.startOfSlaveFrameChar = parseInt(node.serialAsciiResponseStartDelimiter, 16)
+                } else {
+                  serialPortOptions.startOfSlaveFrameChar = node.serialAsciiResponseStartDelimiter
+                }
+                verboseLog('Using response delimiter: 0x' + serialPortOptions.startOfSlaveFrameChar.toString(16))
+
+                node.client.connectAsciiSerial(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
+                  .catch((err) => {
+                    node.modbusSerialErrorHandling(err)
+                    return false
+                  })
+                break
+              case 'RTU':
+                verboseLog('RTU port serial')
+                node.client.connectRTU(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
+                  .catch((err) => {
+                    node.modbusSerialErrorHandling(err)
+                    return false
+                  })
+                break
+              default:
+                verboseLog('RTU buffered port serial')
+                node.client.connectRTUBuffered(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
+                  .catch((err) => {
+                    node.modbusSerialErrorHandling(err)
+                    return false
+                  })
+                break
+            }
+          } catch (e) {
+            node.modbusSerialErrorHandling(e)
+            return false
+          }
         }
+      } catch (err) {
+        node.modbusErrorHandling(err)
+        return false
       }
+
+      return true
     }
 
     node.setTCPConnectionOptions = function () {
@@ -423,13 +467,16 @@ module.exports = function (RED) {
         node.error(err)
       }
 
-      if (err.message) {
-        coreModbusClient.modbusSerialDebug('modbusTcpErrorHandling:' + err.message)
-      } else {
-        coreModbusClient.modbusSerialDebug('modbusTcpErrorHandling:' + JSON.stringify(err))
+      if (node.failureLogEnabled) {
+        if (err.message) {
+          coreModbusClient.modbusSerialDebug('modbusTcpErrorHandling:' + err.message)
+        } else {
+          coreModbusClient.modbusSerialDebug('modbusTcpErrorHandling:' + JSON.stringify(err))
+        }
       }
 
-      if (err.errno && coreModbusClient.networkErrors.includes(err.errno)) {
+      if ((err.errno && coreModbusClient.networkErrors.includes(err.errno)) ||
+      (err.code && coreModbusClient.networkErrors.includes(err.code))) {
         node.stateService.send('BREAK')
       }
     }
@@ -440,11 +487,14 @@ module.exports = function (RED) {
         node.error(err)
       }
 
-      if (err.message) {
-        coreModbusClient.modbusSerialDebug('modbusSerialErrorHandling:' + err.message)
-      } else {
-        coreModbusClient.modbusSerialDebug('modbusSerialErrorHandling:' + JSON.stringify(err))
+      if (node.failureLogEnabled) {
+        if (err.message) {
+          coreModbusClient.modbusSerialDebug('modbusSerialErrorHandling:' + err.message)
+        } else {
+          coreModbusClient.modbusSerialDebug('modbusSerialErrorHandling:' + JSON.stringify(err))
+        }
       }
+
       node.stateService.send('BREAK')
     }
 
@@ -657,7 +707,7 @@ module.exports = function (RED) {
 
   RED.httpAdmin.get('/modbus/serial/ports', RED.auth.needsPermission('serial.read'), function (req, res) {
     const SerialPort = require('serialport')
-    SerialPort.list().then(ports => {
+    SerialPort.SerialPort.list().then(ports => {
       res.json(ports)
     }).catch(err => {
       res.json([err.message])

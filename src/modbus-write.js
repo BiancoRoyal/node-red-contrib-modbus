@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018,2019,2020,2021 Klaus Landsdorf (https://bianco-royal.space/)
+ Copyright (c) 2016,2017,2018,2019,2020,2021,2022 Klaus Landsdorf (http://node-red.plus/)
  Copyright 2016 - Jason D. Harper, Argonne National Laboratory
  Copyright 2015,2016 - Mika Karaila, Valmet Automation Inc.
  All rights reserved.
@@ -7,6 +7,7 @@
 
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  **/
+
 /**
  * Modbus Write node.
  * @module NodeRedModbusWrite
@@ -59,14 +60,16 @@ module.exports = function (RED) {
     }
 
     node.errorProtocolMsg = function (err, msg) {
-      mbBasics.logMsgError(node, err, msg)
-      mbBasics.sendEmptyMsgOnFail(node, err, msg)
+      if (node.showErrors) {
+        mbBasics.logMsgError(node, err, msg)
+      }
     }
 
     node.onModbusWriteError = function (err, msg) {
       node.internalDebugLog(err.message)
       const origMsg = mbCore.getOriginalMessage(node.bufferMessageList, msg)
       node.errorProtocolMsg(err, origMsg)
+      mbBasics.sendEmptyMsgOnFail(node, err, msg)
       mbBasics.setModbusError(node, modbusClient, err, origMsg)
       node.emit('modbusWriteNodeError')
     }
@@ -124,6 +127,7 @@ module.exports = function (RED) {
         }
       } catch (err) {
         node.errorProtocolMsg(err, origMsgInput)
+        mbBasics.sendEmptyMsgOnFail(node, err, origMsgInput)
       }
     })
 
