@@ -18,11 +18,11 @@
 
 ## International Node-RED IIoT Website
 
-For an international area, [Iniationware][15] has provided the [Node-RED PLUS International][16] website.
+For an international area, [Iniationware][15] has provided the [PLUS for Node-RED International][16] website.
 
 ## Node-RED IIoT Webseite Deutschland
 
-Für einen deutschsprachigen Bereich hat [Iniationware][15] die Webseite [Node-RED PLUS Germany][17] bereitgestellt.
+Für einen deutschsprachigen Bereich hat [Iniationware][15] die Webseite [PLUS for Node-RED Germany][17] bereitgestellt.
 
 ## Contribution Information
 
