@@ -16,11 +16,11 @@
 
 [![nodemodbus64](images/modbus-icon64.png)](https://www.npmjs.com/package/node-red-contrib-modbus)
 
-## International Node-RED IIoT Website
+## International IIoT Website for Node-RED
 
 For an international area, [Iniationware][15] has provided the [PLUS for Node-RED International][16] website.
 
-## Node-RED IIoT Webseite Deutschland
+## IIoT Webseite Deutschland für Node-RED 
 
 Für einen deutschsprachigen Bereich hat [Iniationware][15] die Webseite [PLUS for Node-RED Germany][17] bereitgestellt.
 
