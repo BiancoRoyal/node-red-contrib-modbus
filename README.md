@@ -170,8 +170,8 @@ since April 2016 by [Klaus Landsdorf][4] and Community Driven
 [13]:https://www.npmjs.com/package/jsmodbus
 [14]:https://www.npmjs.com/package/serialport
 [15]:https://iniationware.com/
-[16]:http://node-red.plus/
-[17]:http://node-red-plus.de/
+[16]:https://www.noderedplus.de/
+[17]:https://www.noderedplus.de/de/
 
 ## Contributors
 
