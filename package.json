@@ -1,17 +1,17 @@
 {
   "name": "node-red-contrib-modbus",
-  "version": "5.23.1",
+  "version": "5.23.2",
   "private": false,
   "description": "The all in one Modbus TCP and Serial contribution package for Node-RED.",
   "dependencies": {
     "@xstate/fsm": "~1.6.5",
-    "bson": "~4.6.4",
+    "bson": "~4.7.0",
     "debug": "~4.3.4",
     "jsmodbus": "~4.0.6",
     "line-by-line": "~0.1.6",
     "modbus-serial": "~8.0.5",
     "source-map-support": "~0.5.21",
-    "vm2": "~3.9.10"
+    "vm2": "~3.9.11"
   },
   "optionalDependencies": {
     "@serialport/list": "~10.4.0",
@@ -19,9 +19,9 @@
   },
   "keywords": [
     "node-red",
+    "plusfornodered",
     "modbus",
     "automation",
-    "iiot",
     "biancoroyal"
   ],
   "engines": {
@@ -84,10 +84,10 @@
     "dev-unlink": "npm unlink node-red-contrib-modbus -g"
   },
   "devDependencies": {
-    "@babel/cli": "^7.18.9",
-    "@babel/core": "^7.18.9",
-    "@babel/preset-env": "^7.18.9",
-    "@node-red/nodes": "^3.0.1",
+    "@babel/cli": "^7.18.10",
+    "@babel/core": "^7.19.1",
+    "@babel/preset-env": "^7.19.1",
+    "@node-red/nodes": "^3.0.2",
     "chai": "^4.3.6",
     "codacy-coverage": "^3.4.0",
     "conventional-changelog-cli": "^2.2.2",
@@ -104,10 +104,10 @@
     "gulp-uglify": "^3.0.2",
     "istanbul": "^0.4.5",
     "jasmine-node": "^3.0.0",
-    "js-beautify": "^1.14.4",
+    "js-beautify": "^1.14.6",
     "mocha": "^10.0.0",
     "nock": "^13.2.9",
-    "node-red": "^3.0.1",
+    "node-red": "^3.0.2",
     "node-red-node-test-helper": "^0.3.0",
     "nyc": "^15.1.0",
     "pump": "^3.0.0",
