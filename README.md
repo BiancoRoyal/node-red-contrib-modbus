@@ -18,11 +18,11 @@
 
 ## International Node-RED IIoT Website
 
-For an international area, [Iniationware][15] has provided the [Node-RED PLUS International][16] website.
+For an international area, [Iniationware][15] has provided the [PLUS for Node-RED International][16] website.
 
 ## Node-RED IIoT Webseite Deutschland
 
-Für einen deutschsprachigen Bereich hat [Iniationware][15] die Webseite [Node-RED PLUS Germany][17] bereitgestellt.
+Für einen deutschsprachigen Bereich hat [Iniationware][15] die Webseite [PLUS for Node-RED Germany][17] bereitgestellt.
 
 ## Contribution Information
 
@@ -170,8 +170,8 @@ since April 2016 by [Klaus Landsdorf][4] and Community Driven
 [13]:https://www.npmjs.com/package/jsmodbus
 [14]:https://www.npmjs.com/package/serialport
 [15]:https://iniationware.com/
-[16]:http://node-red.plus/
-[17]:http://node-red-plus.de/
+[16]:https://www.noderedplus.de/
+[17]:https://www.noderedplus.de/de/
 
 ## Contributors
 
