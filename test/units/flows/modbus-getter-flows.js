@@ -19,7 +19,7 @@ module.exports = {
       "name": "",
       "logEnabled": true,
       "hostname": "127.0.0.1",
-      "serverPort": "8592",
+      "serverPort": "7572",
       "responseDelay": 100,
       "delayUnit": "ms",
       "coilsBufferSize": 10000,
@@ -69,7 +69,7 @@ module.exports = {
       "type": "helper",
       "z": "d6e437043c8cf4a4",
       "active": true,
-      "x": 630,
+      "x": 650,
       "y": 180,
       "wires": []
     },
@@ -114,11 +114,11 @@ module.exports = {
       "serialParity": "none",
       "serialConnectionDelay": "100",
       "serialAsciiResponseStartDelimiter": "",
-      "unit_id": "1",
-      "commandDelay": "1",
-      "clientTimeout": "100",
+      "unit_id": 1,
+      "commandDelay": 1,
+      "clientTimeout": 100,
       "reconnectOnTimeout": false,
-      "reconnectTimeout": "200",
+      "reconnectTimeout": 200,
       "parallelUnitIdsAllowed": true
     },
     {
@@ -126,7 +126,7 @@ module.exports = {
       "type": "modbus-io-config",
       "z": "d6e437043c8cf4a4",
       "name": "TestIOFile",
-      "path": "./test/resources/device.json",
+      "path": "./test/units/resources/device.json",
       "format": "utf8",
       "addressOffset": ""
     }
