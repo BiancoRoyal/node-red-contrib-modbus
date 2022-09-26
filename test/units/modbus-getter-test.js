@@ -111,7 +111,7 @@ var testGetterFlowWithInject = [{
   id: 'e0519b16.5fcdd',
   type: 'modbus-io-config',
   name: 'TestIOFile',
-  path: './test/nodes/resources/device.json',
+  path: './test/units/resources/device.json',
   format: 'utf8',
   addressOffset: ''
 }
@@ -190,7 +190,7 @@ var testGetterFlow = [{
   id: 'e0519b16.5fcdd',
   type: 'modbus-io-config',
   name: 'TestIOFile',
-  path: './test/nodes/resources/device.json',
+  path: './test/units/resources/device.json',
   format: 'utf8',
   addressOffset: ''
 }

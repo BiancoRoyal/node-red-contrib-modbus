@@ -11,7 +11,7 @@
 'use strict'
 
 const assert = require('assert')
-const coreServerUnderTest = require('../../../src/core/modbus-server-core')
+const coreServerUnderTest = require('../../src/core/modbus-server-core')
 
 const defaultBufferSize = 1024
 
@@ -183,7 +183,7 @@ const serverJsModbusFlow = [
 
 describe('Core Server Testing', function () {
   describe('Core Server', function () {
-    it('should give the nodes internalDebugLog', function (done) {
+    it('should give the units internalDebugLog', function (done) {
       const node = { internalDebugLog: true }
       assert.strict.equal(coreServerUnderTest.getLogFunction(node), node.internalDebugLog)
       done()

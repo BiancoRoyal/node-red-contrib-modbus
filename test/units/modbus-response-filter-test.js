@@ -289,7 +289,7 @@ describe('Response Filter node Testing', function () {
           id: '7417947e.da6c3c',
           type: 'modbus-io-config',
           name: 'C3FactorySet',
-          path: './test/nodes/resources/device.json',
+          path: './test/units/resources/device.json',
           format: 'utf8',
           addressOffset: ''
         }

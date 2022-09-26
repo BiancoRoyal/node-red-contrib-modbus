@@ -11,7 +11,7 @@
 var assert = require('chai').assert
 
 describe('Modbus Node basics Suite', function () {
-  var basic = require('../src/modbus-basics')
+  var basic = require('../../src/modbus-basics')
 
   function checkStatus (statusProperty, fill, shape, text) {
     assert.equal(statusProperty.fill, fill)

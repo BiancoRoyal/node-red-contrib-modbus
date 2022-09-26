@@ -65,7 +65,10 @@
   "homepage": "https://noderedplus.de/",
   "scripts": {
     "changelog": "npm run rewrite-changelog",
-    "test": "standard --fix && mocha test --recursive --reporter dot --timeout 5000",
+    "test": "standard --fix && mocha ./test --parallel --recursive --reporter dot --timeout 5000",
+    "test:e2e": "standard --fix && mocha './test/e2e/*-test.js' --parallel --recursive --reporter dot --timeout 5000",
+    "test:units": "standard --fix && mocha './test/units/*-test.js' --parallel --recursive --reporter dot --timeout 5000",
+    "test:core": "standard --fix && mocha './test/core/*-test.js' --parallel --recursive --reporter dot --timeout 5000",
     "test-nyc": "nyc --reporter=html --reporter=text mocha --recursive --timeout=5000",
     "test-npx": "npx nyc@latest --reporter=html --reporter=text mocha --timeout=5000",
     "test-with-coverage": "istanbul cover _mocha --report lcovonly -- --recursive --timeout 5000 -R spec && cat ./coverage/lcov.info | codacy-coverage --token $CODACY_COVERAGE_TOKEN && rm -rf ./coverage",
