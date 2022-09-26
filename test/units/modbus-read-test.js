@@ -43,29 +43,7 @@ describe('Read node Testing', function () {
 
   describe('Node', function () {
     it('simple Node should be loaded without client config', function (done) {
-      helper.load([readNode], [{
-        id: '8ecaae3e.4b8928',
-        type: 'modbus-read',
-        name: 'modbusRead',
-        topic: '',
-        showStatusActivities: false,
-        showErrors: true,
-        unitid: '',
-        dataType: 'Coil',
-        adr: '0',
-        quantity: '10',
-        rate: '2',
-        rateUnit: 's',
-        delayOnStart: false,
-        startDelayTime: '',
-        server: '',
-        useIOFile: false,
-        ioFile: '',
-        useIOForPayload: false,
-        emptyMsgOnFail: false,
-        wires: [[], []]
-      }
-      ], function () {
+      helper.load([readNode], testFlows.testReadWithoutClientFlow, function () {
         var modbusRead = helper.getNode('8ecaae3e.4b8928')
         modbusRead.should.have.property('name', 'modbusRead')
         done()
@@ -75,84 +53,14 @@ describe('Read node Testing', function () {
     })
 
     it('simple Node should be loaded', function (done) {
-      helper.load([clientNode, serverNode, readNode], [{
-        id: 'e54529b9.952ea8',
-        type: 'modbus-server',
-        name: 'modbusServer',
-        logEnabled: true,
-        hostname: '127.0.0.1',
-        serverPort: '9502',
-        responseDelay: 100,
-        delayUnit: 'ms',
-        coilsBufferSize: 10000,
-        holdingBufferSize: 10000,
-        inputBufferSize: 10000,
-        discreteBufferSize: 10000,
-        showErrors: false,
-        wires: [
-          [],
-          [],
-          []
-        ]
-      },
-      {
-        id: '8ecaae3e.4b8928',
-        type: 'modbus-read',
-        name: 'modbusRead',
-        topic: '',
-        showStatusActivities: false,
-        showErrors: true,
-        unitid: '',
-        dataType: 'Coil',
-        adr: '0',
-        quantity: '10',
-        rate: '2',
-        rateUnit: 's',
-        delayOnStart: false,
-        startDelayTime: '',
-        server: '92e7bf63.2efd7',
-        useIOFile: false,
-        ioFile: '',
-        useIOForPayload: false,
-        emptyMsgOnFail: false,
-        wires: [
-          [
-            'd2840baa.d986b8'
-          ],
-          []
-        ]
-      },
-      {
-        id: '92e7bf63.2efd7',
-        type: 'modbus-client',
-        name: 'ModbusServer',
-        clienttype: 'tcp',
-        bufferCommands: true,
-        stateLogEnabled: true,
-        parallelUnitIdsAllowed: true,
-        tcpHost: '127.0.0.1',
-        tcpPort: '9502',
-        tcpType: 'DEFAULT',
-        serialPort: '/dev/ttyUSB',
-        serialType: 'RTU-BUFFERD',
-        serialBaudrate: '9600',
-        serialDatabits: '8',
-        serialStopbits: '1',
-        serialParity: 'none',
-        serialConnectionDelay: '100',
-        unit_id: '1',
-        commandDelay: '1',
-        clientTimeout: '100',
-        reconnectTimeout: 200
-      }
-      ], function () {
-        var modbusServer = helper.getNode('e54529b9.952ea8')
+      helper.load([clientNode, serverNode, readNode], testFlows.testReadWithClientFlow, function () {
+        var modbusServer = helper.getNode('b071294594e37a6c')
         modbusServer.should.have.property('name', 'modbusServer')
 
-        var modbusClient = helper.getNode('92e7bf63.2efd7')
-        modbusClient.should.have.property('name', 'ModbusServer')
+        var modbusClient = helper.getNode('9018f377f076609d')
+        modbusClient.should.have.property('name', 'modbusClient')
 
-        var modbusRead = helper.getNode('8ecaae3e.4b8928')
+        var modbusRead = helper.getNode('09846c74de630616')
         modbusRead.should.have.property('name', 'modbusRead')
 
         done()
@@ -162,7 +70,7 @@ describe('Read node Testing', function () {
     })
 
     it('simple Node should send message with empty topic', function (done) {
-      testFlows.testReadMsgFlow[1].topic = ''
+      testFlows.testReadMsgFlow[2].topic = ''
       helper.load([clientNode, serverNode, readNode], testFlows.testReadMsgFlow, function () {
         const h1 = helper.getNode('h1')
         let counter = 0
@@ -178,7 +86,7 @@ describe('Read node Testing', function () {
     })
 
     it('simple Node should send message with own topic', function (done) {
-      testFlows.testReadMsgFlow[1].topic = 'myTopic'
+      testFlows.testReadMsgFlow[2].topic = 'myTopic'
       helper.load([clientNode, serverNode, readNode], testFlows.testReadMsgFlow, function () {
         const h1 = helper.getNode('h1')
         let counter = 0
@@ -194,88 +102,7 @@ describe('Read node Testing', function () {
     })
 
     it('simple Node should send message with IO', function (done) {
-      helper.load([clientNode, serverNode, ioConfigNode, readNode], [
-        {
-          id: '445454e4.968564',
-          type: 'modbus-server',
-          name: '',
-          logEnabled: true,
-          hostname: '127.0.0.1',
-          serverPort: '8502',
-          responseDelay: 100,
-          delayUnit: 'ms',
-          coilsBufferSize: 10000,
-          holdingBufferSize: 10000,
-          inputBufferSize: 10000,
-          discreteBufferSize: 10000,
-          showErrors: false,
-          wires: [
-            [],
-            [],
-            []
-          ]
-        },
-        {
-          id: '90922127.397cb8',
-          type: 'modbus-read',
-          name: 'Modbus Read With IO',
-          topic: '',
-          showStatusActivities: false,
-          showErrors: false,
-          unitid: '',
-          dataType: 'InputRegister',
-          adr: '0',
-          quantity: '20',
-          rate: '200',
-          rateUnit: 'ms',
-          delayOnStart: false,
-          startDelayTime: '',
-          server: '92e7bf63.2efd7',
-          useIOFile: true,
-          ioFile: 'e0519b16.5fcdd',
-          useIOForPayload: false,
-          logIOActivities: true,
-          emptyMsgOnFail: false,
-          wires: [
-            [
-              'h1'
-            ],
-            []
-          ]
-        },
-        { id: 'h1', type: 'helper' },
-        {
-          id: '92e7bf63.2efd7',
-          type: 'modbus-client',
-          name: 'ModbusServer',
-          clienttype: 'tcp',
-          bufferCommands: true,
-          stateLogEnabled: true,
-          parallelUnitIdsAllowed: true,
-          tcpHost: '127.0.0.1',
-          tcpPort: '8502',
-          tcpType: 'DEFAULT',
-          serialPort: '/dev/ttyUSB',
-          serialType: 'RTU-BUFFERD',
-          serialBaudrate: '9600',
-          serialDatabits: '8',
-          serialStopbits: '1',
-          serialParity: 'none',
-          serialConnectionDelay: '100',
-          unit_id: '1',
-          commandDelay: '1',
-          clientTimeout: '100',
-          reconnectTimeout: 200
-        },
-        {
-          id: 'e0519b16.5fcdd',
-          type: 'modbus-io-config',
-          name: 'TestIOFile',
-          path: './test/units/resources/device.json',
-          format: 'utf8',
-          addressOffset: ''
-        }
-      ], function () {
+      helper.load([clientNode, serverNode, ioConfigNode, readNode], testFlows.testReadWithClientIoFlow, function () {
         const h1 = helper.getNode('h1')
         let countMsg = 0
         h1.on('input', function (msg) {
@@ -290,88 +117,7 @@ describe('Read node Testing', function () {
     })
 
     it('simple Node should send message with IO and sending IO-objects as payload', function (done) {
-      helper.load([clientNode, serverNode, ioConfigNode, readNode], [
-        {
-          id: '445454e4.968564',
-          type: 'modbus-server',
-          name: '',
-          logEnabled: true,
-          hostname: '127.0.0.1',
-          serverPort: '8502',
-          responseDelay: 100,
-          delayUnit: 'ms',
-          coilsBufferSize: 10000,
-          holdingBufferSize: 10000,
-          inputBufferSize: 10000,
-          discreteBufferSize: 10000,
-          showErrors: false,
-          wires: [
-            [],
-            [],
-            []
-          ]
-        },
-        {
-          id: '90922127.397cb8',
-          type: 'modbus-read',
-          name: 'Modbus Read With IO',
-          topic: '',
-          showStatusActivities: true,
-          showErrors: false,
-          unitid: '',
-          dataType: 'InputRegister',
-          adr: '0',
-          quantity: '20',
-          rate: '100',
-          rateUnit: 'ms',
-          delayOnStart: true,
-          startDelayTime: '1',
-          server: '92e7bf63.2efd7',
-          useIOFile: true,
-          ioFile: 'e0519b16.5fcdd',
-          useIOForPayload: true,
-          logIOActivities: true,
-          emptyMsgOnFail: false,
-          wires: [
-            [
-              'h1'
-            ],
-            []
-          ]
-        },
-        { id: 'h1', type: 'helper' },
-        {
-          id: '92e7bf63.2efd7',
-          type: 'modbus-client',
-          name: 'ModbusServer',
-          clienttype: 'tcp',
-          bufferCommands: true,
-          stateLogEnabled: true,
-          parallelUnitIdsAllowed: true,
-          tcpHost: '127.0.0.1',
-          tcpPort: '8502',
-          tcpType: 'DEFAULT',
-          serialPort: '/dev/ttyUSB',
-          serialType: 'RTU-BUFFERD',
-          serialBaudrate: '9600',
-          serialDatabits: '8',
-          serialStopbits: '1',
-          serialParity: 'none',
-          serialConnectionDelay: '100',
-          unit_id: '1',
-          commandDelay: '1',
-          clientTimeout: '100',
-          reconnectTimeout: 200
-        },
-        {
-          id: 'e0519b16.5fcdd',
-          type: 'modbus-io-config',
-          name: 'TestIOFile',
-          path: './test/units/resources/device.json',
-          format: 'utf8',
-          addressOffset: ''
-        }
-      ], function () {
+      helper.load([clientNode, serverNode, ioConfigNode, readNode], testFlows.testReadWithClientIoPayloadFlow, function () {
         const h1 = helper.getNode('h1')
         let countMsg = 0
         h1.on('input', function (msg) {
@@ -396,78 +142,8 @@ describe('Read node Testing', function () {
     })
 
     it('should inject on valid node', function (done) {
-      helper.load([clientNode, serverNode, readNode], [{
-        id: 'e54529b9.952ea8',
-        type: 'modbus-server',
-        name: 'modbusServer',
-        logEnabled: true,
-        hostname: '127.0.0.1',
-        serverPort: '9502',
-        responseDelay: 100,
-        delayUnit: 'ms',
-        coilsBufferSize: 10000,
-        holdingBufferSize: 10000,
-        inputBufferSize: 10000,
-        discreteBufferSize: 10000,
-        showErrors: false,
-        wires: [
-          [],
-          [],
-          []
-        ]
-      },
-      {
-        id: '8ecaae3e.4b8928',
-        type: 'modbus-read',
-        name: 'modbusRead',
-        topic: '',
-        showStatusActivities: false,
-        showErrors: true,
-        unitid: '',
-        dataType: 'Coil',
-        adr: '0',
-        quantity: '10',
-        rate: '2',
-        rateUnit: 's',
-        delayOnStart: false,
-        startDelayTime: '',
-        server: '92e7bf63.2efd7',
-        useIOFile: false,
-        ioFile: '',
-        useIOForPayload: false,
-        emptyMsgOnFail: false,
-        wires: [
-          [
-            'd2840baa.d986b8'
-          ],
-          []
-        ]
-      },
-      {
-        id: '92e7bf63.2efd7',
-        type: 'modbus-client',
-        name: 'ModbusServer',
-        clienttype: 'tcp',
-        bufferCommands: true,
-        stateLogEnabled: true,
-        parallelUnitIdsAllowed: true,
-        tcpHost: '127.0.0.1',
-        tcpPort: '9502',
-        tcpType: 'DEFAULT',
-        serialPort: '/dev/ttyUSB',
-        serialType: 'RTU-BUFFERD',
-        serialBaudrate: '9600',
-        serialDatabits: '8',
-        serialStopbits: '1',
-        serialParity: 'none',
-        serialConnectionDelay: '100',
-        unit_id: '1',
-        commandDelay: '1',
-        clientTimeout: '100',
-        reconnectTimeout: 200
-      }
-      ], function () {
-        helper.request().post('/modbus/read/inject/8ecaae3e.4b8928').expect(200).end(done)
+      helper.load([clientNode, serverNode, readNode], testFlows.testReadWithClientFlow, function () {
+        helper.request().post('/modbus/read/inject/09846c74de630616').expect(200).end(done)
       }, function () {
         helper.log('function callback')
       })
