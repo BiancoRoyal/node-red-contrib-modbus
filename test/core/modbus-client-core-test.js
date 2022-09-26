@@ -11,11 +11,11 @@
 'use strict'
 
 const assert = require('assert')
-const coreClientUnderTest = require('../../../src/core/modbus-client-core')
+const coreClientUnderTest = require('../../src/core/modbus-client-core')
 
 describe('Core Client Testing', function () {
   describe('Core Client', function () {
-    it('should give the nodes internalDebugLog', function (done) {
+    it('should give the units internalDebugLog', function (done) {
       const node = { internalDebugLog: true }
       assert.strict.equal(coreClientUnderTest.getLogFunction(node), node.internalDebugLog)
       done()

@@ -11,7 +11,7 @@
 'use strict'
 
 const assert = require('assert')
-const coreIOUnderTest = require('../../../src/core/modbus-io-core')
+const coreIOUnderTest = require('../../src/core/modbus-io-core')
 
 describe ('Core IO Testing', function () {
   describe ('Core IO', function () {

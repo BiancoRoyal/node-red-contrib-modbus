@@ -1,4 +1,4 @@
-## [5.23.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.23.1...v5.23.2) (2022-09-25)
+## [5.23.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.23.1...v5.23.2) (2022-09-26)
 
 
 ### Bug Fixes
@@ -39,7 +39,7 @@
 
 
 
-# [5.14.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.13.1...v5.14.0) (2021-04-10)
+# [5.14.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.13.3...v5.14.0) (2021-04-10)
 
 
 ### Bug Fixes

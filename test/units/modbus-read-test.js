@@ -18,79 +18,7 @@ var ioConfigNode = require('../../src/modbus-io-config')
 var helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
-const readMsgFlow = [
-  {
-    id: '445454e4.968564',
-    type: 'modbus-server',
-    name: '',
-    logEnabled: true,
-    hostname: '127.0.0.1',
-    serverPort: '7502',
-    responseDelay: 100,
-    delayUnit: 'ms',
-    coilsBufferSize: 10000,
-    holdingBufferSize: 10000,
-    inputBufferSize: 10000,
-    discreteBufferSize: 10000,
-    showErrors: false,
-    wires: [
-      [],
-      [],
-      []
-    ]
-  },
-  {
-    id: '90922127.397cb8',
-    type: 'modbus-read',
-    name: 'Modbus Read With IO',
-    topic: '',
-    showStatusActivities: false,
-    showErrors: false,
-    unitid: '',
-    dataType: 'Coil',
-    adr: '0',
-    quantity: '10',
-    rate: '500',
-    rateUnit: 'ms',
-    delayOnStart: false,
-    startDelayTime: '',
-    server: '92e7bf63.2efd7',
-    useIOFile: false,
-    ioFile: '',
-    useIOForPayload: false,
-    emptyMsgOnFail: false,
-    wires: [
-      [
-        'h1'
-      ],
-      []
-    ]
-  },
-  { id: 'h1', type: 'helper' },
-  {
-    id: '92e7bf63.2efd7',
-    type: 'modbus-client',
-    name: 'ModbusServer',
-    clienttype: 'tcp',
-    bufferCommands: true,
-    stateLogEnabled: true,
-    parallelUnitIdsAllowed: true,
-    tcpHost: '127.0.0.1',
-    tcpPort: '7502',
-    tcpType: 'DEFAULT',
-    serialPort: '/dev/ttyUSB',
-    serialType: 'RTU-BUFFERD',
-    serialBaudrate: '9600',
-    serialDatabits: '8',
-    serialStopbits: '1',
-    serialParity: 'none',
-    serialConnectionDelay: '100',
-    unit_id: '1',
-    commandDelay: '1',
-    clientTimeout: '100',
-    reconnectTimeout: 200
-  }
-]
+var testFlows = require('./flows/modbus-read-flows')
 
 describe('Read node Testing', function () {
   before(function (done) {
@@ -234,8 +162,8 @@ describe('Read node Testing', function () {
     })
 
     it('simple Node should send message with empty topic', function (done) {
-      readMsgFlow[1].topic = ''
-      helper.load([clientNode, serverNode, readNode], readMsgFlow, function () {
+      testFlows.testReadMsgFlow[1].topic = ''
+      helper.load([clientNode, serverNode, readNode], testFlows.testReadMsgFlow, function () {
         const h1 = helper.getNode('h1')
         let counter = 0
         h1.on('input', function (msg) {
@@ -250,8 +178,8 @@ describe('Read node Testing', function () {
     })
 
     it('simple Node should send message with own topic', function (done) {
-      readMsgFlow[1].topic = 'myTopic'
-      helper.load([clientNode, serverNode, readNode], readMsgFlow, function () {
+      testFlows.testReadMsgFlow[1].topic = 'myTopic'
+      helper.load([clientNode, serverNode, readNode], testFlows.testReadMsgFlow, function () {
         const h1 = helper.getNode('h1')
         let counter = 0
         h1.on('input', function (msg) {
@@ -343,7 +271,7 @@ describe('Read node Testing', function () {
           id: 'e0519b16.5fcdd',
           type: 'modbus-io-config',
           name: 'TestIOFile',
-          path: './test/nodes/resources/device.json',
+          path: './test/units/resources/device.json',
           format: 'utf8',
           addressOffset: ''
         }
@@ -439,7 +367,7 @@ describe('Read node Testing', function () {
           id: 'e0519b16.5fcdd',
           type: 'modbus-io-config',
           name: 'TestIOFile',
-          path: './test/nodes/resources/device.json',
+          path: './test/units/resources/device.json',
           format: 'utf8',
           addressOffset: ''
         }
