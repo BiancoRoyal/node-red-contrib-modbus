@@ -70,7 +70,6 @@ describe('Read node Testing', function () {
     })
 
     it('simple Node should send message with empty topic', function (done) {
-      testFlows.testReadMsgFlow[2].topic = ''
       helper.load([clientNode, serverNode, readNode], testFlows.testReadMsgFlow, function () {
         const h1 = helper.getNode('h1')
         let counter = 0
@@ -86,8 +85,7 @@ describe('Read node Testing', function () {
     })
 
     it('simple Node should send message with own topic', function (done) {
-      testFlows.testReadMsgFlow[2].topic = 'myTopic'
-      helper.load([clientNode, serverNode, readNode], testFlows.testReadMsgFlow, function () {
+      helper.load([clientNode, serverNode, readNode], testFlows.testReadMsgMyTopicFlow, function () {
         const h1 = helper.getNode('h1')
         let counter = 0
         h1.on('input', function (msg) {

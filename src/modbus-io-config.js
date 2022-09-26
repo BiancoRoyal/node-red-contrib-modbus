@@ -81,7 +81,7 @@ module.exports = function (RED) {
 
     node.on('close', function (done) {
       fs.unwatchFile(node.path)
-      node.watcher.close()
+      node.watcher.stop()
       done()
     })
   }
