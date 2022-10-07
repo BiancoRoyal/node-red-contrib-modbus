@@ -37,7 +37,7 @@ Node-RED v3.x versions:
 * Node.JS 18.x will be supported with v5.22+
 * Node.JS 16.x will be supported with v5.22+
 
-* Node-RED v2.x versions:
+Node-RED v2.x versions:
 * Node.JS 18.x will be supported with v5.22+
 * Node.JS 16.x will be supported with v5.20+
 * Node.JS 14.x is supported with v5.14+
@@ -126,7 +126,7 @@ see [Wiki][10] pages to get more options in detail
 ## Contributing
 
 Let's work together! Contributors are welcome.
-Please, for the repo and send your pull requests from your repo 
+Please, fork the repo and send your pull requests from your repo 
 to our develop branch or open issues while you're testing!
 
 ## For Developers
