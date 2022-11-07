@@ -17,6 +17,8 @@ var nodeClient = require('../../src/modbus-client.js')
 var helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
+var testFlows = require('./flows/modbus-flex-connector-flows')
+
 describe('Flex Connector node Testing', function () {
   before(function (done) {
     helper.startServer(function () {
@@ -40,43 +42,7 @@ describe('Flex Connector node Testing', function () {
 
   describe('Node', function () {
     it('should be loaded', function (done) {
-      helper.load([nodeUnderTest, nodeClient], [
-        {
-          id: '40ddaabb.fd44d4',
-          type: 'modbus-flex-connector',
-          name: 'FlexConnector',
-          maxReconnectsPerMinute: 4,
-          emptyQueue: true,
-          showStatusActivities: false,
-          showErrors: false,
-          server: '2a253153.fae3ce',
-          wires: []
-        },
-        {
-          id: '2a253153.fae3ce',
-          type: 'modbus-client',
-          name: '',
-          clienttype: 'tcp',
-          bufferCommands: true,
-          stateLogEnabled: false,
-          parallelUnitIdsAllowed: true,
-          tcpHost: '127.0.0.1',
-          tcpPort: '11522',
-          tcpType: 'DEFAULT',
-          serialPort: '/dev/ttyUSB',
-          serialType: 'RTU-BUFFERD',
-          serialBaudrate: '9600',
-          serialDatabits: '8',
-          serialStopbits: '1',
-          serialParity: 'none',
-          serialConnectionDelay: '100',
-          unit_id: '1',
-          commandDelay: '100',
-          clientTimeout: '100',
-          reconnectTimeout: 200,
-          reconnectOnTimeout: true
-        }
-      ], function () {
+      helper.load([nodeUnderTest, nodeClient], testFlows.testShouldBeLoadedFlow, function () {
         var modbusNode = helper.getNode('40ddaabb.fd44d4')
         modbusNode.should.have.property('name', 'FlexConnector')
         modbusNode.should.have.property('emptyQueue', true)
@@ -86,63 +52,7 @@ describe('Flex Connector node Testing', function () {
 
     it('should change the TCP-Port of the client from 7522 to 8522', function (done) {
       this.timeout(5000)
-      helper.load([serverNode, nodeUnderTest, nodeClient], [
-        {
-          id: '445454e4.968564',
-          type: 'modbus-server',
-          name: '',
-          logEnabled: true,
-          hostname: '127.0.0.1',
-          serverPort: '8522',
-          responseDelay: 100,
-          delayUnit: 'ms',
-          coilsBufferSize: 10000,
-          holdingBufferSize: 10000,
-          inputBufferSize: 10000,
-          discreteBufferSize: 10000,
-          showErrors: false,
-          wires: [
-            [],
-            [],
-            []
-          ]
-        },
-        {
-          id: '40ddaabb.fd44d4',
-          type: 'modbus-flex-connector',
-          name: 'FlexConnector',
-          maxReconnectsPerMinute: 4,
-          emptyQueue: true,
-          showStatusActivities: false,
-          showErrors: false,
-          server: '2a253153.fae3ce',
-          wires: []
-        },
-        {
-          id: '2a253153.fae3ce',
-          type: 'modbus-client',
-          name: '',
-          clienttype: 'tcp',
-          bufferCommands: true,
-          stateLogEnabled: false,
-          parallelUnitIdsAllowed: true,
-          tcpHost: '127.0.0.1',
-          tcpPort: '7522',
-          tcpType: 'DEFAULT',
-          serialPort: '/dev/ttyUSB',
-          serialType: 'RTU-BUFFERD',
-          serialBaudrate: '9600',
-          serialDatabits: '8',
-          serialStopbits: '1',
-          serialParity: 'none',
-          serialConnectionDelay: '100',
-          unit_id: '1',
-          commandDelay: '100',
-          clientTimeout: '100',
-          reconnectTimeout: '200',
-          reconnectOnTimeout: true
-        }
-      ], function () {
+      helper.load([serverNode, nodeUnderTest, nodeClient], testFlows.testShouldChangeTcpPortFlow, function () {
         var modbusNode = helper.getNode('40ddaabb.fd44d4')
         var clientNode = helper.getNode('2a253153.fae3ce')
         modbusNode.should.have.property('name', 'FlexConnector')
@@ -160,43 +70,7 @@ describe('Flex Connector node Testing', function () {
 
     it('should change the Serial-Port of the client from /dev/ttyUSB to /dev/ttyUSB0', function (done) {
       this.timeout(3000)
-      helper.load([nodeUnderTest, nodeClient], [
-        {
-          id: '40ddaabb.fd44d4',
-          type: 'modbus-flex-connector',
-          name: 'FlexConnector',
-          maxReconnectsPerMinute: 4,
-          emptyQueue: true,
-          showStatusActivities: false,
-          showErrors: false,
-          server: '2a253153.fae3ef',
-          wires: []
-        },
-        {
-          id: '2a253153.fae3ef',
-          type: 'modbus-client',
-          name: '',
-          clienttype: 'serial',
-          bufferCommands: true,
-          stateLogEnabled: false,
-          parallelUnitIdsAllowed: true,
-          tcpHost: '127.0.0.1',
-          tcpPort: '7522',
-          tcpType: 'DEFAULT',
-          serialPort: '/dev/ttyUSB',
-          serialType: 'RTU-BUFFERD',
-          serialBaudrate: '0',
-          serialDatabits: '8',
-          serialStopbits: '1',
-          serialParity: 'none',
-          serialConnectionDelay: '100',
-          unit_id: '1',
-          commandDelay: '100',
-          clientTimeout: '100',
-          reconnectTimeout: '200',
-          reconnectOnTimeout: true
-        }
-      ], function () {
+      helper.load([nodeUnderTest, nodeClient], testFlows.testShouldChangeSerialPortFlow, function () {
         var modbusNode = helper.getNode('40ddaabb.fd44d4')
         var clientNode = helper.getNode('2a253153.fae3ef')
         modbusNode.should.have.property('name', 'FlexConnector')
