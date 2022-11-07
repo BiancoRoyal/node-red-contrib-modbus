@@ -64,7 +64,15 @@ module.exports = {
       "id": "h1",
       "type": "helper",
       "z": "4cadf3686ac42701",
+      "name": "",
       "active": true,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "payload",
+      "targetType": "msg",
+      "statusVal": "",
+      "statusType": "auto",
       "x": 470,
       "y": 180,
       "wires": []
@@ -163,11 +171,21 @@ module.exports = {
       "type": "inject",
       "z": "6fc7552dec67377b",
       "name": "injectTrue",
+      "props": [
+        {
+          "p": "payload"
+        },
+        {
+          "p": "topic",
+          "vt": "str"
+        }
+      ],
       "repeat": "",
       "crontab": "",
       "once": false,
+      "onceDelay": "",
       "topic": "",
-      "payload": true,
+      "payload": "true",
       "payloadType": "bool",
       "x": 200,
       "y": 220,
@@ -186,7 +204,8 @@ module.exports = {
       "tosidebar": true,
       "console": false,
       "tostatus": false,
-      "complete": "false",
+      "complete": "payload",
+      "targetType": "msg",
       "statusVal": "",
       "statusType": "auto",
       "x": 620,
@@ -202,7 +221,8 @@ module.exports = {
       "tosidebar": true,
       "console": false,
       "tostatus": false,
-      "complete": "false",
+      "complete": "payload",
+      "targetType": "msg",
       "statusVal": "",
       "statusType": "auto",
       "x": 620,
@@ -300,7 +320,15 @@ module.exports = {
       "id": "h1",
       "type": "helper",
       "z": "df9950e9527cceaa",
+      "name": "",
       "active": true,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "payload",
+      "targetType": "msg",
+      "statusVal": "",
+      "statusType": "auto",
       "x": 590,
       "y": 220,
       "wires": []
@@ -310,9 +338,19 @@ module.exports = {
       "type": "inject",
       "z": "df9950e9527cceaa",
       "name": "",
+      "props": [
+        {
+          "p": "payload"
+        },
+        {
+          "p": "topic",
+          "vt": "str"
+        }
+      ],
       "repeat": "2",
       "crontab": "",
       "once": false,
+      "onceDelay": "",
       "topic": "",
       "payload": "true",
       "payloadType": "bool",
@@ -329,6 +367,15 @@ module.exports = {
       "type": "inject",
       "z": "df9950e9527cceaa",
       "name": "",
+      "props": [
+        {
+          "p": "payload"
+        },
+        {
+          "p": "topic",
+          "vt": "str"
+        }
+      ],
       "repeat": "2",
       "crontab": "",
       "once": true,
