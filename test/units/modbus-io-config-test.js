@@ -10,11 +10,21 @@
 
 'use strict'
 
-var nodeUnderTest = require('../../src/modbus-io-config.js')
-var readNode = require('../../src/modbus-read.js')
+const nodeUnderTest = require('../../src/modbus-io-config.js')
+const readNode = require('../../src/modbus-read.js')
+const catchNode = require('@node-red/nodes/core/common/25-catch')
+const injectNode = require('@node-red/nodes/core/common/20-inject')
+const functionNode = require('@node-red/nodes/core/function/10-function')
+const clientNode = require('../../src/modbus-client')
+const serverNode = require('../../src/modbus-server')
 
-var helper = require('node-red-node-test-helper')
+const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
+
+const testIoConfigNodes = [catchNode, injectNode, functionNode, clientNode, serverNode, nodeUnderTest, readNode]
+
+const testFlows = require('./flows/modbus-io-config-flows')
+
 
 describe('IO Config node Testing', function () {
   before(function (done) {
@@ -39,38 +49,8 @@ describe('IO Config node Testing', function () {
 
   describe('Node', function () {
     it('should be loaded', function (done) {
-      helper.load([nodeUnderTest, readNode], [
-        {
-          id: 'b0fefd31.802188',
-          type: 'modbus-read',
-          name: '',
-          topic: '',
-          showStatusActivities: false,
-          showErrors: false,
-          unitid: '',
-          dataType: '',
-          adr: '',
-          quantity: '',
-          rate: '',
-          rateUnit: '',
-          delayOnStart: false,
-          startDelayTime: '',
-          server: '',
-          useIOFile: true,
-          ioFile: '2f5a90d.bcaa1f',
-          useIOForPayload: false,
-          wires: [[], []]
-        },
-        {
-          id: '2f5a90d.bcaa1f',
-          type: 'modbus-io-config',
-          name: 'ModbusIOConfig',
-          path: 'testpath',
-          format: 'utf8',
-          addressOffset: ''
-        }
-      ], function () {
-        var modbusIOConfigNode = helper.getNode('2f5a90d.bcaa1f')
+      helper.load(testIoConfigNodes, testFlows.testShouldBeLoadedFlow, function () {
+        const modbusIOConfigNode = helper.getNode('2f5a90d.bcaa1f')
         modbusIOConfigNode.should.have.property('name', 'ModbusIOConfig')
         done()
       })
