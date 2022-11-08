@@ -10,11 +10,17 @@
 
 'use strict'
 
-var injectNode = require('@node-red/nodes/core/common/20-inject.js')
-var serverNode = require('../../src/modbus-flex-server.js')
+const injectNode = require('@node-red/nodes/core/common/20-inject.js')
+const serverNode = require('../../src/modbus-flex-server.js')
+const clientNode = require('../../src/modbus-client')
+const nodeUnderTest = require('../../src/modbus-flex-sequencer')
 
-var helper = require('node-red-node-test-helper')
+const testFlexServerNodes = [injectNode, clientNode, serverNode, nodeUnderTest]
+
+const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
+
+const testFlows = require('./flows/modbus-flex-server-flows')
 
 describe('Flex Server node Testing', function () {
   before(function (done) {
@@ -39,30 +45,7 @@ describe('Flex Server node Testing', function () {
 
   describe('Node', function () {
     it('simple Node should be loaded', function (done) {
-      helper.load(serverNode, [
-        {
-          id: 'ebd4bd0a.2f4af8',
-          type: 'modbus-flex-server',
-          name: 'ModbusFlexServer',
-          logEnabled: false,
-          serverAddress: '0.0.0.0',
-          serverPort: 8512,
-          responseDelay: 100,
-          unitId: 1,
-          delayUnit: 'ms',
-          coilsBufferSize: 20000,
-          registersBufferSize: 20000,
-          minAddress: 0,
-          splitAddress: 10000,
-          funcGetCoil: 'function getFlexCoil(addr, unitID) {\n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\treturn node.coils.readUInt8(addr * node.bufferFactor) \n\t}  \n}',
-          funcGetDiscreteInput: 'function getFlexDiscreteInput(addr, unitID) {\n\tif (unitID === node.unitId && \n\t\taddr > node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.coils.readUInt8(addr * node.bufferFactor) \n\t}  \n}',
-          funcGetInputRegister: 'function getFlexInputRegister(addr, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}',
-          funcGetHoldingRegister: 'function getFlexHoldingRegsiter(addr, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr > node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}',
-          funcSetCoil: 'function setFlexCoil(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\tnode.coils.writeUInt8(value, addr * node.bufferFactor)  \n\t} \n}',
-          funcSetRegister: 'function setFlexRegister(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\tnode.registers.writeUInt16BE(value, addr * node.bufferFactor)  \n\t} \n}',
-          wires: [[], [], [], []]
-        }
-      ], function () {
+      helper.load(testFlexServerNodes, testFlows.testNodeShouldBeLoadedFlow, function () {
         var modbusServer = helper.getNode('ebd4bd0a.2f4af8')
         modbusServer.should.have.property('name', 'ModbusFlexServer')
 
@@ -73,48 +56,7 @@ describe('Flex Server node Testing', function () {
     })
 
     it('should send data on input', function (done) {
-      helper.load([injectNode, serverNode], [
-        {
-          id: 'ebd4bd0a.2f4af8',
-          type: 'modbus-flex-server',
-          name: 'ModbusFlexServer',
-          logEnabled: false,
-          serverAddress: '0.0.0.0',
-          serverPort: 8512,
-          responseDelay: 100,
-          unitId: 1,
-          delayUnit: 'ms',
-          coilsBufferSize: 20000,
-          registersBufferSize: 20000,
-          minAddress: 0,
-          splitAddress: 10000,
-          funcGetCoil: 'function getFlexCoil(addr, unitID) {\n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\treturn node.coils.readUInt8(addr * node.bufferFactor) \n\t}  \n}',
-          funcGetDiscreteInput: 'function getFlexDiscreteInput(addr, unitID) {\n\tif (unitID === node.unitId && \n\t\taddr > node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.coils.readUInt8(addr * node.bufferFactor) \n\t}  \n}',
-          funcGetInputRegister: 'function getFlexInputRegister(addr, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}',
-          funcGetHoldingRegister: 'function getFlexHoldingRegsiter(addr, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr > node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}',
-          funcSetCoil: 'function setFlexCoil(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\tnode.coils.writeUInt8(value, addr * node.bufferFactor)  \n\t} \n}',
-          funcSetRegister: 'function setFlexRegister(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\tnode.registers.writeUInt16BE(value, addr * node.bufferFactor)  \n\t} \n}',
-          wires: [['h1'], [], [], []]
-        },
-        { id: 'h1', type: 'helper' },
-        {
-          id: 'a75e0ccf.e16628',
-          type: 'inject',
-          name: '',
-          topic: '',
-          payload: '',
-          payloadType: 'date',
-          repeat: '2',
-          crontab: '',
-          once: true,
-          onceDelay: 0.1,
-          wires: [
-            [
-              'ebd4bd0a.2f4af8'
-            ]
-          ]
-        }
-      ], function () {
+      helper.load(testFlexServerNodes, testFlows.testShouldSendDataFlow, function () {
         const h1 = helper.getNode('h1')
         h1.on('input', function (msg) {
           done()
@@ -125,48 +67,7 @@ describe('Flex Server node Testing', function () {
     })
 
     it('should send discrete data on input', function (done) {
-      helper.load([injectNode, serverNode], [
-        {
-          id: 'ebd4bd0a.2f4af8',
-          type: 'modbus-flex-server',
-          name: 'ModbusFlexServer',
-          logEnabled: false,
-          serverAddress: '0.0.0.0',
-          serverPort: 8512,
-          responseDelay: 100,
-          unitId: 1,
-          delayUnit: 'ms',
-          coilsBufferSize: 20000,
-          registersBufferSize: 20000,
-          minAddress: 0,
-          splitAddress: 10000,
-          funcGetCoil: 'function getFlexCoil(addr, unitID) {\n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\treturn node.coils.readUInt8(addr * node.bufferFactor) \n\t}  \n}',
-          funcGetDiscreteInput: 'function getFlexDiscreteInput(addr, unitID) {\n\tif (unitID === node.unitId && \n\t\taddr > node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.coils.readUInt8(addr * node.bufferFactor) \n\t}  \n}',
-          funcGetInputRegister: 'function getFlexInputRegister(addr, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}',
-          funcGetHoldingRegister: 'function getFlexHoldingRegsiter(addr, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr > node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}',
-          funcSetCoil: 'function setFlexCoil(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\tnode.coils.writeUInt8(value, addr * node.bufferFactor)  \n\t} \n}',
-          funcSetRegister: 'function setFlexRegister(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\tnode.registers.writeUInt16BE(value, addr * node.bufferFactor)  \n\t} \n}',
-          wires: [[], [], [], ['h1']]
-        },
-        { id: 'h1', type: 'helper' },
-        {
-          id: 'a75e0ccf.e16628',
-          type: 'inject',
-          name: '',
-          topic: '',
-          payload: '',
-          payloadType: 'date',
-          repeat: '2',
-          crontab: '',
-          once: true,
-          onceDelay: 0.1,
-          wires: [
-            [
-              'ebd4bd0a.2f4af8'
-            ]
-          ]
-        }
-      ], function () {
+      helper.load(testFlexServerNodes, testFlows.testShouldSendDiscreteDataFlow, function () {
         const h1 = helper.getNode('h1')
         h1.on('input', function (msg) {
           done()
