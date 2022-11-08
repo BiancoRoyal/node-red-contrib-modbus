@@ -3,6 +3,42 @@ const helperExtensions = require('../../helper/test-helper-extensions')
 
 module.exports = {
 
+  "testGetterWithoutClientConfigFlow": helperExtensions.cleanFlowPositionData([
+    {
+      "id": "1243c51545a330d6",
+      "type": "tab",
+      "label": "Node without Client Config",
+      "disabled": false,
+      "info": "",
+      "env": []
+    },
+    {
+      "id": "3ffe153acc21d72b",
+      "type": "modbus-getter",
+      "z": "1243c51545a330d6",
+      "name": "modbusGetter",
+      "showStatusActivities": false,
+      "showErrors": false,
+      "logIOActivities": false,
+      "unitid": "",
+      "dataType": "",
+      "adr": "",
+      "quantity": "",
+      "server": "",
+      "useIOFile": false,
+      "ioFile": "",
+      "useIOForPayload": false,
+      "emptyMsgOnFail": false,
+      "keepMsgProperties": false,
+      "x": 340,
+      "y": 240,
+      "wires": [
+        [],
+        []
+      ]
+    }
+  ]),
+
   "testGetterFlowWithInjectIo": helperExtensions.cleanFlowPositionData([
     {
       "id": "d6e437043c8cf4a4",

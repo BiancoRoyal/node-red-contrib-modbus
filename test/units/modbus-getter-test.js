@@ -10,19 +10,19 @@
 
 'use strict'
 
-var injectNode = require('@node-red/nodes/core/common/20-inject.js')
+const injectNode = require('@node-red/nodes/core/common/20-inject.js')
 
-var clientNode = require('../../src/modbus-client.js')
-var serverNode = require('../../src/modbus-server.js')
-var getterNode = require('../../src/modbus-getter.js')
-var ioConfigNode = require('../../src/modbus-io-config')
+const clientNode = require('../../src/modbus-client.js')
+const serverNode = require('../../src/modbus-server.js')
+const getterNode = require('../../src/modbus-getter.js')
+const ioConfigNode = require('../../src/modbus-io-config')
 
-var helper = require('node-red-node-test-helper')
+const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
-var testGetterNodes = [injectNode, ioConfigNode, clientNode, serverNode, getterNode]
+const testGetterNodes = [injectNode, ioConfigNode, clientNode, serverNode, getterNode]
 
-var testFlows = require('./flows/modbus-getter-flows')
+const testFlows = require('./flows/modbus-getter-flows')
 
 describe('Getter node Testing', function () {
   before(function (done) {
@@ -47,29 +47,7 @@ describe('Getter node Testing', function () {
 
   describe('Node', function () {
     it('simple Node should be loaded without client config', function (done) {
-      helper.load([clientNode, serverNode, getterNode], [
-        {
-          "id": "3ffe153acc21d72b",
-          "type": "modbus-getter",
-          "name": "modbusGetter",
-          "showStatusActivities": false,
-          "showErrors": false,
-          "logIOActivities": false,
-          "unitid": "",
-          "dataType": "",
-          "adr": "",
-          "quantity": "",
-          "useIOFile": false,
-          "ioFile": "",
-          "useIOForPayload": false,
-          "emptyMsgOnFail": false,
-          "keepMsgProperties": false,
-          "wires": [
-            [],
-            []
-          ]
-        }
-      ], function () {
+      helper.load(testGetterNodes, testFlows.testGetterWithoutClientConfigFlow, function () {
         const modbusGetter = helper.getNode('3ffe153acc21d72b')
         modbusGetter.should.have.property('name', 'modbusGetter')
 
@@ -80,7 +58,7 @@ describe('Getter node Testing', function () {
     })
 
     it('simple Node should be loaded', function (done) {
-      helper.load([clientNode, serverNode, getterNode], testFlows.testGetterWithClientFlow, function () {
+      helper.load(testGetterNodes, testFlows.testGetterWithClientFlow, function () {
         const modbusServer = helper.getNode('996023fe.ea04b')
         modbusServer.should.have.property('name', 'modbusServer')
 
@@ -97,7 +75,7 @@ describe('Getter node Testing', function () {
     })
 
     it('simple flow with inject should be loaded', function (done) {
-      helper.load([injectNode, clientNode, serverNode, getterNode], testFlows.testInjectGetterWithClientFlow, function () {
+      helper.load(testGetterNodes, testFlows.testInjectGetterWithClientFlow, function () {
         const h1 = helper.getNode('h1')
         let counter = 0
         h1.on('input', function (msg) {
