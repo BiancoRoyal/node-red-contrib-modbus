@@ -10,16 +10,19 @@
 
 'use strict'
 
-var functionNode = require('@node-red/nodes/core/function/10-function.js')
-var injectNode = require('@node-red/nodes/core/common/20-inject.js')
-var nodeUnderTest = require('../../src/modbus-response-filter.js')
-var nodeIOConfig = require('../../src/modbus-io-config.js')
-var clientNode = require('../../src/modbus-client.js')
-var serverNode = require('../../src/modbus-server.js')
-var flexGetterNode = require('../../src/modbus-flex-getter.js')
+const functionNode = require('@node-red/nodes/core/function/10-function.js')
+const injectNode = require('@node-red/nodes/core/common/20-inject.js')
+const nodeUnderTest = require('../../src/modbus-response-filter.js')
+const nodeIOConfig = require('../../src/modbus-io-config.js')
+const clientNode = require('../../src/modbus-client.js')
+const serverNode = require('../../src/modbus-server.js')
+const flexGetterNode = require('../../src/modbus-flex-getter.js')
 
-var helper = require('node-red-node-test-helper')
+
+const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
+
+const testFlows = require('./flows/modbus-response-filter-flows')
 
 describe('Response Filter node Testing', function () {
   before(function (done) {
@@ -68,7 +71,7 @@ describe('Response Filter node Testing', function () {
           addressOffset: ''
         }
       ], function () {
-        var modbusNode = helper.getNode('50f41d03.d1eff4')
+        const modbusNode = helper.getNode('50f41d03.d1eff4')
         modbusNode.should.have.property('name', 'ModbusResponseFilter')
         modbusNode.should.have.property('filter', 'FilterTest')
         done()
@@ -294,11 +297,11 @@ describe('Response Filter node Testing', function () {
           addressOffset: ''
         }
       ], function () {
-        var modbusNode = helper.getNode('5a7d9b84.a543a4')
+        const modbusNode = helper.getNode('5a7d9b84.a543a4')
         modbusNode.should.have.property('name', 'ModbusResponseFilter')
         modbusNode.should.have.property('filter', 'bOperationActive')
 
-        var h1 = helper.getNode('h1')
+        const h1 = helper.getNode('h1')
         h1.on('input', function () {
           done()
         })
