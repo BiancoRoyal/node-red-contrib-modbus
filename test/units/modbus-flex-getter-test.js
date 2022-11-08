@@ -10,17 +10,17 @@
 
 'use strict'
 
-var injectNode = require('@node-red/nodes/core/common/20-inject.js')
-var clientNode = require('../../src/modbus-client.js')
-var serverNode = require('../../src/modbus-server.js')
-var nodeUnderTest = require('../../src/modbus-flex-getter.js')
+const injectNode = require('@node-red/nodes/core/common/20-inject.js')
+const clientNode = require('../../src/modbus-client.js')
+const serverNode = require('../../src/modbus-server.js')
+const nodeUnderTest = require('../../src/modbus-flex-getter.js')
 
-var helper = require('node-red-node-test-helper')
+const testFlexGetterNodes = [injectNode, clientNode, serverNode, nodeUnderTest]
+
+const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
-var testFlexGetterNodes = [injectNode, clientNode, serverNode, nodeUnderTest]
-
-var testFlows = require('./flows/modbus-flex-getter-flows')
+const testFlows = require('./flows/modbus-flex-getter-flows')
 
 describe('Flex Getter node Testing', function () {
   before(function (done) {
@@ -45,7 +45,7 @@ describe('Flex Getter node Testing', function () {
 
   describe('Node', function () {
     it('simple Node should be loaded without client config', function (done) {
-      helper.load([nodeUnderTest],testFlows.testNodeWithoutClientFlow , function () {
+      helper.load(testFlexGetterNodes,testFlows.testNodeWithoutClientFlow , function () {
         const modbusFlexGetter = helper.getNode('bc5a61b6.a3972')
         modbusFlexGetter.should.have.property('name', 'modbusFlexGetter')
 
@@ -56,7 +56,7 @@ describe('Flex Getter node Testing', function () {
     })
 
     it('simple Node should be loaded', function (done) {
-      helper.load([clientNode, serverNode, nodeUnderTest],testFlows.testNodeShouldBeLoadedFlow , function () {
+      helper.load(testFlexGetterNodes,testFlows.testNodeShouldBeLoadedFlow , function () {
         const modbusServer = helper.getNode('996023fe.ea04b')
         modbusServer.should.have.property('name', 'modbusServer')
 
