@@ -46,7 +46,7 @@ describe('Flex Server node Testing', function () {
   describe('Node', function () {
     it('simple Node should be loaded', function (done) {
       helper.load(testFlexServerNodes, testFlows.testNodeShouldBeLoadedFlow, function () {
-        var modbusServer = helper.getNode('ebd4bd0a.2f4af8')
+        const modbusServer = helper.getNode('ebd4bd0a.2f4af8')
         modbusServer.should.have.property('name', 'ModbusFlexServer')
 
         done()
