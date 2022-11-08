@@ -10,17 +10,17 @@
 
 'use strict'
 
-var injectNode = require('@node-red/nodes/core/common/20-inject.js')
-var clientNode = require('../../src/modbus-client.js')
-var serverNode = require('../../src/modbus-server.js')
-var nodeUnderTest = require('../../src/modbus-flex-sequencer.js')
+const injectNode = require('@node-red/nodes/core/common/20-inject.js')
+const clientNode = require('../../src/modbus-client.js')
+const serverNode = require('../../src/modbus-server.js')
+const nodeUnderTest = require('../../src/modbus-flex-sequencer.js')
 
-var helper = require('node-red-node-test-helper')
+const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
-var testFlexSequencerNodes = [injectNode, clientNode, serverNode, nodeUnderTest]
+const testFlexSequencerNodes = [injectNode, clientNode, serverNode, nodeUnderTest]
 
-var testFlows = require('./flows/modbus-flex-sequencer-flows')
+const testFlows = require('./flows/modbus-flex-sequencer-flows')
 
 describe('Flex Sequencer node Testing', function () {
   before(function (done) {
