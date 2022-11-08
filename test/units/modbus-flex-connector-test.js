@@ -10,14 +10,16 @@
 
 'use strict'
 
-var nodeUnderTest = require('../../src/modbus-flex-connector.js')
-var serverNode = require('../../src/modbus-server.js')
-var nodeClient = require('../../src/modbus-client.js')
+const nodeUnderTest = require('../../src/modbus-flex-connector.js')
+const serverNode = require('../../src/modbus-server.js')
+const nodeClient = require('../../src/modbus-client.js')
 
-var helper = require('node-red-node-test-helper')
+const testFlexConnectorNodes = [nodeUnderTest, serverNode, nodeClient]
+
+const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
-var testFlows = require('./flows/modbus-flex-connector-flows')
+const testFlows = require('./flows/modbus-flex-connector-flows')
 
 describe('Flex Connector node Testing', function () {
   before(function (done) {
@@ -42,8 +44,8 @@ describe('Flex Connector node Testing', function () {
 
   describe('Node', function () {
     it('should be loaded', function (done) {
-      helper.load([nodeUnderTest, nodeClient], testFlows.testShouldBeLoadedFlow, function () {
-        var modbusNode = helper.getNode('40ddaabb.fd44d4')
+      helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
+        const modbusNode = helper.getNode('40ddaabb.fd44d4')
         modbusNode.should.have.property('name', 'FlexConnector')
         modbusNode.should.have.property('emptyQueue', true)
         done()
@@ -52,9 +54,9 @@ describe('Flex Connector node Testing', function () {
 
     it('should change the TCP-Port of the client from 7522 to 8522', function (done) {
       this.timeout(5000)
-      helper.load([serverNode, nodeUnderTest, nodeClient], testFlows.testShouldChangeTcpPortFlow, function () {
-        var modbusNode = helper.getNode('40ddaabb.fd44d4')
-        var clientNode = helper.getNode('2a253153.fae3ce')
+      helper.load(testFlexConnectorNodes, testFlows.testShouldChangeTcpPortFlow, function () {
+        const modbusNode = helper.getNode('40ddaabb.fd44d4')
+        const clientNode = helper.getNode('2a253153.fae3ce')
         modbusNode.should.have.property('name', 'FlexConnector')
         modbusNode.should.have.property('emptyQueue', true)
         setTimeout(function () {
@@ -70,9 +72,9 @@ describe('Flex Connector node Testing', function () {
 
     it('should change the Serial-Port of the client from /dev/ttyUSB to /dev/ttyUSB0', function (done) {
       this.timeout(3000)
-      helper.load([nodeUnderTest, nodeClient], testFlows.testShouldChangeSerialPortFlow, function () {
-        var modbusNode = helper.getNode('40ddaabb.fd44d4')
-        var clientNode = helper.getNode('2a253153.fae3ef')
+      helper.load(testFlexConnectorNodes, testFlows.testShouldChangeSerialPortFlow, function () {
+        const modbusNode = helper.getNode('40ddaabb.fd44d4')
+        const clientNode = helper.getNode('2a253153.fae3ef')
         modbusNode.should.have.property('name', 'FlexConnector')
         modbusNode.should.have.property('emptyQueue', true)
         setTimeout(function () {
