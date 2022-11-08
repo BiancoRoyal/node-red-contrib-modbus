@@ -18,7 +18,7 @@ const serverNode = require('../../src/modbus-server.js')
 const nodeUnderTest = require('../../src/modbus-queue-info.js')
 const catchNode = require('@node-red/nodes/core/common/25-catch')
 
-const testIoConfigNodes = [catchNode, injectNode, functionNode, clientNode, serverNode, nodeUnderTest, readNode]
+const testQueueInfoNodes = [catchNode, injectNode, functionNode, clientNode, serverNode, nodeUnderTest, readNode]
 
 const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
@@ -49,7 +49,7 @@ describe('Queue Info node Testing', function () {
 
   describe('Node', function () {
     it('simple Node should be loaded', function (done) {
-      helper.load(testIoConfigNodes, testFlows.testShouldBeLoadedFlow, function () {
+      helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusServer = helper.getNode('389153e.cb648ac')
         modbusServer.should.have.property('name', 'modbusServer')
 
@@ -66,7 +66,7 @@ describe('Queue Info node Testing', function () {
     })
 
     it('simple flow with old reset inject should be loaded', function (done) {
-      helper.load(testIoConfigNodes, testFlows.testOldResetInjectShouldBeLoadedFlow, function () {
+      helper.load(testQueueInfoNodes, testFlows.testOldResetInjectShouldBeLoadedFlow, function () {
         const h1 = helper.getNode('h1')
         h1.on('input', function (msg) {
           done()
@@ -79,7 +79,7 @@ describe('Queue Info node Testing', function () {
     })
 
     it('simple flow with new reset inject should be loaded', function (done) {
-      helper.load(testIoConfigNodes, testFlows.testNewResetInjectShouldBeLoadedFlow, function () {
+      helper.load(testQueueInfoNodes, testFlows.testNewResetInjectShouldBeLoadedFlow, function () {
         const h1 = helper.getNode('h1')
         h1.on('input', function (msg) {
           done()
@@ -92,7 +92,7 @@ describe('Queue Info node Testing', function () {
     })
 
     it('simple flow with inject and polling read should be loaded', function (done) {
-      helper.load(testIoConfigNodes, testFlows.testInjectAndPollingShouldBeLoadedFlow, function () {
+      helper.load(testQueueInfoNodes, testFlows.testInjectAndPollingShouldBeLoadedFlow, function () {
         const h1 = helper.getNode('h1')
         let countMsg = 0
         h1.on('input', function (msg) {
@@ -109,7 +109,7 @@ describe('Queue Info node Testing', function () {
     })
 
     it('simple flow with reset function for queue', function (done) {
-      helper.load(testIoConfigNodes, testFlows.testResetFunctionQueueFlow, function () {
+      helper.load(testQueueInfoNodes, testFlows.testResetFunctionQueueFlow, function () {
         const h1 = helper.getNode('h1')
         h1.on('input', function (msg) {
           done()
