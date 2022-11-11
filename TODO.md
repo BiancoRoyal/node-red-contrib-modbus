@@ -18,4 +18,55 @@
 - version 18
   - check failing tests
 - modbus serial new version put in v.18
-- 
+- Research Modbus Lib
+
+- Modbus Client
+  - Funktionen
+    - Read
+    - Multiple Read
+    - Write
+    - Multiple Write
+- Modbus Crawler
+  - Adresse 0 - n durchlaufen bis unbekannte Adresse
+    - ggf. set area
+    - goAhead on errors option (jump empty inbetween)
+- Sequence Read (Sequencer)
+  - Sequencer Write
+    - write around five things after each other
+- Modbus Server
+  - TSL-Verschlüsselung möglich (nicht für 6.12.)
+    - secured modbus vorbereiten
+- Modbus Flex-Server
+  - rework
+  - maybe different package
+    - vm critical point (security issues)
+- Issue
+  - js Modbus unsafe / schlecht gepflegt
+
+- Payload Structure
+  - modbusBuffer: []
+  - modbusItems: []
+  - modbusItem: Any
+  - metadata
+    - serviceType: String (switch-case)
+    - modbusBufferLength: Int
+    - modbusItemsLength: Int
+    - hasModbusBuffer: bool
+    - hasModbusItem: bool
+    - hasModbusItems: bool
+- last priority
+  - separate serial and tcp
+  - separation with new core packages
+- Goal: core
+  - which test is for serial
+- own modbus simulator / demo server (for PlusForNodeRED)
+  - [Modbus simulator installation](https://www.youtube.com/watch?v=c9flM7UZ-gY)
+  - [Modbus Simulator ModRSsim2](https://sourceforge.net/projects/modrssim2/)
+- Modbus serial
+
+- Bibliothek keep current forked project
+  - right version (check)
+    - for test and for dev
+    - use sh shell
+
+- **Always same Output for Node-RED package**
