@@ -1,0 +1,21 @@
+# TODO
+
+- closed Issues
+  - excel list
+    - extract Todo (Jira)
+    - set priorities
+- milestones for 6.12.
+  - better exception handling (security issue)
+  - testing examples (function)
+    - e2e usable examples
+      - change to test helper
+- nvm install
+- v. 14/16/18 node.js (with Node-RED)
+  - 18 set default
+  - check e2e in all version
+    - write shell script
+      - 14/16/18 
+- version 18
+  - check failing tests
+- modbus serial new version put in v.18
+- 
