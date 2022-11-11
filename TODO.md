@@ -63,10 +63,29 @@
   - [Modbus simulator installation](https://www.youtube.com/watch?v=c9flM7UZ-gY)
   - [Modbus Simulator ModRSsim2](https://sourceforge.net/projects/modrssim2/)
 - Modbus serial
+  - serialport check node.js version
+  - which node.js allowed
+  - package.json "engines" checken
+  - (node-modbus-serial no engines!)
 
 - Bibliothek keep current forked project
   - right version (check)
     - for test and for dev
     - use sh shell
+- package.json
+  - dependency ~
+  - dev-dependency ^
+  - use npx for script in package.json (test, build, coverage)
+  - xstate/fsm check for version (2.0.0)
+    - find tests or write tests
 
+- Research
+  - "npm install" or "npm i" when it comes to dev-dependencies/dependencies
+
+- JS Source 2021
+  - [JS Version W3school](https://www.w3schools.com/js/js_2021.asp)
+- JS Deploy 2017
+
+
+- check nvm versioning in Shell
 - **Always same Output for Node-RED package**

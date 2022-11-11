@@ -1,9 +1,35 @@
-## [5.23.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.23.1...v5.23.2) (2022-09-26)
+## [5.23.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.23.1...v5.23.2) (2022-11-11)
 
 
 ### Bug Fixes
 
+* **flex-server:** changed var to const ([d638d53](https://github.com/biancoroyal/node-red-contrib-modbus/commit/d638d5368b3e13700a0fd3aaaa434aae6be8d522))
+* **flex-write:** deleted unused flow ([2f0baee](https://github.com/biancoroyal/node-red-contrib-modbus/commit/2f0baee699a25d0c21eaf95773ab67f4dccd47f6))
 * Node-RED PLUS changed to PLUS for Node-RED ([f726949](https://github.com/biancoroyal/node-red-contrib-modbus/commit/f72694954b2d3d07e65766c00dcb9274ffb1fd66))
+* **test:** same port on test ([b6f531f](https://github.com/biancoroyal/node-red-contrib-modbus/commit/b6f531fafbe7b22b4d3812dd20fa68e2f7a9e97f))
+
+
+### Features
+
+* **clex-connector-test:** organized code ([92c9e37](https://github.com/biancoroyal/node-red-contrib-modbus/commit/92c9e37d6f1e94975b86fe4b16e96601e1ef477e))
+* **client-flows:** extracted and updated flows ([7c40530](https://github.com/biancoroyal/node-red-contrib-modbus/commit/7c405300e8fea8ceeabd8e0e4e15145fcd67a2cd))
+* **client-tests:** organized code ([830b0ce](https://github.com/biancoroyal/node-red-contrib-modbus/commit/830b0cee067ad9e5ef35478eb06e589ea3affcbc))
+* **flex-connector-flows:** extracted and updated flows ([6f4330c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/6f4330c9a57bce71c696a9ed499759f1d227e3a1))
+* **flex-getter-flows:** extracted and updated flows ([db2471b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/db2471bff6e0009b7fa45644a53267e45ad163a4))
+* **flex-getter-test:** organized code ([981a15e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/981a15e302f05c8ea6f1c1d742d9876a5ad37d61))
+* **flex-sequencer-test:** changed var to const ([ffbf9ff](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ffbf9ffae7c10f66ab8bc8224784ffb10249ed02))
+* **flex-sequencer:** extracted and updated flows ([b8c12b9](https://github.com/biancoroyal/node-red-contrib-modbus/commit/b8c12b94e8f3e485348b462d1a0f0cd031a19723))
+* **flex-server:** extracted and updated flows ([64d69ea](https://github.com/biancoroyal/node-red-contrib-modbus/commit/64d69ea0a83d20a5d3951e540c0fbba261aaf22c))
+* **flex-write:** extracted and updated flows ([38e4b18](https://github.com/biancoroyal/node-red-contrib-modbus/commit/38e4b18e6e1b56630cd37c5a8aa70e5f87b45a05))
+* **getter-flows:** updated flows to be organized ([5c6239a](https://github.com/biancoroyal/node-red-contrib-modbus/commit/5c6239a5e5220b96d2585ff16da32df64be19402))
+* **getter:** organized Code ([19da2dc](https://github.com/biancoroyal/node-red-contrib-modbus/commit/19da2dc4cd02ea9cc1e7c29a8d0c6ec6e5af8dbf))
+* **io-config:** extracted and updated flows ([e037a59](https://github.com/biancoroyal/node-red-contrib-modbus/commit/e037a59d726b1ad3fddadac3948befcc367f18ae))
+* **queue-info:** extracted and updated flows ([1b668fa](https://github.com/biancoroyal/node-red-contrib-modbus/commit/1b668fa2679e0d121a27093671eae1464d76aa7c))
+* **read-flows:** updated flows to be organized ([ccfece8](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ccfece87345f28d3bbf8bff658710e34ee47fc59))
+* **response-filter:** extracted and updated flows ([93e10f8](https://github.com/biancoroyal/node-red-contrib-modbus/commit/93e10f8df273efbe417b4cc1db984bb039d15054))
+* **response-filter:** prepared flow-extraction ([39092de](https://github.com/biancoroyal/node-red-contrib-modbus/commit/39092de5f800c2301cb11b1d58485351ba3ca26f))
+* **response:** extracted and updated flows ([6930e37](https://github.com/biancoroyal/node-red-contrib-modbus/commit/6930e37c94aa5b2e7c0899c2c78fdec074e49d50))
+* **write-flows:** updated flows to be organized ([b32cd54](https://github.com/biancoroyal/node-red-contrib-modbus/commit/b32cd5457d4aa16c5c1b7abac04fb415e20264ee))
 
 
 
@@ -39,7 +65,7 @@
 
 
 
-# [5.14.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.13.3...v5.14.0) (2021-04-10)
+# [5.14.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.13.1...v5.14.0) (2021-04-10)
 
 
 ### Bug Fixes
@@ -161,7 +187,7 @@
 
 
 
-# [5.2.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/5.1.0-0...v5.2.0) (2019-12-08)
+# [5.2.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v4.1.3...v5.2.0) (2019-12-08)
 
 
 ### Bug Fixes
@@ -175,14 +201,6 @@
 ### Features
 
 * [#161](https://github.com/biancoroyal/node-red-contrib-modbus/issues/161) multiple RTU devices via UnitID ([b0b5011](https://github.com/biancoroyal/node-red-contrib-modbus/commit/b0b5011be4ab5e7c06ab44fd9df7b0ff5ddd0fd8))
-
-
-
-# [5.1.0-0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v4.1.3...5.1.0-0) (2019-11-24)
-
-
-### Features
-
 * new state machine from xstate ([57aef99](https://github.com/biancoroyal/node-red-contrib-modbus/commit/57aef9956187ee9d70e862b226f3a3ef5e091528))
 
 
