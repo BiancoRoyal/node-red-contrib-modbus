@@ -2,8 +2,14 @@
 
 - closed Issues
   - excel list
-    - extract Todo (Jira)
-    - set priorities
+  - work on tcp first
+    - serial modbus server
+      - extract Todo (Jira)
+      - set priorities
+      - Stale issues
+        - recreate and rebuild with helper-node
+          - use as test-flow
+          - mention new test in new version in issue-comments
 - milestones for 6.12.
   - better exception handling (security issue)
   - testing examples (function)
@@ -40,6 +46,9 @@
   - rework
   - maybe different package
     - vm critical point (security issues)
+- Modbus Flex-Getter
+  - more tests for mentioned issues
+  - 
 - Issue
   - js Modbus unsafe / schlecht gepflegt
 
@@ -86,6 +95,11 @@
   - [JS Version W3school](https://www.w3schools.com/js/js_2021.asp)
 - JS Deploy 2017
 
+- Modbus Specifications
+  - Modbus SunSpec (PV-protocol)
+    - issue [#340](https://github.com/BiancoRoyal/node-red-contrib-modbus/issues/340)
+
+- contact creator and seller of PV Wallbox and heat pumps
 
 - check nvm versioning in Shell
 - **Always same Output for Node-RED package**
