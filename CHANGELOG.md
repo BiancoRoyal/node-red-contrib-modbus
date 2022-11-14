@@ -1,4 +1,4 @@
-## [5.23.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.23.1...v5.23.2) (2022-09-26)
+## [5.23.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.23.1...v5.23.2) (2022-11-14)
 
 
 ### Bug Fixes
@@ -161,7 +161,7 @@
 
 
 
-# [5.2.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/5.1.0-0...v5.2.0) (2019-12-08)
+# [5.2.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v4.1.3...v5.2.0) (2019-12-08)
 
 
 ### Bug Fixes
@@ -175,14 +175,6 @@
 ### Features
 
 * [#161](https://github.com/biancoroyal/node-red-contrib-modbus/issues/161) multiple RTU devices via UnitID ([b0b5011](https://github.com/biancoroyal/node-red-contrib-modbus/commit/b0b5011be4ab5e7c06ab44fd9df7b0ff5ddd0fd8))
-
-
-
-# [5.1.0-0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v4.1.3...5.1.0-0) (2019-11-24)
-
-
-### Features
-
 * new state machine from xstate ([57aef99](https://github.com/biancoroyal/node-red-contrib-modbus/commit/57aef9956187ee9d70e862b226f3a3ef5e091528))
 
 
