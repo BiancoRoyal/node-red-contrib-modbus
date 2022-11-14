@@ -103,3 +103,14 @@
 
 - check nvm versioning in Shell
 - **Always same Output for Node-RED package**
+
+
+Current State (14.11. - v5.23.3): 
+- Tests
+  - check tests (231 master - 166 develop)
+  - compare tests
+- Test Coverage (14.11. - v5.23.3)
+  - Statements   : 74.7% (1813/2427)
+    Branches     : 63.18% (719/1138)
+    Functions    : 75.61% (217/287)
+    Lines        : 74.75% (1809/2420)
