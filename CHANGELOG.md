@@ -1,9 +1,14 @@
-## [5.23.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.23.1...v5.23.2) (2022-11-14)
+## [5.23.3](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.23.1...v5.23.3) (2022-11-14)
 
 
 ### Bug Fixes
 
 * Node-RED PLUS changed to PLUS for Node-RED ([f726949](https://github.com/biancoroyal/node-red-contrib-modbus/commit/f72694954b2d3d07e65766c00dcb9274ffb1fd66))
+
+
+### Features
+
+* added test-helper-extension ([c4b493d](https://github.com/biancoroyal/node-red-contrib-modbus/commit/c4b493d9fad7a3d1ff17b71fda117ca7a35b5216))
 
 
 
