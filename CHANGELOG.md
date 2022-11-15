@@ -1,4 +1,4 @@
-## [5.23.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.23.1...v5.23.2) (2022-11-11)
+## [5.23.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.23.1...v5.23.2) (2022-11-15)
 
 
 ### Bug Fixes
@@ -11,6 +11,9 @@
 
 ### Features
 
+* added more Todo notes ([30c5e80](https://github.com/biancoroyal/node-red-contrib-modbus/commit/30c5e808750e4c6ae9505ce045f4a1eff152e7aa))
+* added test coverage to Todo ([6148dd5](https://github.com/biancoroyal/node-red-contrib-modbus/commit/6148dd5dca533b2e5a628dc1a40cece7c77c4be6))
+* adjusted TODO and package.json ([c481b6f](https://github.com/biancoroyal/node-red-contrib-modbus/commit/c481b6f7885fad2349e98bf1e46d61ab7318a61f))
 * **clex-connector-test:** organized code ([92c9e37](https://github.com/biancoroyal/node-red-contrib-modbus/commit/92c9e37d6f1e94975b86fe4b16e96601e1ef477e))
 * **client-flows:** extracted and updated flows ([7c40530](https://github.com/biancoroyal/node-red-contrib-modbus/commit/7c405300e8fea8ceeabd8e0e4e15145fcd67a2cd))
 * **client-tests:** organized code ([830b0ce](https://github.com/biancoroyal/node-red-contrib-modbus/commit/830b0cee067ad9e5ef35478eb06e589ea3affcbc))

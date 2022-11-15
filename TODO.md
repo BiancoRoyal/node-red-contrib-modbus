@@ -8,7 +8,8 @@
       - set priorities
       - Stale issues
         - recreate and rebuild with helper-node
-          - use as test-flow
+          - use as test-flow (issues flow - server flows - read - write)
+          - look for tests in modbus-serial
           - mention new test in new version in issue-comments
 - milestones for 6.12.
   - better exception handling (security issue)
@@ -114,3 +115,8 @@ Current State (14.11. - v5.23.3):
     Branches     : 63.18% (719/1138)
     Functions    : 75.61% (217/287)
     Lines        : 74.75% (1809/2420)
+
+- Documentation
+  - Funktionsbausteine extra erwähnen
+- Specification
+  - if missing, maybe contribution
