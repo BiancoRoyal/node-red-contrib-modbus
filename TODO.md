@@ -120,3 +120,30 @@ Current State (14.11. - v5.23.3):
   - Funktionsbausteine extra erwähnen
 - Specification
   - if missing, maybe contribution
+
+Todo 
+
+Flex-Getter
+- mehr Tests
+
+Flex-Writer
+- mehr Tests
+
+Video für Releases
+- Deutsch/Englisch
+  - Vermerk auf andere Sprache
+  - Kamera von oben herab
+  - Shorts mit einbauen
+- Vermerk Plus4NodeRed
+- Sterne
+- MacBook einrichten
+  - Tutorials
+- Was wurde gemacht?
+- Was wurde dazu in Plus4NodeRed Content geschrieben
+- Nicht länger als eine Minute
+Präsentation --> 6.12.
+Video --> 9.12.
+- Verweis Kontaktformular auf noderedplus.de
+
+Client
+- function isConnected (queueing, active)
