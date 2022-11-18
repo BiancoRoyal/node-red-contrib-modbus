@@ -82,7 +82,7 @@ module.exports = function (RED) {
     node.bufferCommandList = new Map()
     node.sendingAllowed = new Map()
     node.unitSendingAllowed = []
-    node.messageAllowedStates = coreModbusClient.messagesAllowedStates
+    node.messageAllowedStates = coreModbusClient.messageAllowedStates
     node.serverInfo = ''
 
     node.stateMachine = null
@@ -695,6 +695,10 @@ module.exports = function (RED) {
         node.error(err)
         done()
       }
+    }
+
+    node.isInactive = function () {
+      return node.messageAllowedStates.indexOf(state.value) === -1
     }
   }
 

@@ -133,8 +133,20 @@ module.exports = function (RED) {
       }
     }
 
+    function verboseWarn (logMessage) {
+      if (RED.settings.verbose) {
+        node.updateServerinfo()
+        node.warn('Flex-Getter -> ' + logMessage + ' ' + node.serverInfo)
+      }
+    }
+
     node.on('input', function (msg) {
       if (mbBasics.invalidPayloadIn(msg) || !modbusClient.client) {
+        return
+      }
+
+      if (modbusClient.isInactive()) {
+        verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
         return
       }
 

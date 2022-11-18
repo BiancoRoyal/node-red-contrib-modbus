@@ -9,6 +9,7 @@
  **/
 
 'use strict'
+const coreModbusClient = require('../../src/core/modbus-client-core')
 
 const serverNode = require('../../src/modbus-server.js')
 const nodeUnderTest = require('../../src/modbus-client.js')
@@ -119,11 +120,31 @@ describe('Client node Testing', function () {
         })
       })
     })
+
+    it('should have messageAllowed defaults', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testShouldBeSerialAsciiFlow, function () {
+        const modbusClientNode = helper.getNode('466860d5.3f6364')
+        modbusClientNode.should.have.property('messageAllowedStates', coreModbusClient.messageAllowedStates)
+        setTimeout(done, 1000)
+      })
+    })
+
+    it('should be inactive if message not allowed', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testShouldBeInactiveFlow, function () {
+        const modbusClientNode = helper.getNode('466860d5.3f6364')
+        !modbusClientNode.should.not.have     should.have.property('message not allowed', coreModbusClient.messageAllowedStates)
+        setTimeout(done, 1000)
+      })
+    })
+
+    // ohne Verbindung
+    // mit Verbindung 2sec timeout inactive = false
+
   })
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      helper.request().post('/modbus-cient/invalid').expect(404).end(done)
+      helper.request().post('/modbus-client/invalid').expect(404).end(done)
     })
   })
 })

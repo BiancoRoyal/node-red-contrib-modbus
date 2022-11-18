@@ -157,8 +157,32 @@ describe('Flex Getter node Testing', function () {
         helper.log('function callback')
       })
     })
+
+    /**
+     * "Client not ready to read at state init"
+     *
+     * possible issue with access permissions
+     * - "simple Node should recognize missing access permission"
+     *    - how to simulate missing access permission in flow?
+     *    - way to ask for access permission status?
+     * - "simple Node should recognize existing access permission"
+     *    - same questions
+     *
+     * possible issue with delay/inject before read/write
+     *  - "simple Node should have not enough delay"
+     *  - "simple Node should have enough delay"
+     *
+     */
+
+    it('should be inactive if message not allowed', function (done) {
+      helper.load(testFlexGetterNodes, testFlows.testFlexGetterFlow,function () {
+        const modbusGetter = helper.getNode('bc5a61b6.a3972')
+
+      } )
+    })
   })
 
+  //TODO: Check why this test fails when running alone - helper.request empty?
   describe('post', function () {
     it('should fail for invalid node', function (done) {
       helper.request().post('/modbus-flex-getter/invalid').expect(404).end(done)

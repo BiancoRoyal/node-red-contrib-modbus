@@ -661,6 +661,64 @@ module.exports = {
       "reconnectTimeout": "200",
       "parallelUnitIdsAllowed": false
     }
-  ])
+  ]),
 
+  "testShouldBeInactiveFlow": helperExtensions.cleanFlowPositionData([
+    {
+      "id": "dee6791347fc9889",
+      "type": "tab",
+      "label": "client active mode test",
+      "disabled": false,
+      "info": "",
+      "env": []
+    },
+    {
+      "id": "067caad9aeed05bb",
+      "type": "modbus-flex-getter",
+      "z": "dee6791347fc9889",
+      "name": "",
+      "showStatusActivities": true,
+      "showErrors": true,
+      "logIOActivities": false,
+      "server": "53f6fb33a3f90ead",
+      "useIOFile": false,
+      "ioFile": "",
+      "useIOForPayload": false,
+      "emptyMsgOnFail": false,
+      "keepMsgProperties": false,
+      "x": 350,
+      "y": 200,
+      "wires": [
+        [],
+        []
+      ]
+    },
+    {
+      "id": "53f6fb33a3f90ead",
+      "type": "modbus-client",
+      "name": "",
+      "clienttype": "tcp",
+      "bufferCommands": true,
+      "stateLogEnabled": false,
+      "queueLogEnabled": false,
+      "failureLogEnabled": true,
+      "tcpHost": "127.0.0.1",
+      "tcpPort": "10502",
+      "tcpType": "DEFAULT",
+      "serialPort": "/dev/ttyUSB",
+      "serialType": "RTU-BUFFERD",
+      "serialBaudrate": "9600",
+      "serialDatabits": "8",
+      "serialStopbits": "1",
+      "serialParity": "none",
+      "serialConnectionDelay": "100",
+      "serialAsciiResponseStartDelimiter": "0x3A",
+      "unit_id": "1",
+      "commandDelay": "1",
+      "clientTimeout": "1000",
+      "reconnectOnTimeout": true,
+      "reconnectTimeout": "2000",
+      "parallelUnitIdsAllowed": true
+    }
+  ])
 }
