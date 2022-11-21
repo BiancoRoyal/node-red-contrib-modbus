@@ -21,6 +21,7 @@ module.exports = function (RED) {
   const coreModbusClient = require('./core/modbus-client-core')
   const coreModbusQueue = require('./core/modbus-queue-core')
   const internalDebugLog = require('debug')('contribModbus:config:client')
+  const _ = require('underscore')
 
   function ModbusClientNode (config) {
     RED.nodes.createNode(this, config)
@@ -698,7 +699,7 @@ module.exports = function (RED) {
     }
 
     node.isInactive = function () {
-      return node.messageAllowedStates.indexOf(state.value) === -1
+      return _.isUndefined(node.actualServiceState) || node.messageAllowedStates.indexOf(node.actualServiceState.value) === -1
     }
   }
 

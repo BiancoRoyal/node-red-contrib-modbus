@@ -14,8 +14,9 @@ const coreModbusClient = require('../../src/core/modbus-client-core')
 const serverNode = require('../../src/modbus-server.js')
 const nodeUnderTest = require('../../src/modbus-client.js')
 const readNode = require('../../src/modbus-read.js')
+const flexGetterNode = require('../../src/modbus-flex-getter.js')
 
-const testModbusClientNodes = [serverNode, nodeUnderTest, readNode]
+const testModbusClientNodes = [serverNode, nodeUnderTest, readNode, flexGetterNode]
 
 const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
@@ -131,14 +132,17 @@ describe('Client node Testing', function () {
 
     it('should be inactive if message not allowed', function (done) {
       helper.load(testModbusClientNodes, testFlows.testShouldBeInactiveFlow, function () {
-        const modbusClientNode = helper.getNode('466860d5.3f6364')
-        !modbusClientNode.should.have.property('message not allowed', coreModbusClient.messageAllowedStates)
-        setTimeout(done, 1000)
+        const modbusClientNode = helper.getNode('53f6fb33a3f90ead')
+        setTimeout(() => {
+          modbusClientNode.messageAllowedStates = ['']
+          let isInactive = modbusClientNode.isInactive()
+          isInactive.should.be.true
+          done()
+        } , 1500)
       })
     })
 
-    // ohne Verbindung
-    // mit Verbindung 2sec timeout inactive = false
+
 
   })
 
