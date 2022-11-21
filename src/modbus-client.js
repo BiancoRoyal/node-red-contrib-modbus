@@ -8,6 +8,7 @@
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  */
 
+const coreModbusQueue = require('./core/modbus-queue-core')
 /**
  * Modbus connection node.
  * @module NodeRedModbusClient
@@ -700,6 +701,14 @@ module.exports = function (RED) {
 
     node.isInactive = function () {
       return _.isUndefined(node.actualServiceState) || node.messageAllowedStates.indexOf(node.actualServiceState.value) === -1
+    }
+
+    node.isReadyToSend = function (node) {
+      if (node.actualServiceState.matches('queueing')) {
+        return true
+      }
+      verboseWarn('Node not ready to send')
+      return false
     }
   }
 

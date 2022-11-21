@@ -15,6 +15,7 @@ const serverNode = require('../../src/modbus-server.js')
 const nodeUnderTest = require('../../src/modbus-client.js')
 const readNode = require('../../src/modbus-read.js')
 const flexGetterNode = require('../../src/modbus-flex-getter.js')
+const mBasics = require('../../src/modbus-basics.js')
 
 const testModbusClientNodes = [serverNode, nodeUnderTest, readNode, flexGetterNode]
 
@@ -142,8 +143,29 @@ describe('Client node Testing', function () {
       })
     })
 
+    it('should be state queueing - ready to send', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
+        const modbusClientNode = helper.getNode('466860d5.3f6358')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('queueing', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.true
+          done()
+        } , 1500)
+      })
+    })
 
-
+    it('should be not state queueing - not ready to send', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
+        const modbusClientNode = helper.getNode('466860d5.3f6358')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('stopped', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.false
+          done()
+        } , 1500)
+      })
+    })
   })
 
   describe('post', function () {

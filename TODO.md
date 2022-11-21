@@ -151,4 +151,3 @@ Client
 - function isConnected (queueing, active)
 
 F1, F3, F4
-- 
