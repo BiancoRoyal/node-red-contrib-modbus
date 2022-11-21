@@ -21,6 +21,7 @@ helper.init(require.resolve('node-red'))
 const testFlexSequencerNodes = [injectNode, clientNode, serverNode, nodeUnderTest]
 
 const testFlows = require('./flows/modbus-flex-sequencer-flows')
+const mBasics = require('../../src/modbus-basics')
 
 describe('Flex Sequencer node Testing', function () {
   before(function (done) {
@@ -69,6 +70,30 @@ describe('Flex Sequencer node Testing', function () {
         done()
       }, function () {
         helper.log('function callback')
+      })
+    })
+
+    it('should be state queueing - ready to send', function (done) {
+      helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
+        const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('queueing', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.true
+          done()
+        } , 1500)
+      })
+    })
+
+    it('should be not state queueing - not ready to send', function (done) {
+      helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
+        const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('stopped', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.false
+          done()
+        } , 1500)
       })
     })
   })
