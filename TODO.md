@@ -125,6 +125,8 @@ Todo
 
 Flex-Getter
 - mehr Tests
+- für jeden Function Code einen Test
+- Filter Github-Issues: Issues
 
 Flex-Writer
 - mehr Tests
@@ -147,3 +149,6 @@ Video --> 9.12.
 
 Client
 - function isConnected (queueing, active)
+
+F1, F3, F4
+- 

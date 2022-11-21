@@ -132,7 +132,7 @@ describe('Client node Testing', function () {
     it('should be inactive if message not allowed', function (done) {
       helper.load(testModbusClientNodes, testFlows.testShouldBeInactiveFlow, function () {
         const modbusClientNode = helper.getNode('466860d5.3f6364')
-        !modbusClientNode.should.not.have     should.have.property('message not allowed', coreModbusClient.messageAllowedStates)
+        !modbusClientNode.should.have.property('message not allowed', coreModbusClient.messageAllowedStates)
         setTimeout(done, 1000)
       })
     })
