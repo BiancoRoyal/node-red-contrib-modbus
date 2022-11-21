@@ -520,7 +520,7 @@ module.exports = function (RED) {
     node.on('readModbus', function (msg, cb, cberr) {
       const state = node.actualServiceState
 
-      if (node.messageAllowedStates.indexOf(state.value) === -1) {
+      if (node.isInactive()) {
         cberr(new Error('Client Not Ready To Read At State ' + state.value), msg)
       } else {
         if (node.bufferCommands) {
@@ -545,7 +545,7 @@ module.exports = function (RED) {
     node.on('writeModbus', function (msg, cb, cberr) {
       const state = node.actualServiceState
 
-      if (node.messageAllowedStates.indexOf(state.value) === -1) {
+      if (node.isInactive()) {
         cberr(new Error('Client Not Ready To Write At State ' + state.value), msg)
       } else {
         if (node.bufferCommands) {
