@@ -21,6 +21,7 @@ const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
 const testFlows = require('./flows/modbus-flex-getter-flows')
+const mBasics = require('../../src/modbus-basics')
 
 describe('Flex Getter node Testing', function () {
   before(function (done) {
@@ -158,27 +159,28 @@ describe('Flex Getter node Testing', function () {
       })
     })
 
-    /**
-     * "Client not ready to read at state init"
-     *
-     * possible issue with access permissions
-     * - "simple Node should recognize missing access permission"
-     *    - how to simulate missing access permission in flow?
-     *    - way to ask for access permission status?
-     * - "simple Node should recognize existing access permission"
-     *    - same questions
-     *
-     * possible issue with delay/inject before read/write
-     *  - "simple Node should have not enough delay"
-     *  - "simple Node should have enough delay"
-     *
-     */
+    it('should be state queueing - ready to send', function (done) {
+      helper.load(testFlexGetterNodes, testFlows.testFlexGetterFlow, function () {
+        const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('queueing', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.true
+          done()
+        } , 1500)
+      })
+    })
 
-    it('should be inactive if message not allowed', function (done) {
-      helper.load(testFlexGetterNodes, testFlows.testFlexGetterFlow,function () {
-        const modbusGetter = helper.getNode('bc5a61b6.a3972')
-
-      } )
+    it('should be not state queueing - not ready to send', function (done) {
+      helper.load(testFlexGetterNodes, testFlows.testFlexGetterFlow, function () {
+        const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('stopped', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.false
+          done()
+        } , 1500)
+      })
     })
   })
 

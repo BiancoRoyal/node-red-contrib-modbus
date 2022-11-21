@@ -23,6 +23,7 @@ const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
 const testFlows = require('./flows/modbus-flex-write-flows')
+const mBasics = require('../../src/modbus-basics')
 
 const testWriteParametersNodes = [catchNode, injectNode, functionNode, clientNode, serverNode, nodeUnderTest]
 
@@ -208,6 +209,30 @@ describe('Flex Write node Testing', function () {
         }, 800)
       }, function () {
         helper.log('function callback')
+      })
+    })
+
+    it('should be state queueing - ready to send', function (done) {
+      helper.load(testWriteParametersNodes, testFlows.testWriteParametersFlow, function () {
+        const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('queueing', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.true
+          done()
+        } , 1500)
+      })
+    })
+
+    it('should be not state queueing - not ready to send', function (done) {
+      helper.load(testWriteParametersNodes, testFlows.testWriteParametersFlow, function () {
+        const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('stopped', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.false
+          done()
+        } , 1500)
       })
     })
   })
