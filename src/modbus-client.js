@@ -9,6 +9,7 @@
  */
 
 const coreModbusQueue = require('./core/modbus-queue-core')
+const _ = require('underscore')
 /**
  * Modbus connection node.
  * @module NodeRedModbusClient
@@ -701,6 +702,10 @@ module.exports = function (RED) {
 
     node.isInactive = function () {
       return _.isUndefined(node.actualServiceState) || node.messageAllowedStates.indexOf(node.actualServiceState.value) === -1
+    }
+
+    node.isActive = function () {
+      return !node.isInactive()
     }
 
     node.isReadyToSend = function (node) {
