@@ -22,6 +22,7 @@ const testFlexSequencerNodes = [injectNode, clientNode, serverNode, nodeUnderTes
 
 const testFlows = require('./flows/modbus-flex-sequencer-flows')
 const mBasics = require('../../src/modbus-basics')
+const _ = require('underscore')
 
 describe('Flex Sequencer node Testing', function () {
   before(function (done) {
@@ -72,7 +73,31 @@ describe('Flex Sequencer node Testing', function () {
         helper.log('function callback')
       })
     })
+    
+    it('should be inactive if message not allowed', function (done) {
+      helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
+        const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+        _.isUndefined(modbusClientNode).should.be.false
 
+        modbusClientNode.receive({payload: "test"})
+        let isInactive = modbusClientNode.isInactive()
+        isInactive.should.be.true
+        done()
+      })
+    })
+
+    it('should be inactive if message empty', function (done) {
+      helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
+        const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+        setTimeout(() => {
+          modbusClientNode.messageAllowedStates = ['']
+          let isInactive = modbusClientNode.isInactive()
+          isInactive.should.be.true
+          done()
+        } , 1500)
+      })
+    })
+    
     it('should be state queueing - ready to send', function (done) {
       helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')

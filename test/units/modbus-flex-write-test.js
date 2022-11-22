@@ -24,6 +24,7 @@ helper.init(require.resolve('node-red'))
 
 const testFlows = require('./flows/modbus-flex-write-flows')
 const mBasics = require('../../src/modbus-basics')
+const _ = require('underscore')
 
 const testWriteParametersNodes = [catchNode, injectNode, functionNode, clientNode, serverNode, nodeUnderTest]
 
@@ -209,6 +210,30 @@ describe('Flex Write node Testing', function () {
         }, 800)
       }, function () {
         helper.log('function callback')
+      })
+    })
+
+    it('should be inactive if message not allowed', function (done) {
+      helper.load(testWriteParametersNodes, testFlows.testWriteParametersFlow, function () {
+        const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
+        _.isUndefined(modbusClientNode).should.be.false
+
+        modbusClientNode.receive({payload: "test"})
+        let isInactive = modbusClientNode.isInactive()
+        isInactive.should.be.true
+        done()
+      })
+    })
+
+    it('should be inactive if message empty', function (done) {
+      helper.load(testWriteParametersNodes, testFlows.testWriteParametersFlow, function () {
+        const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
+        setTimeout(() => {
+          modbusClientNode.messageAllowedStates = ['']
+          let isInactive = modbusClientNode.isInactive()
+          isInactive.should.be.true
+          done()
+        } , 1500)
       })
     })
 

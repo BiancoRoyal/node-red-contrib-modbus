@@ -109,7 +109,6 @@ module.exports = function (RED) {
         return false
       }
 
-
       const origMsgInput = Object.assign({}, msg) // keep it origin
       try {
         const newMsg = node.buildNewMessageObject(node, origMsgInput)

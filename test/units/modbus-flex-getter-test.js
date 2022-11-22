@@ -22,6 +22,7 @@ helper.init(require.resolve('node-red'))
 
 const testFlows = require('./flows/modbus-flex-getter-flows')
 const mBasics = require('../../src/modbus-basics')
+const _ = require('underscore')
 
 describe('Flex Getter node Testing', function () {
   before(function (done) {
@@ -156,6 +157,32 @@ describe('Flex Getter node Testing', function () {
         }, 800)
       }, function () {
         helper.log('function callback')
+      })
+    })
+
+    it('should be inactive if message not allowed', function (done) {
+      helper.load(testFlexGetterNodes, testFlows.testFlexGetterFlow, function () {
+        const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+        _.isUndefined(modbusClientNode).should.be.false
+
+        setTimeout(() => {
+          modbusClientNode.receive({payload: "test"})
+          let isInactive = modbusClientNode.isInactive()
+          isInactive.should.be.true
+          done()
+        } , 1500)
+      })
+    })
+
+    it('should be inactive if message empty', function (done) {
+      helper.load(testFlexGetterNodes, testFlows.testFlexGetterFlow, function () {
+        const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+        setTimeout(() => {
+          modbusClientNode.messageAllowedStates = ['']
+          let isInactive = modbusClientNode.isInactive()
+          isInactive.should.be.true
+          done()
+        } , 1500)
       })
     })
 

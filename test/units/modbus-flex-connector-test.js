@@ -21,6 +21,7 @@ helper.init(require.resolve('node-red'))
 
 const testFlows = require('./flows/modbus-flex-connector-flows')
 const mBasics = require('../../src/modbus-basics')
+const _ = require('underscore')
 
 describe('Flex Connector node Testing', function () {
   before(function (done) {
@@ -86,6 +87,30 @@ describe('Flex Connector node Testing', function () {
             done()
           }
         })
+      })
+    })
+
+    it('should be inactive if message not allowed', function (done) {
+      helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
+        const modbusClientNode = helper.getNode('2a253153.fae3ce')
+        _.isUndefined(modbusClientNode).should.be.false
+
+        modbusClientNode.receive({payload: "test"})
+        let isInactive = modbusClientNode.isInactive()
+        isInactive.should.be.true
+        done()
+      })
+    })
+
+    it('should be inactive if message empty', function (done) {
+      helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
+        const modbusClientNode = helper.getNode('2a253153.fae3ce')
+        setTimeout(() => {
+          modbusClientNode.messageAllowedStates = ['']
+          let isInactive = modbusClientNode.isInactive()
+          isInactive.should.be.true
+          done()
+        } , 1500)
       })
     })
 

@@ -151,3 +151,28 @@ Client
 - function isConnected (queueing, active)
 
 F1, F3, F4
+
+**Issue: Check Client Ready To Send**
+
+Flex-Getter line 148, use similar in all nodes using the client.
+- flex-connector
+- flex-sequencer
+- flex-write
+- getter
+- write
+
+use receive with random message (test)  
+do we have the client  
+is client inactive?
+- flex-connector
+- flex-getter
+- flex-write
+
+
+
+
+inject once - helper not receive anything
+
+Node-RED option to catch "warnings". Maybe catch-Node set to warnings if possible
+
+Read - interval
