@@ -147,7 +147,7 @@ module.exports = function (RED) {
 
       if (modbusClient.isInactive()) {
         verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
-        return
+        return false
       }
 
       const origMsgInput = Object.assign({}, msg) // keep it origin

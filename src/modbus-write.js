@@ -116,6 +116,11 @@ module.exports = function (RED) {
         return
       }
 
+      if (modbusClient.isInactive()) {
+        verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
+        return false
+      }
+
       try {
         const httpMsg = node.setMsgPayloadFromHTTPRequests(origMsgInput)
         const newMsg = node.buildNewMessageObject(node, httpMsg)
