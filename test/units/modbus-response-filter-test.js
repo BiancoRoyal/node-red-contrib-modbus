@@ -25,6 +25,7 @@ helper.init(require.resolve('node-red'))
 
 const testFlows = require('./flows/modbus-response-filter-flows')
 const mBasics = require('../../src/modbus-basics')
+const _ = require('underscore')
 
 describe('Response Filter node Testing', function () {
   before(function (done) {
@@ -97,6 +98,30 @@ describe('Response Filter node Testing', function () {
         h1.on('input', function () {
           done()
         })
+      })
+    })
+
+    it('should be inactive if message not allowed', function (done) {
+      helper.load(testResponseFilterNodes, testFlows.testWorkWithFlexGetterFlow, function () {
+        const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
+        _.isUndefined(modbusClientNode).should.be.false
+
+        modbusClientNode.receive({payload: "test"})
+        let isInactive = modbusClientNode.isInactive()
+        isInactive.should.be.true
+        done()
+      })
+    })
+
+    it('should be inactive if message empty', function (done) {
+      helper.load(testResponseFilterNodes, testFlows.testWorkWithFlexGetterFlow, function () {
+        const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
+        setTimeout(() => {
+          modbusClientNode.messageAllowedStates = ['']
+          let isInactive = modbusClientNode.isInactive()
+          isInactive.should.be.true
+          done()
+        } , 1500)
       })
     })
 
