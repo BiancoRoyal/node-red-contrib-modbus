@@ -15,11 +15,11 @@
   - better exception handling (security issue)
   - testing examples (function)
     - e2e usable examples
-      - change to test helper
+      - change to test helper (--> already changed to Test Helper)
 - nvm install
 - v. 14/16/18 node.js (with Node-RED)
   - 18 set default
-  - check e2e in all version
+  - check e2e in all versions
     - write shell script
       - 14/16/18 
 - version 18
@@ -49,7 +49,7 @@
     - vm critical point (security issues)
 - Modbus Flex-Getter
   - more tests for mentioned issues
-  - 
+  
 - Issue
   - js Modbus unsafe / schlecht gepflegt
 
@@ -121,8 +121,6 @@ Current State (14.11. - v5.23.3):
 - Specification
   - if missing, maybe contribution
 
-Todo 
-
 Flex-Getter
 - mehr Tests
 - für jeden Function Code einen Test
@@ -131,7 +129,7 @@ Flex-Getter
 Flex-Writer
 - mehr Tests
 
-Video für Releases
+## Video für Releases
 - Deutsch/Englisch
   - Vermerk auf andere Sprache
   - Kamera von oben herab
