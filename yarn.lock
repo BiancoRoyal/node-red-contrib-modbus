@@ -1195,10 +1195,26 @@
     "node-addon-api" "^4.3.0"
     "node-gyp-build" "^4.3.0"
 
+"@serialport/bindings-cpp@10.8.0":
+  "integrity" "sha512-OMQNJz5kJblbmZN5UgJXLwi2XNtVLxSKmq5VyWuXQVsUIJD4l9UGHnLPqM5LD9u3HPZgDI5w7iYN7gxkQNZJUw=="
+  "resolved" "https://registry.npmjs.org/@serialport/bindings-cpp/-/bindings-cpp-10.8.0.tgz"
+  "version" "10.8.0"
+  dependencies:
+    "@serialport/bindings-interface" "1.2.2"
+    "@serialport/parser-readline" "^10.2.1"
+    "debug" "^4.3.2"
+    "node-addon-api" "^5.0.0"
+    "node-gyp-build" "^4.3.0"
+
 "@serialport/bindings-interface@^1.2.1", "@serialport/bindings-interface@1.2.1":
   "integrity" "sha512-63Dyqz2gtryRDDckFusOYqLYhR3Hq/M4sEdbF9i/VsvDb6T+tNVgoAKUZ+FMrXXKnCSu+hYbk+MTc0XQANszxw=="
   "resolved" "https://registry.npmjs.org/@serialport/bindings-interface/-/bindings-interface-1.2.1.tgz"
   "version" "1.2.1"
+
+"@serialport/bindings-interface@1.2.2":
+  "integrity" "sha512-CJaUd5bLvtM9c5dmO9rPBHPXTa9R2UwpkJ0wdh9JCYcbrPWsKz+ErvR0hBLeo7NPeiFdjFO4sonRljiw4d2XiA=="
+  "resolved" "https://registry.npmjs.org/@serialport/bindings-interface/-/bindings-interface-1.2.2.tgz"
+  "version" "1.2.2"
 
 "@serialport/list@~10.4.0":
   "integrity" "sha512-ruy2wTYnQbiWm7YCkR2gwZXta3vKQzr6twPJlp1BS+um8mcgtRfpH4pe1QWFeuzoH9c9zork2xXzoYC0xd8Udg=="
@@ -1208,64 +1224,64 @@
     "@serialport/bindings-cpp" "10.7.0"
     "commander" "^9.0.0"
 
-"@serialport/parser-byte-length@10.3.0":
-  "integrity" "sha512-pJ/VoFemzKRRNDHLhFfPThwP40QrGaEnm9TtwL7o2GihEPwzBg3T0bN13ew5TpbbUYZdMpUtpm3CGfl6av9rUQ=="
-  "resolved" "https://registry.npmjs.org/@serialport/parser-byte-length/-/parser-byte-length-10.3.0.tgz"
-  "version" "10.3.0"
+"@serialport/parser-byte-length@10.5.0":
+  "integrity" "sha512-eHhr4lHKboq1OagyaXAqkemQ1XyoqbLQC8XJbvccm95o476TmEdW5d7AElwZV28kWprPW68ZXdGF2VXCkJgS2w=="
+  "resolved" "https://registry.npmjs.org/@serialport/parser-byte-length/-/parser-byte-length-10.5.0.tgz"
+  "version" "10.5.0"
 
-"@serialport/parser-cctalk@10.3.0":
-  "integrity" "sha512-8ujmk8EvVbDPrNF4mM33bWvUYJOZ0wXbY3WCRazHRWvyCdL0VO0DQvW81ZqgoTpiDQZm5r8wQu9rmuemahF6vQ=="
-  "resolved" "https://registry.npmjs.org/@serialport/parser-cctalk/-/parser-cctalk-10.3.0.tgz"
-  "version" "10.3.0"
+"@serialport/parser-cctalk@10.5.0":
+  "integrity" "sha512-Iwsdr03xmCKAiibLSr7b3w6ZUTBNiS+PwbDQXdKU/clutXjuoex83XvsOtYVcNZmwJlVNhAUbkG+FJzWwIa4DA=="
+  "resolved" "https://registry.npmjs.org/@serialport/parser-cctalk/-/parser-cctalk-10.5.0.tgz"
+  "version" "10.5.0"
 
-"@serialport/parser-delimiter@10.3.0":
-  "integrity" "sha512-9E4Vj6s0UbbcCCTclwegHGPYjJhdm9qLCS0lowXQDEQC5naZnbsELemMHs93nD9jHPcyx1B4oXkMnVZLxX5TYw=="
-  "resolved" "https://registry.npmjs.org/@serialport/parser-delimiter/-/parser-delimiter-10.3.0.tgz"
-  "version" "10.3.0"
+"@serialport/parser-delimiter@10.5.0":
+  "integrity" "sha512-/uR/yT3jmrcwnl2FJU/2ySvwgo5+XpksDUR4NF/nwTS5i3CcuKS+FKi/tLzy1k8F+rCx5JzpiK+koqPqOUWArA=="
+  "resolved" "https://registry.npmjs.org/@serialport/parser-delimiter/-/parser-delimiter-10.5.0.tgz"
+  "version" "10.5.0"
 
-"@serialport/parser-inter-byte-timeout@10.3.0":
-  "integrity" "sha512-wKP0QK85NHgvT6BBB1qBfKBBU4pf8kespNXAZBUYmFT+P4n8r8IZE2mqigCD+AiZcfWNQoAizwOsT/Jx/qeVig=="
-  "resolved" "https://registry.npmjs.org/@serialport/parser-inter-byte-timeout/-/parser-inter-byte-timeout-10.3.0.tgz"
-  "version" "10.3.0"
+"@serialport/parser-inter-byte-timeout@10.5.0":
+  "integrity" "sha512-WPvVlSx98HmmUF9jjK6y9mMp3Wnv6JQA0cUxLeZBgS74TibOuYG3fuUxUWGJALgAXotOYMxfXSezJ/vSnQrkhQ=="
+  "resolved" "https://registry.npmjs.org/@serialport/parser-inter-byte-timeout/-/parser-inter-byte-timeout-10.5.0.tgz"
+  "version" "10.5.0"
 
-"@serialport/parser-packet-length@10.3.0":
-  "integrity" "sha512-bj0cWzt8YSQj/E5fRQVYdi4TsfTlZQrXlXrUwjyTsCONv8IPOHzsz+yY0fw5SEMiJtaLyqvPkCHLsttOd/zFsg=="
-  "resolved" "https://registry.npmjs.org/@serialport/parser-packet-length/-/parser-packet-length-10.3.0.tgz"
-  "version" "10.3.0"
+"@serialport/parser-packet-length@10.5.0":
+  "integrity" "sha512-jkpC/8w4/gUBRa2Teyn7URv1D7T//0lGj27/4u9AojpDVXsR6dtdcTG7b7dNirXDlOrSLvvN7aS5/GNaRlEByw=="
+  "resolved" "https://registry.npmjs.org/@serialport/parser-packet-length/-/parser-packet-length-10.5.0.tgz"
+  "version" "10.5.0"
 
-"@serialport/parser-readline@^10.2.1", "@serialport/parser-readline@10.3.0":
-  "integrity" "sha512-ki3ATZ3/RAqnqGROBKE7k+OeZ0DZXZ53GTca4q71OU5RazbbNhTOBQLKLXD3v9QZXCMJdg4hGW/2Y0DuMUqMQg=="
-  "resolved" "https://registry.npmjs.org/@serialport/parser-readline/-/parser-readline-10.3.0.tgz"
-  "version" "10.3.0"
+"@serialport/parser-readline@^10.2.1", "@serialport/parser-readline@10.5.0":
+  "integrity" "sha512-0aXJknodcl94W9zSjvU+sLdXiyEG2rqjQmvBWZCr8wJZjWEtv3RgrnYiWq4i2OTOyC8C/oPK8ZjpBjQptRsoJQ=="
+  "resolved" "https://registry.npmjs.org/@serialport/parser-readline/-/parser-readline-10.5.0.tgz"
+  "version" "10.5.0"
   dependencies:
-    "@serialport/parser-delimiter" "10.3.0"
+    "@serialport/parser-delimiter" "10.5.0"
 
-"@serialport/parser-ready@10.3.0":
-  "integrity" "sha512-1owywJ4p592dJyVrEJZPIh6pUZ3/y/LN6kGTDH2wxdewRUITo/sGvDy0er5i2+dJD3yuowiAz0dOHSdz8tevJA=="
-  "resolved" "https://registry.npmjs.org/@serialport/parser-ready/-/parser-ready-10.3.0.tgz"
-  "version" "10.3.0"
+"@serialport/parser-ready@10.5.0":
+  "integrity" "sha512-QIf65LTvUoxqWWHBpgYOL+soldLIIyD1bwuWelukem2yDZVWwEjR288cLQ558BgYxH4U+jLAQahhqoyN1I7BaA=="
+  "resolved" "https://registry.npmjs.org/@serialport/parser-ready/-/parser-ready-10.5.0.tgz"
+  "version" "10.5.0"
 
-"@serialport/parser-regex@10.3.0":
-  "integrity" "sha512-tIogTs7CvTH+UUFnsvE7i33MSISyTPTGPWlglWYH2/5coipXY503jlaYS1YGe818wWNcSx6YAjMZRdhTWwM39w=="
-  "resolved" "https://registry.npmjs.org/@serialport/parser-regex/-/parser-regex-10.3.0.tgz"
-  "version" "10.3.0"
+"@serialport/parser-regex@10.5.0":
+  "integrity" "sha512-9jnr9+PCxRoLjtGs7uxwsFqvho+rxuJlW6ZWSB7oqfzshEZWXtTJgJRgac/RuLft4hRlrmRz5XU40i3uoL4HKw=="
+  "resolved" "https://registry.npmjs.org/@serialport/parser-regex/-/parser-regex-10.5.0.tgz"
+  "version" "10.5.0"
 
-"@serialport/parser-slip-encoder@10.3.0":
-  "integrity" "sha512-JI0ILF5sylWn8f0MuMzHFBix/iMUTa79/Z95KaPZYnVaEdA7h7hh/o21Jmon/26P3RJwL1SNJCjZ81zfan+LtQ=="
-  "resolved" "https://registry.npmjs.org/@serialport/parser-slip-encoder/-/parser-slip-encoder-10.3.0.tgz"
-  "version" "10.3.0"
+"@serialport/parser-slip-encoder@10.5.0":
+  "integrity" "sha512-wP8m+uXQdkWSa//3n+VvfjLthlabwd9NiG6kegf0fYweLWio8j4pJRL7t9eTh2Lbc7zdxuO0r8ducFzO0m8CQw=="
+  "resolved" "https://registry.npmjs.org/@serialport/parser-slip-encoder/-/parser-slip-encoder-10.5.0.tgz"
+  "version" "10.5.0"
 
-"@serialport/parser-spacepacket@10.3.0":
-  "integrity" "sha512-PDF73ClEPsClD1FEJZHNuBevDKsJCkqy/XD5+S5eA6+tY5D4HLrVgSWsg+3qqB6+dlpwf2CzHe+uO8D3teuKHA=="
-  "resolved" "https://registry.npmjs.org/@serialport/parser-spacepacket/-/parser-spacepacket-10.3.0.tgz"
-  "version" "10.3.0"
+"@serialport/parser-spacepacket@10.5.0":
+  "integrity" "sha512-BEZ/HAEMwOd8xfuJSeI/823IR/jtnThovh7ils90rXD4DPL1ZmrP4abAIEktwe42RobZjIPfA4PaVfyO0Fjfhg=="
+  "resolved" "https://registry.npmjs.org/@serialport/parser-spacepacket/-/parser-spacepacket-10.5.0.tgz"
+  "version" "10.5.0"
 
-"@serialport/stream@10.3.0":
-  "integrity" "sha512-7sooi5fHogYNVEJwxVdg872xO6TuMgQd2E9iRmv+o8pk/1dbBnPkmH6Ka3st1mVE+0KnIJqVlgei+ncSsqXIGw=="
-  "resolved" "https://registry.npmjs.org/@serialport/stream/-/stream-10.3.0.tgz"
-  "version" "10.3.0"
+"@serialport/stream@10.5.0":
+  "integrity" "sha512-gbcUdvq9Kyv2HsnywS7QjnEB28g+6OGB5Z8TLP7X+UPpoMIWoUsoQIq5Kt0ZTgMoWn3JGM2lqwTsSHF+1qhniA=="
+  "resolved" "https://registry.npmjs.org/@serialport/stream/-/stream-10.5.0.tgz"
+  "version" "10.5.0"
   dependencies:
-    "@serialport/bindings-interface" "1.2.1"
+    "@serialport/bindings-interface" "1.2.2"
     "debug" "^4.3.2"
 
 "@sindresorhus/is@^4.0.0":
@@ -6690,6 +6706,11 @@
   "resolved" "https://registry.npmjs.org/node-addon-api/-/node-addon-api-4.3.0.tgz"
   "version" "4.3.0"
 
+"node-addon-api@^5.0.0":
+  "integrity" "sha512-CvkDw2OEnme7ybCykJpVcKH+uAOLV2qLqiyla128dN9TkEWfrYmxG6C2boDe5KcNQqZF3orkqzGgOMvZ/JNekA=="
+  "resolved" "https://registry.npmjs.org/node-addon-api/-/node-addon-api-5.0.0.tgz"
+  "version" "5.0.0"
+
 "node-fetch@^2.6.7":
   "integrity" "sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ=="
   "resolved" "https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.7.tgz"
@@ -8291,24 +8312,24 @@
   dependencies:
     "randombytes" "^2.1.0"
 
-"serialport@^10.0.0", "serialport@~10.4.0":
-  "integrity" "sha512-PszPM5SnFMgSXom60PkKS2A9nMlNbHkuoyRBlzdSWw9rmgOn258+V0dYbWMrETJMM+TJV32vqBzjg5MmmUMwMw=="
-  "resolved" "https://registry.npmjs.org/serialport/-/serialport-10.4.0.tgz"
-  "version" "10.4.0"
+"serialport@^10.0.0", "serialport@^10.5.0":
+  "integrity" "sha512-7OYLDsu5i6bbv3lU81pGy076xe0JwpK6b49G6RjNvGibstUqQkI+I3/X491yBGtf4gaqUdOgoU1/5KZ/XxL4dw=="
+  "resolved" "https://registry.npmjs.org/serialport/-/serialport-10.5.0.tgz"
+  "version" "10.5.0"
   dependencies:
     "@serialport/binding-mock" "10.2.2"
-    "@serialport/bindings-cpp" "10.7.0"
-    "@serialport/parser-byte-length" "10.3.0"
-    "@serialport/parser-cctalk" "10.3.0"
-    "@serialport/parser-delimiter" "10.3.0"
-    "@serialport/parser-inter-byte-timeout" "10.3.0"
-    "@serialport/parser-packet-length" "10.3.0"
-    "@serialport/parser-readline" "10.3.0"
-    "@serialport/parser-ready" "10.3.0"
-    "@serialport/parser-regex" "10.3.0"
-    "@serialport/parser-slip-encoder" "10.3.0"
-    "@serialport/parser-spacepacket" "10.3.0"
-    "@serialport/stream" "10.3.0"
+    "@serialport/bindings-cpp" "10.8.0"
+    "@serialport/parser-byte-length" "10.5.0"
+    "@serialport/parser-cctalk" "10.5.0"
+    "@serialport/parser-delimiter" "10.5.0"
+    "@serialport/parser-inter-byte-timeout" "10.5.0"
+    "@serialport/parser-packet-length" "10.5.0"
+    "@serialport/parser-readline" "10.5.0"
+    "@serialport/parser-ready" "10.5.0"
+    "@serialport/parser-regex" "10.5.0"
+    "@serialport/parser-slip-encoder" "10.5.0"
+    "@serialport/parser-spacepacket" "10.5.0"
+    "@serialport/stream" "10.5.0"
     "debug" "^4.3.3"
 
 "serve-static@1.15.0":
