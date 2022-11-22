@@ -10,15 +10,18 @@
 
 'use strict'
 
-var clientNode = require('../../src/modbus-client.js')
-var serverNode = require('../../src/modbus-server.js')
-var readNode = require('../../src/modbus-read.js')
-var ioConfigNode = require('../../src/modbus-io-config')
+const clientNode = require('../../src/modbus-client.js')
+const serverNode = require('../../src/modbus-server.js')
+const readNode = require('../../src/modbus-read.js')
+const ioConfigNode = require('../../src/modbus-io-config')
 
-var helper = require('node-red-node-test-helper')
+const testReadNodes = [clientNode, serverNode, readNode, ioConfigNode]
+
+const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
-var testFlows = require('./flows/modbus-read-flows')
+const testFlows = require('./flows/modbus-read-flows')
+const mBasics = require('../../src/modbus-basics')
 
 describe('Read node Testing', function () {
   before(function (done) {
@@ -43,8 +46,8 @@ describe('Read node Testing', function () {
 
   describe('Node', function () {
     it('simple Node should be loaded without client config', function (done) {
-      helper.load([readNode], testFlows.testReadWithoutClientFlow, function () {
-        var modbusRead = helper.getNode('8ecaae3e.4b8928')
+      helper.load(testReadNodes, testFlows.testReadWithoutClientFlow, function () {
+        const modbusRead = helper.getNode('8ecaae3e.4b8928')
         modbusRead.should.have.property('name', 'modbusRead')
         done()
       }, function () {
@@ -53,14 +56,14 @@ describe('Read node Testing', function () {
     })
 
     it('simple Node should be loaded', function (done) {
-      helper.load([clientNode, serverNode, readNode], testFlows.testReadWithClientFlow, function () {
-        var modbusServer = helper.getNode('b071294594e37a6c')
+      helper.load(testReadNodes, testFlows.testReadWithClientFlow, function () {
+        const modbusServer = helper.getNode('b071294594e37a6c')
         modbusServer.should.have.property('name', 'modbusServer')
 
-        var modbusClient = helper.getNode('9018f377f076609d')
+        const modbusClient = helper.getNode('9018f377f076609d')
         modbusClient.should.have.property('name', 'modbusClient')
 
-        var modbusRead = helper.getNode('09846c74de630616')
+        const modbusRead = helper.getNode('09846c74de630616')
         modbusRead.should.have.property('name', 'modbusRead')
 
         done()
@@ -70,7 +73,7 @@ describe('Read node Testing', function () {
     })
 
     it('simple Node should send message with empty topic', function (done) {
-      helper.load([clientNode, serverNode, readNode], testFlows.testReadMsgFlow, function () {
+      helper.load(testReadNodes, testFlows.testReadMsgFlow, function () {
         const h1 = helper.getNode('h1')
         let counter = 0
         h1.on('input', function (msg) {
@@ -85,7 +88,7 @@ describe('Read node Testing', function () {
     })
 
     it('simple Node should send message with own topic', function (done) {
-      helper.load([clientNode, serverNode, readNode], testFlows.testReadMsgMyTopicFlow, function () {
+      helper.load(testReadNodes, testFlows.testReadMsgMyTopicFlow, function () {
         const h1 = helper.getNode('h1')
         let counter = 0
         h1.on('input', function (msg) {
@@ -100,7 +103,7 @@ describe('Read node Testing', function () {
     })
 
     it('simple Node should send message with IO', function (done) {
-      helper.load([clientNode, serverNode, ioConfigNode, readNode], testFlows.testReadWithClientIoFlow, function () {
+      helper.load(testReadNodes, testFlows.testReadWithClientIoFlow, function () {
         const h1 = helper.getNode('h1')
         let countMsg = 0
         h1.on('input', function (msg) {
@@ -115,7 +118,7 @@ describe('Read node Testing', function () {
     })
 
     it('simple Node should send message with IO and sending IO-objects as payload', function (done) {
-      helper.load([clientNode, serverNode, ioConfigNode, readNode], testFlows.testReadWithClientIoPayloadFlow, function () {
+      helper.load(testReadNodes, testFlows.testReadWithClientIoPayloadFlow, function () {
         const h1 = helper.getNode('h1')
         let countMsg = 0
         h1.on('input', function (msg) {
@@ -126,6 +129,30 @@ describe('Read node Testing', function () {
         })
       }, function () {
         helper.log('function callback')
+      })
+    })
+
+    it('should be state queueing - ready to send', function (done) {
+      helper.load(testReadNodes, testFlows.testReadMsgFlow, function () {
+        const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('queueing', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.true
+          done()
+        } , 1500)
+      })
+    })
+
+    it('should be not state queueing - not ready to send', function (done) {
+      helper.load(testReadNodes, testFlows.testReadMsgFlow, function () {
+        const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('stopped', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.false
+          done()
+        } , 1500)
       })
     })
   })

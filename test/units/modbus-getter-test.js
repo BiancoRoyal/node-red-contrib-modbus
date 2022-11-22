@@ -23,6 +23,7 @@ helper.init(require.resolve('node-red'))
 const testGetterNodes = [injectNode, ioConfigNode, clientNode, serverNode, getterNode]
 
 const testFlows = require('./flows/modbus-getter-flows')
+const mBasics = require('../../src/modbus-basics')
 
 describe('Getter node Testing', function () {
   before(function (done) {
@@ -161,6 +162,30 @@ describe('Getter node Testing', function () {
         }, 800)
       }, function () {
         helper.log('function callback')
+      })
+    })
+
+    it('should be state queueing - ready to send', function (done) {
+      helper.load(testGetterNodes, testFlows.testGetterFlowWithInjectIo, function () {
+        const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('queueing', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.true
+          done()
+        } , 1500)
+      })
+    })
+
+    it('should be not state queueing - not ready to send', function (done) {
+      helper.load(testGetterNodes, testFlows.testGetterFlowWithInjectIo, function () {
+        const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('stopped', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.false
+          done()
+        } , 1500)
       })
     })
   })

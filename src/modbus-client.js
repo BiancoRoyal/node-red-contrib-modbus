@@ -707,7 +707,7 @@ module.exports = function (RED) {
       if (node.actualServiceState.matches('queueing')) {
         return true
       }
-      verboseWarn('Node not ready to send')
+      verboseWarn('Client not ready to send')
       return false
     }
   }

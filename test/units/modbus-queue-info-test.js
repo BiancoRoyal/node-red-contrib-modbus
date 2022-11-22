@@ -24,6 +24,7 @@ const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
 const testFlows = require('./flows/modbus-queue-info-flows')
+const mBasics = require('../../src/modbus-basics')
 
 
 describe('Queue Info node Testing', function () {
@@ -118,6 +119,30 @@ describe('Queue Info node Testing', function () {
         queueNode.receive({ payload: { resetQueue: true } })
       }, function () {
         helper.log('function callback')
+      })
+    })
+
+    it('should be state queueing - ready to send', function (done) {
+      helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
+        const modbusClientNode = helper.getNode('d4c76ff5.c424b8')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('queueing', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.true
+          done()
+        } , 1500)
+      })
+    })
+
+    it('should be not state queueing - not ready to send', function (done) {
+      helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
+        const modbusClientNode = helper.getNode('d4c76ff5.c424b8')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('stopped', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.false
+          done()
+        } , 1500)
       })
     })
   })

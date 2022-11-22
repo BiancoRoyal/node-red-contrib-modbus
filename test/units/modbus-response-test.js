@@ -19,6 +19,7 @@ const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
 const testFlows = require('./flows/modbus-response-flows')
+const mBasics = require('../../src/modbus-basics')
 
 describe('Response node Testing', function () {
   before(function (done) {
