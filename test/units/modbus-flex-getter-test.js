@@ -80,6 +80,7 @@ describe('Flex Getter node Testing', function () {
     it('simple flow with inject should be loaded', function (done) {
       const flow = Array.from(testFlows.testFlexGetterWithInjectFlow)
       flow[1].serverPort = "50101"
+      flow[5].tcpPort = "50101"
       helper.load(testFlexGetterNodes, flow, function () {
         const modbusGetter = helper.getNode('bc5a61b6.a3972')
         const h1 = helper.getNode('h1')
@@ -98,6 +99,7 @@ describe('Flex Getter node Testing', function () {
     it('simple flow with inject should be loaded and read be done', function (done) {
       const flow = Array.from(testFlows.testFlexGetterWithInjectFlow)
       flow[1].serverPort = "50102"
+      flow[5].tcpPort = "50102"
       helper.load(testFlexGetterNodes, flow, function () {
         const modbusGetter = helper.getNode('bc5a61b6.a3972')
         let counter = 0
@@ -115,6 +117,7 @@ describe('Flex Getter node Testing', function () {
     it('simple flow should be loaded and with receive got input', function (done) {
       const flow = Array.from(testFlows.testFlexGetterFlow)
       flow[1].serverPort = "50103"
+      flow[4].tcpPort = "50103"
       helper.load(testFlexGetterNodes, flow, function () {
         const modbusGetter = helper.getNode('bc5a61b6.a3972')
         const h1 = helper.getNode('h1')
@@ -236,7 +239,11 @@ describe('Flex Getter node Testing', function () {
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      helper.request().post('/modbus-flex-getter/invalid').expect(404).end(done)
+      const flow = Array.from(testFlows.testFlexGetterFlow)
+      flow[1].serverPort = "50111"
+      helper.load(testFlexGetterNodes, flow, function () {
+        helper.request().post('/modbus-flex-getter/invalid').expect(404).end(done)
+      })
     })
   })
 })
