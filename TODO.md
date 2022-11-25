@@ -124,7 +124,8 @@ Current State (14.11. - v5.23.3):
 Flex-Getter
 - mehr Tests
 - für jeden Function Code einen Test
-- Filter Github-Issues: Issues
+- Filter Github-Issues:
+  - "closed" obwohl noch nicht geklärt? (Stale issues)
 
 Flex-Writer
 - mehr Tests
@@ -174,3 +175,5 @@ inject once - helper not receive anything
 Node-RED option to catch "warnings". Maybe catch-Node set to warnings if possible
 
 Read - interval
+
+Ports doppelt?
