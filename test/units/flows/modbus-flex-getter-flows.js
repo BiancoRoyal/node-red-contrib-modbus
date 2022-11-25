@@ -150,7 +150,7 @@ module.exports = {
       "name": "",
       "logEnabled": true,
       "hostname": "127.0.0.1",
-      "serverPort": "7505",
+      "serverPort": "7605",
       "responseDelay": 100,
       "delayUnit": "ms",
       "coilsBufferSize": 10000,
