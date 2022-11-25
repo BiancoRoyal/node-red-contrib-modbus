@@ -13,6 +13,9 @@
           - mention new test in new version in issue-comments
 - milestones for 6.12.
   - better exception handling (security issue)
+    - Systemexceptions abfangen Javascript?
+    - [Errors-V.18](https://nodejs.org/docs/latest-v18.x/api/errors.html)
+    - Welche Exceptions gibt es, was passiert bei den verschiedenen Fehlern und wie kann ich sie einfangen
   - testing examples (function)
     - e2e usable examples
       - change to test helper (--> already changed to Test Helper)
@@ -176,4 +179,6 @@ Node-RED option to catch "warnings". Maybe catch-Node set to warnings if possibl
 
 Read - interval
 
-Ports doppelt?
+Ports doppelt? &#x2611;
+
+Node-RED read with Aqua-Tool Jetbrains?
