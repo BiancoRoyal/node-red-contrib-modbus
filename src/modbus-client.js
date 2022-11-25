@@ -8,8 +8,6 @@
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  */
 
-const coreModbusQueue = require('./core/modbus-queue-core')
-const _ = require('underscore')
 /**
  * Modbus connection node.
  * @module NodeRedModbusClient

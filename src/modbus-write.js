@@ -105,6 +105,13 @@ module.exports = function (RED) {
       }
     }
 
+    function verboseWarn (logMessage) {
+      if (RED.settings.verbose) {
+        node.updateServerinfo()
+        node.warn('Writer -> ' + logMessage + ' ' + node.serverInfo)
+      }
+    }
+
     node.on('input', function (msg) {
       const origMsgInput = Object.assign({}, msg)
 

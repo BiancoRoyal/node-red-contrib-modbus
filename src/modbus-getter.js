@@ -95,6 +95,13 @@ module.exports = function (RED) {
       }
     }
 
+    function verboseWarn (logMessage) {
+      if (RED.settings.verbose) {
+        node.updateServerinfo()
+        node.warn('Getter -> ' + logMessage + ' ' + node.serverInfo)
+      }
+    }
+
     node.on('input', function (msg) {
       if (mbBasics.invalidPayloadIn(msg)) {
         return

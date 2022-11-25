@@ -149,6 +149,14 @@ module.exports = function (RED) {
       }
     }
 
+    function verboseWarn (logMessage) {
+      if (RED.settings.verbose) {
+        node.updateServerinfo()
+        node.warn('Flex-Sequencer -> ' + logMessage + ' ' + node.serverInfo)
+      }
+    }
+
+
     node.on('input', function (msg) {
       if (!modbusClient.client) {
         return
