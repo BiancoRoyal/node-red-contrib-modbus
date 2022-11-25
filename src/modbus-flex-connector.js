@@ -77,11 +77,6 @@ module.exports = function (RED) {
         return
       }
 
-      if (modbusClient.isInactive()) {
-        verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
-        return false
-      }
-
       if (node.showStatusActivities) {
         mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
       }

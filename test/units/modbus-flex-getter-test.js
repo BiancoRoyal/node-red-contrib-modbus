@@ -211,7 +211,6 @@ describe('Flex Getter node Testing', function () {
     })
   })
 
-  //TODO: Check why this test fails when running alone - helper.request empty?
   describe('post', function () {
     it('should fail for invalid node', function (done) {
       helper.request().post('/modbus-flex-getter/invalid').expect(404).end(done)

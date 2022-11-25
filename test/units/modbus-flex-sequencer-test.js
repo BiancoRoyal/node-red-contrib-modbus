@@ -87,7 +87,9 @@ describe('Flex Sequencer node Testing', function () {
     })
 
     it('should be inactive if message empty', function (done) {
-      helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
+      const flow = Array.from(testFlows.testNodeWithServerFlow)
+      flow[2].serverPort = "50201"
+      helper.load(testFlexSequencerNodes, flow, function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         setTimeout(() => {
           modbusClientNode.messageAllowedStates = ['']

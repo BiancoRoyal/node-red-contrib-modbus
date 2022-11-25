@@ -156,7 +156,6 @@ module.exports = function (RED) {
       }
     }
 
-
     node.on('input', function (msg) {
       if (!modbusClient.client) {
         return

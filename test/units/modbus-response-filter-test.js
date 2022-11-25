@@ -114,7 +114,9 @@ describe('Response Filter node Testing', function () {
     })
 
     it('should be inactive if message empty', function (done) {
-      helper.load(testResponseFilterNodes, testFlows.testWorkWithFlexGetterFlow, function () {
+      const flow = Array.from(testFlows.testWorkWithFlexGetterFlow)
+      flow[1].serverPort = "50201"
+      helper.load(testResponseFilterNodes, flow, function () {
         const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
         setTimeout(() => {
           modbusClientNode.messageAllowedStates = ['']
@@ -152,7 +154,7 @@ describe('Response Filter node Testing', function () {
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      helper.request().post('/modbus-reponse-filter/invalid').expect(404).end(done)
+      helper.request().post('/modbus-response-filter/invalid').expect(404).end(done)
     })
   })
 })
