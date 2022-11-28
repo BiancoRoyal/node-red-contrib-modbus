@@ -6,6 +6,7 @@
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  */
 
+const _ = require('underscore')
 /**
  * Modbus flexible Getter node.
  * @module NodeRedModbusFlexGetter
@@ -41,6 +42,8 @@ module.exports = function (RED) {
 
     this.delayOnStart = config.delayOnStart
     this.startDelayTime = parseInt(config.startDelayTime) || 10
+
+    this.isReadyForInput = config.isReadyForInput
 
     const node = this
     node.bufferMessageList = new Map()
@@ -159,6 +162,10 @@ module.exports = function (RED) {
         return false
       }
 
+      if (node.notReadyForInput()) {
+        verboseWarn('Not ready for Input. Set "Delay on start" to Default')
+      }
+
       const origMsgInput = Object.assign({}, msg) // keep it origin
       try {
         const inputMsg = node.prepareMsg(origMsgInput)
@@ -219,6 +226,14 @@ module.exports = function (RED) {
 
     function getTimeInfo () {
       return ' ( ' + node.rate + ' ' + mbBasics.get_timeUnit_name(node.rateUnit) + ' ) '
+    }
+
+    node.isReadyForInput = function () {
+      return modbusClient.isActive()|| node.messageAllowedStates
+    }
+
+    node.notReadyForInput = function () {
+      return !node.isReadyForInput
     }
   }
 
