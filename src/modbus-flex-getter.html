@@ -140,7 +140,8 @@
           <li>FC 3: Read Holding Registers</li>
           <li>FC 4: Read Input Registers</li>
         </ul>
-        </p>
+    </p>
+
      <p>
          <strong>Input parameter for connecting Modbus</strong>
          <ul>
@@ -165,4 +166,16 @@
         msg.payload = { value: msg.payload, 'fc': 3, 'unitid': 1, 'address': 0 , 'quantity': 10 }
         return msg
      </code>
+
+     <p>
+        The status of the Flex-Getter-Node is "active"  if the operating system opens up the dev with no error.
+        Connection issues with your ethernet connection won't affect this status.
+        Warnings and notifications about ethernet connection issues will be displayed in the Debug-window.
+    </p>
+
+    <p>
+        To use the Flex-Getter-Node with "split"- and "join"-nodes, please make sure to enable "Keep Msg Properties" in the nodes' "Optionals" properties.
+    </p>
+
+
 </script>
