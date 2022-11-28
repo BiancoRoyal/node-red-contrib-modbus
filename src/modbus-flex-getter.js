@@ -6,6 +6,7 @@
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  */
 
+const mbBasics = require('./modbus-basics')
 /**
  * Modbus flexible Getter node.
  * @module NodeRedModbusFlexGetter
@@ -26,6 +27,7 @@ module.exports = function (RED) {
     this.name = config.name
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
+    this.showWarnings = config.showWarnings
     this.connection = null
 
     this.useIOFile = config.useIOFile
@@ -38,9 +40,17 @@ module.exports = function (RED) {
     this.internalDebugLog = internalDebugLog
     this.verboseLogging = RED.settings.verbose
 
+    this.delayOnStart = config.delayOnStart
+    this.startDelayTime = parseInt(config.startDelayTime) || 10
+
     const node = this
     node.bufferMessageList = new Map()
-    mbBasics.setNodeStatusTo('waiting', node)
+    let timeoutOccurred = false
+    node.INPUT_TIMEOUT_MILLISECONDS = 1000
+    node.statusText = 'waiting'
+    node.delayTimerReading = false
+    node.intervalTimerIdReading = false
+    setNodeStatusWithTimeTo(node.statusText)
 
     const modbusClient = RED.nodes.getNode(config.server)
     if (!modbusClient) {
@@ -176,6 +186,40 @@ module.exports = function (RED) {
 
     if (!node.showStatusActivities) {
       mbBasics.setNodeDefaultStatus(node)
+    }
+
+    function setNodeStatusWithTimeTo (statusValue) {
+      if (statusValue === 'polling' && timeoutOccurred) {
+        return
+      }
+
+      const statusOptions = mbBasics.setNodeStatusProperties(statusValue, node.showStatusActivities)
+      const statusText = node.statusText
+
+      if (statusValue.search('active') !== -1 || statusValue === 'polling') {
+        const newStatusText = statusOptions.status + getTimeInfo()
+        timeoutOccurred = false
+        if (newStatusText !== statusText) {
+          node.status({
+            fill: statusOptions.fill,
+            shape: statusOptions.shape,
+            text: newStatusText
+          })
+        }
+      } else {
+        const newStatusText = statusOptions.status
+        if (newStatusText !== statusText) {
+          node.status({
+            fill: statusOptions.fill,
+            shape: statusOptions.shape,
+            text: newStatusText
+          })
+        }
+      }
+    }
+
+    function getTimeInfo () {
+      return ' ( ' + node.rate + ' ' + mbBasics.get_timeUnit_name(node.rateUnit) + ' ) '
     }
   }
 

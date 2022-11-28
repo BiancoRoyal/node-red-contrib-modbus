@@ -7,7 +7,8 @@
       "quantity": "Anzahl",
       "pollrate": "Poll-Rate",
       "useIOFile": "Nutze IO-Datei",
-      "ioFile": "IO-Datei"
+      "ioFile": "IO-Datei",
+      "delayOnStart": "Verzögerung beim Start"
     }
   }
 }

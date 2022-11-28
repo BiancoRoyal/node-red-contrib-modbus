@@ -182,3 +182,18 @@ Read - interval
 Ports doppelt? &#x2611;
 
 Node-RED read with Aqua-Tool Jetbrains?
+
+0 als Broadcast
+
+
+Funktionalität delay 
+
+Write/getter
+
+Input on first delay (10 seconds)
+Wie bei Read (Delay on Start)
+isRead
+verboseWarn if not ready (Wait for one delay)
+
+Option do not warn on not ready for input
+verboseWarn output disable/enable warnings
