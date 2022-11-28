@@ -34,6 +34,7 @@
 * **flex-getter-flows:** extracted and updated flows ([db2471b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/db2471bff6e0009b7fa45644a53267e45ad163a4))
 * **flex-getter-test:** organized code ([981a15e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/981a15e302f05c8ea6f1c1d742d9876a5ad37d61))
 * **flex-getter:** added html information for node ([c74dc2d](https://github.com/biancoroyal/node-red-contrib-modbus/commit/c74dc2dba7820707cbe7aebe29b0a3b5d7b95e91))
+* **flex-getter:** further implementing "delayOnStart" ([7666d95](https://github.com/biancoroyal/node-red-contrib-modbus/commit/7666d957ebaf89593d1d004dd8cdae437134e2e1))
 * **flex-getter:** started implementing "showWarnings" + "DelayOnStart" ([d9db52a](https://github.com/biancoroyal/node-red-contrib-modbus/commit/d9db52a5fa4851c71dbc8ea41ff020056bc6ab69))
 * **flex-sequencer-test:** changed var to const ([ffbf9ff](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ffbf9ffae7c10f66ab8bc8224784ffb10249ed02))
 * **flex-sequencer:** added "Ready-To-Read" tests ([43e34d6](https://github.com/biancoroyal/node-red-contrib-modbus/commit/43e34d61e4d3e2fe7b3bd1b60407627955ba6346))

@@ -192,7 +192,7 @@ Write/getter
 
 Input on first delay (10 seconds)
 Wie bei Read (Delay on Start)
-isRead
+isReady
 verboseWarn if not ready (Wait for one delay)
 
 Option do not warn on not ready for input
