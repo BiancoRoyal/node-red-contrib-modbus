@@ -4,7 +4,8 @@
       "showActivities": "Aktivitäten anzeigen",
       "showErrors": "Fehler anzeigen",
       "showWarnings": "Warnungen anzeigen",
-      "delayOnStart": "Verzögerung beim Start"
+      "delayOnStart": "Verzögerung beim Start",
+      "showNotReadyForInput": "Zeige 'Nicht bereit für Eingabe' Hinweis"
     }
   }
 }

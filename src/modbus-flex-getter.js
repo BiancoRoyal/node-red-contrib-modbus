@@ -21,6 +21,8 @@ module.exports = function (RED) {
   const mbIOCore = require('./core/modbus-io-core')
   const internalDebugLog = require('debug')('contribModbus:flex:getter')
 
+  let readyForInput = false;
+
   function ModbusFlexGetter (config) {
     RED.nodes.createNode(this, config)
 
@@ -229,10 +231,12 @@ module.exports = function (RED) {
     }
 
     node.isReadyForInput = function () {
+      readyForInput = true
       return modbusClient.isActive()|| node.messageAllowedStates
     }
 
     node.notReadyForInput = function () {
+      readyForInput = false
       return !node.isReadyForInput
     }
   }

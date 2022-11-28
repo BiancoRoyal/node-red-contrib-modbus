@@ -11,7 +11,8 @@
       "useIOForPayload": "IO's As Payload",
       "emptyMsgOnFail": "Empty msg on fail",
       "keepMsgProperties": "Keep Msg Properties",
-      "delayOnStart": "Delay on start"
+      "delayOnStart": "Delay on start",
+      "showNotReadyForInput": "Show 'Not Ready For Input' Warning"
     },
     "tabs-label": {
       "settings": "Settings",
