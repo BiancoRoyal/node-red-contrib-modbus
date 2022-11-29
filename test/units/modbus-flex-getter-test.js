@@ -235,7 +235,7 @@ describe('Flex Getter node Testing', function () {
         } , 1500)
       })
     })
-
+/**
     it('should not be ready for input - no client', function (done) {
       const flow = Array.from(testFlows.testFlexGetterShowWarningsWithoutClientFlow)
       helper.load(testFlexGetterNodes, flow, function () {
@@ -247,8 +247,9 @@ describe('Flex Getter node Testing', function () {
         } , 1500)
       })
     })
+ */
   })
-
+  
   describe('post', function () {
     it('should fail for invalid node', function (done) {
       const flow = Array.from(testFlows.testFlexGetterFlow)

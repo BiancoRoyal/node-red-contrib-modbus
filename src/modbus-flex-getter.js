@@ -48,9 +48,8 @@ module.exports = function (RED) {
     const node = this
     node.bufferMessageList = new Map()
     node.INPUT_TIMEOUT_MILLISECONDS = 1000
-    node.statusText = 'waiting'
     node.delayTimerReading = false
-    mbBasics.setNodeStatusTo(node.statusText)
+    mbBasics.setNodeStatusTo('waiting', node)
 
     const modbusClient = RED.nodes.getNode(config.server)
     if (!modbusClient) {
@@ -196,8 +195,7 @@ module.exports = function (RED) {
       mbBasics.setNodeDefaultStatus(node)
     }
 
-
-    //TODO: Duplicated Code from read. Needs changing
+    // TODO: Duplicated Code from read. Needs changing
     node.initializeReadingTimer = function () {
       node.resetDelayTimerToRead()
       if (node.delayOnStart) {

@@ -6,6 +6,8 @@
 * added missing verbose warn ([4082952](https://github.com/biancoroyal/node-red-contrib-modbus/commit/4082952624d6336d9463d8793415d786d45a2d9f))
 * adjusted failing tests to tcp ports ([5db0e99](https://github.com/biancoroyal/node-red-contrib-modbus/commit/5db0e996c2b95b27cb245ee335cc53d82bdecb65))
 * fixed failing tests using same ports ([06080d4](https://github.com/biancoroyal/node-red-contrib-modbus/commit/06080d452b0efd71d5f516d14137c24161e984c7))
+* **flex-getter:** corrected isReadyForInput ([806ee4c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/806ee4cb33659744708e80fad7d51e9f7b7c9edc))
+* **flex-getter:** revise DelayOnStart ([c9d246a](https://github.com/biancoroyal/node-red-contrib-modbus/commit/c9d246a1627dbadb7a0bbd3e3b39c9429a10f859))
 * **flex-server:** changed var to const ([d638d53](https://github.com/biancoroyal/node-red-contrib-modbus/commit/d638d5368b3e13700a0fd3aaaa434aae6be8d522))
 * **flex-write:** deleted unused flow ([2f0baee](https://github.com/biancoroyal/node-red-contrib-modbus/commit/2f0baee699a25d0c21eaf95773ab67f4dccd47f6))
 * Node-RED PLUS changed to PLUS for Node-RED ([f726949](https://github.com/biancoroyal/node-red-contrib-modbus/commit/f72694954b2d3d07e65766c00dcb9274ffb1fd66))
