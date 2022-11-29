@@ -350,6 +350,115 @@ module.exports = {
       "reconnectTimeout": "200",
       "parallelUnitIdsAllowed": true
     }
+  ]),
+
+  "testFlexGetterShowWarningsWithoutClientFlow": helperExtensions.cleanFlowPositionData([
+    {
+      "id": "de0ae33276a95fc3",
+      "type": "tab",
+      "label": "Flex Getter Show Warnings Without Client Flow",
+      "disabled": false,
+      "info": "",
+      "env": []
+    },
+    {
+      "id": "445454e4.968564",
+      "type": "modbus-server",
+      "z": "de0ae33276a95fc3",
+      "name": "",
+      "logEnabled": true,
+      "hostname": "127.0.0.1",
+      "serverPort": "8505",
+      "responseDelay": 100,
+      "delayUnit": "ms",
+      "coilsBufferSize": 10000,
+      "holdingBufferSize": 10000,
+      "inputBufferSize": 10000,
+      "discreteBufferSize": 10000,
+      "showErrors": false,
+      "x": 500,
+      "y": 260,
+      "wires": [
+        [],
+        [],
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "id": "bc5a61b6.a3972",
+      "type": "modbus-flex-getter",
+      "z": "de0ae33276a95fc3",
+      "name": "",
+      "showStatusActivities": false,
+      "showErrors": false,
+      "showWarnings": true,
+      "showNotReadyForInput": true,
+      "logIOActivities": false,
+      "server": "",
+      "useIOFile": false,
+      "ioFile": "",
+      "useIOForPayload": false,
+      "emptyMsgOnFail": false,
+      "keepMsgProperties": false,
+      "delayOnStart": false,
+      "startDelayTime": "",
+      "x": 490,
+      "y": 160,
+      "wires": [
+        [
+          "h1"
+        ],
+        []
+      ]
+    },
+    {
+      "id": "h1",
+      "type": "helper",
+      "z": "de0ae33276a95fc3",
+      "name": "",
+      "active": true,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "payload",
+      "targetType": "msg",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 810,
+      "y": 160,
+      "wires": []
+    },
+    {
+      "id": "fda9ed0f.c27278",
+      "type": "inject",
+      "z": "de0ae33276a95fc3",
+      "name": "Flex Inject",
+      "props": [
+        {
+          "p": "payload"
+        },
+        {
+          "p": "topic",
+          "vt": "str"
+        }
+      ],
+      "repeat": "5",
+      "crontab": "",
+      "once": true,
+      "onceDelay": 0.1,
+      "topic": "",
+      "payload": "{\"value\":0,\"fc\":1,\"unitid\":1,\"address\":0,\"quantity\":1}",
+      "payloadType": "json",
+      "x": 250,
+      "y": 160,
+      "wires": [
+        [
+          "bc5a61b6.a3972"
+        ]
+      ]
+    }
   ])
 
 }

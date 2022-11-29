@@ -6,7 +6,6 @@
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  */
 
-const _ = require('underscore')
 /**
  * Modbus flexible Getter node.
  * @module NodeRedModbusFlexGetter
@@ -21,8 +20,6 @@ module.exports = function (RED) {
   const mbIOCore = require('./core/modbus-io-core')
   const internalDebugLog = require('debug')('contribModbus:flex:getter')
 
-  let readyForInput = false;
-
   function ModbusFlexGetter (config) {
     RED.nodes.createNode(this, config)
 
@@ -30,6 +27,7 @@ module.exports = function (RED) {
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
     this.showWarnings = config.showWarnings
+    this.showNotReadyForInput = config.showNotReadyForInput
     this.connection = null
 
     this.useIOFile = config.useIOFile
@@ -164,8 +162,8 @@ module.exports = function (RED) {
         return false
       }
 
-      if (node.notReadyForInput()) {
-        verboseWarn('Not ready for Input. Set "Delay on start" to Default')
+      if (node.notReadyForInput() && node.showNotReadyForInput) {
+        verboseWarn('Not ready for Input. Enable "Delay on start"')
       }
 
       const origMsgInput = Object.assign({}, msg) // keep it origin
@@ -230,14 +228,12 @@ module.exports = function (RED) {
       return ' ( ' + node.rate + ' ' + mbBasics.get_timeUnit_name(node.rateUnit) + ' ) '
     }
 
-    node.isReadyForInput = function () {
-      readyForInput = true
-      return modbusClient.isActive()|| node.messageAllowedStates
+    node.isReadyForInput = function (msg) {
+      return (!mbBasics.invalidPayloadIn(msg) && modbusClient.client && modbusClient.isActive())
     }
 
     node.notReadyForInput = function () {
-      readyForInput = false
-      return !node.isReadyForInput
+      return !node.isReadyForInput('')
     }
   }
 

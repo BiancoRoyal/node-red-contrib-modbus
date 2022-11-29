@@ -1,4 +1,4 @@
-## [5.23.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.23.1...v5.23.2) (2022-11-28)
+## [5.23.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.23.1...v5.23.2) (2022-11-29)
 
 
 ### Bug Fixes
@@ -34,8 +34,12 @@
 * **flex-getter-flows:** extracted and updated flows ([db2471b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/db2471bff6e0009b7fa45644a53267e45ad163a4))
 * **flex-getter-test:** organized code ([981a15e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/981a15e302f05c8ea6f1c1d742d9876a5ad37d61))
 * **flex-getter:** added html information for node ([c74dc2d](https://github.com/biancoroyal/node-red-contrib-modbus/commit/c74dc2dba7820707cbe7aebe29b0a3b5d7b95e91))
+* **flex-getter:** finished implementing delay +  ([9656e8f](https://github.com/biancoroyal/node-red-contrib-modbus/commit/9656e8f6886d2cb941eb1d54f2e7a71c9bebebf8))
+* **flex-getter:** finished implementing delay + warnings ([9782a0d](https://github.com/biancoroyal/node-red-contrib-modbus/commit/9782a0daf180fcaebae0aaf39a4da254cdcd4b8f))
 * **flex-getter:** further implementing "delayOnStart" ([7666d95](https://github.com/biancoroyal/node-red-contrib-modbus/commit/7666d957ebaf89593d1d004dd8cdae437134e2e1))
+* **flex-getter:** implemented readyForInput ([70bff72](https://github.com/biancoroyal/node-red-contrib-modbus/commit/70bff720af0175eee6a4662bb7415d5ce79aac96))
 * **flex-getter:** started implementing "showWarnings" + "DelayOnStart" ([d9db52a](https://github.com/biancoroyal/node-red-contrib-modbus/commit/d9db52a5fa4851c71dbc8ea41ff020056bc6ab69))
+* **flex-getter:** startted implementing showReadyForInput ([55b107c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/55b107c0a281a57fa80de921dd35bd5df759c6bd))
 * **flex-sequencer-test:** changed var to const ([ffbf9ff](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ffbf9ffae7c10f66ab8bc8224784ffb10249ed02))
 * **flex-sequencer:** added "Ready-To-Read" tests ([43e34d6](https://github.com/biancoroyal/node-red-contrib-modbus/commit/43e34d61e4d3e2fe7b3bd1b60407627955ba6346))
 * **flex-sequencer:** extracted and updated flows ([b8c12b9](https://github.com/biancoroyal/node-red-contrib-modbus/commit/b8c12b94e8f3e485348b462d1a0f0cd031a19723))
