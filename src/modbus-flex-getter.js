@@ -47,12 +47,10 @@ module.exports = function (RED) {
 
     const node = this
     node.bufferMessageList = new Map()
-    let timeoutOccurred = false
     node.INPUT_TIMEOUT_MILLISECONDS = 1000
     node.statusText = 'waiting'
     node.delayTimerReading = false
-    node.intervalTimerIdReading = false
-    setNodeStatusWithTimeTo(node.statusText)
+    mbBasics.setNodeStatusTo(node.statusText)
 
     const modbusClient = RED.nodes.getNode(config.server)
     if (!modbusClient) {
@@ -152,18 +150,22 @@ module.exports = function (RED) {
       }
     }
 
+    node.isReadyForInput = function (msg) {
+      return (!mbBasics.invalidPayloadIn(msg) && modbusClient.client && modbusClient.isActive())
+    }
+
+    node.notReadyForInput = function (msg) {
+      return !node.isReadyForInput(msg)
+    }
+
     node.on('input', function (msg) {
-      if (mbBasics.invalidPayloadIn(msg) || !modbusClient.client) {
+      if (node.notReadyForInput(msg) && node.showNotReadyForInput) {
+        if (modbusClient.isInactive()) {
+          verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
+        } else {
+          verboseWarn('Not ready for Input. Enable "Delay on start"')
+        }
         return
-      }
-
-      if (modbusClient.isInactive()) {
-        verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
-        return false
-      }
-
-      if (node.notReadyForInput() && node.showNotReadyForInput) {
-        verboseWarn('Not ready for Input. Enable "Delay on start"')
       }
 
       const origMsgInput = Object.assign({}, msg) // keep it origin
@@ -194,46 +196,24 @@ module.exports = function (RED) {
       mbBasics.setNodeDefaultStatus(node)
     }
 
-    function setNodeStatusWithTimeTo (statusValue) {
-      if (statusValue === 'polling' && timeoutOccurred) {
-        return
-      }
 
-      const statusOptions = mbBasics.setNodeStatusProperties(statusValue, node.showStatusActivities)
-      const statusText = node.statusText
-
-      if (statusValue.search('active') !== -1 || statusValue === 'polling') {
-        const newStatusText = statusOptions.status + getTimeInfo()
-        timeoutOccurred = false
-        if (newStatusText !== statusText) {
-          node.status({
-            fill: statusOptions.fill,
-            shape: statusOptions.shape,
-            text: newStatusText
-          })
-        }
+    //TODO: Duplicated Code from read. Needs changing
+    node.initializeReadingTimer = function () {
+      node.resetDelayTimerToRead()
+      if (node.delayOnStart) {
+        verboseWarn('initializeReadingTimer delay timer node ' + node.id)
+        node.delayTimerReading = setTimeout(node.startIntervalReading, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)
       } else {
-        const newStatusText = statusOptions.status
-        if (newStatusText !== statusText) {
-          node.status({
-            fill: statusOptions.fill,
-            shape: statusOptions.shape,
-            text: newStatusText
-          })
-        }
+        node.startIntervalReading()
       }
     }
 
-    function getTimeInfo () {
-      return ' ( ' + node.rate + ' ' + mbBasics.get_timeUnit_name(node.rateUnit) + ' ) '
-    }
-
-    node.isReadyForInput = function (msg) {
-      return (!mbBasics.invalidPayloadIn(msg) && modbusClient.client && modbusClient.isActive())
-    }
-
-    node.notReadyForInput = function () {
-      return !node.isReadyForInput('')
+    node.resetDelayTimerToRead = function (node) {
+      if (node.delayTimerReading) {
+        verboseWarn('resetDelayTimerToRead node ' + node.id)
+        clearTimeout(node.delayTimerReading)
+      }
+      node.delayTimerReading = null
     }
   }
 

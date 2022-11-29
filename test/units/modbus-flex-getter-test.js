@@ -238,11 +238,10 @@ describe('Flex Getter node Testing', function () {
 
     it('should not be ready for input - no client', function (done) {
       const flow = Array.from(testFlows.testFlexGetterShowWarningsWithoutClientFlow)
-      flow[1].serverPort = "50111"
       helper.load(testFlexGetterNodes, flow, function () {
         const modbusGetterNode = helper.getNode('bc5a61b6.a3972')
         setTimeout(() => {
-          let isReady = modbusGetterNode.isReadyForInput()
+          let isReady = modbusGetterNode.isReadyForInput({ payload: '{"value": 0, "fc": 1, "unitid": 1, "address": 0, "quantity": 1}' })  //TODO: modbusGetterNode.isReadyForInput is not a function
           isReady.should.be.false
           done()
         } , 1500)
