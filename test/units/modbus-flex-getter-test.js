@@ -235,12 +235,25 @@ describe('Flex Getter node Testing', function () {
         } , 1500)
       })
     })
+
+    it('should not be ready for input - no client', function (done) {
+      const flow = Array.from(testFlows.testFlexGetterShowWarningsWithoutClientFlow)
+      flow[1].serverPort = "50111"
+      helper.load(testFlexGetterNodes, flow, function () {
+        const modbusGetterNode = helper.getNode('bc5a61b6.a3972')
+        setTimeout(() => {
+          let isReady = modbusGetterNode.isReadyForInput()
+          isReady.should.be.false
+          done()
+        } , 1500)
+      })
+    })
   })
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
       const flow = Array.from(testFlows.testFlexGetterFlow)
-      flow[1].serverPort = "50111"
+      flow[1].serverPort = "50112"
       helper.load(testFlexGetterNodes, flow, function () {
         helper.request().post('/modbus-flex-getter/invalid').expect(404).end(done)
       })
