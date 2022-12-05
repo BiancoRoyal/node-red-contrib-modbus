@@ -6,6 +6,7 @@
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  */
 
+const mbBasics = require('./modbus-basics')
 /**
  * Modbus flexible Getter node.
  * @module NodeRedModbusFlexGetter
@@ -149,7 +150,7 @@ module.exports = function (RED) {
     }
 
     node.isReadyForInput = function (msg) {
-      return (!mbBasics.invalidPayloadIn(msg) && modbusClient.client && modbusClient.isActive())
+      return (modbusClient.client && modbusClient.isActive())
     }
 
     node.isNotReadyForInput = function (msg) {
@@ -157,11 +158,17 @@ module.exports = function (RED) {
     }
 
     node.on('input', function (msg) {
+      if(!mbBasics.invalidPayloadIn(msg)) {
+        verboseWarn('Invalid message: no payload on msg')
+        return
+      }
+
       if (node.isNotReadyForInput(msg)) {
         if (modbusClient.isInactive()) {
-          verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
+          verboseWarn('Not ready for Input: Client is not active. Please use initial delay on start or ' +
+            'send data more slowly.')
         } else {
-          verboseWarn('Not ready for Input. Enable "Delay on start" for possible fix')
+          verboseWarn('Not ready for Input. Use initial delay on start for possible fix')
         }
         return
       }
