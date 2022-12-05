@@ -6,7 +6,6 @@
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  */
 
-const mbBasics = require('./modbus-basics')
 /**
  * Modbus flexible Getter node.
  * @module NodeRedModbusFlexGetter
@@ -150,7 +149,7 @@ module.exports = function (RED) {
     }
 
     node.isReadyForInput = function (msg) {
-      return (modbusClient.client && modbusClient.isActive())
+      return (modbusClient.client && modbusClient.isActive() && node.delayOccured)
     }
 
     node.isNotReadyForInput = function (msg) {
