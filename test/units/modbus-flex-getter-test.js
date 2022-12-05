@@ -23,6 +23,7 @@ helper.init(require.resolve('node-red'))
 const testFlows = require('./flows/modbus-flex-getter-flows')
 const mBasics = require('../../src/modbus-basics')
 const _ = require('underscore')
+const { Timestamp } = require('bson')
 
 describe('Flex Getter node Testing', function () {
   before(function (done) {
@@ -233,6 +234,37 @@ describe('Flex Getter node Testing', function () {
           isReady.should.be.false
           done()
         } , 1500)
+      })
+    })
+
+    it('should inject 5 messages but only use one to test initial delay', function (done) {
+      const flow = Array.from(testFlows.testFlexGetterWithInjectAndDelayFlow)
+      flow[10].serverPort = "50111"
+      flow[11].tcpPort = "50111"
+      helper.load(testFlexGetterNodes, flow, function () {
+        const getterNode = helper.getNode('823b8c53.ee14b8')
+        const helperNode = helper.getNode('23156c303a59c400')
+        let getterCounter = 0
+        let helperCounter = 0
+        let startingTimestamp = null
+        let endTimestamp = null
+        getterNode.on('input', (msg) => {
+          getterCounter++
+
+          if(getterCounter === 1){
+            startingTimestamp = 0 //Todo: set timestamp
+          }
+        })
+
+        helperNode.on('input', (msg) => {
+          helperCounter++
+          endTimestamp = 0 //Todo: set timestamp
+        })
+        let difBetweenTimestamps = endTimestamp - startingTimestamp
+
+        getterCounter.should.be.eql(5)
+        helperCounter.should.be.eql(1)
+        difBetweenTimestamps.should.be.greaterThanOrEqual(5000)
       })
     })
 /**

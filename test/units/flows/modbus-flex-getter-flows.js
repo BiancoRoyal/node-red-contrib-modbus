@@ -134,6 +134,304 @@ module.exports = {
     }
   ]),
 
+  "testFlexGetterWithInjectAndDelayFlow": helperExtensions.cleanFlowPositionData([
+    {
+      "id": "5b26a23d.a8a06c",
+      "type": "tab",
+      "label": "Test FlexGetter Delay",
+      "disabled": false,
+      "info": ""
+    },
+    {
+      "id": "6293ed5b.e22d6c",
+      "type": "inject",
+      "z": "5b26a23d.a8a06c",
+      "name": "Get flexible!",
+      "props": [
+        {
+          "p": "payload"
+        },
+        {
+          "p": "topic",
+          "vt": "str"
+        }
+      ],
+      "repeat": "",
+      "crontab": "",
+      "once": true,
+      "onceDelay": "0",
+      "topic": "",
+      "payload": "",
+      "payloadType": "date",
+      "x": 161,
+      "y": 110,
+      "wires": [
+        [
+          "391d65b9.85b07a"
+        ]
+      ]
+    },
+    {
+      "id": "391d65b9.85b07a",
+      "type": "function",
+      "z": "5b26a23d.a8a06c",
+      "name": "Read 0-9 on Unit 1 FC3",
+      "func": "msg.payload = { input: msg.payload, 'fc': 3, 'unitid': 1, 'address': 0 , 'quantity': 10 }\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 459,
+      "y": 221,
+      "wires": [
+        [
+          "823b8c53.ee14b8"
+        ]
+      ]
+    },
+    {
+      "id": "823b8c53.ee14b8",
+      "type": "modbus-flex-getter",
+      "z": "5b26a23d.a8a06c",
+      "name": "",
+      "showStatusActivities": false,
+      "showErrors": false,
+      "showWarnings": true,
+      "logIOActivities": false,
+      "server": "352955bb.be6e6a",
+      "useIOFile": false,
+      "ioFile": "",
+      "useIOForPayload": false,
+      "emptyMsgOnFail": true,
+      "keepMsgProperties": false,
+      "delayOnStart": true,
+      "startDelayTime": "5",
+      "x": 705,
+      "y": 221,
+      "wires": [
+        [
+          "23156c303a59c400"
+        ],
+        []
+      ]
+    },
+    {
+      "id": "10467337b76b6677",
+      "type": "inject",
+      "z": "5b26a23d.a8a06c",
+      "name": "Get flexible!",
+      "props": [
+        {
+          "p": "payload"
+        },
+        {
+          "p": "topic",
+          "vt": "str"
+        }
+      ],
+      "repeat": "",
+      "crontab": "",
+      "once": true,
+      "onceDelay": "1",
+      "topic": "",
+      "payload": "",
+      "payloadType": "date",
+      "x": 160,
+      "y": 147,
+      "wires": [
+        [
+          "391d65b9.85b07a"
+        ]
+      ]
+    },
+    {
+      "id": "5fb123c57a372cc8",
+      "type": "inject",
+      "z": "5b26a23d.a8a06c",
+      "name": "Get flexible!",
+      "props": [
+        {
+          "p": "payload"
+        },
+        {
+          "p": "topic",
+          "vt": "str"
+        }
+      ],
+      "repeat": "",
+      "crontab": "",
+      "once": true,
+      "onceDelay": "2",
+      "topic": "",
+      "payload": "",
+      "payloadType": "date",
+      "x": 160,
+      "y": 184,
+      "wires": [
+        [
+          "391d65b9.85b07a"
+        ]
+      ]
+    },
+    {
+      "id": "167addbdbeac2992",
+      "type": "inject",
+      "z": "5b26a23d.a8a06c",
+      "name": "Get flexible!",
+      "props": [
+        {
+          "p": "payload"
+        },
+        {
+          "p": "topic",
+          "vt": "str"
+        }
+      ],
+      "repeat": "",
+      "crontab": "",
+      "once": true,
+      "onceDelay": "3",
+      "topic": "",
+      "payload": "",
+      "payloadType": "date",
+      "x": 159,
+      "y": 221,
+      "wires": [
+        [
+          "391d65b9.85b07a"
+        ]
+      ]
+    },
+    {
+      "id": "31eac50edf56c56f",
+      "type": "inject",
+      "z": "5b26a23d.a8a06c",
+      "name": "Get flexible!",
+      "props": [
+        {
+          "p": "payload"
+        },
+        {
+          "p": "topic",
+          "vt": "str"
+        }
+      ],
+      "repeat": "",
+      "crontab": "",
+      "once": true,
+      "onceDelay": "4",
+      "topic": "",
+      "payload": "",
+      "payloadType": "date",
+      "x": 157,
+      "y": 255,
+      "wires": [
+        [
+          "391d65b9.85b07a"
+        ]
+      ]
+    },
+    {
+      "id": "5171c1556e7b5c1b",
+      "type": "inject",
+      "z": "5b26a23d.a8a06c",
+      "name": "Get flexible!",
+      "props": [
+        {
+          "p": "payload"
+        },
+        {
+          "p": "topic",
+          "vt": "str"
+        }
+      ],
+      "repeat": "",
+      "crontab": "",
+      "once": true,
+      "onceDelay": "5",
+      "topic": "",
+      "payload": "",
+      "payloadType": "date",
+      "x": 158,
+      "y": 289,
+      "wires": [
+        [
+          "391d65b9.85b07a"
+        ]
+      ]
+    },
+    {
+      "id": "23156c303a59c400",
+      "type": "helper",
+      "z": "5b26a23d.a8a06c",
+      "name": "helper 1",
+      "active": true,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "false",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 920,
+      "y": 214,
+      "wires": []
+    },
+    {
+      "id": "7e8ddc253adc0bd6",
+      "type": "modbus-server",
+      "z": "5b26a23d.a8a06c",
+      "name": "",
+      "logEnabled": false,
+      "hostname": "0.0.0.0",
+      "serverPort": "14502",
+      "responseDelay": 100,
+      "delayUnit": "ms",
+      "coilsBufferSize": 10000,
+      "holdingBufferSize": 10000,
+      "inputBufferSize": 10000,
+      "discreteBufferSize": 10000,
+      "showErrors": false,
+      "x": 543,
+      "y": 80,
+      "wires": [
+        [],
+        [],
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "id": "352955bb.be6e6a",
+      "type": "modbus-client",
+      "z": "5b26a23d.a8a06c",
+      "name": "Modbus Server",
+      "clienttype": "tcp",
+      "bufferCommands": true,
+      "stateLogEnabled": false,
+      "queueLogEnabled": false,
+      "failureLogEnabled": false,
+      "tcpHost": "127.0.0.1",
+      "tcpPort": "14502",
+      "tcpType": "DEFAULT",
+      "serialPort": "/dev/ttyUSB",
+      "serialType": "RTU-BUFFERD",
+      "serialBaudrate": "9600",
+      "serialDatabits": "8",
+      "serialStopbits": "1",
+      "serialParity": "none",
+      "serialConnectionDelay": "100",
+      "serialAsciiResponseStartDelimiter": "",
+      "unit_id": "1",
+      "commandDelay": "1",
+      "clientTimeout": "1000",
+      "reconnectOnTimeout": true,
+      "reconnectTimeout": "2000",
+      "parallelUnitIdsAllowed": true
+    }
+  ]),
+
   "testFlexGetterFlow": helperExtensions.cleanFlowPositionData([
     {
       "id": "8c99fb2559058c40",
