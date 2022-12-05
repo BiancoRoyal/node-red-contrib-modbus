@@ -143,7 +143,7 @@ module.exports = function (RED) {
 
     function verboseWarn (logMessage) {
       if (RED.settings.verbose && node.showWarnings) {
-        node.updateServerinfo()
+        // node.updateServerinfo()
         node.warn('Flex-Getter -> ' + logMessage + ' ' + node.serverInfo)
       }
     }

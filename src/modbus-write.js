@@ -107,7 +107,7 @@ module.exports = function (RED) {
 
     function verboseWarn (logMessage) {
       if (RED.settings.verbose) {
-        node.updateServerinfo()
+        // node.updateServerinfo()
         node.warn('Writer -> ' + logMessage + ' ' + node.serverInfo)
       }
     }
