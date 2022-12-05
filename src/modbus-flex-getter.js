@@ -27,7 +27,6 @@ module.exports = function (RED) {
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
     this.showWarnings = config.showWarnings
-    this.showNotReadyForInput = config.showNotReadyForInput
     this.connection = null
 
     this.useIOFile = config.useIOFile
@@ -153,16 +152,16 @@ module.exports = function (RED) {
       return (!mbBasics.invalidPayloadIn(msg) && modbusClient.client && modbusClient.isActive())
     }
 
-    node.notReadyForInput = function (msg) {
+    node.isNotReadyForInput = function (msg) {
       return !node.isReadyForInput(msg)
     }
 
     node.on('input', function (msg) {
-      if (node.notReadyForInput(msg) && node.showNotReadyForInput) {
+      if (node.isNotReadyForInput(msg)) {
         if (modbusClient.isInactive()) {
           verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
         } else {
-          verboseWarn('Not ready for Input. Enable "Delay on start"')
+          verboseWarn('Not ready for Input. Enable "Delay on start" for possible fix')
         }
         return
       }
