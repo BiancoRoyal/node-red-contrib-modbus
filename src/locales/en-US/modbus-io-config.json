@@ -3,6 +3,7 @@
     "label": {
       "showActivities": "Show Activities",
       "showErrors": "Show Errors",
+      "showWarnings": "Show Warnings",
       "file": "IO-File",
       "path": "IO-File",
       "format": "Format",
@@ -10,6 +11,10 @@
       "ansi": "ANSI",
       "buffer": "Buffer",
       "addressOffset": "Offset"
+    },
+    "tabs-label": {
+      "settings": "Settings",
+      "options": "Optionals"
     }
   }
 }

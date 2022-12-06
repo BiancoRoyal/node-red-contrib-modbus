@@ -4,6 +4,7 @@
       "showActivities": "Show Activities",
       "logIOActivities": "Log IO",
       "showErrors": "Show Errors",
+      "showWarnings": "Show Warnings",
       "unitId": "Unit-Id",
       "functioncode": "FC",
       "address": "Address",

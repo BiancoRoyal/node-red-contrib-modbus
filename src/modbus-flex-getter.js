@@ -26,6 +26,7 @@ module.exports = function (RED) {
     this.name = config.name
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
+    this.showWarnings = config.showWarnings
     this.connection = null
 
     this.useIOFile = config.useIOFile
@@ -38,8 +39,14 @@ module.exports = function (RED) {
     this.internalDebugLog = internalDebugLog
     this.verboseLogging = RED.settings.verbose
 
+    this.delayOnStart = config.delayOnStart
+    this.startDelayTime = parseInt(config.startDelayTime) || 10
+
     const node = this
     node.bufferMessageList = new Map()
+    node.INPUT_TIMEOUT_MILLISECONDS = 1000
+    node.delayOccured = false
+    node.delayTimerFlexGetter = null
     mbBasics.setNodeStatusTo('waiting', node)
 
     const modbusClient = RED.nodes.getNode(config.server)
@@ -133,8 +140,59 @@ module.exports = function (RED) {
       }
     }
 
+    function verboseWarn (logMessage) {
+      if (RED.settings.verbose && node.showWarnings) {
+        // node.updateServerinfo()
+        node.warn('Flex-Getter -> ' + logMessage)
+      }
+    }
+
+    node.isReadyForInput = function (msg) {
+      return (modbusClient.client && modbusClient.isActive() && node.delayOccured)
+    }
+
+    node.isNotReadyForInput = function (msg) {
+      return !node.isReadyForInput(msg)
+    }
+
+    node.resetDelayTimerToFlexGetter = function () {
+      if (node.delayTimerFlexGetter) {
+        verboseWarn('resetDelayTimerToFlexGetter node ' + node.id)
+        clearTimeout(node.delayTimerFlexGetter)
+      }
+      node.delayTimerFlexGetter = null
+      node.delayOccured = false
+    }
+
+    node.initializeFlexGetterTimer = function () {
+      node.resetDelayTimerToFlexGetter()
+      if (node.delayOnStart) {
+        verboseWarn('initializeFlexGetterTimer delay timer node ' + node.id)
+        node.delayTimerFlexGetter = setTimeout(() => {
+          node.delayOccured = true
+        }, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)
+      } else {
+        node.delayOccured = true
+      }
+    }
+
+    node.initializeFlexGetterTimer()
+
     node.on('input', function (msg) {
-      if (mbBasics.invalidPayloadIn(msg) || !modbusClient.client) {
+      if (mbBasics.invalidPayloadIn(msg)) {
+        verboseWarn('Invalid message: no payload on msg')
+        return
+      }
+
+      if (node.isNotReadyForInput(msg)) {
+        if (node.delayOccured) {
+          if (modbusClient.isInactive()) {
+            verboseWarn('Not ready for Input: Client is not active. Please use initial delay on start or ' +
+              'send data more slowly.')
+          } else {
+            verboseWarn('Not ready for Input. Use initial delay on start for possible fix')
+          }
+        }
         return
       }
 
@@ -157,6 +215,7 @@ module.exports = function (RED) {
     })
 
     node.on('close', function (done) {
+      node.resetDelayTimerToFlexGetter()
       mbBasics.setNodeStatusTo('closed', node)
       node.bufferMessageList.clear()
       modbusClient.deregisterForModbus(node.id, done)

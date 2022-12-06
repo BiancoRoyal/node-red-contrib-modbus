@@ -18,7 +18,8 @@
       filterValues: {value: true},
       filterInput: {value: true},
       showStatusActivities: {value: false},
-      showErrors: {value: false}
+      showErrors: {value: false},
+      showWarnings: {value: true},
     },
     inputs: 1,
     outputs: 1,
@@ -30,6 +31,24 @@
     },
     oneditprepare: function () {
       let node = this
+
+      let tabs = RED.tabs.create({
+        id: "node-input-modbus-tabs",
+        onchange: function (tab) {
+          $("#node-input-tabs-content").children().hide()
+          $("#" + tab.id).show()
+        }
+      })
+
+      tabs.addTab({
+        id: "modbus-settings-tab",
+        label: this._("modbus-contrib.tabs-label.settings")
+      })
+
+      tabs.addTab({
+        id: "modbus-options-tab",
+        label: this._("modbus-contrib.tabs-label.options")
+      })
 
       let lookupButton = $('#node-filter-lookup-button')
       let lookupField = $('#node-input-filter')
@@ -61,48 +80,61 @@
 
 <script type="text/x-red" data-template-name="modbus-response-filter">
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="node-input-modbus-tabs"></ul>
     </div>
-    <div class="form-row">
-        <label for="node-input-filter"><i class="fa fa-filter"></i> <span data-i18n="modbus-contrib.label.filter"></span></label>
-        <input type="text" id="node-input-filter" style="width:60%;" placeholder="">
-        <a id="node-filter-lookup-button" class="red-ui-button"><i id="node-filter-lookup-button-icon" class="fa fa-search"></i></a>
-    </div>
-    <div class="form-row">
-        <label for="node-input-registers"><i class="fa fa-filter"></i> <span data-i18n="modbus-contrib.label.registers"></span></label>
-        <input type="text" id="node-input-registers" placeholder="0">
-    </div>
-    <div class="form-row">
-        <label for="node-input-ioFile"><i class="icon-file"></i> <span data-i18n="modbus-contrib.label.ioFile"></span></label>
-        <input type="text" id="node-input-ioFile">
-    </div>
-    <hr>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-input-filterResponseBuffer"><i class="fa fa-filter"></i> <span
-        data-i18n="modbus-contrib.label.filterResponseBuffer"></span></label>
-        <input type="checkbox" id="node-input-filterResponseBuffer" style="max-width:30px">
-    </div>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-input-filterValues"><i class="fa fa-filter"></i> <span
-        data-i18n="modbus-contrib.label.filterValues"></span></label>
-        <input type="checkbox" id="node-input-filterValues" style="max-width:30px">
-    </div>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-input-filterInput"><i class="fa fa-filter"></i> <span
-        data-i18n="modbus-contrib.label.filterInput"></span></label>
-        <input type="checkbox" id="node-input-filterInput" style="max-width:30px">
-    </div>
-    <hr>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
-        data-i18n="modbus-contrib.label.showActivities"></span></label>
-        <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
-    </div>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
-        data-i18n="modbus-contrib.label.showErrors"></span></label>
-        <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
+    <div id="node-input-tabs-content" style="min-height: 170px;">
+        <div id="modbus-settings-tab" style="display:none">
+            <div class="form-row">
+                <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+                <input type="text" id="node-input-name" placeholder="Name">
+            </div>
+            <div class="form-row">
+                <label for="node-input-filter"><i class="fa fa-filter"></i> <span data-i18n="modbus-contrib.label.filter"></span></label>
+                <input type="text" id="node-input-filter" style="width:60%;" placeholder="">
+                <a id="node-filter-lookup-button" class="red-ui-button"><i id="node-filter-lookup-button-icon" class="fa fa-search"></i></a>
+            </div>
+            <div class="form-row">
+                <label for="node-input-registers"><i class="fa fa-filter"></i> <span data-i18n="modbus-contrib.label.registers"></span></label>
+                <input type="text" id="node-input-registers" placeholder="0">
+            </div>
+            <div class="form-row">
+                <label for="node-input-ioFile"><i class="icon-file"></i> <span data-i18n="modbus-contrib.label.ioFile"></span></label>
+                <input type="text" id="node-input-ioFile">
+            </div>
+            <hr>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-filterResponseBuffer"><i class="fa fa-filter"></i> <span
+                data-i18n="modbus-contrib.label.filterResponseBuffer"></span></label>
+                <input type="checkbox" id="node-input-filterResponseBuffer" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-filterValues"><i class="fa fa-filter"></i> <span
+                data-i18n="modbus-contrib.label.filterValues"></span></label>
+                <input type="checkbox" id="node-input-filterValues" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-filterInput"><i class="fa fa-filter"></i> <span
+                data-i18n="modbus-contrib.label.filterInput"></span></label>
+                <input type="checkbox" id="node-input-filterInput" style="max-width:30px">
+            </div>
+        </div>
+        <div id="modbus-options-tab" style="display:none">
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.showActivities"></span></label>
+                <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.showErrors"></span></label>
+                <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-showWarnings"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.showWarnings"></span></label>
+                <input type="checkbox" checked id="node-input-showWarnings" style="max-width:30px">
+            </div>
+        </div>
     </div>
 </script>
 

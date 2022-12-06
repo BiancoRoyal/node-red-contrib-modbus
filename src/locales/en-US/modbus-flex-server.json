@@ -3,6 +3,7 @@
     "label": {
       "showActivities": "Show Activities",
       "showErrors": "Show Errors",
+      "showWarnings": "Show Warnings",
       "address": "Bind Address",
       "port": "Port",
       "responseDelay": "Response Delay",

@@ -13,6 +13,7 @@
       name: {value: ''},
       showStatusActivities: {value: false},
       showErrors: {value: false},
+      showWarnings: {value: true},
       server: {type: 'modbus-client', required: true},
       emptyMsgOnFail: {value: false},
       keepMsgProperties: {value: false}
@@ -25,6 +26,28 @@
     paletteLabel: 'Modbus-Flex-Write',
     label: function () {
       return this.name || 'Modbus Flex Write'
+    },
+    oneditprepare: function () {
+      let previous = null
+      let node = this
+
+      let tabs = RED.tabs.create({
+        id: "node-input-modbus-tabs",
+        onchange: function (tab) {
+          $("#node-input-tabs-content").children().hide()
+          $("#" + tab.id).show()
+        }
+      })
+
+      tabs.addTab({
+        id: "modbus-settings-tab",
+        label: this._("modbus-contrib.tabs-label.settings")
+      })
+
+      tabs.addTab({
+        id: "modbus-options-tab",
+        label: this._("modbus-contrib.tabs-label.options")
+      })
     }
   })
 </script>
@@ -32,35 +55,47 @@
 
 <script type="text/x-red" data-template-name="modbus-flex-write">
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="node-input-modbus-tabs"></ul>
     </div>
-    <div class="form-row">
-        <label for="node-input-server"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
-        <input type="text" id="node-input-server">
+    <div id="node-input-tabs-content" style="min-height: 170px;">
+        <div id="modbus-settings-tab" style="display:none">
+            <div class="form-row">
+                <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+                <input type="text" id="node-input-name" placeholder="Name">
+            </div>
+            <div class="form-row">
+                <label for="node-input-server"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
+                <input type="text" id="node-input-server">
+            </div>
+        </div>
+        <div id="modbus-options-tab" style="display:none">
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-emptyMsgOnFail"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.emptyMsgOnFail"></span></label>
+                <input type="checkbox" id="node-input-emptyMsgOnFail" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-keepMsgProperties"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.keepMsgProperties"></span></label>
+                <input type="checkbox" id="node-input-keepMsgProperties" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.showActivities"></span></label>
+                <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.showErrors"></span></label>
+                <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-showWarnings"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.showWarnings"></span></label>
+                <input type="checkbox" checked id="node-input-showWarnings" style="max-width:30px">
+            </div>
+        </div>
     </div>
-    <hr>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-input-emptyMsgOnFail"><i class="fa fa-th"></i> <span
-        data-i18n="modbus-contrib.label.emptyMsgOnFail"></span></label>
-        <input type="checkbox" id="node-input-emptyMsgOnFail" style="max-width:30px">
-    </div>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-input-keepMsgProperties"><i class="fa fa-th"></i> <span
-        data-i18n="modbus-contrib.label.keepMsgProperties"></span></label>
-        <input type="checkbox" id="node-input-keepMsgProperties" style="max-width:30px">
-    </div>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
-        data-i18n="modbus-contrib.label.showActivities"></span></label>
-        <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
-    </div>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
-        data-i18n="modbus-contrib.label.showErrors"></span></label>
-        <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
-    </div>
-
 </script>
 
 

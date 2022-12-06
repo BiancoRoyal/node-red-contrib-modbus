@@ -9,89 +9,20 @@
  **/
 
 'use strict'
+const coreModbusClient = require('../../src/core/modbus-client-core')
 
-var serverNode = require('../../src/modbus-server.js')
-var nodeUnderTest = require('../../src/modbus-client.js')
-var readNode = require('../../src/modbus-read.js')
+const serverNode = require('../../src/modbus-server.js')
+const nodeUnderTest = require('../../src/modbus-client.js')
+const readNode = require('../../src/modbus-read.js')
+const flexGetterNode = require('../../src/modbus-flex-getter.js')
+const mBasics = require('../../src/modbus-basics.js')
 
-var helper = require('node-red-node-test-helper')
+const testModbusClientNodes = [serverNode, nodeUnderTest, readNode, flexGetterNode]
+
+const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
-const simpleReadWithClient = [
-  {
-    id: '445454e4.968564',
-    type: 'modbus-server',
-    name: '',
-    logEnabled: true,
-    hostname: '0.0.0.0',
-    serverPort: '9503',
-    responseDelay: 100,
-    delayUnit: 'ms',
-    coilsBufferSize: 10000,
-    holdingBufferSize: 10000,
-    inputBufferSize: 10000,
-    discreteBufferSize: 10000,
-    showErrors: false,
-    wires: [
-      [],
-      [],
-      []
-    ]
-  },
-  {
-    id: '384fb9f1.e96296',
-    type: 'modbus-read',
-    name: '',
-    topic: '',
-    showStatusActivities: false,
-    showErrors: false,
-    unitid: '',
-    dataType: 'Coil',
-    adr: '0',
-    quantity: '10',
-    rate: '1',
-    rateUnit: 's',
-    delayOnStart: false,
-    startDelayTime: '',
-    server: '466860d5.3f6358',
-    useIOFile: false,
-    ioFile: '',
-    useIOForPayload: false,
-    wires: [
-      [
-        'h1'
-      ],
-      [
-        'h2'
-      ]
-    ]
-  },
-  { id: 'h1', type: 'helper' },
-  { id: 'h2', type: 'helper' },
-  {
-    id: '466860d5.3f6358',
-    type: 'modbus-client',
-    name: 'ModbusClientRead',
-    clienttype: 'tcp',
-    bufferCommands: true,
-    stateLogEnabled: false,
-    tcpHost: '127.0.0.1',
-    tcpPort: '9503',
-    tcpType: 'DEFAULT',
-    serialPort: '/dev/ttyUSB',
-    serialType: 'RTU-BUFFERD',
-    serialBaudrate: '9600',
-    serialDatabits: '8',
-    serialStopbits: '1',
-    serialParity: 'none',
-    serialConnectionDelay: '100',
-    unit_id: '1',
-    commandDelay: '1',
-    clientTimeout: '100',
-    reconnectTimeout: 200,
-    reconnectOnTimeout: true
-  }
-]
+const testFlows = require('./flows/modbus-client-flows')
 
 describe('Client node Testing', function () {
   before(function (done) {
@@ -116,423 +47,71 @@ describe('Client node Testing', function () {
 
   describe('Node', function () {
     it('should be loaded with TCP DEFAULT', function (done) {
-      helper.load([readNode, nodeUnderTest], [{
-        id: '466860d5.3f6358',
-        type: 'modbus-client',
-        name: 'ModbusClientTCPDefault',
-        clienttype: 'tcp',
-        bufferCommands: true,
-        queueLogEnabled: true,
-        stateLogEnabled: true,
-        tcpHost: '127.0.0.1',
-        tcpPort: '502',
-        tcpType: 'DEFAULT',
-        serialPort: '/dev/ttyUSB',
-        serialType: 'RTU-BUFFERD',
-        serialBaudrate: '9600',
-        serialDatabits: '8',
-        serialStopbits: '1',
-        serialParity: 'none',
-        serialConnectionDelay: '50',
-        unit_id: '1',
-        commandDelay: '1',
-        clientTimeout: '100',
-        reconnectTimeout: 200,
-        reconnectOnTimeout: true
-      },
-      {
-        id: '384fb9f1.e96296',
-        type: 'modbus-read',
-        name: '',
-        topic: '',
-        showStatusActivities: false,
-        showErrors: false,
-        unitid: '',
-        dataType: 'Coil',
-        adr: '0',
-        quantity: '10',
-        rate: '4',
-        rateUnit: 's',
-        delayOnStart: false,
-        startDelayTime: '',
-        server: '466860d5.3f6358',
-        useIOFile: false,
-        ioFile: '',
-        useIOForPayload: false,
-        wires: [[], []]
-      }], function () {
-        var modbusReadNode = helper.getNode('466860d5.3f6358')
+      helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
+        const modbusReadNode = helper.getNode('466860d5.3f6358')
         modbusReadNode.should.have.property('name', 'ModbusClientTCPDefault')
         setTimeout(done, 1000)
       })
     })
 
     it('should be loaded with wrong TCP', function (done) {
-      helper.load([readNode, nodeUnderTest], [{
-        id: '466860d5.3f6358',
-        type: 'modbus-client',
-        name: 'ModbusClientTCPDefault',
-        clienttype: 'tcp',
-        bufferCommands: true,
-        queueLogEnabled: true,
-        stateLogEnabled: true,
-        tcpHost: '192.168.99.1',
-        tcpPort: '502',
-        tcpType: 'DEFAULT',
-        serialPort: '/dev/ttyUSB',
-        serialType: 'RTU-BUFFERD',
-        serialBaudrate: '9600',
-        serialDatabits: '8',
-        serialStopbits: '1',
-        serialParity: 'none',
-        serialConnectionDelay: '50',
-        unit_id: '1',
-        commandDelay: '1',
-        clientTimeout: '100',
-        reconnectTimeout: 200,
-        reconnectOnTimeout: true
-      },
-      {
-        id: '384fb9f1.e96296',
-        type: 'modbus-read',
-        name: '',
-        topic: '',
-        showStatusActivities: false,
-        showErrors: false,
-        unitid: '',
-        dataType: 'Coil',
-        adr: '0',
-        quantity: '10',
-        rate: '4',
-        rateUnit: 's',
-        delayOnStart: false,
-        startDelayTime: '',
-        server: '466860d5.3f6358',
-        useIOFile: false,
-        ioFile: '',
-        useIOForPayload: false,
-        wires: [[], []]
-      }], function () {
-        var modbusReadNode = helper.getNode('466860d5.3f6358')
+      helper.load(testModbusClientNodes, testFlows.testShouldBeWrongTcpFlow, function () {
+        const modbusReadNode = helper.getNode('466860d5.3f6358')
         modbusReadNode.should.have.property('name', 'ModbusClientTCPDefault')
         setTimeout(done, 1000)
       })
     })
 
     it('should be loaded with TCP TELNET', function (done) {
-      helper.load([readNode, nodeUnderTest], [{
-        id: '466860d5.3f6359',
-        type: 'modbus-client',
-        name: 'ModbusClientTCPTelnet',
-        clienttype: 'tcp',
-        bufferCommands: true,
-        queueLogEnabled: true,
-        stateLogEnabled: true,
-        tcpHost: '127.0.0.1',
-        tcpPort: '502',
-        tcpType: 'TELNET',
-        serialPort: '/dev/ttyUSB',
-        serialType: 'RTU-BUFFERD',
-        serialBaudrate: '9600',
-        serialDatabits: '8',
-        serialStopbits: '1',
-        serialParity: 'none',
-        serialConnectionDelay: '100',
-        unit_id: '1',
-        commandDelay: '1',
-        clientTimeout: '100',
-        reconnectTimeout: 200,
-        reconnectOnTimeout: true
-      },
-      {
-        id: '384fb9f1.e96296',
-        type: 'modbus-read',
-        name: '',
-        topic: '',
-        showStatusActivities: false,
-        showErrors: false,
-        unitid: '',
-        dataType: 'Coil',
-        adr: '0',
-        quantity: '10',
-        rate: '4',
-        rateUnit: 's',
-        delayOnStart: false,
-        startDelayTime: '',
-        server: '466860d5.3f6359',
-        useIOFile: false,
-        ioFile: '',
-        useIOForPayload: false,
-        wires: [[], []]
-      }], function () {
-        var modbusReadNode = helper.getNode('466860d5.3f6359')
+      helper.load(testModbusClientNodes, testFlows.testShouldBeTcpTelnetFlow, function () {
+        const modbusReadNode = helper.getNode('466860d5.3f6359')
         modbusReadNode.should.have.property('name', 'ModbusClientTCPTelnet')
         setTimeout(done, 1000)
       })
     })
 
     it('should be loaded with TCP RTU-BUFFERED', function (done) {
-      helper.load([readNode, nodeUnderTest], [{
-        id: '466860d5.3f6360',
-        type: 'modbus-client',
-        name: 'ModbusClientTCPRTUB',
-        clienttype: 'tcp',
-        bufferCommands: true,
-        queueLogEnabled: true,
-        stateLogEnabled: true,
-        tcpHost: '127.0.0.1',
-        tcpPort: '502',
-        tcpType: 'RTU-BUFFERED',
-        serialPort: '/dev/ttyUSB',
-        serialType: 'RTU-BUFFERD',
-        serialBaudrate: '9600',
-        serialDatabits: '8',
-        serialStopbits: '1',
-        serialParity: 'none',
-        serialConnectionDelay: '100',
-        unit_id: '1',
-        commandDelay: '1',
-        clientTimeout: '100',
-        reconnectTimeout: 200,
-        reconnectOnTimeout: true
-      },
-      {
-        id: '384fb9f1.e96296',
-        type: 'modbus-read',
-        name: '',
-        topic: '',
-        showStatusActivities: false,
-        showErrors: false,
-        unitid: '',
-        dataType: 'Coil',
-        adr: '0',
-        quantity: '10',
-        rate: '4',
-        rateUnit: 's',
-        delayOnStart: false,
-        startDelayTime: '',
-        server: '466860d5.3f6360',
-        useIOFile: false,
-        ioFile: '',
-        useIOForPayload: false,
-        wires: [[], []]
-      }], function () {
-        var modbusReadNode = helper.getNode('466860d5.3f6360')
+      helper.load(testModbusClientNodes, testFlows.testShouldBeTcpRtuBufferedFlow, function () {
+        const modbusReadNode = helper.getNode('466860d5.3f6360')
         modbusReadNode.should.have.property('name', 'ModbusClientTCPRTUB')
         setTimeout(done, 1000)
       })
     })
 
     it('should be loaded with TCP C701', function (done) {
-      helper.load([readNode, nodeUnderTest], [{
-        id: '466860d5.3f6361',
-        type: 'modbus-client',
-        name: 'ModbusClientTCPC701',
-        clienttype: 'tcp',
-        bufferCommands: true,
-        queueLogEnabled: true,
-        stateLogEnabled: true,
-        tcpHost: '127.0.0.1',
-        tcpPort: '502',
-        tcpType: 'C701',
-        serialPort: '/dev/ttyUSB',
-        serialType: 'RTU-BUFFERD',
-        serialBaudrate: '9600',
-        serialDatabits: '8',
-        serialStopbits: '1',
-        serialParity: 'none',
-        serialConnectionDelay: '100',
-        unit_id: '1',
-        commandDelay: '1',
-        clientTimeout: '100',
-        reconnectTimeout: 200,
-        reconnectOnTimeout: true
-      },
-      {
-        id: '384fb9f1.e96296',
-        type: 'modbus-read',
-        name: '',
-        topic: '',
-        showStatusActivities: false,
-        showErrors: false,
-        unitid: '',
-        dataType: 'Coil',
-        adr: '0',
-        quantity: '10',
-        rate: '4',
-        rateUnit: 's',
-        delayOnStart: false,
-        startDelayTime: '',
-        server: '466860d5.3f6361',
-        useIOFile: false,
-        ioFile: '',
-        useIOForPayload: false,
-        wires: [[], []]
-      }], function () {
-        var modbusReadNode = helper.getNode('466860d5.3f6361')
+      helper.load(testModbusClientNodes, testFlows.testShouldBeTcpC701Flow, function () {
+        const modbusReadNode = helper.getNode('466860d5.3f6361')
         modbusReadNode.should.have.property('name', 'ModbusClientTCPC701')
         setTimeout(done, 1000)
       })
     })
 
     it('should be loaded with Serial RTU-BUFFERED', function (done) {
-      helper.load([readNode, nodeUnderTest], [{
-        id: '466860d5.3f6362',
-        type: 'modbus-client',
-        name: 'ModbusClientSerialRTUB',
-        clienttype: 'simpleser',
-        bufferCommands: true,
-        queueLogEnabled: true,
-        stateLogEnabled: true,
-        tcpHost: '127.0.0.1',
-        tcpPort: '502',
-        tcpType: 'C701',
-        serialPort: '/dev/ttyUSB',
-        serialType: 'RTU-BUFFERD',
-        serialBaudrate: '9600',
-        serialDatabits: '8',
-        serialStopbits: '1',
-        serialParity: 'none',
-        serialConnectionDelay: '100',
-        unit_id: '1',
-        commandDelay: '1',
-        clientTimeout: '100',
-        reconnectTimeout: 200,
-        reconnectOnTimeout: true
-      },
-      {
-        id: '384fb9f1.e96296',
-        type: 'modbus-read',
-        name: '',
-        topic: '',
-        showStatusActivities: false,
-        showErrors: false,
-        unitid: '',
-        dataType: 'Coil',
-        adr: '0',
-        quantity: '10',
-        rate: '4',
-        rateUnit: 's',
-        delayOnStart: false,
-        startDelayTime: '',
-        server: '466860d5.3f6362',
-        useIOFile: false,
-        ioFile: '',
-        useIOForPayload: false,
-        wires: [[], []]
-      }], function () {
-        var modbusReadNode = helper.getNode('466860d5.3f6362')
+      helper.load(testModbusClientNodes, testFlows.testShouldBeSerialRtuBufferedFlow, function () {
+        const modbusReadNode = helper.getNode('466860d5.3f6362')
         modbusReadNode.should.have.property('name', 'ModbusClientSerialRTUB')
         setTimeout(done, 1000)
       })
     })
 
     it('should be loaded with Serial RTU', function (done) {
-      helper.load([readNode, nodeUnderTest], [{
-        id: '466860d5.3f6363',
-        type: 'modbus-client',
-        name: 'ModbusClientSerialRTU',
-        clienttype: 'simpleser',
-        bufferCommands: true,
-        queueLogEnabled: true,
-        stateLogEnabled: true,
-        tcpHost: '127.0.0.1',
-        tcpPort: '502',
-        tcpType: 'C701',
-        serialPort: '/dev/ttyUSB',
-        serialType: 'RTU',
-        serialBaudrate: '9600',
-        serialDatabits: '8',
-        serialStopbits: '1',
-        serialParity: 'none',
-        serialConnectionDelay: '100',
-        unit_id: '1',
-        commandDelay: '1',
-        clientTimeout: '100',
-        reconnectTimeout: 200,
-        reconnectOnTimeout: true
-      },
-      {
-        id: '384fb9f1.e96296',
-        type: 'modbus-read',
-        name: '',
-        topic: '',
-        showStatusActivities: false,
-        showErrors: false,
-        unitid: '',
-        dataType: 'Coil',
-        adr: '0',
-        quantity: '10',
-        rate: '4',
-        rateUnit: 's',
-        delayOnStart: false,
-        startDelayTime: '',
-        server: '466860d5.3f6363',
-        useIOFile: false,
-        ioFile: '',
-        useIOForPayload: false,
-        wires: [[], []]
-      }], function () {
-        var modbusReadNode = helper.getNode('466860d5.3f6363')
+      helper.load(testModbusClientNodes, testFlows.testShouldBeSerialRtuFlow, function () {
+        const modbusReadNode = helper.getNode('466860d5.3f6363')
         modbusReadNode.should.have.property('name', 'ModbusClientSerialRTU')
         setTimeout(done, 1000)
       })
     })
 
     it('should be loaded with Serial ASCII', function (done) {
-      helper.load([readNode, nodeUnderTest], [{
-        id: '466860d5.3f6364',
-        type: 'modbus-client',
-        name: 'ModbusClientSerialASCII',
-        clienttype: 'simpleser',
-        bufferCommands: true,
-        queueLogEnabled: true,
-        stateLogEnabled: true,
-        tcpHost: '127.0.0.1',
-        tcpPort: '502',
-        tcpType: 'C701',
-        serialPort: '/dev/ttyUSB',
-        serialType: 'ASCII',
-        serialBaudrate: '9600',
-        serialDatabits: '8',
-        serialStopbits: '1',
-        serialParity: 'none',
-        serialConnectionDelay: '100',
-        unit_id: '1',
-        commandDelay: '1',
-        clientTimeout: '100',
-        reconnectTimeout: 200,
-        reconnectOnTimeout: true
-      },
-      {
-        id: '384fb9f1.e96296',
-        type: 'modbus-read',
-        name: '',
-        topic: '',
-        showStatusActivities: false,
-        showErrors: false,
-        unitid: '',
-        dataType: 'Coil',
-        adr: '0',
-        quantity: '10',
-        rate: '4',
-        rateUnit: 's',
-        delayOnStart: false,
-        startDelayTime: '',
-        server: '466860d5.3f6364',
-        useIOFile: false,
-        ioFile: '',
-        useIOForPayload: false,
-        wires: [[], []]
-      }], function () {
-        var modbusReadNode = helper.getNode('466860d5.3f6364')
+      helper.load(testModbusClientNodes, testFlows.testShouldBeSerialAsciiFlow, function () {
+        const modbusReadNode = helper.getNode('466860d5.3f6364')
         modbusReadNode.should.have.property('name', 'ModbusClientSerialASCII')
         setTimeout(done, 1000)
       })
     })
 
     it('should work with simple read on local server', function (done) {
-      helper.load([serverNode, readNode, nodeUnderTest], simpleReadWithClient, function () {
+      helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
         const h1 = helper.getNode('h1')
         let counter = 0
         h1.on('input', function (msg) {
@@ -543,11 +122,55 @@ describe('Client node Testing', function () {
         })
       })
     })
+
+    it('should have messageAllowed defaults', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testShouldBeSerialAsciiFlow, function () {
+        const modbusClientNode = helper.getNode('466860d5.3f6364')
+        modbusClientNode.should.have.property('messageAllowedStates', coreModbusClient.messageAllowedStates)
+        setTimeout(done, 1000)
+      })
+    })
+
+    it('should be inactive if message not allowed', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testShouldBeInactiveFlow, function () {
+        const modbusClientNode = helper.getNode('53f6fb33a3f90ead')
+        setTimeout(() => {
+          modbusClientNode.messageAllowedStates = ['']
+          let isInactive = modbusClientNode.isInactive()
+          isInactive.should.be.true
+          done()
+        } , 1500)
+      })
+    })
+
+    it('should be state queueing - ready to send', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
+        const modbusClientNode = helper.getNode('466860d5.3f6358')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('queueing', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.true
+          done()
+        } , 1500)
+      })
+    })
+
+    it('should be not state queueing - not ready to send', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
+        const modbusClientNode = helper.getNode('466860d5.3f6358')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('stopped', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.false
+          done()
+        } , 1500)
+      })
+    })
   })
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      helper.request().post('/modbus-cient/invalid').expect(404).end(done)
+      helper.request().post('/modbus-client/invalid').expect(404).end(done)
     })
   })
 })

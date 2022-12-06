@@ -482,6 +482,6 @@ de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
   return true
 }
 
-de.biancoroyal.modbus.core.client.messagesAllowedStates = ['activated', 'queueing', 'sending', 'empty', 'connected']
+de.biancoroyal.modbus.core.client.messageAllowedStates = ['activated', 'queueing', 'sending', 'empty', 'connected']
 
 module.exports = de.biancoroyal.modbus.core.client

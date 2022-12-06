@@ -8,9 +8,14 @@
       "filterInput": "Filter Input",
       "showActivities": "Show Activities",
       "showErrors": "Show Errors",
+      "showWarnings": "Show Warnings",
       "useIOFile": "Using IO-File",
       "ioFile": "IO-File",
       "useIOForPayload": "IO's As Payload"
+    },
+    "tabs-label": {
+      "settings": "Settings",
+      "options": "Optionals"
     }
   }
 }

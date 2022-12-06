@@ -13,13 +13,16 @@
       name: {value: ''},
       showStatusActivities: {value: false},
       showErrors: {value: false},
+      showWarnings: {value: true},
       logIOActivities: {value: false},
       server: {type: 'modbus-client', required: true},
       useIOFile: {value: false},
       ioFile: {value: '', type: 'modbus-io-config', required: false},
       useIOForPayload: {value: false},
       emptyMsgOnFail: {value: false},
-      keepMsgProperties: {value: false}
+      keepMsgProperties: {value: false},
+      delayOnStart: {value: false},
+      startDelayTime: {value: ''},
     },
     inputs: 1,
     outputs: 2,
@@ -59,6 +62,22 @@
           modbusiofileRow.hide()
         }
       })
+
+      if (this.delayOnStart) {
+        $('#node-delay').show()
+      }
+      else {
+        $('#node-delay').hide()
+        $('#node-input-delayOnStart').prop('checked', false)
+      }
+
+      $('#node-input-delayOnStart').change(function () {
+        if ($(this).is(':checked')) {
+          $('#node-delay').show()
+        } else {
+          $('#node-delay').hide()
+        }
+      })
     }
   })
 </script>
@@ -77,6 +96,15 @@
             <div class="form-row">
                 <label for="node-input-server"><i class="icon-globe"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
                 <input type="text" id="node-input-server">
+            </div>
+            <div class="form-row" id="node-delayonstart">
+                <label for="node-input-delayOnStart" style="width:140px">
+                <i class="fa fa-power-off"></i> <span data-i18n="modbus-contrib.label.delayOnStart"></span></label>
+                <input type="checkbox" id="node-input-delayOnStart" style="width:40px">
+            </div>
+            <div class="form-row" id="node-delay">
+                <label for="node-input-startDelayTime"><i class="fa fa-clock-o"></i> <span data-i18n="modbus-contrib.label.startDelayTime"></span></label>
+                <input type="text" id="node-input-startDelayTime" placeholder="10" style="width:80px">
             </div>
         </div>
         <div id="modbus-options-tab" style="display:none">
@@ -99,6 +127,11 @@
                 <label style="min-width:160px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
                 data-i18n="modbus-contrib.label.showErrors"></span></label>
                 <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-showWarnings"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.showWarnings"></span></label>
+                <input type="checkbox" checked id="node-input-showWarnings" style="max-width:30px">
             </div>
             <hr>
             <div class="form-row">
@@ -140,7 +173,8 @@
           <li>FC 3: Read Holding Registers</li>
           <li>FC 4: Read Input Registers</li>
         </ul>
-        </p>
+    </p>
+
      <p>
          <strong>Input parameter for connecting Modbus</strong>
          <ul>
@@ -165,4 +199,16 @@
         msg.payload = { value: msg.payload, 'fc': 3, 'unitid': 1, 'address': 0 , 'quantity': 10 }
         return msg
      </code>
+
+     <p>
+        The status of the Flex-Getter-Node is "active"  if the operating system opens up the dev with no error.
+        Connection issues with your ethernet connection won't affect this status.
+        Warnings and notifications about ethernet connection issues will be displayed in the Debug-window.
+    </p>
+
+    <p>
+        To use the Flex-Getter-Node with "split"- and "join"-nodes, please make sure to enable "Keep Msg Properties" in the nodes' "Optionals" properties.
+    </p>
+
+
 </script>

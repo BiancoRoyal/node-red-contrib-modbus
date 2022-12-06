@@ -3,6 +3,7 @@
       "label": {
         "showActivities": "Show Activities",
         "showErrors": "Show Errors",
+        "showWarnings": "Show Warnings",
         "logIOActivities": "Log IO",
         "unitId": "Unit-Id",
         "functioncode": "FC",
