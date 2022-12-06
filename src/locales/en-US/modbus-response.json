@@ -3,7 +3,12 @@
     "label": {
       "showActivities": "Show Activities",
       "showErrors": "Show Errors",
+      "showWarnings": "Show Warnings",
       "registerShowMax": "Register Max."
+    },
+    "tabs-label": {
+      "settings": "Settings",
+      "options": "Optionals"
     }
   }
 }

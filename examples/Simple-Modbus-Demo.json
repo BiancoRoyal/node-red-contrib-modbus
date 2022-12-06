@@ -162,6 +162,123 @@
     "wires": []
   },
   {
+    "id": "8ffaec31.e2a02",
+    "type": "debug",
+    "z": "c88a71c9.688818",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "x": 570,
+    "y": 180,
+    "wires": []
+  },
+  {
+    "id": "62981a95.cd186c",
+    "type": "inject",
+    "z": "c88a71c9.688818",
+    "name": "",
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": "",
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "x": 180,
+    "y": 180,
+    "wires": [
+      [
+        "a56de452.aafbd8"
+      ]
+    ]
+  },
+  {
+    "id": "2bc1708e.a8539",
+    "type": "comment",
+    "z": "c88a71c9.688818",
+    "name": "Information",
+    "info": "The Modbus Server and Modbus Flex Server \nworking with all reading and writing nodes.\n\nThese are two different servers \nfrom different libraries.\n\nThe simple examples hold \nthe same functions for both servers.\n",
+    "x": 810,
+    "y": 200,
+    "wires": []
+  },
+  {
+    "id": "a56de452.aafbd8",
+    "type": "modbus-flex-server",
+    "z": "c88a71c9.688818",
+    "name": "",
+    "logEnabled": false,
+    "serverAddress": "0.0.0.0",
+    "serverPort": "15502",
+    "responseDelay": 100,
+    "unitId": 1,
+    "delayUnit": "ms",
+    "coilsBufferSize": 20000,
+    "registersBufferSize": 20000,
+    "minAddress": 0,
+    "splitAddress": 10000,
+    "funcGetCoil": "function getFlexCoil(addr, unitID) {\n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\treturn node.coils.readUInt8(addr * node.bufferFactor) \n\t}  \n}",
+    "funcGetDiscreteInput": "function getFlexDiscreteInput(addr, unitID) {\n\tif (unitID === node.unitId && \n\t\taddr > node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.coils.readUInt8(addr * node.bufferFactor) \n\t}  \n}",
+    "funcGetInputRegister": "function getFlexInputRegister(addr, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}",
+    "funcGetHoldingRegister": "function getFlexHoldingRegsiter(addr, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr > node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}",
+    "funcSetCoil": "function setFlexCoil(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\tnode.coils.writeUInt8(value, addr * node.bufferFactor)  \n\t} \n}",
+    "funcSetRegister": "function setFlexRegister(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\tnode.registers.writeUInt16BE(value, addr * node.bufferFactor)  \n\t} \n}",
+    "showErrors": true,
+    "x": 380,
+    "y": 180,
+    "wires": [
+      [
+        "8ffaec31.e2a02"
+      ],
+      [
+        "8ffaec31.e2a02"
+      ],
+      [
+        "8ffaec31.e2a02"
+      ],
+      [
+        "8ffaec31.e2a02"
+      ],
+      [
+        "afb69812.fc4d68"
+      ]
+    ]
+  },
+  {
+    "id": "afb69812.fc4d68",
+    "type": "debug",
+    "z": "c88a71c9.688818",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "x": 570,
+    "y": 220,
+    "wires": []
+  },
+  {
+    "id": "2534b73c.f4a13",
+    "type": "debug",
+    "z": "c88a71c9.688818",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "x": 590,
+    "y": 120,
+    "wires": []
+  },
+  {
     "id": "f25bd8a6.734138",
     "type": "debug",
     "z": "5b26a23d.a8a06c",
@@ -210,6 +327,7 @@
     "showStatusActivities": false,
     "logIOActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "unitid": "",
     "dataType": "HoldingRegister",
     "adr": "0",
@@ -222,6 +340,7 @@
     "useIOFile": false,
     "ioFile": "",
     "useIOForPayload": false,
+    "emptyMsgOnFail": false,
     "x": 150,
     "y": 100,
     "wires": [
@@ -398,12 +517,16 @@
     "name": "",
     "showStatusActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "logIOActivities": false,
     "server": "352955bb.be6e6a",
     "useIOFile": false,
     "ioFile": "",
     "useIOForPayload": false,
     "emptyMsgOnFail": true,
+    "keepMsgProperties": false,
+    "delayOnStart": false,
+    "startDelayTime": "",
     "x": 740,
     "y": 240,
     "wires": [
@@ -513,6 +636,7 @@
     "name": "Half-Automatic Getter FC4",
     "showStatusActivities": true,
     "showErrors": false,
+    "showWarnings": true,
     "logIOActivities": false,
     "unitid": "",
     "dataType": "InputRegister",
@@ -523,6 +647,7 @@
     "ioFile": "",
     "useIOForPayload": false,
     "emptyMsgOnFail": true,
+    "keepMsgProperties": false,
     "x": 440,
     "y": 340,
     "wires": [
@@ -541,6 +666,7 @@
     "name": "Manual Getter FC3",
     "showStatusActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "logIOActivities": false,
     "unitid": "",
     "dataType": "HoldingRegister",
@@ -551,6 +677,7 @@
     "ioFile": "",
     "useIOForPayload": false,
     "emptyMsgOnFail": true,
+    "keepMsgProperties": false,
     "x": 330,
     "y": 460,
     "wires": [
@@ -569,6 +696,7 @@
     "name": "Manual Getter FC1",
     "showStatusActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "logIOActivities": false,
     "unitid": "",
     "dataType": "Coil",
@@ -579,6 +707,7 @@
     "ioFile": "",
     "useIOForPayload": false,
     "emptyMsgOnFail": true,
+    "keepMsgProperties": false,
     "x": 330,
     "y": 600,
     "wires": [
@@ -597,6 +726,7 @@
     "name": "Manual Getter FC2",
     "showStatusActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "logIOActivities": false,
     "unitid": "",
     "dataType": "Input",
@@ -607,6 +737,7 @@
     "ioFile": "",
     "useIOForPayload": false,
     "emptyMsgOnFail": true,
+    "keepMsgProperties": false,
     "x": 330,
     "y": 720,
     "wires": [
@@ -619,14 +750,199 @@
     ]
   },
   {
+    "id": "399af77.a109088",
+    "type": "debug",
+    "z": "5b26a23d.a8a06c",
+    "name": "",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "x": 990,
+    "y": 220,
+    "wires": []
+  },
+  {
+    "id": "f12542b3.505cf",
+    "type": "debug",
+    "z": "5b26a23d.a8a06c",
+    "name": "",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "x": 970,
+    "y": 260,
+    "wires": []
+  },
+  {
+    "id": "4118dde8.6df054",
+    "type": "debug",
+    "z": "5b26a23d.a8a06c",
+    "name": "",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "x": 430,
+    "y": 100,
+    "wires": []
+  },
+  {
+    "id": "a865fbaf.367808",
+    "type": "comment",
+    "z": "5b26a23d.a8a06c",
+    "name": "Modbus Server",
+    "info": "These nodes are to write to the Modbus Server.",
+    "x": 160,
+    "y": 40,
+    "wires": []
+  },
+  {
+    "id": "cfad602f.fa69c8",
+    "type": "catch",
+    "z": "5b26a23d.a8a06c",
+    "name": "",
+    "scope": null,
+    "uncaught": false,
+    "x": 720,
+    "y": 80,
+    "wires": [
+      [
+        "e0901843.1a8d4",
+        "9bd0a01b.f370a8"
+      ]
+    ]
+  },
+  {
+    "id": "e0901843.1a8d4",
+    "type": "debug",
+    "z": "5b26a23d.a8a06c",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "x": 910,
+    "y": 140,
+    "wires": []
+  },
+  {
+    "id": "387fc05e.ba7838",
+    "type": "modbus-queue-info",
+    "z": "5b26a23d.a8a06c",
+    "name": "Server Client Queue",
+    "topic": "",
+    "unitid": "1",
+    "queueReadIntervalTime": "1000",
+    "lowLowLevel": 25,
+    "lowLevel": 75,
+    "highLevel": 150,
+    "highHighLevel": 300,
+    "server": "352955bb.be6e6a",
+    "errorOnHighLevel": false,
+    "showStatusActivities": true,
+    "updateOnAllQueueChanges": false,
+    "updateOnAllUnitQueues": false,
+    "x": 1400,
+    "y": 80,
+    "wires": [
+      [
+        "6e288031.0f3bb"
+      ]
+    ]
+  },
+  {
+    "id": "c3fc62a4.0522f8",
+    "type": "function",
+    "z": "5b26a23d.a8a06c",
+    "name": "reset on High",
+    "func": "if(\"high level reached\" === msg.state) {\n    msg.resetQueue = true;\n}\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 1150,
+    "y": 60,
+    "wires": [
+      [
+        "387fc05e.ba7838"
+      ]
+    ]
+  },
+  {
+    "id": "dd790617.d9a738",
+    "type": "function",
+    "z": "5b26a23d.a8a06c",
+    "name": "reset on HighHigh",
+    "func": "if(\"high high level reached\" === msg.state) {\n    msg.resetQueue = true;\n}\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 1170,
+    "y": 100,
+    "wires": [
+      [
+        "387fc05e.ba7838"
+      ]
+    ]
+  },
+  {
+    "id": "6e288031.0f3bb",
+    "type": "debug",
+    "z": "5b26a23d.a8a06c",
+    "name": "",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "x": 1590,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "9bd0a01b.f370a8",
+    "type": "switch",
+    "z": "5b26a23d.a8a06c",
+    "name": "Modbus Server",
+    "property": "modbusClientName",
+    "propertyType": "msg",
+    "rules": [
+      {
+        "t": "eq",
+        "v": "Modbus Server",
+        "vt": "str"
+      }
+    ],
+    "checkall": "true",
+    "outputs": 1,
+    "x": 920,
+    "y": 80,
+    "wires": [
+      [
+        "c3fc62a4.0522f8",
+        "dd790617.d9a738"
+      ]
+    ]
+  },
+  {
     "id": "101179f2.207b46",
     "type": "modbus-flex-write",
     "z": "7d09e02b.55be3",
     "name": "",
     "showStatusActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "server": "352955bb.be6e6a",
     "emptyMsgOnFail": true,
+    "keepMsgProperties": false,
     "x": 730,
     "y": 300,
     "wires": [
@@ -646,8 +962,10 @@
     "name": "",
     "showStatusActivities": false,
     "showErrors": true,
+    "showWarnings": false,
     "server": "352955bb.be6e6a",
     "emptyMsgOnFail": true,
+    "keepMsgProperties": false,
     "x": 730,
     "y": 140,
     "wires": [
@@ -961,71 +1279,6 @@
     "wires": []
   },
   {
-    "id": "399af77.a109088",
-    "type": "debug",
-    "z": "5b26a23d.a8a06c",
-    "name": "",
-    "active": false,
-    "tosidebar": true,
-    "console": false,
-    "tostatus": false,
-    "complete": "payload",
-    "targetType": "msg",
-    "x": 990,
-    "y": 220,
-    "wires": []
-  },
-  {
-    "id": "f12542b3.505cf",
-    "type": "debug",
-    "z": "5b26a23d.a8a06c",
-    "name": "",
-    "active": false,
-    "tosidebar": true,
-    "console": false,
-    "tostatus": false,
-    "complete": "true",
-    "targetType": "full",
-    "x": 970,
-    "y": 260,
-    "wires": []
-  },
-  {
-    "id": "8ffaec31.e2a02",
-    "type": "debug",
-    "z": "c88a71c9.688818",
-    "name": "",
-    "active": true,
-    "tosidebar": true,
-    "console": false,
-    "tostatus": false,
-    "complete": "true",
-    "targetType": "full",
-    "x": 570,
-    "y": 180,
-    "wires": []
-  },
-  {
-    "id": "62981a95.cd186c",
-    "type": "inject",
-    "z": "c88a71c9.688818",
-    "name": "",
-    "repeat": "",
-    "crontab": "",
-    "once": false,
-    "onceDelay": "",
-    "topic": "",
-    "payload": "",
-    "payloadType": "date",
-    "x": 180,
-    "y": 180,
-    "wires": [
-      [
-        "a56de452.aafbd8"
-      ]
-    ]
-  },
-  {
     "id": "eb74a645.8cc998",
     "type": "comment",
     "z": "7d09e02b.55be3",
@@ -1036,33 +1289,20 @@
     "wires": []
   },
   {
-    "id": "4118dde8.6df054",
-    "type": "debug",
-    "z": "5b26a23d.a8a06c",
-    "name": "",
-    "active": false,
-    "tosidebar": true,
-    "console": false,
-    "tostatus": false,
-    "complete": "true",
-    "targetType": "full",
-    "x": 430,
-    "y": 100,
-    "wires": []
-  },
-  {
     "id": "3532c602.c961ba",
     "type": "modbus-write",
     "z": "7d09e02b.55be3",
     "name": "Write Reset FC5",
     "showStatusActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "unitid": "",
     "dataType": "Coil",
     "adr": "64",
     "quantity": "1",
     "server": "352955bb.be6e6a",
     "emptyMsgOnFail": true,
+    "keepMsgProperties": false,
     "x": 720,
     "y": 420,
     "wires": [
@@ -1140,16 +1380,6 @@
     ]
   },
   {
-    "id": "a865fbaf.367808",
-    "type": "comment",
-    "z": "5b26a23d.a8a06c",
-    "name": "Modbus Server",
-    "info": "These nodes are to write to the Modbus Server.",
-    "x": 160,
-    "y": 40,
-    "wires": []
-  },
-  {
     "id": "a4b0567c.c9ca18",
     "type": "debug",
     "z": "f819cc75.23b27",
@@ -1195,6 +1425,7 @@
     "showStatusActivities": true,
     "logIOActivities": false,
     "showErrors": true,
+    "showWarnings": true,
     "unitid": "",
     "dataType": "HoldingRegister",
     "adr": "0",
@@ -1207,6 +1438,7 @@
     "useIOFile": false,
     "ioFile": "",
     "useIOForPayload": false,
+    "emptyMsgOnFail": false,
     "x": 190,
     "y": 120,
     "wires": [
@@ -1383,12 +1615,16 @@
     "name": "",
     "showStatusActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "logIOActivities": false,
     "server": "a9050e37.a6f618",
     "useIOFile": false,
     "ioFile": "",
     "useIOForPayload": false,
     "emptyMsgOnFail": true,
+    "keepMsgProperties": false,
+    "delayOnStart": false,
+    "startDelayTime": "",
     "x": 760,
     "y": 260,
     "wires": [
@@ -1495,6 +1731,8 @@
     "name": "Half-Automatic Getter FC4",
     "showStatusActivities": false,
     "showErrors": false,
+    "showWarnings": true,
+    "logIOActivities": false,
     "unitid": "",
     "dataType": "InputRegister",
     "adr": "0",
@@ -1503,6 +1741,8 @@
     "useIOFile": false,
     "ioFile": "",
     "useIOForPayload": false,
+    "emptyMsgOnFail": false,
+    "keepMsgProperties": false,
     "x": 480,
     "y": 360,
     "wires": [
@@ -1521,6 +1761,7 @@
     "name": "Manual Getter FC3",
     "showStatusActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "logIOActivities": false,
     "unitid": "",
     "dataType": "HoldingRegister",
@@ -1531,6 +1772,7 @@
     "ioFile": "",
     "useIOForPayload": false,
     "emptyMsgOnFail": true,
+    "keepMsgProperties": false,
     "x": 350,
     "y": 480,
     "wires": [
@@ -1549,6 +1791,7 @@
     "name": "Manual Getter FC1",
     "showStatusActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "logIOActivities": false,
     "unitid": "",
     "dataType": "Coil",
@@ -1559,6 +1802,7 @@
     "ioFile": "",
     "useIOForPayload": false,
     "emptyMsgOnFail": true,
+    "keepMsgProperties": false,
     "x": 350,
     "y": 620,
     "wires": [
@@ -1577,6 +1821,7 @@
     "name": "Manual Getter FC2",
     "showStatusActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "logIOActivities": false,
     "unitid": "",
     "dataType": "Input",
@@ -1587,6 +1832,7 @@
     "ioFile": "",
     "useIOForPayload": false,
     "emptyMsgOnFail": true,
+    "keepMsgProperties": false,
     "x": 350,
     "y": 740,
     "wires": [
@@ -1648,14 +1894,137 @@
     "wires": []
   },
   {
+    "id": "7c7d3fc.7ad87c",
+    "type": "catch",
+    "z": "f819cc75.23b27",
+    "name": "",
+    "scope": null,
+    "x": 780,
+    "y": 100,
+    "wires": [
+      [
+        "5e2abeb6.a4fe7",
+        "8391d6ea.0f47f8"
+      ]
+    ]
+  },
+  {
+    "id": "5e2abeb6.a4fe7",
+    "type": "debug",
+    "z": "f819cc75.23b27",
+    "name": "",
+    "active": true,
+    "console": "false",
+    "complete": "true",
+    "x": 990,
+    "y": 60,
+    "wires": []
+  },
+  {
+    "id": "5691f88a.317158",
+    "type": "modbus-queue-info",
+    "z": "f819cc75.23b27",
+    "name": "Flex Server Client Queue",
+    "topic": "",
+    "unitid": "1",
+    "queueReadIntervalTime": "1000",
+    "lowLowLevel": 25,
+    "lowLevel": 75,
+    "highLevel": 150,
+    "highHighLevel": 300,
+    "server": "a9050e37.a6f618",
+    "errorOnHighLevel": false,
+    "showStatusActivities": false,
+    "updateOnAllQueueChanges": false,
+    "updateOnAllUnitQueues": false,
+    "x": 1490,
+    "y": 120,
+    "wires": [
+      [
+        "60d284e5.b74a04"
+      ]
+    ]
+  },
+  {
+    "id": "53ad109f.dbb948",
+    "type": "function",
+    "z": "f819cc75.23b27",
+    "name": "reset on High",
+    "func": "if(\"high level reached\" === msg.state) {\n    msg.resetQueue = true;\n}\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 1230,
+    "y": 100,
+    "wires": [
+      [
+        "5691f88a.317158"
+      ]
+    ]
+  },
+  {
+    "id": "62c07aee.525b04",
+    "type": "function",
+    "z": "f819cc75.23b27",
+    "name": "reset on HighHigh",
+    "func": "if(\"high high level reached\" === msg.state) {\n    msg.resetQueue = true;\n}\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 1250,
+    "y": 140,
+    "wires": [
+      [
+        "5691f88a.317158"
+      ]
+    ]
+  },
+  {
+    "id": "60d284e5.b74a04",
+    "type": "debug",
+    "z": "f819cc75.23b27",
+    "name": "",
+    "active": false,
+    "console": "false",
+    "complete": "true",
+    "x": 1670,
+    "y": 120,
+    "wires": []
+  },
+  {
+    "id": "8391d6ea.0f47f8",
+    "type": "switch",
+    "z": "f819cc75.23b27",
+    "name": "Modbus Flex Server",
+    "property": "modbusClientName",
+    "propertyType": "msg",
+    "rules": [
+      {
+        "t": "eq",
+        "v": "Modbus Flex Server",
+        "vt": "str"
+      }
+    ],
+    "checkall": "true",
+    "outputs": 1,
+    "x": 1020,
+    "y": 120,
+    "wires": [
+      [
+        "62c07aee.525b04",
+        "53ad109f.dbb948"
+      ]
+    ]
+  },
+  {
     "id": "2c0aa5f.9ef9d5a",
     "type": "modbus-flex-write",
     "z": "3f96c5b3.72cd02",
     "name": "",
     "showStatusActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "server": "a9050e37.a6f618",
     "emptyMsgOnFail": true,
+    "keepMsgProperties": false,
     "x": 770,
     "y": 300,
     "wires": [
@@ -1675,8 +2044,10 @@
     "name": "",
     "showStatusActivities": false,
     "showErrors": true,
+    "showWarnings": true,
     "server": "a9050e37.a6f618",
     "emptyMsgOnFail": true,
+    "keepMsgProperties": false,
     "x": 770,
     "y": 140,
     "wires": [
@@ -2006,12 +2377,14 @@
     "name": "Write Reset FC5",
     "showStatusActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "unitid": "",
     "dataType": "Coil",
     "adr": "64",
     "quantity": "1",
     "server": "a9050e37.a6f618",
     "emptyMsgOnFail": true,
+    "keepMsgProperties": false,
     "x": 760,
     "y": 420,
     "wires": [
@@ -2089,337 +2462,6 @@
     ]
   },
   {
-    "id": "2bc1708e.a8539",
-    "type": "comment",
-    "z": "c88a71c9.688818",
-    "name": "Information",
-    "info": "The Modbus Server and Modbus Flex Server \nworking with all reading and writing nodes.\n\nThese are two different servers \nfrom different libraries.\n\nThe simple examples hold \nthe same functions for both servers.\n",
-    "x": 810,
-    "y": 200,
-    "wires": []
-  },
-  {
-    "id": "cfad602f.fa69c8",
-    "type": "catch",
-    "z": "5b26a23d.a8a06c",
-    "name": "",
-    "scope": null,
-    "uncaught": false,
-    "x": 720,
-    "y": 80,
-    "wires": [
-      [
-        "e0901843.1a8d4",
-        "9bd0a01b.f370a8"
-      ]
-    ]
-  },
-  {
-    "id": "e0901843.1a8d4",
-    "type": "debug",
-    "z": "5b26a23d.a8a06c",
-    "name": "",
-    "active": true,
-    "tosidebar": true,
-    "console": false,
-    "tostatus": false,
-    "complete": "true",
-    "targetType": "full",
-    "x": 910,
-    "y": 140,
-    "wires": []
-  },
-  {
-    "id": "387fc05e.ba7838",
-    "type": "modbus-queue-info",
-    "z": "5b26a23d.a8a06c",
-    "name": "Server Client Queue",
-    "topic": "",
-    "unitid": "1",
-    "queueReadIntervalTime": "1000",
-    "lowLowLevel": 25,
-    "lowLevel": 75,
-    "highLevel": 150,
-    "highHighLevel": 300,
-    "server": "352955bb.be6e6a",
-    "errorOnHighLevel": false,
-    "showStatusActivities": true,
-    "updateOnAllQueueChanges": false,
-    "updateOnAllUnitQueues": false,
-    "x": 1400,
-    "y": 80,
-    "wires": [
-      [
-        "6e288031.0f3bb"
-      ]
-    ]
-  },
-  {
-    "id": "c3fc62a4.0522f8",
-    "type": "function",
-    "z": "5b26a23d.a8a06c",
-    "name": "reset on High",
-    "func": "if(\"high level reached\" === msg.state) {\n    msg.resetQueue = true;\n}\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "x": 1150,
-    "y": 60,
-    "wires": [
-      [
-        "387fc05e.ba7838"
-      ]
-    ]
-  },
-  {
-    "id": "dd790617.d9a738",
-    "type": "function",
-    "z": "5b26a23d.a8a06c",
-    "name": "reset on HighHigh",
-    "func": "if(\"high high level reached\" === msg.state) {\n    msg.resetQueue = true;\n}\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "x": 1170,
-    "y": 100,
-    "wires": [
-      [
-        "387fc05e.ba7838"
-      ]
-    ]
-  },
-  {
-    "id": "6e288031.0f3bb",
-    "type": "debug",
-    "z": "5b26a23d.a8a06c",
-    "name": "",
-    "active": false,
-    "tosidebar": true,
-    "console": false,
-    "tostatus": false,
-    "complete": "true",
-    "targetType": "full",
-    "x": 1590,
-    "y": 80,
-    "wires": []
-  },
-  {
-    "id": "9bd0a01b.f370a8",
-    "type": "switch",
-    "z": "5b26a23d.a8a06c",
-    "name": "Modbus Server",
-    "property": "modbusClientName",
-    "propertyType": "msg",
-    "rules": [
-      {
-        "t": "eq",
-        "v": "Modbus Server",
-        "vt": "str"
-      }
-    ],
-    "checkall": "true",
-    "outputs": 1,
-    "x": 920,
-    "y": 80,
-    "wires": [
-      [
-        "c3fc62a4.0522f8",
-        "dd790617.d9a738"
-      ]
-    ]
-  },
-  {
-    "id": "7c7d3fc.7ad87c",
-    "type": "catch",
-    "z": "f819cc75.23b27",
-    "name": "",
-    "scope": null,
-    "x": 780,
-    "y": 100,
-    "wires": [
-      [
-        "5e2abeb6.a4fe7",
-        "8391d6ea.0f47f8"
-      ]
-    ]
-  },
-  {
-    "id": "5e2abeb6.a4fe7",
-    "type": "debug",
-    "z": "f819cc75.23b27",
-    "name": "",
-    "active": true,
-    "console": "false",
-    "complete": "true",
-    "x": 990,
-    "y": 60,
-    "wires": []
-  },
-  {
-    "id": "5691f88a.317158",
-    "type": "modbus-queue-info",
-    "z": "f819cc75.23b27",
-    "name": "Flex Server Client Queue",
-    "topic": "",
-    "unitid": "1",
-    "queueReadIntervalTime": "1000",
-    "lowLowLevel": 25,
-    "lowLevel": 75,
-    "highLevel": 150,
-    "highHighLevel": 300,
-    "server": "a9050e37.a6f618",
-    "errorOnHighLevel": false,
-    "showStatusActivities": false,
-    "updateOnAllQueueChanges": false,
-    "updateOnAllUnitQueues": false,
-    "x": 1490,
-    "y": 120,
-    "wires": [
-      [
-        "60d284e5.b74a04"
-      ]
-    ]
-  },
-  {
-    "id": "53ad109f.dbb948",
-    "type": "function",
-    "z": "f819cc75.23b27",
-    "name": "reset on High",
-    "func": "if(\"high level reached\" === msg.state) {\n    msg.resetQueue = true;\n}\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "x": 1230,
-    "y": 100,
-    "wires": [
-      [
-        "5691f88a.317158"
-      ]
-    ]
-  },
-  {
-    "id": "62c07aee.525b04",
-    "type": "function",
-    "z": "f819cc75.23b27",
-    "name": "reset on HighHigh",
-    "func": "if(\"high high level reached\" === msg.state) {\n    msg.resetQueue = true;\n}\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "x": 1250,
-    "y": 140,
-    "wires": [
-      [
-        "5691f88a.317158"
-      ]
-    ]
-  },
-  {
-    "id": "60d284e5.b74a04",
-    "type": "debug",
-    "z": "f819cc75.23b27",
-    "name": "",
-    "active": false,
-    "console": "false",
-    "complete": "true",
-    "x": 1670,
-    "y": 120,
-    "wires": []
-  },
-  {
-    "id": "8391d6ea.0f47f8",
-    "type": "switch",
-    "z": "f819cc75.23b27",
-    "name": "Modbus Flex Server",
-    "property": "modbusClientName",
-    "propertyType": "msg",
-    "rules": [
-      {
-        "t": "eq",
-        "v": "Modbus Flex Server",
-        "vt": "str"
-      }
-    ],
-    "checkall": "true",
-    "outputs": 1,
-    "x": 1020,
-    "y": 120,
-    "wires": [
-      [
-        "62c07aee.525b04",
-        "53ad109f.dbb948"
-      ]
-    ]
-  },
-  {
-    "id": "a56de452.aafbd8",
-    "type": "modbus-flex-server",
-    "z": "c88a71c9.688818",
-    "name": "",
-    "logEnabled": false,
-    "serverAddress": "0.0.0.0",
-    "serverPort": "15502",
-    "responseDelay": 100,
-    "unitId": 1,
-    "delayUnit": "ms",
-    "coilsBufferSize": 20000,
-    "registersBufferSize": 20000,
-    "minAddress": 0,
-    "splitAddress": 10000,
-    "funcGetCoil": "function getFlexCoil(addr, unitID) {\n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\treturn node.coils.readUInt8(addr * node.bufferFactor) \n\t}  \n}",
-    "funcGetDiscreteInput": "function getFlexDiscreteInput(addr, unitID) {\n\tif (unitID === node.unitId && \n\t\taddr > node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.coils.readUInt8(addr * node.bufferFactor) \n\t}  \n}",
-    "funcGetInputRegister": "function getFlexInputRegister(addr, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}",
-    "funcGetHoldingRegister": "function getFlexHoldingRegsiter(addr, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr > node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}",
-    "funcSetCoil": "function setFlexCoil(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\tnode.coils.writeUInt8(value, addr * node.bufferFactor)  \n\t} \n}",
-    "funcSetRegister": "function setFlexRegister(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\tnode.registers.writeUInt16BE(value, addr * node.bufferFactor)  \n\t} \n}",
-    "showErrors": true,
-    "x": 380,
-    "y": 180,
-    "wires": [
-      [
-        "8ffaec31.e2a02"
-      ],
-      [
-        "8ffaec31.e2a02"
-      ],
-      [
-        "8ffaec31.e2a02"
-      ],
-      [
-        "8ffaec31.e2a02"
-      ],
-      [
-        "afb69812.fc4d68"
-      ]
-    ]
-  },
-  {
-    "id": "afb69812.fc4d68",
-    "type": "debug",
-    "z": "c88a71c9.688818",
-    "name": "",
-    "active": true,
-    "tosidebar": true,
-    "console": false,
-    "tostatus": false,
-    "complete": "true",
-    "targetType": "full",
-    "x": 570,
-    "y": 220,
-    "wires": []
-  },
-  {
-    "id": "2534b73c.f4a13",
-    "type": "debug",
-    "z": "c88a71c9.688818",
-    "name": "",
-    "active": true,
-    "tosidebar": true,
-    "console": false,
-    "tostatus": false,
-    "complete": "true",
-    "targetType": "full",
-    "x": 590,
-    "y": 120,
-    "wires": []
-  },
-  {
     "id": "b5762218.8300d8",
     "type": "modbus-flex-sequencer",
     "z": "f0cfd0c1.8a4f48",
@@ -2443,6 +2485,7 @@
     "server": "352955bb.be6e6a",
     "showStatusActivities": false,
     "showErrors": true,
+    "showWarnings": true,
     "logIOActivities": false,
     "useIOFile": false,
     "ioFile": "",

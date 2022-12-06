@@ -27,6 +27,7 @@ module.exports = function (RED) {
     this.name = config.name
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
+    this.showWarnings = config.showWarnings
 
     this.unitid = config.unitid
     this.dataType = config.dataType
@@ -105,6 +106,13 @@ module.exports = function (RED) {
       }
     }
 
+    function verboseWarn (logMessage) {
+      if (RED.settings.verbose && node.showWarnings) {
+        // node.updateServerinfo()
+        node.warn('Writer -> ' + logMessage + ' ' + node.serverInfo)
+      }
+    }
+
     node.on('input', function (msg) {
       const origMsgInput = Object.assign({}, msg)
 
@@ -114,6 +122,11 @@ module.exports = function (RED) {
 
       if (!modbusClient.client) {
         return
+      }
+
+      if (modbusClient.isInactive()) {
+        verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
+        return false
       }
 
       try {

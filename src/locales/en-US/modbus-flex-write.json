@@ -3,9 +3,14 @@
     "label": {
       "showActivities": "Show Activities",
       "showErrors": "Show Errors",
+      "showWarnings": "Show Warnings",
       "server": "Server",
       "emptyMsgOnFail": "Empty msg on fail",
       "keepMsgProperties": "Keep Msg Properties"
+    },
+    "tabs-label": {
+      "settings": "Settings",
+      "options": "Optionals"
     }
   }
 }

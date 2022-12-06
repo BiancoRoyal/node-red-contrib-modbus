@@ -29,13 +29,22 @@
     "type": "inject",
     "z": "5b0dada6.2ecd9c",
     "name": "",
-    "topic": "",
-    "payload": "",
-    "payloadType": "date",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
     "repeat": "",
     "crontab": "",
     "once": false,
     "onceDelay": 0.1,
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
     "x": 200,
     "y": 180,
     "wires": [
@@ -53,6 +62,9 @@
     "func": "msg.payload = { \n    'connectorType': 'TCP', \n    'tcpHost': '127.0.0.1', \n    'tcpPort': '11512'\n};\nreturn msg;",
     "outputs": 1,
     "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
     "x": 260,
     "y": 180,
     "wires": [
@@ -119,13 +131,22 @@
     "type": "inject",
     "z": "5b0dada6.2ecd9c",
     "name": "",
-    "topic": "",
-    "payload": "",
-    "payloadType": "date",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
     "repeat": "",
     "crontab": "",
     "once": false,
     "onceDelay": 0.1,
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
     "x": 195,
     "y": 240,
     "wires": [
@@ -143,6 +164,9 @@
     "func": "msg.payload = { \n    'connectorType': 'TCP', \n    'tcpHost': '127.0.0.1', \n    'tcpPort': '12512'\n};\nreturn msg;",
     "outputs": 1,
     "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
     "x": 255,
     "y": 240,
     "wires": [
@@ -157,13 +181,22 @@
     "type": "inject",
     "z": "5b0dada6.2ecd9c",
     "name": "",
-    "topic": "",
-    "payload": "",
-    "payloadType": "date",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
     "repeat": "",
     "crontab": "",
     "once": false,
     "onceDelay": 0.1,
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
     "x": 195,
     "y": 120,
     "wires": [
@@ -181,6 +214,9 @@
     "func": "msg.payload = { \n    'connectorType': 'TCP', \n    'tcpHost': '127.0.0.1', \n    'tcpPort': '10512'\n};\nreturn msg;",
     "outputs": 1,
     "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
     "x": 255,
     "y": 120,
     "wires": [
@@ -241,6 +277,7 @@
     "showStatusActivities": false,
     "logIOActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "unitid": "",
     "dataType": "HoldingRegister",
     "adr": "0",
@@ -253,6 +290,7 @@
     "useIOFile": false,
     "ioFile": "",
     "useIOForPayload": false,
+    "emptyMsgOnFail": false,
     "x": 795,
     "y": 100,
     "wires": [
@@ -272,6 +310,7 @@
     "showStatusActivities": false,
     "logIOActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "unitid": "",
     "dataType": "HoldingRegister",
     "adr": "0",
@@ -284,6 +323,7 @@
     "useIOFile": false,
     "ioFile": "",
     "useIOForPayload": false,
+    "emptyMsgOnFail": false,
     "x": 795,
     "y": 160,
     "wires": [
@@ -303,6 +343,7 @@
     "showStatusActivities": false,
     "logIOActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "unitid": "",
     "dataType": "HoldingRegister",
     "adr": "0",
@@ -315,6 +356,7 @@
     "useIOFile": false,
     "ioFile": "",
     "useIOForPayload": false,
+    "emptyMsgOnFail": false,
     "x": 795,
     "y": 240,
     "wires": [
@@ -332,6 +374,7 @@
     "showStatusActivities": false,
     "logIOActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "unitid": "",
     "dataType": "HoldingRegister",
     "adr": "0",
@@ -344,6 +387,7 @@
     "useIOFile": false,
     "ioFile": "",
     "useIOForPayload": false,
+    "emptyMsgOnFail": false,
     "x": 795,
     "y": 300,
     "wires": [
@@ -361,6 +405,7 @@
     "showStatusActivities": false,
     "logIOActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "unitid": "",
     "dataType": "HoldingRegister",
     "adr": "0",
@@ -373,6 +418,7 @@
     "useIOFile": false,
     "ioFile": "",
     "useIOForPayload": false,
+    "emptyMsgOnFail": false,
     "x": 795,
     "y": 380,
     "wires": [
@@ -390,7 +436,10 @@
     "tosidebar": true,
     "console": false,
     "tostatus": false,
-    "complete": "false",
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "",
+    "statusType": "auto",
     "x": 955,
     "y": 80,
     "wires": [],
@@ -416,6 +465,7 @@
     "showStatusActivities": false,
     "logIOActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "unitid": "",
     "dataType": "HoldingRegister",
     "adr": "0",
@@ -428,6 +478,7 @@
     "useIOFile": false,
     "ioFile": "",
     "useIOForPayload": false,
+    "emptyMsgOnFail": false,
     "x": 975,
     "y": 240,
     "wires": [
@@ -470,6 +521,7 @@
     "showStatusActivities": false,
     "logIOActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "unitid": "",
     "dataType": "HoldingRegister",
     "adr": "0",
@@ -482,6 +534,7 @@
     "useIOFile": false,
     "ioFile": "",
     "useIOForPayload": false,
+    "emptyMsgOnFail": false,
     "x": 975,
     "y": 320,
     "wires": [
@@ -499,6 +552,7 @@
     "showStatusActivities": false,
     "logIOActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "unitid": "",
     "dataType": "HoldingRegister",
     "adr": "0",
@@ -511,6 +565,7 @@
     "useIOFile": false,
     "ioFile": "",
     "useIOForPayload": false,
+    "emptyMsgOnFail": false,
     "x": 975,
     "y": 380,
     "wires": [
@@ -528,6 +583,7 @@
     "showStatusActivities": false,
     "logIOActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "unitid": "",
     "dataType": "HoldingRegister",
     "adr": "0",
@@ -540,6 +596,7 @@
     "useIOFile": false,
     "ioFile": "",
     "useIOForPayload": false,
+    "emptyMsgOnFail": false,
     "x": 975,
     "y": 440,
     "wires": [
@@ -557,6 +614,7 @@
     "showStatusActivities": false,
     "logIOActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "unitid": "",
     "dataType": "HoldingRegister",
     "adr": "0",
@@ -569,6 +627,7 @@
     "useIOFile": false,
     "ioFile": "",
     "useIOForPayload": false,
+    "emptyMsgOnFail": false,
     "x": 975,
     "y": 500,
     "wires": [
@@ -614,13 +673,22 @@
     "type": "inject",
     "z": "5b0dada6.2ecd9c",
     "name": "",
-    "topic": "",
-    "payload": "{\"resetQueue\":true,\"unitId\":1}",
-    "payloadType": "json",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
     "repeat": "",
     "crontab": "",
     "once": false,
     "onceDelay": 0.1,
+    "topic": "",
+    "payload": "{\"resetQueue\":true,\"unitId\":1}",
+    "payloadType": "json",
     "x": 195,
     "y": 320,
     "wires": [
@@ -633,12 +701,12 @@
   {
     "id": "a477577e.9e0bc",
     "type": "modbus-client",
-    "z": "",
     "name": "Modbus Switch TCP",
     "clienttype": "tcp",
     "bufferCommands": true,
     "stateLogEnabled": false,
     "queueLogEnabled": false,
+    "failureLogEnabled": false,
     "tcpHost": "127.0.0.1",
     "tcpPort": "10512",
     "tcpType": "DEFAULT",
@@ -649,6 +717,7 @@
     "serialStopbits": "1",
     "serialParity": "none",
     "serialConnectionDelay": "100",
+    "serialAsciiResponseStartDelimiter": "",
     "unit_id": "1",
     "commandDelay": "1",
     "clientTimeout": "1000",
