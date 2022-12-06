@@ -14,8 +14,9 @@ const injectNode = require('@node-red/nodes/core/common/20-inject.js')
 const clientNode = require('../../src/modbus-client.js')
 const serverNode = require('../../src/modbus-server.js')
 const nodeUnderTest = require('../../src/modbus-flex-getter.js')
+var functionNode = require('@node-red/nodes/core/function/10-function')
 
-const testFlexGetterNodes = [injectNode, clientNode, serverNode, nodeUnderTest]
+const testFlexGetterNodes = [injectNode, clientNode, serverNode, nodeUnderTest, functionNode]
 
 const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
@@ -239,8 +240,8 @@ describe('Flex Getter node Testing', function () {
 
     it('should inject 5 messages but only use one to test initial delay', function (done) {
       const flow = Array.from(testFlows.testFlexGetterWithInjectAndDelayFlow)
-      flow[10].serverPort = "50111"
-      flow[11].tcpPort = "50111"
+      flow[9].serverPort = "50111"
+      flow[10].tcpPort = "50111"
       helper.load(testFlexGetterNodes, flow, function () {
         const getterNode = helper.getNode('823b8c53.ee14b8')
         const helperNode = helper.getNode('23156c303a59c400')
@@ -248,23 +249,27 @@ describe('Flex Getter node Testing', function () {
         let helperCounter = 0
         let startingTimestamp = null
         let endTimestamp = null
+
         getterNode.on('input', (msg) => {
           getterCounter++
 
           if(getterCounter === 1){
-            startingTimestamp = 0 //Todo: set timestamp
+            startingTimestamp = Date.now()
+          } else if (getterCounter === 5) {
+            endTimestamp = Date.now()
           }
         })
 
         helperNode.on('input', (msg) => {
           helperCounter++
-          endTimestamp = 0 //Todo: set timestamp
-        })
-        let difBetweenTimestamps = endTimestamp - startingTimestamp
 
-        getterCounter.should.be.eql(5)
-        helperCounter.should.be.eql(1)
-        difBetweenTimestamps.should.be.greaterThanOrEqual(5000)
+          let difBetweenTimestamps = endTimestamp - startingTimestamp
+          getterCounter.should.be.eql(5)
+          helperCounter.should.be.greaterThanOrEqual(1)
+          difBetweenTimestamps.should.be.greaterThanOrEqual(3000)
+
+          done()
+        })
       })
     })
 /**

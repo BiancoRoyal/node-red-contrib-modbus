@@ -163,8 +163,8 @@ module.exports = {
       "topic": "",
       "payload": "",
       "payloadType": "date",
-      "x": 161,
-      "y": 110,
+      "x": 159,
+      "y": 144,
       "wires": [
         [
           "391d65b9.85b07a"
@@ -206,7 +206,7 @@ module.exports = {
       "emptyMsgOnFail": true,
       "keepMsgProperties": false,
       "delayOnStart": true,
-      "startDelayTime": "5",
+      "startDelayTime": "3",
       "x": 705,
       "y": 221,
       "wires": [
@@ -237,8 +237,8 @@ module.exports = {
       "topic": "",
       "payload": "",
       "payloadType": "date",
-      "x": 160,
-      "y": 147,
+      "x": 158,
+      "y": 181,
       "wires": [
         [
           "391d65b9.85b07a"
@@ -266,8 +266,8 @@ module.exports = {
       "topic": "",
       "payload": "",
       "payloadType": "date",
-      "x": 160,
-      "y": 184,
+      "x": 158,
+      "y": 218,
       "wires": [
         [
           "391d65b9.85b07a"
@@ -295,8 +295,8 @@ module.exports = {
       "topic": "",
       "payload": "",
       "payloadType": "date",
-      "x": 159,
-      "y": 221,
+      "x": 157,
+      "y": 255,
       "wires": [
         [
           "391d65b9.85b07a"
@@ -324,36 +324,7 @@ module.exports = {
       "topic": "",
       "payload": "",
       "payloadType": "date",
-      "x": 157,
-      "y": 255,
-      "wires": [
-        [
-          "391d65b9.85b07a"
-        ]
-      ]
-    },
-    {
-      "id": "5171c1556e7b5c1b",
-      "type": "inject",
-      "z": "5b26a23d.a8a06c",
-      "name": "Get flexible!",
-      "props": [
-        {
-          "p": "payload"
-        },
-        {
-          "p": "topic",
-          "vt": "str"
-        }
-      ],
-      "repeat": "",
-      "crontab": "",
-      "once": true,
-      "onceDelay": "5",
-      "topic": "",
-      "payload": "",
-      "payloadType": "date",
-      "x": 158,
+      "x": 155,
       "y": 289,
       "wires": [
         [
