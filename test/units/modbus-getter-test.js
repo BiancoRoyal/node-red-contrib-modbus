@@ -92,8 +92,8 @@ describe('Getter node Testing', function () {
 
     it('should work as simple flow with inject and IO', function (done) {
       this.timeout(3000)
-      testFlows.testGetterFlowWithInjectIo[1].serverPort = "5810"
-      testFlows.testGetterFlowWithInjectIo[5].tcpPort = "5810"
+      testFlows.testGetterFlowWithInjectIo[1].serverPort = 5810
+      testFlows.testGetterFlowWithInjectIo[5].tcpPort = 5810
       const flow = Array.from(testFlows.testGetterFlowWithInjectIo)
       helper.load(testGetterNodes, flow, function () {
         const modbusGetter = helper.getNode('a9b0b8a7cec1de86')
@@ -130,7 +130,10 @@ describe('Getter node Testing', function () {
     })
 
     it('should work as simple flow with wrong write inject and IO', function (done) {
-      helper.load(testGetterNodes, testFlows.testGetterFlow, function () {
+      testFlows.testGetterFlow[1].serverPort = 5812
+      testFlows.testGetterFlow[4].tcpPort = 5812
+      const flow = Array.from(testFlows.testGetterFlow)
+      helper.load(testGetterNodes, flow, function () {
         const modbusGetter = helper.getNode('cea01c8.36f8f6')
         setTimeout(function () {
           modbusGetter.receive({ payload: '{ "value": "true", "fc": 5, "unitid": 1,"address": 0, "quantity": 4 }' })
@@ -142,7 +145,10 @@ describe('Getter node Testing', function () {
     })
 
     it('should work as simple flow with wrong address inject and IO', function (done) {
-      helper.load(testGetterNodes, testFlows.testGetterFlow, function () {
+      testFlows.testGetterFlow[1].serverPort = 5813
+      testFlows.testGetterFlow[4].tcpPort = 5813
+      const flow = Array.from(testFlows.testGetterFlow)
+      helper.load(testGetterNodes, flow, function () {
         const modbusGetter = helper.getNode('cea01c8.36f8f6')
         setTimeout(function () {
           modbusGetter.receive({ payload: '{ "fc": 1, "unitid": 1,"address": -1, "quantity": 4 }' })
@@ -154,7 +160,10 @@ describe('Getter node Testing', function () {
     })
 
     it('should work as simple flow with wrong quantity inject and IO', function (done) {
-      helper.load(testGetterNodes, testFlows.testGetterFlow, function () {
+      testFlows.testGetterFlow[1].serverPort = 5814
+      testFlows.testGetterFlow[4].tcpPort = 5814
+      const flow = Array.from(testFlows.testGetterFlow)
+      helper.load(testGetterNodes, flow, function () {
         const modbusGetter = helper.getNode('cea01c8.36f8f6')
         setTimeout(function () {
           modbusGetter.receive({ payload: '{ "fc": 1, "unitid": 1,"address": 0, "quantity": -1 }' })
@@ -166,7 +175,10 @@ describe('Getter node Testing', function () {
     })
 
     it('should be state queueing - ready to send', function (done) {
-      helper.load(testGetterNodes, testFlows.testGetterFlowWithInjectIo, function () {
+      testFlows.testGetterFlowWithInjectIo[1].serverPort = 5815
+      testFlows.testGetterFlowWithInjectIo[5].tcpPort = 5815
+      const flow = Array.from(testFlows.testGetterFlowWithInjectIo)
+      helper.load(testGetterNodes, flow, function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         setTimeout(() => {
           mBasics.setNodeStatusTo('queueing', modbusClientNode)
@@ -178,7 +190,10 @@ describe('Getter node Testing', function () {
     })
 
     it('should be not state queueing - not ready to send', function (done) {
-      helper.load(testGetterNodes, testFlows.testGetterFlowWithInjectIo, function () {
+      testFlows.testGetterFlowWithInjectIo[1].serverPort = 5816
+      testFlows.testGetterFlowWithInjectIo[5].tcpPort = 5816
+      const flow = Array.from(testFlows.testGetterFlowWithInjectIo)
+      helper.load(testGetterNodes, flow, function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         setTimeout(() => {
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
