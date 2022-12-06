@@ -31,73 +31,99 @@
         paletteLabel: 'Modbus-Queue-Info',
         label: function () {
             return this.name || 'Modbus Queue Info'
-        }
+        },
+      oneditprepare: function () {
+
+        let tabs = RED.tabs.create({
+          id: "node-input-modbus-tabs",
+          onchange: function (tab) {
+            $("#node-input-tabs-content").children().hide()
+            $("#" + tab.id).show()
+          }
+        })
+
+        tabs.addTab({
+          id: "modbus-settings-tab",
+          label: this._("modbus-contrib.tabs-label.settings")
+        })
+
+        tabs.addTab({
+          id: "modbus-options-tab",
+          label: this._("modbus-contrib.tabs-label.options")
+        })
+      }
     })
 </script>
 
 
 <script type="text/x-red" data-template-name="modbus-queue-info">
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="node-input-modbus-tabs"></ul>
     </div>
-    <div class="form-row">
-        <label for="node-input-topic"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.topic"></span></label>
-        <input type="text" id="node-input-topic" placeholder="Topic">
+    <div id="node-input-tabs-content" style="min-height: 170px;">
+        <div id="modbus-settings-tab" style="display:none">
+            <div class="form-row">
+                <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+                <input type="text" id="node-input-name" placeholder="Name">
+            </div>
+            <div class="form-row">
+                <label for="node-input-topic"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.topic"></span></label>
+                <input type="text" id="node-input-topic" placeholder="Topic">
+            </div>
+            <div class="form-row">
+                <label for="node-input-unitid"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.unitId"></span></label>
+                <input type="text" id="node-input-unitid" placeholder="1">
+            </div>
+            <div class="form-row">
+                <label for="node-input-queueReadIntervalTime"><i class="icon-clock"></i> <span data-i18n="modbus-contrib.label.queueReadIntervalTime"></span></label>
+                <input type="text" id="node-input-queueReadIntervalTime" placeholder="1000" style="width:140px;"> msec.
+            </div>
+            <hr>
+            <div class="form-row">
+                <label for="node-input-lowLowLevel"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.lowLowLevel"></span></label>
+                <input type="text" id="node-input-lowLowLevel" placeholder="25">
+            </div>
+            <div class="form-row">
+                <label for="node-input-lowLevel"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.lowLevel"></span></label>
+                <input type="text" id="node-input-lowLevel" placeholder="75">
+            </div>
+            <div class="form-row">
+                <label for="node-input-highLevel"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.highLevel"></span></label>
+                <input type="text" id="node-input-highLevel" placeholder="150">
+            </div>
+            <div class="form-row">
+                <label for="node-input-highHighLevel"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.highHighLevel"></span></label>
+                <input type="text" id="node-input-highHighLevel" placeholder="300">
+            </div>
+            <div class="form-row">
+                <label for="node-input-server"><i class="icon-globe"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
+                <input type="text" id="node-input-server">
+            </div>
+        </div>
+        <div id="modbus-options-tab" style="display:none">
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-updateOnAllQueueChanges"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.updateOnAllQueueChanges"></span></label>
+                <input type="checkbox" id="node-input-updateOnAllQueueChanges" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-updateOnAllUnitQueues"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.updateOnAllUnitQueues"></span></label>
+                <input type="checkbox" id="node-input-updateOnAllUnitQueues" style="max-width:30px">
+            </div>
+            <hr>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-errorOnHighLevel"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.errorOnHighLevel"></span></label>
+                <input type="checkbox" id="node-input-errorOnHighLevel" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.showActivities"></span></label>
+                <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
+            </div>
+        </div>
     </div>
-    <div class="form-row">
-        <label for="node-input-unitid"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.unitId"></span></label>
-        <input type="text" id="node-input-unitid" placeholder="1">
-    </div>
-    <div class="form-row">
-        <label for="node-input-queueReadIntervalTime"><i class="icon-clock"></i> <span data-i18n="modbus-contrib.label.queueReadIntervalTime"></span></label>
-        <input type="text" id="node-input-queueReadIntervalTime" placeholder="1000" style="width:140px;"> msec.
-    </div>
-    <hr>
-    <div class="form-row">
-        <label for="node-input-lowLowLevel"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.lowLowLevel"></span></label>
-        <input type="text" id="node-input-lowLowLevel" placeholder="25">
-    </div>
-    <div class="form-row">
-        <label for="node-input-lowLevel"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.lowLevel"></span></label>
-        <input type="text" id="node-input-lowLevel" placeholder="75">
-    </div>
-    <div class="form-row">
-        <label for="node-input-highLevel"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.highLevel"></span></label>
-        <input type="text" id="node-input-highLevel" placeholder="150">
-    </div>
-    <div class="form-row">
-        <label for="node-input-highHighLevel"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.highHighLevel"></span></label>
-        <input type="text" id="node-input-highHighLevel" placeholder="300">
-    </div>
-    <hr>
-    <div class="form-row">
-        <label for="node-input-server"><i class="icon-globe"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
-        <input type="text" id="node-input-server">
-    </div>
-    <hr>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-input-updateOnAllQueueChanges"><i class="fa fa-th"></i> <span
-        data-i18n="modbus-contrib.label.updateOnAllQueueChanges"></span></label>
-        <input type="checkbox" id="node-input-updateOnAllQueueChanges" style="max-width:30px">
-    </div>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-input-updateOnAllUnitQueues"><i class="fa fa-th"></i> <span
-        data-i18n="modbus-contrib.label.updateOnAllUnitQueues"></span></label>
-        <input type="checkbox" id="node-input-updateOnAllUnitQueues" style="max-width:30px">
-    </div>
-    <hr>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-input-errorOnHighLevel"><i class="fa fa-th"></i> <span
-        data-i18n="modbus-contrib.label.errorOnHighLevel"></span></label>
-        <input type="checkbox" id="node-input-errorOnHighLevel" style="max-width:30px">
-    </div>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
-        data-i18n="modbus-contrib.label.showActivities"></span></label>
-        <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
-    </div>
-
 </script>
 
 

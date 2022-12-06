@@ -12,6 +12,10 @@
       "showActivities": "Show Activities",
       "updateOnAllQueueChanges": "Show All Updates",
       "updateOnAllUnitQueues": "All Queues (0-255)"
+    },
+    "tabs-label": {
+      "settings": "Settings",
+      "options": "Optionals"
     }
   }
 }

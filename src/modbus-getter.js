@@ -32,6 +32,7 @@ module.exports = function (RED) {
 
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
+    this.showWarnings = config.showWarnings
     this.msgThruput = config.msgThruput
     this.connection = null
 
@@ -96,7 +97,7 @@ module.exports = function (RED) {
     }
 
     function verboseWarn (logMessage) {
-      if (RED.settings.verbose) {
+      if (RED.settings.verbose && node.showWarnings) {
         // node.updateServerinfo()
         node.warn('Getter -> ' + logMessage + ' ' + node.serverInfo)
       }

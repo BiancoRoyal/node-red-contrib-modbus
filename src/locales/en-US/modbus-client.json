@@ -23,7 +23,13 @@
       "reconnectOnTimeout": "Reconnect on timeout",
       "reconnectTimeout": "Reconnect timeout (ms)",
       "parallelUnitIdsAllowed": "UnitId's in parallel",
-      "serialAsciiResponseStartDelimiter": "ASCII response start delimiter"
+      "serialAsciiResponseStartDelimiter": "ASCII response start delimiter",
+      "showErrors": "Show Errors",
+      "showWarnings": "Show Warnings"
+    },
+    "tabs-label": {
+      "settings": "Settings",
+      "options": "Optionals"
     }
   }
 }

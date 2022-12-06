@@ -31,6 +31,7 @@ module.exports = function (RED) {
 
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
+    this.showWarnings = config.showWarnings
 
     this.ioFile = RED.nodes.getNode(config.ioFile)
 
@@ -74,7 +75,9 @@ module.exports = function (RED) {
           if (node.showErrors) {
             node.error(new Error(msg.payload.length + ' does not match ' + node.registers))
           }
-          mbCore.internalDebug(msg.payload.length + ' Registers And Filter Length Of ' + node.registers + ' Does Not Match')
+          if (node.showWarnings) {
+            mbCore.internalDebug(msg.payload.length + ' Registers And Filter Length Of ' + node.registers + ' Does Not Match')
+          }
         } else {
           node.send(node.filterFromPayload(msg))
         }

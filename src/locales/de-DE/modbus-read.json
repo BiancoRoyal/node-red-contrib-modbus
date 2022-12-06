@@ -3,6 +3,7 @@
     "label": {
       "showActivities": "Aktivitäten anzeigen",
       "showErrors": "Fehler anzeigen",
+      "showWarnings": "Warnungen anzeigen",
       "address": "Adresse",
       "quantity": "Anzahl",
       "pollrate": "Poll-Rate",

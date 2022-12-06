@@ -27,6 +27,7 @@ module.exports = function (RED) {
     this.name = config.name
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
+    this.showWarnings = config.showWarnings
 
     this.unitid = config.unitid
     this.dataType = config.dataType
@@ -106,7 +107,7 @@ module.exports = function (RED) {
     }
 
     function verboseWarn (logMessage) {
-      if (RED.settings.verbose) {
+      if (RED.settings.verbose && node.showWarnings) {
         // node.updateServerinfo()
         node.warn('Writer -> ' + logMessage + ' ' + node.serverInfo)
       }
