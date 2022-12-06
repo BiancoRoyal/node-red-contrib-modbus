@@ -42,6 +42,7 @@ module.exports = function (RED) {
 
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
+    this.showWarnings = config.showWarnings
     this.connection = null
 
     this.useIOFile = config.useIOFile
@@ -62,7 +63,7 @@ module.exports = function (RED) {
     setNodeStatusWithTimeTo(node.statusText)
 
     function verboseWarn (logMessage) {
-      if (RED.settings.verbose) {
+      if (RED.settings.verbose && node.showWarnings) {
         node.warn('Read -> ' + logMessage + ' address: ' + node.adr)
       }
     }

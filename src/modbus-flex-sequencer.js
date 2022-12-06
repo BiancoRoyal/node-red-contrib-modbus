@@ -28,6 +28,7 @@ module.exports = function (RED) {
 
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
+    this.showWarnings = config.showWarnings
     this.connection = null
 
     this.useIOFile = config.useIOFile
@@ -149,9 +150,21 @@ module.exports = function (RED) {
       }
     }
 
+    function verboseWarn (logMessage) {
+      if (RED.settings.verbose && node.showWarnings) {
+        // node.updateServerinfo()
+        node.warn('Flex-Sequencer -> ' + logMessage + ' ' + node.serverInfo)
+      }
+    }
+
     node.on('input', function (msg) {
       if (!modbusClient.client) {
         return
+      }
+
+      if (modbusClient.isInactive()) {
+        verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
+        return false
       }
 
       const origMsgInput = Object.assign({}, msg)

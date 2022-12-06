@@ -10,15 +10,19 @@
 
 'use strict'
 
-var injectNode = require('@node-red/nodes/core/common/20-inject.js')
-var clientNode = require('../../src/modbus-client.js')
-var serverNode = require('../../src/modbus-server.js')
-var nodeUnderTest = require('../../src/modbus-flex-sequencer.js')
+const injectNode = require('@node-red/nodes/core/common/20-inject.js')
+const clientNode = require('../../src/modbus-client.js')
+const serverNode = require('../../src/modbus-server.js')
+const nodeUnderTest = require('../../src/modbus-flex-sequencer.js')
 
-var helper = require('node-red-node-test-helper')
+const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
-var testFlexSequencerNodes = [injectNode, clientNode, serverNode, nodeUnderTest]
+const testFlexSequencerNodes = [injectNode, clientNode, serverNode, nodeUnderTest]
+
+const testFlows = require('./flows/modbus-flex-sequencer-flows')
+const mBasics = require('../../src/modbus-basics')
+const _ = require('underscore')
 
 describe('Flex Sequencer node Testing', function () {
   before(function (done) {
@@ -43,23 +47,7 @@ describe('Flex Sequencer node Testing', function () {
 
   describe('Node', function () {
     it('simple Node should be loaded without client config', function (done) {
-      helper.load([nodeUnderTest], [{
-        id: 'bc5a61b6.a3972',
-        type: 'modbus-flex-sequencer',
-        name: 'modbusFlexSequencer',
-        showStatusActivities: false,
-        showErrors: false,
-        server: '',
-        useIOFile: false,
-        ioFile: '',
-        useIOForPayload: false,
-        emptyMsgOnFail: false,
-        keepMsgProperties: false,
-        wires: [
-          [],
-          []
-        ]
-      }], function () {
+      helper.load(testFlexSequencerNodes,testFlows.testNodeWithoutClientFlow , function () {
         const modbusFlexSequencer = helper.getNode('bc5a61b6.a3972')
         modbusFlexSequencer.should.have.property('name', 'modbusFlexSequencer')
 
@@ -70,64 +58,7 @@ describe('Flex Sequencer node Testing', function () {
     })
 
     it('simple Node with server should be loaded', function (done) {
-      helper.load([clientNode, serverNode, nodeUnderTest], [{
-        id: 'bc5a61b6.a3972',
-        type: 'modbus-flex-sequencer',
-        name: 'modbusFlexSequencer',
-        showStatusActivities: false,
-        showErrors: false,
-        server: '92e7bf63.2efd7',
-        useIOFile: false,
-        ioFile: '',
-        useIOForPayload: false,
-        emptyMsgOnFail: false,
-        keepMsgProperties: false,
-        wires: [
-          [],
-          []
-        ]
-      }, {
-        id: '996023fe.ea04b',
-        type: 'modbus-server',
-        name: 'modbusServer',
-        logEnabled: true,
-        hostname: '127.0.0.1',
-        serverPort: '7506',
-        responseDelay: 100,
-        delayUnit: 'ms',
-        coilsBufferSize: 10000,
-        holdingBufferSize: 10000,
-        inputBufferSize: 10000,
-        discreteBufferSize: 10000,
-        showErrors: false,
-        wires: [
-          [],
-          [],
-          []
-        ]
-      }, {
-        id: '92e7bf63.2efd7',
-        type: 'modbus-client',
-        name: 'ModbusServer',
-        clienttype: 'tcp',
-        bufferCommands: true,
-        stateLogEnabled: true,
-        parallelUnitIdsAllowed: true,
-        tcpHost: '127.0.0.1',
-        tcpPort: '7506',
-        tcpType: 'DEFAULT',
-        serialPort: '/dev/ttyUSB',
-        serialType: 'RTU-BUFFERD',
-        serialBaudrate: '9600',
-        serialDatabits: '8',
-        serialStopbits: '1',
-        serialParity: 'none',
-        serialConnectionDelay: '100',
-        unit_id: '1',
-        commandDelay: '1',
-        clientTimeout: '100',
-        reconnectTimeout: 200
-      }], function () {
+      helper.load(testFlexSequencerNodes,testFlows.testNodeWithServerFlow , function () {
         const modbusServer = helper.getNode('996023fe.ea04b')
         modbusServer.should.have.property('name', 'modbusServer')
 
@@ -140,6 +71,56 @@ describe('Flex Sequencer node Testing', function () {
         done()
       }, function () {
         helper.log('function callback')
+      })
+    })
+    
+    it('should be inactive if message not allowed', function (done) {
+      helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
+        const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+        _.isUndefined(modbusClientNode).should.be.false
+
+        modbusClientNode.receive({payload: "test"})
+        let isInactive = modbusClientNode.isInactive()
+        isInactive.should.be.true
+        done()
+      })
+    })
+
+    it('should be inactive if message empty', function (done) {
+      const flow = Array.from(testFlows.testNodeWithServerFlow)
+      flow[2].serverPort = "50201"
+      helper.load(testFlexSequencerNodes, flow, function () {
+        const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+        setTimeout(() => {
+          modbusClientNode.messageAllowedStates = ['']
+          let isInactive = modbusClientNode.isInactive()
+          isInactive.should.be.true
+          done()
+        } , 1500)
+      })
+    })
+    
+    it('should be state queueing - ready to send', function (done) {
+      helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
+        const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('queueing', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.true
+          done()
+        } , 1500)
+      })
+    })
+
+    it('should be not state queueing - not ready to send', function (done) {
+      helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
+        const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('stopped', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.false
+          done()
+        } , 1500)
       })
     })
   })

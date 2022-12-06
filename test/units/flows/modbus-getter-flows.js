@@ -3,6 +3,42 @@ const helperExtensions = require('../../helper/test-helper-extensions')
 
 module.exports = {
 
+  "testGetterWithoutClientConfigFlow": helperExtensions.cleanFlowPositionData([
+    {
+      "id": "1243c51545a330d6",
+      "type": "tab",
+      "label": "Node without Client Config",
+      "disabled": false,
+      "info": "",
+      "env": []
+    },
+    {
+      "id": "3ffe153acc21d72b",
+      "type": "modbus-getter",
+      "z": "1243c51545a330d6",
+      "name": "modbusGetter",
+      "showStatusActivities": false,
+      "showErrors": false,
+      "logIOActivities": false,
+      "unitid": "",
+      "dataType": "",
+      "adr": "",
+      "quantity": "",
+      "server": "",
+      "useIOFile": false,
+      "ioFile": "",
+      "useIOForPayload": false,
+      "emptyMsgOnFail": false,
+      "keepMsgProperties": false,
+      "x": 340,
+      "y": 240,
+      "wires": [
+        [],
+        []
+      ]
+    }
+  ]),
+
   "testGetterFlowWithInjectIo": helperExtensions.cleanFlowPositionData([
     {
       "id": "d6e437043c8cf4a4",
@@ -134,8 +170,17 @@ module.exports = {
 
   "testGetterFlow": helperExtensions.cleanFlowPositionData([
     {
+      "id": "9e0ce71e20ca8f6d",
+      "type": "tab",
+      "label": "GetterFlow",
+      "disabled": false,
+      "info": "",
+      "env": []
+    },
+    {
       "id": "445454e4.968564",
       "type": "modbus-server",
+      "z": "9e0ce71e20ca8f6d",
       "name": "",
       "logEnabled": true,
       "hostname": "127.0.0.1",
@@ -147,7 +192,10 @@ module.exports = {
       "inputBufferSize": 10000,
       "discreteBufferSize": 10000,
       "showErrors": false,
+      "x": 640,
+      "y": 80,
       "wires": [
+        [],
         [],
         [],
         [],
@@ -157,9 +205,11 @@ module.exports = {
     {
       "id": "cea01c8.36f8f6",
       "type": "modbus-getter",
+      "z": "9e0ce71e20ca8f6d",
       "name": "",
       "showStatusActivities": true,
       "showErrors": true,
+      "logIOActivities": true,
       "unitid": "",
       "dataType": "Coil",
       "adr": "0",
@@ -168,9 +218,10 @@ module.exports = {
       "useIOFile": true,
       "ioFile": "e0519b16.5fcdd",
       "useIOForPayload": false,
-      "logIOActivities": true,
       "emptyMsgOnFail": false,
       "keepMsgProperties": false,
+      "x": 540,
+      "y": 200,
       "wires": [
         [
           "h1"
@@ -180,7 +231,19 @@ module.exports = {
     },
     {
       "id": "h1",
-      "type": "helper"
+      "type": "helper",
+      "z": "9e0ce71e20ca8f6d",
+      "name": "",
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "payload",
+      "targetType": "msg",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 750,
+      "y": 200,
+      "wires": []
     },
     {
       "id": "92e7bf63.2efd7",
@@ -189,7 +252,6 @@ module.exports = {
       "clienttype": "tcp",
       "bufferCommands": true,
       "stateLogEnabled": true,
-      "parallelUnitIdsAllowed": true,
       "tcpHost": "127.0.0.1",
       "tcpPort": "8502",
       "tcpType": "DEFAULT",
@@ -203,7 +265,8 @@ module.exports = {
       "unit_id": "1",
       "commandDelay": "1",
       "clientTimeout": "100",
-      "reconnectTimeout": 200
+      "reconnectTimeout": 200,
+      "parallelUnitIdsAllowed": true
     },
     {
       "id": "e0519b16.5fcdd",
@@ -368,7 +431,15 @@ module.exports = {
       "id": "h1",
       "type": "helper",
       "z": "ae4a7c8ae3cc71e0",
+      "name": "",
       "active": true,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "payload",
+      "targetType": "msg",
+      "statusVal": "",
+      "statusType": "auto",
       "x": 610,
       "y": 180,
       "wires": []
@@ -378,6 +449,15 @@ module.exports = {
       "type": "inject",
       "z": "ae4a7c8ae3cc71e0",
       "name": "",
+      "props": [
+        {
+          "p": "payload"
+        },
+        {
+          "p": "topic",
+          "vt": "str"
+        }
+      ],
       "repeat": "1",
       "crontab": "",
       "once": true,

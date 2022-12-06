@@ -3,6 +3,7 @@
     "label": {
       "showActivities": "Show Activities",
       "showErrors": "Show Errors",
+      "showWarnings": "Warnungen anzeigen",
       "file": "IO-Datei",
       "path": "IO-Datei",
       "format": "Format"

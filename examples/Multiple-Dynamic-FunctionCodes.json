@@ -38,7 +38,10 @@
     "name": "",
     "showStatusActivities": false,
     "showErrors": false,
+    "showWarnings": true,
     "server": "d4c10165.fdaad8",
+    "emptyMsgOnFail": false,
+    "keepMsgProperties": false,
     "x": 770,
     "y": 180,
     "wires": [
@@ -155,10 +158,16 @@
     "name": "",
     "showStatusActivities": false,
     "showErrors": false,
+    "showWarnings": true,
+    "logIOActivities": false,
     "server": "d789f1bb.d6ea18",
     "useIOFile": false,
     "ioFile": "",
     "useIOForPayload": false,
+    "emptyMsgOnFail": false,
+    "keepMsgProperties": false,
+    "delayOnStart": false,
+    "startDelayTime": "",
     "x": 780,
     "y": 300,
     "wires": [
@@ -220,6 +229,8 @@
     "name": "",
     "showStatusActivities": false,
     "showErrors": false,
+    "showWarnings": true,
+    "logIOActivities": false,
     "unitid": "",
     "dataType": "HoldingRegister",
     "adr": "0",
@@ -228,6 +239,8 @@
     "useIOFile": false,
     "ioFile": "",
     "useIOForPayload": false,
+    "emptyMsgOnFail": false,
+    "keepMsgProperties": false,
     "x": 760,
     "y": 240,
     "wires": [
@@ -307,6 +320,8 @@
     "clienttype": "tcp",
     "bufferCommands": true,
     "stateLogEnabled": false,
+    "queueLogEnabled": false,
+    "failureLogEnabled": false,
     "tcpHost": "127.0.0.1",
     "tcpPort": "12502",
     "tcpType": "DEFAULT",
@@ -317,10 +332,13 @@
     "serialStopbits": "1",
     "serialParity": "none",
     "serialConnectionDelay": "100",
+    "serialAsciiResponseStartDelimiter": "",
     "unit_id": "1",
     "commandDelay": "1",
     "clientTimeout": "1000",
-    "reconnectTimeout": "2000"
+    "reconnectOnTimeout": false,
+    "reconnectTimeout": "2000",
+    "parallelUnitIdsAllowed": false
   },
   {
     "id": "d789f1bb.d6ea18",
@@ -330,6 +348,8 @@
     "clienttype": "tcp",
     "bufferCommands": true,
     "stateLogEnabled": false,
+    "queueLogEnabled": false,
+    "failureLogEnabled": false,
     "tcpHost": "127.0.0.1",
     "tcpPort": "12502",
     "tcpType": "DEFAULT",
@@ -340,9 +360,12 @@
     "serialStopbits": "1",
     "serialParity": "none",
     "serialConnectionDelay": "100",
+    "serialAsciiResponseStartDelimiter": "",
     "unit_id": "1",
     "commandDelay": "1",
     "clientTimeout": "1000",
-    "reconnectTimeout": "2000"
+    "reconnectOnTimeout": false,
+    "reconnectTimeout": "2000",
+    "parallelUnitIdsAllowed": false
   }
 ]

@@ -18,6 +18,7 @@
       showStatusActivities: {value: false},
       logIOActivities: {value: false},
       showErrors: {value: false},
+      showWarnings: {value: true},
       unitid: {value: ''},
       dataType: {value: '', required: true},
       adr: {value: '', required: true, validate: RED.validators.number()},
@@ -206,6 +207,11 @@
                 <label style="min-width:160px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
                 data-i18n="modbus-contrib.label.showErrors"></span></label>
                 <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-showWarnings"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.showWarnings"></span></label>
+                <input type="checkbox" checked id="node-input-showWarnings" style="max-width:30px">
             </div>
             <hr>
             <div class="form-row">

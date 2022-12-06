@@ -21,6 +21,7 @@ module.exports = function (RED) {
   const coreModbusClient = require('./core/modbus-client-core')
   const coreModbusQueue = require('./core/modbus-queue-core')
   const internalDebugLog = require('debug')('contribModbus:config:client')
+  const _ = require('underscore')
 
   function ModbusClientNode (config) {
     RED.nodes.createNode(this, config)
@@ -82,7 +83,7 @@ module.exports = function (RED) {
     node.bufferCommandList = new Map()
     node.sendingAllowed = new Map()
     node.unitSendingAllowed = []
-    node.messageAllowedStates = coreModbusClient.messagesAllowedStates
+    node.messageAllowedStates = coreModbusClient.messageAllowedStates
     node.serverInfo = ''
 
     node.stateMachine = null
@@ -519,7 +520,7 @@ module.exports = function (RED) {
     node.on('readModbus', function (msg, cb, cberr) {
       const state = node.actualServiceState
 
-      if (node.messageAllowedStates.indexOf(state.value) === -1) {
+      if (node.isInactive()) {
         cberr(new Error('Client Not Ready To Read At State ' + state.value), msg)
       } else {
         if (node.bufferCommands) {
@@ -544,7 +545,7 @@ module.exports = function (RED) {
     node.on('writeModbus', function (msg, cb, cberr) {
       const state = node.actualServiceState
 
-      if (node.messageAllowedStates.indexOf(state.value) === -1) {
+      if (node.isInactive()) {
         cberr(new Error('Client Not Ready To Write At State ' + state.value), msg)
       } else {
         if (node.bufferCommands) {
@@ -695,6 +696,22 @@ module.exports = function (RED) {
         node.error(err)
         done()
       }
+    }
+
+    node.isInactive = function () {
+      return _.isUndefined(node.actualServiceState) || node.messageAllowedStates.indexOf(node.actualServiceState.value) === -1
+    }
+
+    node.isActive = function () {
+      return !node.isInactive()
+    }
+
+    node.isReadyToSend = function (node) {
+      if (node.actualServiceState.matches('queueing')) {
+        return true
+      }
+      verboseWarn('Client not ready to send')
+      return false
     }
   }
 

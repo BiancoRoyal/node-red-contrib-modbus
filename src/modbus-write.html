@@ -15,6 +15,7 @@
       name: {value: ''},
       showStatusActivities: {value: false},
       showErrors: {value: false},
+      showWarnings: {value: true},
       unitid: {value: ''},
       dataType: {value: '', required: true},
       adr: {value: '', required: true, validate: RED.validators.number()},
@@ -38,6 +39,24 @@
       let fcDataTypeSelector = $('#node-input-dataType')
       let quantitySelector = $('#node-input-quantity')
       let modbusWriteQuantityRow = $('#modbus-write-quantity')
+
+      let tabs = RED.tabs.create({
+        id: "node-input-modbus-tabs",
+        onchange: function (tab) {
+          $("#node-input-tabs-content").children().hide()
+          $("#" + tab.id).show()
+        }
+      })
+
+      tabs.addTab({
+        id: "modbus-settings-tab",
+        label: this._("modbus-contrib.tabs-label.settings")
+      })
+
+      tabs.addTab({
+        id: "modbus-options-tab",
+        label: this._("modbus-contrib.tabs-label.options")
+      })
 
       fcDataTypeSelector.on('focus', function () {
         previous = this.value
@@ -65,56 +84,68 @@
 
 <script type="text/x-red" data-template-name="modbus-write">
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="node-input-modbus-tabs"></ul>
     </div>
-    <div class="form-row">
-        <label for="node-input-unitid"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.unitId"></span></label>
-        <input type="text" id="node-input-unitid">
+    <div id="node-input-tabs-content" style="min-height: 170px;">
+        <div id="modbus-settings-tab" style="display:none">
+            <div class="form-row">
+                <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+                <input type="text" id="node-input-name" placeholder="Name">
+            </div>
+            <div class="form-row">
+                <label for="node-input-unitid"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.unitId"></span></label>
+                <input type="text" id="node-input-unitid">
+            </div>
+            <div class="form-row">
+                <label for="node-input-dataType"><i class="icon-list"></i> <span data-i18n="modbus-contrib.label.functioncode"></span></label>
+                <select id="node-input-dataType">
+                    <option value="Coil">FC 5: Force Single Coil</option>
+                    <option value="HoldingRegister">FC 6: Preset Single Register</option>
+                    <option value="MCoils">FC 15: Force Multiple Coils</option>
+                    <option value="MHoldingRegisters">FC 16: Preset Multiple Registers</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="node-input-adr"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.address"></span></label>
+                <input type="text" id="node-input-adr">
+            </div>
+            <div class="form-row" id="modbus-write-quantity">
+                <label for="node-input-quantity"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.quantity"></span></label>
+                <input type="text" id="node-input-quantity" placeholder="1-65535">
+            </div>
+            <div class="form-row">
+                <label for="node-input-server"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
+                <input type="text" id="node-input-server">
+            </div>
+        </div>
+        <div id="modbus-options-tab" style="display:none">
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-emptyMsgOnFail"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.emptyMsgOnFail"></span></label>
+                <input type="checkbox" id="node-input-emptyMsgOnFail" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-keepMsgProperties"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.keepMsgProperties"></span></label>
+                <input type="checkbox" id="node-input-keepMsgProperties" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.showActivities"></span></label>
+                <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.showErrors"></span></label>
+                <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:160px" for="node-input-showWarnings"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.showWarnings"></span></label>
+                <input type="checkbox" checked id="node-input-showWarnings" style="max-width:30px">
+            </div>
+        </div>
     </div>
-    <div class="form-row">
-        <label for="node-input-dataType"><i class="icon-list"></i> <span data-i18n="modbus-contrib.label.functioncode"></span></label>
-        <select id="node-input-dataType">
-            <option value="Coil">FC 5: Force Single Coil</option>
-            <option value="HoldingRegister">FC 6: Preset Single Register</option>
-            <option value="MCoils">FC 15: Force Multiple Coils</option>
-            <option value="MHoldingRegisters">FC 16: Preset Multiple Registers</option>
-        </select>
-    </div>
-    <div class="form-row">
-        <label for="node-input-adr"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.address"></span></label>
-        <input type="text" id="node-input-adr">
-    </div>
-    <div class="form-row" id="modbus-write-quantity">
-        <label for="node-input-quantity"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.quantity"></span></label>
-        <input type="text" id="node-input-quantity" placeholder="1-65535">
-    </div>
-    <div class="form-row">
-        <label for="node-input-server"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
-        <input type="text" id="node-input-server">
-    </div>
-    <hr>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-input-emptyMsgOnFail"><i class="fa fa-th"></i> <span
-        data-i18n="modbus-contrib.label.emptyMsgOnFail"></span></label>
-        <input type="checkbox" id="node-input-emptyMsgOnFail" style="max-width:30px">
-    </div>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-input-keepMsgProperties"><i class="fa fa-th"></i> <span
-        data-i18n="modbus-contrib.label.keepMsgProperties"></span></label>
-        <input type="checkbox" id="node-input-keepMsgProperties" style="max-width:30px">
-    </div>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
-        data-i18n="modbus-contrib.label.showActivities"></span></label>
-        <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
-    </div>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
-        data-i18n="modbus-contrib.label.showErrors"></span></label>
-        <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
-    </div>
-
 </script>
 
 
