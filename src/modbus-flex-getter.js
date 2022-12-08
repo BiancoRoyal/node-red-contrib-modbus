@@ -142,17 +142,16 @@ module.exports = function (RED) {
 
     function verboseWarn (logMessage) {
       if (RED.settings.verbose && node.showWarnings) {
-        // node.updateServerinfo()
         node.warn('Flex-Getter -> ' + logMessage)
       }
     }
 
-    node.isReadyForInput = function (msg) {
+    node.isReadyForInput = function () {
       return (modbusClient.client && modbusClient.isActive() && node.delayOccured)
     }
 
-    node.isNotReadyForInput = function (msg) {
-      return !node.isReadyForInput(msg)
+    node.isNotReadyForInput = function () {
+      return !node.isReadyForInput()
     }
 
     node.resetDelayTimerToFlexGetter = function () {
@@ -184,7 +183,7 @@ module.exports = function (RED) {
         return
       }
 
-      if (node.isNotReadyForInput(msg)) {
+      if (node.isNotReadyForInput()) {
         if (node.delayOccured) {
           if (modbusClient.isInactive()) {
             verboseWarn('Not ready for Input: Client is not active. Please use initial delay on start or ' +

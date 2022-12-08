@@ -152,7 +152,6 @@ module.exports = function (RED) {
 
     function verboseWarn (logMessage) {
       if (RED.settings.verbose && node.showWarnings) {
-        // node.updateServerinfo()
         node.warn('Flex-Sequencer -> ' + logMessage + ' ' + node.serverInfo)
       }
     }
