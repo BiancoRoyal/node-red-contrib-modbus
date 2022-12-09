@@ -22,7 +22,8 @@
       "reconnectTimeout": "Reconnect-Timeout (ms)",
       "serialAsciiResponseStartDelimiter": "ASCII antwort startbegrenzer",
       "showErrors": "Fehler anzeigen",
-      "showWarnings": "Warnungen anzeigen"
+      "showWarnings": "Warnungen anzeigen",
+      "showLogs": "Logs anzeigen"
     }
   }
 }

@@ -22,13 +22,16 @@
       "timeout": "Timeout (ms)",
       "reconnectOnTimeout": "Reconnect on timeout",
       "reconnectTimeout": "Reconnect timeout (ms)",
-      "parallelUnitIdsAllowed": "UnitId's in parallel",
+      "parallelUnitIdsAllowed": "UnitId's in parallel queues",
+      "parallelUnitIdsAllowedInfo": "Don't use it for serial without a serial gateway.",
       "serialAsciiResponseStartDelimiter": "ASCII response start delimiter",
       "showErrors": "Show Errors",
-      "showWarnings": "Show Warnings"
+      "showWarnings": "Show Warnings",
+      "showLogs": "Show Logs"
     },
     "tabs-label": {
       "settings": "Settings",
+      "queues": "Queues",
       "options": "Optionals"
     }
   }

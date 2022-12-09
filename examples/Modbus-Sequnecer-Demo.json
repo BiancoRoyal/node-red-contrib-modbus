@@ -1,0 +1,240 @@
+[
+  {
+    "id": "c88a71c9.688818",
+    "type": "tab",
+    "label": "Modbus Simple Servers",
+    "disabled": false,
+    "info": "simple flows to show what you \ncan do with the package\n\nthink about organization of reads and \nwrites and try to simplify these flows"
+  },
+  {
+    "id": "f0cfd0c1.8a4f48",
+    "type": "tab",
+    "label": "Modbus Sequencer",
+    "disabled": false,
+    "info": ""
+  },
+  {
+    "id": "352955bb.be6e6a",
+    "type": "modbus-client",
+    "name": "Modbus Server",
+    "clienttype": "tcp",
+    "bufferCommands": true,
+    "stateLogEnabled": false,
+    "queueLogEnabled": false,
+    "tcpHost": "127.0.0.1",
+    "tcpPort": "14502",
+    "tcpType": "DEFAULT",
+    "serialPort": "/dev/ttyUSB",
+    "serialType": "RTU-BUFFERD",
+    "serialBaudrate": "9600",
+    "serialDatabits": "8",
+    "serialStopbits": "1",
+    "serialParity": "none",
+    "serialConnectionDelay": "100",
+    "unit_id": 1,
+    "commandDelay": 1,
+    "clientTimeout": 1000,
+    "reconnectOnTimeout": true,
+    "reconnectTimeout": 2000,
+    "parallelUnitIdsAllowed": true
+  },
+  {
+    "id": "7dd49c19.29e75c",
+    "type": "modbus-server",
+    "z": "c88a71c9.688818",
+    "name": "",
+    "logEnabled": false,
+    "hostname": "",
+    "serverPort": "14502",
+    "responseDelay": "50",
+    "delayUnit": "ms",
+    "coilsBufferSize": 1024,
+    "holdingBufferSize": 1024,
+    "inputBufferSize": 1024,
+    "discreteBufferSize": "1024",
+    "showErrors": true,
+    "x": 360,
+    "y": 80,
+    "wires": [
+      [
+        "e4beac85.1d4d78"
+      ],
+      [
+        "e4beac85.1d4d78"
+      ],
+      [
+        "e4beac85.1d4d78"
+      ],
+      [
+        "e4beac85.1d4d78"
+      ],
+      [
+        "2534b73c.f4a13"
+      ]
+    ]
+  },
+  {
+    "id": "699046ec.3e1b78",
+    "type": "inject",
+    "z": "c88a71c9.688818",
+    "name": "",
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": "",
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "x": 180,
+    "y": 80,
+    "wires": [
+      [
+        "7dd49c19.29e75c"
+      ]
+    ]
+  },
+  {
+    "id": "e4beac85.1d4d78",
+    "type": "debug",
+    "z": "c88a71c9.688818",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "x": 590,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "2534b73c.f4a13",
+    "type": "debug",
+    "z": "c88a71c9.688818",
+    "name": "",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "x": 590,
+    "y": 120,
+    "wires": []
+  },
+  {
+    "id": "b5762218.8300d8",
+    "type": "modbus-flex-sequencer",
+    "z": "f0cfd0c1.8a4f48",
+    "name": "",
+    "sequences": [
+      {
+        "name": "",
+        "unitid": "1",
+        "fc": "FC1",
+        "address": "1",
+        "quantity": "2"
+      },
+      {
+        "name": "",
+        "unitid": "1",
+        "fc": "FC1",
+        "address": "10",
+        "quantity": "2"
+      }
+    ],
+    "server": "352955bb.be6e6a",
+    "showStatusActivities": false,
+    "showErrors": true,
+    "showWarnings": true,
+    "logIOActivities": false,
+    "useIOFile": false,
+    "ioFile": "",
+    "useIOForPayload": false,
+    "emptyMsgOnFail": true,
+    "keepMsgProperties": true,
+    "delayOnStart": true,
+    "startDelayTime": "",
+    "x": 400,
+    "y": 120,
+    "wires": [
+      [
+        "14045550.27c8fb"
+      ],
+      [
+        "fee04ce7.992778",
+        "c0bdb056.aad1f"
+      ]
+    ]
+  },
+  {
+    "id": "c0bdb056.aad1f",
+    "type": "modbus-response",
+    "z": "f0cfd0c1.8a4f48",
+    "name": "",
+    "registerShowMax": 20,
+    "x": 690,
+    "y": 180,
+    "wires": []
+  },
+  {
+    "id": "14045550.27c8fb",
+    "type": "debug",
+    "z": "f0cfd0c1.8a4f48",
+    "name": "",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "x": 650,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "fee04ce7.992778",
+    "type": "debug",
+    "z": "f0cfd0c1.8a4f48",
+    "name": "",
+    "active": false,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "x": 650,
+    "y": 120,
+    "wires": []
+  },
+  {
+    "id": "ccec079d1a546a7c",
+    "type": "inject",
+    "z": "f0cfd0c1.8a4f48",
+    "name": "",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "x": 160,
+    "y": 120,
+    "wires": [
+      [
+        "b5762218.8300d8"
+      ]
+    ]
+  }
+]

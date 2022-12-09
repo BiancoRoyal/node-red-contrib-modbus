@@ -5,7 +5,17 @@
       "showErrors": "Fehler anzeigen",
       "showWarnings": "Warnungen anzeigen",
       "address": "Adresse",
-      "quantity": "Anzahl"
+      "quantity": "Anzahl",
+      "useIOFile": "Nutze IO-Datei",
+      "ioFile": "IO-Datei",
+      "useIOForPayload": "IO's als Payload",
+      "emptyMsgOnFail": "Leere msg bei Modbus-Fehler",
+      "keepMsgProperties": "Nachrichteneigenschaften beibehalten",
+      "delayOnStart": "Verzögerung bei der Aktivierung des Eingangs"
+    },
+    "tabs-label": {
+      "settings": "Einstellungen",
+      "options": "Optionales"
     }
   }
 }

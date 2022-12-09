@@ -37,7 +37,11 @@
       clientTimeout: {value: 1000},
       reconnectOnTimeout: {value: true},
       reconnectTimeout: {value: 2000},
-      parallelUnitIdsAllowed: {value: true}
+      parallelUnitIdsAllowed: {value: true},
+
+      showErrors: {value: false},
+      showWarnings: {value: true},
+      showLogs: {value: true}
     },
     label: function () {
       let node = this
@@ -48,9 +52,32 @@
       }
     },
     oneditprepare: function () {
-
       let previous = null
       let node = this
+
+      let tabs = RED.tabs.create({
+        id: "node-input-modbus-tabs",
+        onchange: function (tab) {
+          $("#node-input-tabs-content").children().hide()
+          $("#" + tab.id).show()
+        }
+      })
+
+      tabs.addTab({
+        id: "modbus-settings-tab",
+        label: this._("modbus-contrib.tabs-label.settings")
+      })
+
+      tabs.addTab({
+        id: "modbus-queues-tab",
+        label: this._("modbus-contrib.tabs-label.queues")
+      })
+
+      tabs.addTab({
+        id: "modbus-options-tab",
+        label: this._("modbus-contrib.tabs-label.options")
+      })
+
       node.ports = []
       let clientTypeSelector = $('#node-config-input-clienttype')
       let serialTypeSelector = $('#node-config-input-serialType')
@@ -196,169 +223,194 @@
 
 <script type="text/x-red" data-template-name="modbus-client">
     <div class="form-row">
-        <label for="node-config-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
-        <input type="text" id="node-config-input-name" placeholder="Name">
+        <ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="node-input-modbus-tabs"></ul>
     </div>
-    <div class="form-row">
-        <label for="node-config-input-clienttype"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.type"></span></label>
-        <select type="text" id="node-config-input-clienttype" style="width:140px;">
-            <option value="tcp" select>TCP</option>
-            <option value="simpleser">Serial</option>
-            <option value="serial">Serial Expert</option>
-        </select>
-    </div>
-    <hr>
-    <div id="node-inputs-modbus-tcp">
-        <div class="form-row">
-            <label for="node-config-input-tcpHost"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.host"></span></label>
-            <input type="text" id="node-config-input-tcpHost">
+    <div id="node-input-tabs-content" style="min-height: 170px;">
+        <div id="modbus-settings-tab" style="display:none">
+            <div class="form-row">
+                <label for="node-config-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+                <input type="text" id="node-config-input-name" placeholder="Name">
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-clienttype"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.type"></span></label>
+                <select type="text" id="node-config-input-clienttype" style="width:140px;">
+                    <option value="tcp" select>TCP</option>
+                    <option value="simpleser">Serial</option>
+                    <option value="serial">Serial Expert</option>
+                </select>
+            </div>
+            <hr>
+            <div id="node-inputs-modbus-tcp">
+                <div class="form-row">
+                    <label for="node-config-input-tcpHost"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.host"></span></label>
+                    <input type="text" id="node-config-input-tcpHost">
+                </div>
+                <div class="form-row">
+                    <label for="node-config-input-tcpPort"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.port"></span></label>
+                    <input type="text" id="node-config-input-tcpPort" placeholder="502">
+                </div>
+                <div class="form-row">
+                    <label for="node-config-input-tcpType"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.tcpType"></span></label>
+                    <select type="text" id="node-config-input-tcpType" style="width:140px;">
+                        <option value="DEFAULT" select>DEFAULT</option>
+                        <option value="TCP-RTU-BUFFERED">RTU-BUFFERED</option>
+                        <option value="TELNET">TELNET</option>
+                        <option value="C701">C701</option>
+                    </select>
+                </div>
+            </div>
+            <div id="node-inputs-modbus-serial">
+                <div class="form-row">
+                    <label for="node-config-input-serialPort"><i class="fa fa-random"></i> <span data-i18n="modbus-contrib.label.serialport"></span></label>
+                    <input type="text" id="node-config-input-serialPort" style="width:60%;" placeholder="/dev/ttyUSB or COM4">
+                    <a id="node-config-lookup-serial" class="red-ui-button"><i id="node-config-lookup-serial-icon" class="fa fa-search"></i></a>
+                </div>
+                <div class="form-row">
+                    <label for="node-config-input-serialType"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.serialType"></span></label>
+                    <select type="text" id="node-config-input-serialType" style="width:140px;">
+                        <option value="RTU-BUFFERD" select>RTU-BUFFERD</option>
+                        <option value="RTU">RTU</option>
+                        <option value="ASCII">ASCII</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="node-config-input-serialBaudrate"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.baudRate"></span></label>
+                    <select id="node-config-input-serialBaudrate" style="max-width:140px">
+                        <option value="115200">115200</option>
+                        <option value="57600">57600</option>
+                        <option value="38400">38400</option>
+                        <option value="19200">19200</option>
+                        <option value="9600">9600</option>
+                        <option value="4800">4800</option>
+                        <option value="2400">2400</option>
+                        <option value="1200">1200</option>
+                        <option value="300">300</option>
+                        <option value="110">110</option>
+                        <option value="75">75</option>
+                    </select>
+                </div>
+            </div>
+            <div id="node-inputs-modbus-serial-extras">
+                <div class="form-row">
+                    <label for="node-config-input-serialDatabits"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.dataBits"></span></label>
+                    <select id="node-config-input-serialDatabits" style="max-width:80px">
+                        <option value="8">8</option>
+                        <option value="7">7</option>
+                        <option value="6">6</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="node-config-input-serialStopbits"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.stopBits"></span></label>
+                    <select id="node-config-input-serialStopbits" style="max-width:80px">
+                        <option value="1">1</option>
+                        <option value="1.5">1.5</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="node-config-input-serialParity"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.parity"></span></label>
+                    <select id="node-config-input-serialParity" style="max-width:80px">
+                        <option value="none">None</option>
+                        <option value="even">Even</option>
+                        <option value="mark">Mark</option>
+                        <option value="odd">Odd</option>
+                        <option value="space">Space</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="node-config-input-serialConnectionDelay">
+                        <i class="fa fa-random"></i>
+                        <span data-i18n="modbus-contrib.label.serialconnectiondelay"></span>
+                    </label>
+                    <input type="text" id="node-config-input-serialConnectionDelay" style="max-width:80px" placeholder="500">
+                </div>
+            </div>
+          <div id="node-inputs-ascii-extras">
+            <div class="form-row">
+              <label for="node-config-input-serialAsciiResponseStartDelimiter"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.serialAsciiResponseStartDelimiter"></span></label>
+              <input type="text" id="node-config-input-serialAsciiResponseStartDelimiter" style="max-width:80px" placeholder="0x3A (:)">
+            </div>
+          </div>
+            <hr>
+            <div class="form-row">
+                <label for="node-config-input-unit_id"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.unitId"></span></label>
+                <input type="text" id="node-config-input-unit_id" style="max-width:80px">
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-clientTimeout"><i class="icon-time"></i> <span data-i18n="modbus-contrib.label.timeout"></span></label>
+                <input type="text" id="node-config-input-clientTimeout" placeholder="1000" style="max-width:80px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:190px" for="node-config-input-reconnectOnTimeout"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.reconnectOnTimeout"></span></label>
+                <input type="checkbox" id="node-config-input-reconnectOnTimeout" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-reconnectTimeout">
+                    <i class="icon-time"></i>
+                    <span data-i18n="modbus-contrib.label.reconnectTimeout"></span>
+                </label>
+                <input type="text" id="node-config-input-reconnectTimeout" placeholder="2000" style="max-width:80px">
+            </div>
         </div>
-        <div class="form-row">
-            <label for="node-config-input-tcpPort"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.port"></span></label>
-            <input type="text" id="node-config-input-tcpPort" placeholder="502">
+        <div id="modbus-queues-tab" style="display:none">
+            <div class="form-row">
+                <label style="min-width:190px" for="node-config-input-parallelUnitIdsAllowed"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.parallelUnitIdsAllowed"></span></label>
+                <input type="checkbox" id="node-config-input-parallelUnitIdsAllowed" style="max-width:30px">
+                 <span class="tooltip-text" data-i18n="modbus-contrib.label.parallelUnitIdsAllowedInfo"></span>
+            </div>
+            <div class="form-row">
+                <label style="min-width:190px" for="node-config-input-queueLogEnabled">
+                    <i class="fa fa-th"></i>
+                    <span data-i18n="modbus-contrib.label.queueLogEnabled"></span>
+                </label>
+                <input type="checkbox" id="node-config-input-queueLogEnabled" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:190px" for="node-config-input-bufferCommands"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.queueCommands"></span></label>
+                <input type="checkbox" id="node-config-input-bufferCommands" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:190px" for="node-config-input-commandDelay"><i class="icon-time"></i> <span
+                data-i18n="modbus-contrib.label.commandDelay"></span></label>
+                <input type="text" id="node-config-input-commandDelay" placeholder="1" style="max-width:80px">
+            </div>
         </div>
-        <div class="form-row">
-            <label for="node-config-input-tcpType"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.tcpType"></span></label>
-            <select type="text" id="node-config-input-tcpType" style="width:140px;">
-                <option value="DEFAULT" select>DEFAULT</option>
-                <option value="TCP-RTU-BUFFERED">RTU-BUFFERED</option>
-                <option value="TELNET">TELNET</option>
-                <option value="C701">C701</option>
-            </select>
+        <div id="modbus-options-tab" style="display:none">
+            <div class="form-row">
+                <label style="min-width:190px" for="node-config-input-stateLogEnabled">
+                    <i class="fa fa-th"></i>
+                    <span data-i18n="modbus-contrib.label.stateLogEnabled"></span>
+                </label>
+                <input type="checkbox" id="node-config-input-stateLogEnabled" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:190px" for="node-config-input-failureLogEnabled">
+                    <i class="fa fa-th"></i>
+                    <span data-i18n="modbus-contrib.label.failureLogEnabled"></span>
+                </label>
+                <input type="checkbox" id="node-config-input-failureLogEnabled" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:190px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.showErrors"></span></label>
+                <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:190px" for="node-input-showWarnings"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.showWarnings"></span></label>
+                <input type="checkbox" checked id="node-input-showWarnings" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:190px" for="node-input-showLogs"><i class="fa fa-th"></i> <span
+                data-i18n="modbus-contrib.label.showLogs"></span></label>
+                <input type="checkbox" checked id="node-input-showLogs" style="max-width:30px">
+            </div>
         </div>
     </div>
-    <div id="node-inputs-modbus-serial">
-        <div class="form-row">
-            <label for="node-config-input-serialPort"><i class="fa fa-random"></i> <span data-i18n="modbus-contrib.label.serialport"></span></label>
-            <input type="text" id="node-config-input-serialPort" style="width:60%;" placeholder="/dev/ttyUSB or COM4">
-            <a id="node-config-lookup-serial" class="red-ui-button"><i id="node-config-lookup-serial-icon" class="fa fa-search"></i></a>
-        </div>
-        <div class="form-row">
-            <label for="node-config-input-serialType"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.serialType"></span></label>
-            <select type="text" id="node-config-input-serialType" style="width:140px;">
-                <option value="RTU-BUFFERD" select>RTU-BUFFERD</option>
-                <option value="RTU">RTU</option>
-                <option value="ASCII">ASCII</option>
-            </select>
-        </div>
-        <div class="form-row">
-            <label for="node-config-input-serialBaudrate"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.baudRate"></span></label>
-            <select id="node-config-input-serialBaudrate" style="max-width:140px">
-                <option value="115200">115200</option>
-                <option value="57600">57600</option>
-                <option value="38400">38400</option>
-                <option value="19200">19200</option>
-                <option value="9600">9600</option>
-                <option value="4800">4800</option>
-                <option value="2400">2400</option>
-                <option value="1200">1200</option>
-                <option value="300">300</option>
-                <option value="110">110</option>
-                <option value="75">75</option>
-            </select>
-        </div>
-    </div>
-    <div id="node-inputs-modbus-serial-extras">
-        <div class="form-row">
-            <label for="node-config-input-serialDatabits"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.dataBits"></span></label>
-            <select id="node-config-input-serialDatabits" style="max-width:80px">
-                <option value="8">8</option>
-                <option value="7">7</option>
-                <option value="6">6</option>
-                <option value="5">5</option>
-            </select>
-        </div>
-        <div class="form-row">
-            <label for="node-config-input-serialStopbits"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.stopBits"></span></label>
-            <select id="node-config-input-serialStopbits" style="max-width:80px">
-                <option value="1">1</option>
-                <option value="1.5">1.5</option>
-                <option value="2">2</option>
-            </select>
-        </div>
-        <div class="form-row">
-            <label for="node-config-input-serialParity"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.parity"></span></label>
-            <select id="node-config-input-serialParity" style="max-width:80px">
-                <option value="none">None</option>
-                <option value="even">Even</option>
-                <option value="mark">Mark</option>
-                <option value="odd">Odd</option>
-                <option value="space">Space</option>
-            </select>
-        </div>
-        <div class="form-row">
-            <label for="node-config-input-serialConnectionDelay">
-                <i class="fa fa-random"></i>
-                <span data-i18n="modbus-contrib.label.serialconnectiondelay"></span>
-            </label>
-            <input type="text" id="node-config-input-serialConnectionDelay" style="max-width:80px" placeholder="500">
-        </div>
-	</div>
-  <div id="node-inputs-ascii-extras">
-    <div class="form-row">
-      <label for="node-config-input-serialAsciiResponseStartDelimiter"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.serialAsciiResponseStartDelimiter"></span></label>
-      <input type="text" id="node-config-input-serialAsciiResponseStartDelimiter" style="max-width:80px" placeholder="0x3A (:)">
-    </div>
-  </div>
-	<hr>
-    <div class="form-row">
-        <label for="node-config-input-unit_id"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.unitId"></span></label>
-        <input type="text" id="node-config-input-unit_id" style="max-width:80px">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-clientTimeout"><i class="icon-time"></i> <span data-i18n="modbus-contrib.label.timeout"></span></label>
-        <input type="text" id="node-config-input-clientTimeout" placeholder="1000" style="max-width:80px">
-    </div>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-config-input-reconnectOnTimeout"><i class="fa fa-th"></i> <span
-        data-i18n="modbus-contrib.label.reconnectOnTimeout"></span></label>
-        <input type="checkbox" id="node-config-input-reconnectOnTimeout" style="max-width:30px">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-reconnectTimeout">
-            <i class="icon-time"></i>
-            <span data-i18n="modbus-contrib.label.reconnectTimeout"></span>
-        </label>
-        <input type="text" id="node-config-input-reconnectTimeout" placeholder="2000" style="max-width:80px">
-    </div>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-config-input-parallelUnitIdsAllowed"><i class="fa fa-th"></i> <span
-        data-i18n="modbus-contrib.label.parallelUnitIdsAllowed"></span></label>
-        <input type="checkbox" id="node-config-input-parallelUnitIdsAllowed" style="max-width:30px">
-    </div>
-    <hr>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-config-input-stateLogEnabled">
-            <i class="fa fa-th"></i>
-            <span data-i18n="modbus-contrib.label.stateLogEnabled"></span>
-        </label>
-        <input type="checkbox" id="node-config-input-stateLogEnabled" style="max-width:30px">
-    </div>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-config-input-queueLogEnabled">
-            <i class="fa fa-th"></i>
-            <span data-i18n="modbus-contrib.label.queueLogEnabled"></span>
-        </label>
-        <input type="checkbox" id="node-config-input-queueLogEnabled" style="max-width:30px">
-    </div>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-config-input-failureLogEnabled">
-            <i class="fa fa-th"></i>
-            <span data-i18n="modbus-contrib.label.failureLogEnabled"></span>
-        </label>
-        <input type="checkbox" id="node-config-input-failureLogEnabled" style="max-width:30px">
-    </div>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-config-input-bufferCommands"><i class="fa fa-th"></i> <span
-        data-i18n="modbus-contrib.label.queueCommands"></span></label>
-        <input type="checkbox" id="node-config-input-bufferCommands" style="max-width:30px">
-    </div>
-    <div class="form-row">
-        <label style="min-width:160px" for="node-config-input-commandDelay"><i class="icon-time"></i> <span
-        data-i18n="modbus-contrib.label.commandDelay"></span></label>
-        <input type="text" id="node-config-input-commandDelay" placeholder="1" style="max-width:80px">
-    </div>
-
 </script>
 
 <script type="text/x-red" data-help-name="modbus-client">

@@ -46,8 +46,15 @@ module.exports = function (RED) {
     this.internalDebugLog = internalDebugLog
     this.verboseLogging = RED.settings.verbose
 
+    this.delayOnStart = config.delayOnStart
+    this.startDelayTime = parseInt(config.startDelayTime) || 10
+
     const node = this
     node.bufferMessageList = new Map()
+    node.INPUT_TIMEOUT_MILLISECONDS = 1000
+    node.delayOccured = false
+    node.inputDelayTimer = null
+
     mbBasics.setNodeStatusTo('waiting', node)
 
     const modbusClient = RED.nodes.getNode(config.server)
@@ -98,23 +105,55 @@ module.exports = function (RED) {
 
     function verboseWarn (logMessage) {
       if (RED.settings.verbose && node.showWarnings) {
-        // node.updateServerinfo()
-        node.warn('Getter -> ' + logMessage + ' ' + node.serverInfo)
+        node.warn('Getter -> ' + logMessage)
       }
     }
 
+    node.isReadyForInput = function () {
+      return (modbusClient.client && modbusClient.isActive() && node.delayOccured)
+    }
+
+    node.isNotReadyForInput = function () {
+      return !node.isReadyForInput()
+    }
+
+    node.resetInputDelayTimer = function () {
+      if (node.inputDelayTimer) {
+        verboseWarn('reset input delay timer node ' + node.id)
+        clearTimeout(node.inputDelayTimer)
+      }
+      node.inputDelayTimer = null
+      node.delayOccured = false
+    }
+
+    node.initializeInputDelayTimer = function () {
+      node.resetInputDelayTimer()
+      if (node.delayOnStart) {
+        verboseWarn('initialize input delay timer node ' + node.id)
+        node.inputDelayTimer = setTimeout(() => {
+          node.delayOccured = true
+        }, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)
+      } else {
+        node.delayOccured = true
+      }
+    }
+
+    node.initializeInputDelayTimer()
+
     node.on('input', function (msg) {
       if (mbBasics.invalidPayloadIn(msg)) {
+        verboseWarn('Invalid message on input.')
         return
       }
 
-      if (!modbusClient.client) {
+      if (node.isNotReadyForInput()) {
+        verboseWarn('Inject while node is not ready for input.')
         return
       }
 
       if (modbusClient.isInactive()) {
         verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
-        return false
+        return
       }
 
       const origMsgInput = Object.assign({}, msg) // keep it origin

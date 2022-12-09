@@ -22,7 +22,9 @@
       quantity: {value: '', required: true, validate: RED.validators.number()},
       server: {type: 'modbus-client', required: true},
       emptyMsgOnFail: {value: false},
-      keepMsgProperties: {value: false}
+      keepMsgProperties: {value: false},
+      delayOnStart: {value: false},
+      startDelayTime: {value: ''}
     },
     inputs: 1,
     outputs: 2,
@@ -56,6 +58,22 @@
       tabs.addTab({
         id: "modbus-options-tab",
         label: this._("modbus-contrib.tabs-label.options")
+      })
+
+      if (this.delayOnStart) {
+        $('#node-delay').show()
+      }
+      else {
+        $('#node-delay').hide()
+        $('#node-input-delayOnStart').prop('checked', false)
+      }
+
+      $('#node-input-delayOnStart').change(function () {
+        if ($(this).is(':checked')) {
+          $('#node-delay').show()
+        } else {
+          $('#node-delay').hide()
+        }
       })
 
       fcDataTypeSelector.on('focus', function () {
@@ -113,6 +131,15 @@
                 <label for="node-input-quantity"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.quantity"></span></label>
                 <input type="text" id="node-input-quantity" placeholder="1-65535">
             </div>
+            <div class="form-row" id="node-delayonstart">
+                <label for="node-input-delayOnStart" style="width:160px">
+                <i class="fa fa-power-off"></i> <span data-i18n="modbus-contrib.label.delayOnStart"></span></label>
+                <input type="checkbox" id="node-input-delayOnStart" style="width:40px">
+            </div>
+            <div class="form-row" id="node-delay">
+                <label for="node-input-startDelayTime"><i class="fa fa-clock-o"></i> <span data-i18n="modbus-contrib.label.startDelayTime"></span></label>
+                <input type="text" id="node-input-startDelayTime" placeholder="10" style="width:80px">
+            </div>
             <div class="form-row">
                 <label for="node-input-server"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
                 <input type="text" id="node-input-server">
@@ -120,27 +147,27 @@
         </div>
         <div id="modbus-options-tab" style="display:none">
             <div class="form-row">
-                <label style="min-width:160px" for="node-input-emptyMsgOnFail"><i class="fa fa-th"></i> <span
+                <label style="min-width:190px" for="node-input-emptyMsgOnFail"><i class="fa fa-th"></i> <span
                 data-i18n="modbus-contrib.label.emptyMsgOnFail"></span></label>
                 <input type="checkbox" id="node-input-emptyMsgOnFail" style="max-width:30px">
             </div>
             <div class="form-row">
-                <label style="min-width:160px" for="node-input-keepMsgProperties"><i class="fa fa-th"></i> <span
+                <label style="min-width:190px" for="node-input-keepMsgProperties"><i class="fa fa-th"></i> <span
                 data-i18n="modbus-contrib.label.keepMsgProperties"></span></label>
                 <input type="checkbox" id="node-input-keepMsgProperties" style="max-width:30px">
             </div>
             <div class="form-row">
-                <label style="min-width:160px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
+                <label style="min-width:190px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
                 data-i18n="modbus-contrib.label.showActivities"></span></label>
                 <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
             </div>
             <div class="form-row">
-                <label style="min-width:160px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
+                <label style="min-width:190px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
                 data-i18n="modbus-contrib.label.showErrors"></span></label>
                 <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
             </div>
             <div class="form-row">
-                <label style="min-width:160px" for="node-input-showWarnings"><i class="fa fa-th"></i> <span
+                <label style="min-width:190px" for="node-input-showWarnings"><i class="fa fa-th"></i> <span
                 data-i18n="modbus-contrib.label.showWarnings"></span></label>
                 <input type="checkbox" checked id="node-input-showWarnings" style="max-width:30px">
             </div>

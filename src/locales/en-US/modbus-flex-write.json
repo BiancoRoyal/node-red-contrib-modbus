@@ -5,8 +5,9 @@
       "showErrors": "Show Errors",
       "showWarnings": "Show Warnings",
       "server": "Server",
-      "emptyMsgOnFail": "Empty msg on fail",
-      "keepMsgProperties": "Keep Msg Properties"
+      "emptyMsgOnFail": "Empty msg on Modbus fail",
+      "keepMsgProperties": "Keep Msg Properties",
+      "delayOnStart": "Delay to activate input"
     },
     "tabs-label": {
       "settings": "Settings",

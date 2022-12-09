@@ -3,7 +3,14 @@
     "label": {
       "showActivities": "Aktivitäten anzeigen",
       "showErrors": "Fehler anzeigen",
-      "showWarnings": "Warnungen anzeigen"
+      "showWarnings": "Warnungen anzeigen",
+      "emptyMsgOnFail": "Leere msg bei Modbus-Fehler",
+      "keepMsgProperties": "Nachrichteneigenschaften beibehalten",
+      "delayOnStart": "Verzögerung bei der Aktivierung des Eingangs"
+    },
+    "tabs-label": {
+      "settings": "Einstellungen",
+      "options": "Optionales"
     }
   }
 }

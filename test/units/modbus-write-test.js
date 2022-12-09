@@ -153,6 +153,44 @@ describe('Write node Testing', function () {
         helper.log('function callback')
       })
     })
+
+
+
+    it('should inject at least 4 messages but only use one to test initial delay', function (done) {
+      this.timeout(3000)
+      const flow = Array.from(testFlows.testWriteDelayFlow)
+      flow[1].serverPort = 5803
+      flow[10].tcpPort = 5803
+      helper.load(testSimpleWriteParametersNodes, flow, function () {
+        const writeNode = helper.getNode('1ed908da.427ecf')
+        const helperNode = helper.getNode('h1')
+        let getterCounter = 0
+        let helperCounter = 0
+        let startingTimestamp = null
+        let endTimestamp = null
+
+        writeNode.on('input', (msg) => {
+          getterCounter++
+
+          if(getterCounter === 1){
+            startingTimestamp = Date.now()
+          }
+          endTimestamp = Date.now()
+        })
+
+        helperNode.on('input', (msg) => {
+          helperCounter++
+
+          let difBetweenTimestamps = endTimestamp - startingTimestamp
+          getterCounter.should.be.greaterThanOrEqual(6)
+          helperCounter.should.be.greaterThanOrEqual(1)
+          helperCounter.should.be.greaterThanOrEqual(3)
+          difBetweenTimestamps.should.be.greaterThanOrEqual(1500)
+
+          done()
+        })
+      })
+    })
   })
 
   describe('post', function () {

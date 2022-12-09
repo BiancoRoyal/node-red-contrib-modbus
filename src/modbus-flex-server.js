@@ -161,7 +161,7 @@ module.exports = function (RED) {
         if (node.showErrors) {
           node.error('Is Not A Valid Memory Write Message To Server', msg)
         }
-        if (!msg.payload.disableMsgOutput) {
+        if (coreServer.isValidMessage(msg) && !msg.payload.disableMsgOutput) {
           node.send(buildMessage(msg))
         }
       }

@@ -8,6 +8,8 @@
 'use strict'
 // SOURCE-MAP-REQUIRED
 
+const _ = require('underscore')
+
 // eslint-disable-next-line no-var
 var de = de || { biancoroyal: { modbus: { core: { server: { } } } } } // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.core.server.internalDebug = de.biancoroyal.modbus.core.server.internalDebug || require('debug')('contribModbus:core:server') // eslint-disable-line no-use-before-define
@@ -26,11 +28,15 @@ de.biancoroyal.modbus.core.server.getLogFunction = function (node) {
 }
 
 de.biancoroyal.modbus.core.server.isValidMemoryMessage = function (msg) {
-  return msg.payload &&
+  return _.isUndefined(msg.payload) === false &&
     msg.payload.register &&
     Number.isInteger(msg.payload.address) &&
     msg.payload.address >= 0 &&
     msg.payload.address <= 65535
+}
+
+de.biancoroyal.modbus.core.server.isValidMessage = function (msg) {
+  return _.isUndefined(msg) === false && _.isUndefined(msg.payload) === false
 }
 
 de.biancoroyal.modbus.core.server.copyToModbusFlexBuffer = function (node, msg) {

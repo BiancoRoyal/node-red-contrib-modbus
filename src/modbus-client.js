@@ -76,6 +76,10 @@ module.exports = function (RED) {
       this.parallelUnitIdsAllowed = config.parallelUnitIdsAllowed
     }
 
+    this.showErrors = config.showErrors
+    this.showWarnings = config.showWarnings
+    this.showLogs = config.showLogs
+
     const node = this
     node.isFirstInitOfConnection = true
     node.closingModbus = false
@@ -129,14 +133,20 @@ module.exports = function (RED) {
     }
 
     function verboseWarn (logMessage) {
-      if (RED.settings.verbose) {
+      if (RED.settings.verbose && node.showWarnings) {
         node.updateServerinfo()
         node.warn('Client -> ' + logMessage + ' ' + node.serverInfo)
       }
     }
 
+    node.errorProtocolMsg = function (err, msg) {
+      if (node.showErrors) {
+        mbBasics.logMsgError(node, err, msg)
+      }
+    }
+
     function verboseLog (logMessage) {
-      if (RED.settings.verbose) {
+      if (RED.settings.verbose && node.showLogs) {
         coreModbusClient.internalDebug('Client -> ' + logMessage + ' ' + node.serverInfo)
       }
     }
