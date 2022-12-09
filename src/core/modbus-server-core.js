@@ -35,6 +35,10 @@ de.biancoroyal.modbus.core.server.isValidMemoryMessage = function (msg) {
     msg.payload.address <= 65535
 }
 
+de.biancoroyal.modbus.core.server.isValidMessage = function (msg) {
+  return _.isUndefined(msg) === false && _.isUndefined(msg.payload) === false
+}
+
 de.biancoroyal.modbus.core.server.copyToModbusFlexBuffer = function (node, msg) {
   switch (msg.payload.register) {
     case 'holding':
