@@ -184,7 +184,7 @@ describe('Write node Testing', function () {
           let difBetweenTimestamps = endTimestamp - startingTimestamp
           getterCounter.should.be.greaterThanOrEqual(6)
           helperCounter.should.be.greaterThanOrEqual(1)
-          helperCounter.should.be.lessThanOrEqual(3)
+          helperCounter.should.be.greaterThanOrEqual(3)
           difBetweenTimestamps.should.be.greaterThanOrEqual(1500)
 
           done()
