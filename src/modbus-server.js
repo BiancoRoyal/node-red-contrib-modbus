@@ -102,14 +102,14 @@ module.exports = function (RED) {
     node.on('input', function (msg) {
       if (coreServer.isValidMemoryMessage(msg)) {
         coreServer.writeToServerMemory(node, msg)
-        if (!msg.payload.disableMsgOutput) {
+        if (!msg.payload?.disableMsgOutput) {
           node.send(buildMessage(msg))
         }
       } else {
         if (node.showErrors) {
           node.error('Is Not A Valid Memory Write Message To Server', msg)
         }
-        if (!msg.payload.disableMsgOutput) {
+        if (!msg.payload?.disableMsgOutput) {
           node.send(buildMessage(msg))
         }
       }
