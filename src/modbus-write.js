@@ -39,8 +39,14 @@ module.exports = function (RED) {
     this.internalDebugLog = internalDebugLog
     this.verboseLogging = RED.settings.verbose
 
+    this.delayOnStart = config.delayOnStart
+    this.startDelayTime = parseInt(config.startDelayTime) || 10
+
     const node = this
     node.bufferMessageList = new Map()
+    node.INPUT_TIMEOUT_MILLISECONDS = 1000
+    node.delayOccured = false
+    node.inputDelayTimer = null
 
     mbBasics.setNodeStatusTo('waiting', node)
 
@@ -108,19 +114,49 @@ module.exports = function (RED) {
 
     function verboseWarn (logMessage) {
       if (RED.settings.verbose && node.showWarnings) {
-        // node.updateServerinfo()
-        node.warn('Writer -> ' + logMessage + ' ' + node.serverInfo)
+        node.warn('Writer -> ' + logMessage)
       }
     }
 
-    node.on('input', function (msg) {
-      const origMsgInput = Object.assign({}, msg)
+    node.isReadyForInput = function () {
+      return (modbusClient.client && modbusClient.isActive() && node.delayOccured)
+    }
 
+    node.isNotReadyForInput = function () {
+      return !node.isReadyForInput()
+    }
+
+    node.resetInputDelayTimer = function () {
+      if (node.inputDelayTimer) {
+        verboseWarn('reset input delay timer node ' + node.id)
+        clearTimeout(node.inputDelayTimer)
+      }
+      node.inputDelayTimer = null
+      node.delayOccured = false
+    }
+
+    node.initializeInputDelayTimer = function () {
+      node.resetInputDelayTimer()
+      if (node.delayOnStart) {
+        verboseWarn('initialize input delay timer node ' + node.id)
+        node.inputDelayTimer = setTimeout(() => {
+          node.delayOccured = true
+        }, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)
+      } else {
+        node.delayOccured = true
+      }
+    }
+
+    node.initializeInputDelayTimer()
+
+    node.on('input', function (msg) {
       if (mbBasics.invalidPayloadIn(msg)) {
+        verboseWarn('Invalid message on input.')
         return
       }
 
-      if (!modbusClient.client) {
+      if (node.isNotReadyForInput()) {
+        verboseWarn('Inject while node is not ready for input.')
         return
       }
 
@@ -129,6 +165,7 @@ module.exports = function (RED) {
         return false
       }
 
+      const origMsgInput = Object.assign({}, msg)
       try {
         const httpMsg = node.setMsgPayloadFromHTTPRequests(origMsgInput)
         const newMsg = node.buildNewMessageObject(node, httpMsg)

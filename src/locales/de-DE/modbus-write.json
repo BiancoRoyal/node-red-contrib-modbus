@@ -5,7 +5,12 @@
       "showErrors": "Fehler anzeigen",
       "showWarnings": "Warnungen anzeigen",
       "address": "Adresse",
-      "quantity": "Anzahl"
+      "quantity": "Anzahl",
+      "delayOnStart": "Verzögerung bei der Aktivierung des Eingangs"
+    },
+    "tabs-label": {
+      "settings": "Einstellungen",
+      "options": "Optionales"
     }
   }
 }
