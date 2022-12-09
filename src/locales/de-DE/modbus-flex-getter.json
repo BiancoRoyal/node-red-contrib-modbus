@@ -4,8 +4,15 @@
       "showActivities": "Aktivitäten anzeigen",
       "showErrors": "Fehler anzeigen",
       "showWarnings": "Warnungen anzeigen",
-      "delayOnStart": "Verzögerung beim Start",
-      "showNotReadyForInput": "Zeige 'Nicht bereit für Eingabe' Hinweis"
+      "delayOnStart": "Verzögerung bei der Aktivierung des Eingangs",
+      "showNotReadyForInput": "Zeige 'Nicht bereit für Eingabe' Hinweis",
+      "useIOForPayload": "IO's als Payload",
+      "emptyMsgOnFail": "Leere msg bei Modbus-Fehler",
+      "keepMsgProperties": "Nachrichteneigenschaften beibehalten"
+    },
+    "tabs-label": {
+      "settings": "Einstellungen",
+      "options": "Optionales"
     }
   }
 }

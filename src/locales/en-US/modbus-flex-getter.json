@@ -9,9 +9,9 @@
       "useIOFile": "Using IO-File",
       "ioFile": "IO-File",
       "useIOForPayload": "IO's As Payload",
-      "emptyMsgOnFail": "Empty msg on fail",
+      "emptyMsgOnFail": "Empty msg on Modbus fail",
       "keepMsgProperties": "Keep Msg Properties",
-      "delayOnStart": "Delay on start"
+      "delayOnStart": "Delay to activate input"
     },
     "tabs-label": {
       "settings": "Settings",
