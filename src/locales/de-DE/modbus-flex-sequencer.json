@@ -1,0 +1,25 @@
+{
+    "modbus-contrib": {
+      "label": {
+        "showActivities": "Aktivitäten anzeigen",
+        "showErrors": "Fehler anzeigen",
+        "showWarnings": "Warnungen anzeigen",
+        "delayOnStart": "Verzögerung bei der Aktivierung des Eingangs",
+        "logIOActivities": "Log IO",
+        "unitId": "Unit-Id",
+        "functioncode": "FC",
+        "address": "Adresse",
+        "quantity": "Anzahl",
+        "pollrate": "Poll-Rate",
+        "useIOFile": "Nutze IO-Datei",
+        "ioFile": "IO-Datei",
+        "useIOForPayload": "IO's als Payload",
+        "emptyMsgOnFail": "Leere msg bei Modbus-Fehler",
+        "keepMsgProperties": "Nachrichteneigenschaften beibehalten"
+      },
+      "tabs-label": {
+        "settings": "Einstellungen",
+        "options": "Optionales"
+      }
+    }
+  }

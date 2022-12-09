@@ -2492,6 +2492,8 @@
     "useIOForPayload": false,
     "emptyMsgOnFail": true,
     "keepMsgProperties": true,
+    "delayOnStart": true,
+    "startDelayTime": "",
     "x": 400,
     "y": 120,
     "wires": [
@@ -2505,32 +2507,13 @@
     ]
   },
   {
-    "id": "442061b.228722",
-    "type": "inject",
-    "z": "f0cfd0c1.8a4f48",
-    "name": "Read Sequence",
-    "props": [],
-    "repeat": "",
-    "crontab": "",
-    "once": false,
-    "onceDelay": "",
-    "topic": "",
-    "x": 160,
-    "y": 120,
-    "wires": [
-      [
-        "b5762218.8300d8"
-      ]
-    ]
-  },
-  {
     "id": "c0bdb056.aad1f",
     "type": "modbus-response",
     "z": "f0cfd0c1.8a4f48",
     "name": "",
     "registerShowMax": 20,
     "x": 690,
-    "y": 160,
+    "y": 180,
     "wires": []
   },
   {
@@ -2562,5 +2545,34 @@
     "x": 650,
     "y": 120,
     "wires": []
+  },
+  {
+    "id": "ccec079d1a546a7c",
+    "type": "inject",
+    "z": "f0cfd0c1.8a4f48",
+    "name": "",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "x": 160,
+    "y": 120,
+    "wires": [
+      [
+        "b5762218.8300d8"
+      ]
+    ]
   }
 ]
