@@ -47,6 +47,7 @@ module.exports = function (RED) {
     node.INPUT_TIMEOUT_MILLISECONDS = 1000
     node.delayOccured = false
     node.inputDelayTimer = null
+
     mbBasics.setNodeStatusTo('waiting', node)
 
     const modbusClient = RED.nodes.getNode(config.server)
@@ -156,7 +157,7 @@ module.exports = function (RED) {
 
     node.resetInputDelayTimer = function () {
       if (node.inputDelayTimer) {
-        verboseWarn('resetDelayTimerToFlexGetter node ' + node.id)
+        verboseWarn('reset input delay timer node ' + node.id)
         clearTimeout(node.inputDelayTimer)
       }
       node.inputDelayTimer = null
@@ -166,7 +167,7 @@ module.exports = function (RED) {
     node.initializeInputDelayTimer = function () {
       node.resetInputDelayTimer()
       if (node.delayOnStart) {
-        verboseWarn('initializeFlexGetterTimer delay timer node ' + node.id)
+        verboseWarn('initialize input delay timer node ' + node.id)
         node.inputDelayTimer = setTimeout(() => {
           node.delayOccured = true
         }, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)

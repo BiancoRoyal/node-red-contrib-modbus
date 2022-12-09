@@ -186,7 +186,8 @@ module.exports = function (RED) {
     node.initializeInputDelayTimer()
 
     node.on('input', function (msg) {
-      if (mbBasics.invalidPayloadIn(msg) || !modbusClient.client) {
+      if (mbBasics.invalidPayloadIn(msg)) {
+        verboseWarn('Invalid message on input.')
         return
       }
 
