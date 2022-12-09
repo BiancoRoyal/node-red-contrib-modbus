@@ -11,7 +11,8 @@
       "simpleNegatives": "Negative UInt",
       "server": "Server",
       "emptyMsgOnFail": "Empty msg on fail",
-      "keepMsgProperties": "Keep Msg Properties"
+      "keepMsgProperties": "Keep Msg Properties",
+      "delayOnStart": "Delay on start"
     },
     "tabs-label": {
       "settings": "Settings",
