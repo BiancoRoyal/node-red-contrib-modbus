@@ -12,7 +12,7 @@
     "modbus-serial": "~8.0.8",
     "source-map-support": "~0.5.21",
     "underscore": "^1.13.6",
-    "vm2": "~3.9.11"
+    "vm2": "~3.9.14"
   },
   "optionalDependencies": {
     "@serialport/list": "~10.4.0",
