@@ -56,7 +56,7 @@
       lookupButton.click(function () {
         lookupButton.addClass('disabled')
 
-        $.getJSON('/modbus/iofile/valuenames', function (configData) {
+        $.getJSON('modbus/iofile/valuenames', function (configData) {
           lookupButton.removeClass('disabled')
           node.configData = []
 

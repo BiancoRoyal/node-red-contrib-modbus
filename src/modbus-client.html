@@ -200,7 +200,7 @@
       $('#node-config-lookup-serial').click(function () {
         $('#node-config-lookup-serial').addClass('disabled')
 
-        $.getJSON('/modbus/serial/ports', function (data) {
+        $.getJSON('modbus/serial/ports', function (data) {
           $('#node-config-lookup-serial').removeClass('disabled')
           node.ports = []
 
