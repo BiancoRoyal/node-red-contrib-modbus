@@ -1,0 +1,16 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "emptyQueue": "空队列",
+      "maxReconnectsPerMinute": "最大./每分钟",
+      "showActivities": "显示活动",
+      "showErrors": "显示错误",
+      "showWarnings": "显示警告",
+      "server": "服务器"
+    },
+    "tabs-label": {
+      "settings": "设置",
+      "options": "选项"
+    }
+  }
+}

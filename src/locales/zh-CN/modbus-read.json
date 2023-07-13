@@ -1,0 +1,26 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "显示活动",
+      "logIOActivities": "记录 IO",
+      "showErrors": "显示错误",
+      "showWarnings": "显示警告",
+      "unitId": "单元Id",
+      "functioncode": "FC",
+      "address": "地址",
+      "quantity": "数量",
+      "pollrate": "轮询率",
+      "server": "服务器",
+      "delayOnStart": "延迟激活输入",
+      "startDelayTime": "延迟时间",
+      "useIOFile": "使用IO文件",
+      "ioFile": "IO文件",
+      "useIOForPayload": "IO作为有效负载",
+      "emptyMsgOnFail": "Modbus 上的空消息失败"
+    },
+    "tabs-label": {
+      "settings": "设置",
+      "options": "选项"
+    }
+  }
+}

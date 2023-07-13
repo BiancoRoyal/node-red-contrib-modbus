@@ -1,0 +1,21 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "显示活动",
+      "showErrors": "显示错误",
+      "showWarnings": "显示警告",
+      "logIOActivities": "记录 IO",
+      "server": "服务器",
+      "useIOFile": "使用IO文件",
+      "ioFile": "IO文件",
+      "useIOForPayload": "IO作为有效负载",
+      "emptyMsgOnFail": "Modbus 上的空消息失败",
+      "keepMsgProperties": "保留消息属性",
+      "delayOnStart": "延迟激活输入"
+    },
+    "tabs-label": {
+      "settings": "设置",
+      "options": "选项"
+    }
+  }
+}

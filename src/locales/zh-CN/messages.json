@@ -1,0 +1,24 @@
+{
+  "modbus-contrib": {
+    "common": {
+      "label": {
+        "type": "类型",
+        "server": "服务器",
+        "timeout": "超时",
+        "name": "名称"
+      },
+      "response": {
+      },
+      "getter": {
+      },
+      "read": {
+      },
+      "write": {
+      },
+      "server": {
+      },
+      "client": {
+      }
+    }
+  }
+}

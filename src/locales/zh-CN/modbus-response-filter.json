@@ -1,0 +1,21 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "filter": "筛选",
+      "registers": "注册",
+      "filterResponseBuffer": "过滤器响应缓冲区",
+      "filterValues": "筛选值",
+      "filterInput": "筛选输入",
+      "showActivities": "显示活动",
+      "showErrors": "显示错误",
+      "showWarnings": "显示警告",
+      "useIOFile": "使用IO文件",
+      "ioFile": "IO文件",
+      "useIOForPayload": "IO作为有效负载"
+    },
+    "tabs-label": {
+      "settings": "设置",
+      "options": "选项"
+    }
+  }
+}

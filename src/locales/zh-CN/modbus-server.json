@@ -1,0 +1,17 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "显示活动",
+      "showErrors": "显示错误",
+      "showWarnings": "显示警告",
+      "hostname": "主机名",
+      "port": "端口",
+      "responseDelay": "响应延迟",
+      "coils": "圈",
+      "holdings": "保留",
+      "inputs": "输入",
+      "discretes": "离散",
+      "logEnabled": "记录"
+    }
+  }
+}

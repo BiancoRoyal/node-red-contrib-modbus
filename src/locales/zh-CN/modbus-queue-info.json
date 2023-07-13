@@ -1,0 +1,21 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "unitId": "单元Id",
+      "queueReadIntervalTime": "间隔时间",
+      "lowLowLevel": "更低级",
+      "lowLevel": "低级",
+      "highLevel": "高级",
+      "highHighLevel": "更高级",
+      "server": "服务器",
+      "errorOnHighLevel": "高级错误",
+      "showActivities": "显示活动",
+      "updateOnAllQueueChanges": "显示所有升级",
+      "updateOnAllUnitQueues": "所有队列(0-255)"
+    },
+    "tabs-label": {
+      "settings": "设置",
+      "options": "选项"
+    }
+  }
+}
