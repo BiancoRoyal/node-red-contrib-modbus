@@ -1,0 +1,248 @@
+<!--
+ Copyright (c) 2016,2017,2018,2019,2020,2021,2022 Klaus Landsdorf (http://node-red.plus/)
+ Copyright 2016 - Jason D. Harper, Argonne National Laboratory
+ Copyright 2015,2016 - Mika Karaila, Valmet Automation Inc.
+ All rights reserved.
+ node-red-contrib-modbus
+
+ @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
+-->
+<script type="text/javascript">
+    RED.nodes.registerType('modbus-flex-fc', {
+      category: 'modbus',
+      color: '#E9967A',
+      defaults: {
+        name: {value: ''},
+        showStatusActivities: {value: false},
+        showErrors: {value: false},
+        showWarnings: {value: true},
+        unitid: {value: '', required: true },
+        functionCode: { value: '', required: true },
+        server: {type: 'modbus-client', required: true},
+        emptyMsgOnFail: {value: false},
+        keepMsgProperties: {value: false},
+        delayOnStart: {value: false},
+        startDelayTime: {value: ''},
+        dataContainer: { value: {} },
+      },
+      inputs: 0,
+      outputs: 1,
+      align: "right",
+      icon: 'modbus.png',
+      align: 'right',
+      paletteLabel: 'Modbus-Flex-Fc',
+
+      label: function () {
+        return this.name || 'Modbus Flex Function Code'
+      },
+      oneditprepare: function () {
+        let previous = null
+        let node = this
+        let quantitySelector = $('#node-input-quantity')
+        $("#node-input-requestargs").typedInput({
+          type:"json",
+          types:["json"]
+        })
+
+        $("#node-input-responseargs").typedInput({
+          type:"json",
+          types:["json"]
+        })
+ 
+        console.log(node)
+        let tabs = RED.tabs.create({
+          id: "node-input-modbus-tabs",
+          onchange: function (tab) {
+            $("#node-input-tabs-content").children().hide()
+            $("#" + tab.id).show()
+          }
+        })
+  
+        tabs.addTab({
+          id: "modbus-settings-tab",
+          label: this._("modbus-contrib.tabs-label.settings")
+        })
+  
+        tabs.addTab({
+          id: "modbus-options-tab",
+          label: this._("modbus-contrib.tabs-label.options")
+        })
+  
+        if (this.delayOnStart) {
+          $('#node-delay').show()
+        }
+        else {
+          $('#node-delay').hide()
+          $('#node-input-delayOnStart').prop('checked', false)
+        }
+
+        $('#node-input-functionCode').on("change", function() {
+          const fc = $("#node-input-functionCode").val();
+          
+          /*if(node.hasOwnProperty("datafieldNames") && node["datafieldNames"].length !== 0) {
+            for(let i = 0; i < node["datafieldNames"].length; i++) {
+              const name = node["datafieldNames"][i];
+              delete node[name];
+            }
+          }
+          
+          node["datafieldNames"] = [];
+          console.log(fc);*/
+
+          //TODO: Things todo for tomorrow !
+          //TODO: Add a textbox instead of singular fields
+          //TODO: Make one big JSON instead of multiple
+          //TODO: Make a selected template field that holds the currently selected argument map
+          //TODO: Create a reset button that the user can press to reset the entire template to default values
+          $.getJSON("modbus/serial/fc/"+fc, function(data) {
+            console.log(data);
+            const responseArgs = data["responseMap"];
+            $("#node-input-responseargs").val(JSON.stringify(responseArgs));
+            console.log(responseArgs);
+            const requestArgs = data["requestMap"];
+            console.log(requestArgs);
+
+            node.dataContainer = {};
+
+            $("#request-args").empty()
+            for(var i = 0; i < requestArgs.length; i++) {
+              //TODO(Kay): For tomorrow add all necessary editing fields here !
+              const descriptor = requestArgs[i];
+              const name = descriptor["name"];
+              const offset = descriptor["offset"];
+              const value = descriptor["data"];
+              
+              const dataLabel = $("#request-args").append('<label for="node-input-' + name + '">' + name + " Field" + '</label>')
+              const dataInput = $("#request-args").append('<input type="text" id="node-input-' + name + '" value="' + value + '"' + '>')
+
+              node.dataContainer[name] = value;
+              console.log(node);
+            }
+          })
+
+        })
+      },
+      oneditsave: function() {
+        $('#node-input-delayOnStart').change(function () {
+          if ($(this).is(':checked')) {
+            $('#node-delay').show()
+          } else {
+            $('#node-delay').hide()
+          }
+        })
+      }
+    })
+  </script>
+  
+  
+  <script type="text/x-red" data-template-name="modbus-flex-fc">
+      <div class="form-row">
+          <ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="node-input-modbus-tabs"></ul>
+      </div>
+      <div id="node-input-tabs-content" style="min-height: 170px;">
+          <div id="modbus-settings-tab" style="display:none">
+              <div class="form-row">
+                  <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+                  <input type="text" id="node-input-name" placeholder="Name">
+              </div>
+              <div class="form-row">
+                  <label for="node-input-unitid">Unit ID</label>
+                  <input type="text" id="node-input-unitid">
+              </div>
+              <div class="form-row">
+                  <label for="node-input-functionCode">Custom Function Code</label>
+                  <input type="text" id="node-input-functionCode">
+              </div>
+              <div class="form-row" id="node-delay">
+                  <label for="node-input-startDelayTime"><i class="fa fa-clock-o"></i> <span data-i18n="modbus-contrib.label.startDelayTime"></span></label>
+                  <input type="text" id="node-input-startDelayTime" placeholder="10" style="width:80px">
+              </div>
+              <div class="form-row">
+                  <label for="node-input-server"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
+                  <input type="text" id="node-input-server">
+              </div>
+              
+              <div class="form-row">
+                <label for="node-input-fcArgumentMaps"><i class="icon-list"></i> <span data-i18n="modbus-contrib.label.functioncode"></span></label>
+                <select id="node-input-fcArgumentMaps">
+                    <option value="">Select Map</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-request-map"></div>
+              </div>
+              <div class="form-row">
+                <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-response-map"></div>
+              </div>
+          </div>
+          <div id="modbus-options-tab" style="display:none">
+              <div class="form-row">
+                  <label style="min-width:190px" for="node-input-emptyMsgOnFail"><i class="fa fa-th"></i> <span
+                  data-i18n="modbus-contrib.label.emptyMsgOnFail"></span></label>
+                  <input type="checkbox" id="node-input-emptyMsgOnFail" style="max-width:30px">
+              </div>
+              <div class="form-row">
+                  <label style="min-width:190px" for="node-input-keepMsgProperties"><i class="fa fa-th"></i> <span
+                  data-i18n="modbus-contrib.label.keepMsgProperties"></span></label>
+                  <input type="checkbox" id="node-input-keepMsgProperties" style="max-width:30px">
+              </div>
+              <div class="form-row">
+                  <label style="min-width:190px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
+                  data-i18n="modbus-contrib.label.showActivities"></span></label>
+                  <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
+              </div>
+              <div class="form-row">
+                  <label style="min-width:190px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
+                  data-i18n="modbus-contrib.label.showErrors"></span></label>
+                  <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
+              </div>
+              <div class="form-row">
+                  <label style="min-width:190px" for="node-input-showWarnings"><i class="fa fa-th"></i> <span
+                  data-i18n="modbus-contrib.label.showWarnings"></span></label>
+                  <input type="checkbox" checked id="node-input-showWarnings" style="max-width:30px">
+              </div>
+
+          </div>
+      </div>
+  </script>
+
+  
+  <script type="text/x-red" data-help-name="modbus-flex-fc">
+      <p><strong>
+          If you have more than 10 nodes on one communication configuration,
+          use the Modbus-Flex-Writer or think about multiple connections to your Modbus device, please!
+      </strong></p>
+  
+      <p>Modbus TCP/Serial node triggered with <strong>msg.payload</strong> to write.</p>
+      <p>Connects to a Modbus TCP or serial to write coils/registers at each incoming msg.</p>
+      <p>
+          <h4>Function codes currently supported include:</h4>
+  
+          <ul>
+            <li>FC 5: Force Single Coil</li>
+            <li>FC 6: Preset Single Register</li>
+            <li>FC 15: Force Multiple Coils</li>
+            <li>FC 16: Preset Multiple Registers</li>
+          </ul>
+      </p>
+      <p>
+          Choose a function code (FC) from the dropdown menu,
+          select the coil/register start address (0:65535) and the quantity to write.
+          Choose or edit the Modbus TCP/serial server configuration to specify the server to connect to.
+      </p>
+  
+      <p>Unit-Id (0..255 tcp | 0..247 serial) - leave empty, otherwise it overrides the default Unit-ID of client
+       config</p>
+  
+      <p>
+          For FC 5, <strong>msg.payload</strong> must be a value of 1 or 0 or true or false.
+          For FC 15, <strong>msg.payload</strong> must be an array[] of comma separated values true or false each.
+          For FC 6, <strong>msg.payload</strong> must be a single value between 0:65535.
+          For FC 16, <strong>msg.payload</strong> must be an array[] of comma separated values between 0:65535 each.
+      </p>
+  
+       <p>Output 1: all given data, modbus response Buffer, input message</p>
+       <p>Output 2: modbus response Buffer, all given data, input message</p>
+  
+  </script>
+  
