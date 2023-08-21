@@ -42,17 +42,7 @@
         let previous = null
         let node = this
         let quantitySelector = $('#node-input-quantity')
-        $("#node-input-requestargs").typedInput({
-          type:"json",
-          types:["json"]
-        })
 
-        $("#node-input-responseargs").typedInput({
-          type:"json",
-          types:["json"]
-        })
- 
-        console.log(node)
         let tabs = RED.tabs.create({
           id: "node-input-modbus-tabs",
           onchange: function (tab) {
@@ -79,6 +69,8 @@
           $('#node-input-delayOnStart').prop('checked', false)
         }
 
+        $("#node-input-selected-fc").value = node.lastSelectedFc;
+        
         node.requestMapEditor = RED.editor.createEditor({
           id: 'node-input-request-map',
           mode: 'ace/mode/text',
@@ -93,8 +85,8 @@
 
         $.getJSON("modbus/fc/si", function(data) {
           const argumentCards = data["argumentCards"];
-          console.log(argumentCards);
           const keys = Object.keys(argumentCards);
+
           for(let i = 0; i < keys.length; i++) {
             const code = argumentCards[keys[i]];
             const id = code["id"];
@@ -107,7 +99,8 @@
           }
         })
 
-        $("#node-input-selected-fc").val(node.selectedFc);
+        
+        
 
         //Reset the template back to the original values
         $("#node-input-reset-request").on("click", function() {
@@ -118,64 +111,29 @@
           $.getJSON("modbus/fc/si", function(data) {
             const fc = node.lastSelectedFc;
             
-            node.requestMapEditor.destroy();
-            delete node.requestMapEditor;
-            node.responseMapEditor.destroy();
-            delete node.responseMapEditor;
+            const requestCard = data["argumentCards"][fc]["requestMap"]
+            const responseCard = data["argumentCards"][fc]["responseMap"]
 
-            node.requestCard = data["argumentCards"][fc]["requestMap"]
-            node.responseCard = data["argumentCards"][fc]["responseMap"]
-
-            node.requestMapEditor = RED.editor.createEditor({
-              id: 'node-input-request-map',
-              mode: 'ace/mode/text',
-              value: JSON.stringify(node.requestCard, null, " "),
-            });
-
-            node.responseMapEditor = RED.editor.createEditor({
-              id: 'node-input-response-map',
-              mode: 'ace/mode/text',
-              value: JSON.stringify(node.responseCard, null, " "),
-            });
+            node.requestMapEditor.getModel().setValue(JSON.stringify(requestCard, null, " "))
+            node.responseMapEditor.getModel().setValue(JSON.stringify(responseCard, null, " "))
           })
         })
 
 
-        //Load the right template from the server and present it to the user.
+        //Load the right template from the server and store it inside the request/response json objects, then set the editors to the right content
         $("#node-input-selected-fc").on("change", function() {
           const fc = $("#node-input-selected-fc").val();
           
           if(node.lastSelectedFc === fc || fc === '') {
-            console.log("the user did not change the selection or selected a empty value !");
-            return;
-          }
-          
-          console.log(fc); 
-
-          if(fc === '') {
             return;
           }
 
           $.getJSON("modbus/fc/si", function(data) {
-            node.requestMapEditor.destroy();
-            delete node.requestMapEditor;
-            node.responseMapEditor.destroy();
-            delete node.responseMapEditor;
+            const requestCard = data["argumentCards"][fc]["requestMap"]
+            const responseCard = data["argumentCards"][fc]["responseMap"]
 
-            node.requestCard = data["argumentCards"][fc]["requestMap"]
-            node.responseCard = data["argumentCards"][fc]["responseMap"]
-
-            node.requestMapEditor = RED.editor.createEditor({
-              id: 'node-input-request-map',
-              mode: 'ace/mode/text',
-              value: JSON.stringify(node.requestCard, null, " "),
-            });
-
-            node.responseMapEditor = RED.editor.createEditor({
-              id: 'node-input-response-map',
-              mode: 'ace/mode/text',
-              value: JSON.stringify(node.responseCard, null, " "),
-            });
+            node.requestMapEditor.getModel().setValue(JSON.stringify(requestCard, null, " "))
+            node.responseMapEditor.getModel().setValue(JSON.stringify(responseCard, null, " "))
 
             node.lastSelectedFc = fc;
           })
@@ -193,7 +151,8 @@
           }
         })
 
-        node.selectedFc = $('#node-input-selected-fc').val();
+        console.log("Saving value ", node.lastSelectedFc);
+        node.selectedFc = node.lastSelectedFc;
 
         this.requestCard = JSON.parse(node.requestMapEditor.getValue())
         this.responseCard = JSON.parse(node.responseMapEditor.getValue())
@@ -209,8 +168,8 @@
         
         node.requestMapEditor.destroy();
         delete node.requestMapEditor;
-        
-        node.selectedFc = $('#node-input-selected-fc').val();
+        node.responseMapEditor.destroy();
+        delete node.responseMapEditor;
       }
     })
   </script>
@@ -247,11 +206,11 @@
                 <button id="node-input-reset-request" type="button" class="red-ui-button">Reset Request Card</button>
               </div>
               <div class="form-row">
-                <!--<label for="node-input-request-map">Request Argument Card</label>-->
+                <label for="node-input-request-map">Request Argument Card</label>
                 <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-request-map"></div>
               </div>
               <div class="form-row">
-                <!--<label for="node-input-response-map">Response Argument Card</label>-->
+                <label for="node-input-response-map">Response Argument Card</label>
                 <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-response-map"></div>
               </div>
           </div>
