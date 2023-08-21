@@ -109,6 +109,39 @@
 
         $("#node-input-selected-fc").val(node.selectedFc);
 
+        //Reset the template back to the original values
+        $("#node-input-reset-request").on("click", function() {
+          if(node.lastSelectedFc === '') {
+            return;
+          }
+
+          $.getJSON("modbus/fc/si", function(data) {
+            const fc = node.lastSelectedFc;
+            
+            node.requestMapEditor.destroy();
+            delete node.requestMapEditor;
+            node.responseMapEditor.destroy();
+            delete node.responseMapEditor;
+
+            node.requestCard = data["argumentCards"][fc]["requestMap"]
+            node.responseCard = data["argumentCards"][fc]["responseMap"]
+
+            node.requestMapEditor = RED.editor.createEditor({
+              id: 'node-input-request-map',
+              mode: 'ace/mode/text',
+              value: JSON.stringify(node.requestCard, null, " "),
+            });
+
+            node.responseMapEditor = RED.editor.createEditor({
+              id: 'node-input-response-map',
+              mode: 'ace/mode/text',
+              value: JSON.stringify(node.responseCard, null, " "),
+            });
+          })
+        })
+
+
+        //Load the right template from the server and present it to the user.
         $("#node-input-selected-fc").on("change", function() {
           const fc = $("#node-input-selected-fc").val();
           
@@ -148,6 +181,7 @@
           })
         })
       },
+
       oneditsave: function() {
         let node = this;
         
@@ -169,6 +203,7 @@
         node.responseMapEditor.destroy();
         delete node.requestMapEditor;
       },
+
       oneditcancel: function() {
         let node = this;
         
@@ -209,6 +244,7 @@
                 <select id="node-input-selected-fc">
                     <option value="">Select Map</option>
                 </select>
+                <button id="node-input-reset-request" type="button" class="red-ui-button">Reset Request Card</button>
               </div>
               <div class="form-row">
                 <!--<label for="node-input-request-map">Request Argument Card</label>-->
