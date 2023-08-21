@@ -182,7 +182,6 @@ module.exports = function (RED) {
       const requestsMap = ArgumentMap.requestMap
 
       for (let i = 0; i < requestsMap.length; i++) {
-        console.log('hello from inside the loop !')
         const modifiedDescriptor = requestsMap[i]
 
         const name = modifiedDescriptor.name
@@ -366,14 +365,10 @@ module.exports = function (RED) {
 
   RED.nodes.registerType('modbus-flex-fc', ModbusFlexFc)
 
-  RED.httpAdmin.get('/modbus/serial/fc/:code', RED.auth.needsPermission('modbus.read'), function (req, res) {
-    console.log(req.params)
-    const targetFc = req.params.code
-    console.log(targetFc)
+  RED.httpAdmin.get('/modbus/fc/si', RED.auth.needsPermission('modbus.read'), function (req, res) {
     const fs = require('fs')
-    const filename = 'FC_0x' + targetFc.toUpperCase() + '.json'
+    const filename = 'example.json'
     fs.readFile('extras/SI/' + filename, (error, data) => {
-      res.setHeader('Content-Type', 'application/json')
       if (error) res.json([error])
 
       res.json(JSON.parse(data))

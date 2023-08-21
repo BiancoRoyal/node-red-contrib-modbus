@@ -17,13 +17,16 @@
         showErrors: {value: false},
         showWarnings: {value: true},
         unitid: {value: '', required: true },
-        functionCode: { value: '', required: true },
         server: {type: 'modbus-client', required: true},
         emptyMsgOnFail: {value: false},
         keepMsgProperties: {value: false},
         delayOnStart: {value: false},
         startDelayTime: {value: ''},
         dataContainer: { value: {} },
+        selectedFc: {value: '' },
+        requestCard: { value: {} },
+        responseCard: { value: {} },
+        lastSelectedFc: { value: ''}
       },
       inputs: 0,
       outputs: 1,
@@ -76,53 +79,78 @@
           $('#node-input-delayOnStart').prop('checked', false)
         }
 
-        $('#node-input-functionCode').on("change", function() {
-          const fc = $("#node-input-functionCode").val();
+        node.requestMapEditor = RED.editor.createEditor({
+          id: 'node-input-request-map',
+          mode: 'ace/mode/text',
+          value: JSON.stringify(node.requestCard, null, " "),
+        });
+
+        node.responseMapEditor = RED.editor.createEditor({
+          id: 'node-input-response-map',
+          mode: 'ace/mode/text',
+          value: JSON.stringify(node.responseCard, null, " "),
+        })
+
+        $.getJSON("modbus/fc/si", function(data) {
+          const argumentCards = data["argumentCards"];
+          console.log(argumentCards);
+          const keys = Object.keys(argumentCards);
+          for(let i = 0; i < keys.length; i++) {
+            const code = argumentCards[keys[i]];
+            const id = code["id"];
+            const fcString = code["fc"];
+            const name = code["name"];
+            const description = code["shortDesc"]
+            const desc = name + " - " + description;
+
+            $("#node-input-selected-fc").append("<option value='" + keys[i] + "'" + ">" + desc + "</option>");
+          }
+        })
+
+        $("#node-input-selected-fc").val(node.selectedFc);
+
+        $("#node-input-selected-fc").on("change", function() {
+          const fc = $("#node-input-selected-fc").val();
           
-          /*if(node.hasOwnProperty("datafieldNames") && node["datafieldNames"].length !== 0) {
-            for(let i = 0; i < node["datafieldNames"].length; i++) {
-              const name = node["datafieldNames"][i];
-              delete node[name];
-            }
+          if(node.lastSelectedFc === fc || fc === '') {
+            console.log("the user did not change the selection or selected a empty value !");
+            return;
           }
           
-          node["datafieldNames"] = [];
-          console.log(fc);*/
+          console.log(fc); 
 
-          //TODO: Things todo for tomorrow !
-          //TODO: Add a textbox instead of singular fields
-          //TODO: Make one big JSON instead of multiple
-          //TODO: Make a selected template field that holds the currently selected argument map
-          //TODO: Create a reset button that the user can press to reset the entire template to default values
-          $.getJSON("modbus/serial/fc/"+fc, function(data) {
-            console.log(data);
-            const responseArgs = data["responseMap"];
-            $("#node-input-responseargs").val(JSON.stringify(responseArgs));
-            console.log(responseArgs);
-            const requestArgs = data["requestMap"];
-            console.log(requestArgs);
+          if(fc === '') {
+            return;
+          }
 
-            node.dataContainer = {};
+          $.getJSON("modbus/fc/si", function(data) {
+            node.requestMapEditor.destroy();
+            delete node.requestMapEditor;
+            node.responseMapEditor.destroy();
+            delete node.responseMapEditor;
 
-            $("#request-args").empty()
-            for(var i = 0; i < requestArgs.length; i++) {
-              //TODO(Kay): For tomorrow add all necessary editing fields here !
-              const descriptor = requestArgs[i];
-              const name = descriptor["name"];
-              const offset = descriptor["offset"];
-              const value = descriptor["data"];
-              
-              const dataLabel = $("#request-args").append('<label for="node-input-' + name + '">' + name + " Field" + '</label>')
-              const dataInput = $("#request-args").append('<input type="text" id="node-input-' + name + '" value="' + value + '"' + '>')
+            node.requestCard = data["argumentCards"][fc]["requestMap"]
+            node.responseCard = data["argumentCards"][fc]["responseMap"]
 
-              node.dataContainer[name] = value;
-              console.log(node);
-            }
+            node.requestMapEditor = RED.editor.createEditor({
+              id: 'node-input-request-map',
+              mode: 'ace/mode/text',
+              value: JSON.stringify(node.requestCard, null, " "),
+            });
+
+            node.responseMapEditor = RED.editor.createEditor({
+              id: 'node-input-response-map',
+              mode: 'ace/mode/text',
+              value: JSON.stringify(node.responseCard, null, " "),
+            });
+
+            node.lastSelectedFc = fc;
           })
-
         })
       },
       oneditsave: function() {
+        let node = this;
+        
         $('#node-input-delayOnStart').change(function () {
           if ($(this).is(':checked')) {
             $('#node-delay').show()
@@ -130,6 +158,24 @@
             $('#node-delay').hide()
           }
         })
+
+        node.selectedFc = $('#node-input-selected-fc').val();
+
+        this.requestCard = JSON.parse(node.requestMapEditor.getValue())
+        this.responseCard = JSON.parse(node.responseMapEditor.getValue())
+
+        node.requestMapEditor.destroy();
+        delete node.requestMapEditor;
+        node.responseMapEditor.destroy();
+        delete node.requestMapEditor;
+      },
+      oneditcancel: function() {
+        let node = this;
+        
+        node.requestMapEditor.destroy();
+        delete node.requestMapEditor;
+        
+        node.selectedFc = $('#node-input-selected-fc').val();
       }
     })
   </script>
@@ -149,10 +195,6 @@
                   <label for="node-input-unitid">Unit ID</label>
                   <input type="text" id="node-input-unitid">
               </div>
-              <div class="form-row">
-                  <label for="node-input-functionCode">Custom Function Code</label>
-                  <input type="text" id="node-input-functionCode">
-              </div>
               <div class="form-row" id="node-delay">
                   <label for="node-input-startDelayTime"><i class="fa fa-clock-o"></i> <span data-i18n="modbus-contrib.label.startDelayTime"></span></label>
                   <input type="text" id="node-input-startDelayTime" placeholder="10" style="width:80px">
@@ -163,15 +205,17 @@
               </div>
               
               <div class="form-row">
-                <label for="node-input-fcArgumentMaps"><i class="icon-list"></i> <span data-i18n="modbus-contrib.label.functioncode"></span></label>
-                <select id="node-input-fcArgumentMaps">
+                <label for="node-input-selected-fc"><i class="icon-list"></i> <span data-i18n="modbus-contrib.label.functioncode"></span></label>
+                <select id="node-input-selected-fc">
                     <option value="">Select Map</option>
                 </select>
               </div>
               <div class="form-row">
+                <!--<label for="node-input-request-map">Request Argument Card</label>-->
                 <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-request-map"></div>
               </div>
               <div class="form-row">
+                <!--<label for="node-input-response-map">Response Argument Card</label>-->
                 <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-response-map"></div>
               </div>
           </div>
