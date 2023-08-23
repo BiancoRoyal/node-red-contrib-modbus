@@ -20,46 +20,77 @@ module.exports = {
             "showErrors": false,
             "showWarnings": true,
             "unitid": "1",
-            "server": "73c34548e2954bf6",
+            "server": "5c2b693859e05456",
             "emptyMsgOnFail": false,
             "keepMsgProperties": false,
             "delayOnStart": false,
             "startDelayTime": "",
-            "selectedFc": "7b355bfa-4000-11ee-9d35-039b8e9e9955",
+            "selectedFc": "2813f7a2-40f4-11ee-a078-f7298669a6cf",
             "fc": "0x01",
             "requestCard": [
                 {
-                    "name": "Address",
+                    "name": "startingAddress",
                     "data": 0,
                     "offset": 0,
                     "type": "uint16be"
                 },
                 {
-                    "name": "Quantity",
-                    "data": 2,
+                    "name": "quanitityCoils",
+                    "data": 8,
                     "offset": 2,
                     "type": "uint16be"
                 }
             ],
             "responseCard": [
                 {
-                    "name": "ByteCount",
+                    "name": "byteCount",
                     "data": 0,
                     "offset": 0,
                     "type": "uint8be"
+                },
+                {
+                    "name": "coilStatus",
+                    "data": 0,
+                    "offset": 1,
+                    "type": "uint8be"
                 }
             ],
-            "lastSelectedFc": "7b355bfa-4000-11ee-9d35-039b8e9e9955",
-            "x": 660,
-            "y": 340,
+            "lastSelectedFc": "2813f7a2-40f4-11ee-a078-f7298669a6cf",
+            "x": 500,
+            "y": 400,
             "wires": [
                 [
-                    "db1e89ae92dc7250"
+                    "29dc12925bb8e2d4"
                 ]
             ]
         },
         {
-            "id": "db1e89ae92dc7250",
+            "id": "c77fdcf307244a2f",
+            "type": "modbus-server",
+            "z": "f97dec5ce5d2a799",
+            "name": "test_server",
+            "logEnabled": false,
+            "hostname": "0.0.0.0",
+            "serverPort": 10502,
+            "responseDelay": 100,
+            "delayUnit": "ms",
+            "coilsBufferSize": 10000,
+            "holdingBufferSize": 10000,
+            "inputBufferSize": 10000,
+            "discreteBufferSize": 10000,
+            "showErrors": false,
+            "x": 470,
+            "y": 140,
+            "wires": [
+                [],
+                [],
+                [],
+                [],
+                []
+            ]
+        },
+        {
+            "id": "29dc12925bb8e2d4",
             "type": "helper",
             "z": "f97dec5ce5d2a799",
             "name": "helper 1",
@@ -71,21 +102,21 @@ module.exports = {
             "targetType": "msg",
             "statusVal": "",
             "statusType": "auto",
-            "x": 920,
-            "y": 340,
+            "x": 760,
+            "y": 400,
             "wires": []
         },
         {
-            "id": "73c34548e2954bf6",
+            "id": "5c2b693859e05456",
             "type": "modbus-client",
-            "name": "",
+            "name": "test_server",
             "clienttype": "tcp",
             "bufferCommands": true,
             "stateLogEnabled": false,
             "queueLogEnabled": false,
             "failureLogEnabled": true,
-            "tcpHost": "0.0.0.0",
-            "tcpPort": "40081",
+            "tcpHost": "127.0.0.1",
+            "tcpPort": "10502",
             "tcpType": "DEFAULT",
             "serialPort": "/dev/ttyUSB",
             "serialType": "RTU-BUFFERD",
