@@ -180,7 +180,7 @@ de.biancoroyal.modbus.core.client.sendCustomFunctionCode = function (node, msg, 
 
   console.log('We are ready to make a request to the remote host !')
   console.log(msg.payload.unitid, msg.payload.fc, msg.payload.requestCard, msg.payload.responseCard)
-  node.client.sendCustomFc(msg.payload.unitid, msg.payload.fc, msg.payload.requestCard, msg.payload.responseCard, 10).then(function (resp) {
+  node.client.sendCustomFc(msg.payload.unitid, msg.payload.fc, msg.payload.requestCard, msg.payload.responseCard).then(function (resp) {
     coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
   }).catch(function (err) {
     coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)

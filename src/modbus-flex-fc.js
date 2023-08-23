@@ -162,7 +162,7 @@ module.exports = function (RED) {
       modbusClient.deregisterForModbus(node.id, done)
     })
 
-    function sendMessage(values, response, msg) {
+    function sendMessage (values, response, msg) {
       const topic = msg.topic || node.topic
 
       node.send({
