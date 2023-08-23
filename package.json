@@ -48,7 +48,8 @@
       "Modbus-Flex-Connector": "modbus/modbus-flex-connector.js",
       "Modbus-IO-Config": "modbus/modbus-io-config.js",
       "Modbus-Response-Filter": "modbus/modbus-response-filter.js",
-      "Modbus-Flex-Sequencer": "modbus/modbus-flex-sequencer.js"
+      "Modbus-Flex-Sequencer": "modbus/modbus-flex-sequencer.js",
+      "Modbus-Flex-Fc": "modbus/modbus-flex-fc.js"
     }
   },
   "author": "Klaus Landsdorf <klaus.landsdorf@bianco-royal.de>",
