@@ -527,9 +527,12 @@ module.exports = function (RED) {
       node.stateService.send('CLOSE')
     }
 
+    node.on('customModbusMessage', function (msg, cb, cberr) {
+      // const state = node.actualServiceState
+      coreModbusClient.customModbusMessage(node, msg, cb, cberr)
+    })
     node.on('readModbus', function (msg, cb, cberr) {
       const state = node.actualServiceState
-
       if (node.isInactive()) {
         cberr(new Error('Client Not Ready To Read At State ' + state.value), msg)
       } else {
