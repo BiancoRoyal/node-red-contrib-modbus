@@ -29,10 +29,6 @@ module.exports = function (RED) {
     this.topic = config.topic
     this.unitid = config.unitid
 
-    this.dataType = config.dataType
-    this.adr = config.adr
-    this.quantity = config.quantity || 1
-
     this.rate = config.rate
     this.rateUnit = config.rateUnit
 
@@ -44,17 +40,14 @@ module.exports = function (RED) {
     this.showWarnings = config.showWarnings
     this.connection = null
 
-    this.useIOFile = config.useIOFile
-    this.ioFile = RED.nodes.getNode(config.ioFile)
-    this.useIOForPayload = config.useIOForPayload
-    this.logIOActivities = config.logIOActivities
-
     this.emptyMsgOnFail = config.emptyMsgOnFail
     this.internalDebugLog = internalDebugLog
     this.verboseLogging = RED.settings.verbose
 
+    this.fc = config.fc
+    this.requestCard = config.requestCard
+    this.responseCard = config.responseCard
     this.functionCode = config.functionCode
-    this.dataContainer = config.dataContainer
 
     const node = this
     let timeoutOccurred = false
@@ -82,8 +75,9 @@ module.exports = function (RED) {
 
     node.onModbusConnect = function () {
       setNodeStatusWithTimeTo('connected')
-      node.resetAllReadingTimer()
-      node.initializeReadingTimer()
+      // node.resetAllReadingTimer()
+      // node.initializeReadingTimer()
+      node.modbusPollingRead()
     }
 
     node.onModbusRegister = function () {
@@ -151,23 +145,28 @@ module.exports = function (RED) {
     }
 
     node.modbusPollingRead = function () {
+      console.log(modbusClient)
       if (!modbusClient.client) {
+        console.log('---> client is null')
         setNodeStatusWithTimeTo('waiting')
         return
       }
+
+      console.log('We have a modbusClient object with a valid client value !')
 
       const msg = {
         topic: node.topic || 'polling',
         from: node.name,
         payload: {
           unitid: parseInt(node.unitid),
-          fc: parseInt(node.functionCode),
-          arguments: [],
+          fc: parseInt(node.fc, 16),
+          requestCard: node.requestCard,
+          responseCard: node.responseCard,
           messageId: mbCore.getObjectId()
         }
       }
 
-      const fs = require('fs')
+      /* const fs = require('fs')
       const filename = 'FC_0x' + node.functionCode + '.json'
       console.log(filename)
       console.log('extras/SI/' + filename)
@@ -188,14 +187,15 @@ module.exports = function (RED) {
         modifiedDescriptor.data = node.dataContainer[name]
         console.log(modifiedDescriptor)
         msg.payload.arguments.push(modifiedDescriptor)
-      }
+      } */
 
       console.log(msg)
       if (node.showStatusActivities) {
         setNodeStatusWithTimeTo('polling')
       }
 
-      modbusClient.emit('readModbus', msg, node.onModbusReadDone, node.onModbusReadError)
+      console.log('---> emitting phase')
+      modbusClient.emit('customModbusMessage', msg, node.onModbusReadDone, node.onModbusReadError)
     }
 
     node.resetDelayTimerToRead = function (node) {
@@ -368,7 +368,11 @@ module.exports = function (RED) {
   RED.httpAdmin.get('/modbus/fc/si', RED.auth.needsPermission('modbus.read'), function (req, res) {
     const fs = require('fs')
     const filename = 'example.json'
-    fs.readFile('extras/SI/' + filename, (error, data) => {
+    if (!fs.existsSync('./extras/SI/' + filename)) {
+      return
+    }
+
+    fs.readFile('./extras/SI/' + filename, (error, data) => {
       if (error) res.json([error])
 
       res.json(JSON.parse(data))

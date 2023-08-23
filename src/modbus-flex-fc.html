@@ -22,10 +22,12 @@
         keepMsgProperties: {value: false},
         delayOnStart: {value: false},
         startDelayTime: {value: ''},
-        dataContainer: { value: {} },
+
         selectedFc: {value: '' },
+        fc: { value: '' },
         requestCard: { value: {} },
         responseCard: { value: {} },
+        
         lastSelectedFc: { value: ''}
       },
       inputs: 0,
@@ -69,8 +71,6 @@
           $('#node-input-delayOnStart').prop('checked', false)
         }
 
-        $("#node-input-selected-fc").value = node.lastSelectedFc;
-        
         node.requestMapEditor = RED.editor.createEditor({
           id: 'node-input-request-map',
           mode: 'ace/mode/text',
@@ -84,6 +84,7 @@
         })
 
         $.getJSON("modbus/fc/si", function(data) {
+          console.log("Refreshing the select options");
           const argumentCards = data["argumentCards"];
           const keys = Object.keys(argumentCards);
 
@@ -95,7 +96,15 @@
             const description = code["shortDesc"]
             const desc = name + " - " + description;
 
-            $("#node-input-selected-fc").append("<option value='" + keys[i] + "'" + ">" + desc + "</option>");
+            if(id === node.lastSelectedFc) {
+              console.log("We are processing the selcted element", id);
+              $("#node-input-selected-fc").unshift("<option value='" + keys[i] + "'" + ">" + desc + "</option>");
+            } else {
+              console.log("We are adding a new option to our selectbox")
+              $("#node-input-selected-fc").append("<option value='" + keys[i] + "'" + ">" + desc + "</option>");
+            }
+            
+            $("#node-input-selected-fc").val(node.lastSelectedFc);
           }
         })
 
@@ -112,6 +121,7 @@
             const fc = node.lastSelectedFc;
             
             const requestCard = data["argumentCards"][fc]["requestMap"]
+            console.log(requestCard);
             const responseCard = data["argumentCards"][fc]["responseMap"]
 
             node.requestMapEditor.getModel().setValue(JSON.stringify(requestCard, null, " "))
@@ -123,7 +133,7 @@
         //Load the right template from the server and store it inside the request/response json objects, then set the editors to the right content
         $("#node-input-selected-fc").on("change", function() {
           const fc = $("#node-input-selected-fc").val();
-          
+          console.log(fc, node.lastSelectedFc);
           if(node.lastSelectedFc === fc || fc === '') {
             return;
           }
@@ -136,6 +146,7 @@
             node.responseMapEditor.getModel().setValue(JSON.stringify(responseCard, null, " "))
 
             node.lastSelectedFc = fc;
+            node.fc = data["argumentCards"][fc]["fc"]
           })
         })
       },
@@ -151,11 +162,10 @@
           }
         })
 
-        console.log("Saving value ", node.lastSelectedFc);
         node.selectedFc = node.lastSelectedFc;
 
-        this.requestCard = JSON.parse(node.requestMapEditor.getValue())
-        this.responseCard = JSON.parse(node.responseMapEditor.getValue())
+        node.requestCard = JSON.parse(node.requestMapEditor.getValue())
+        node.responseCard = JSON.parse(node.responseMapEditor.getValue())
 
         node.requestMapEditor.destroy();
         delete node.requestMapEditor;
@@ -275,10 +285,7 @@
   
       <p>
           For FC 5, <strong>msg.payload</strong> must be a value of 1 or 0 or true or false.
-          For FC 15, <strong>msg.payload</strong> must be an array[] of comma separated values true or false each.
-          For FC 6, <strong>msg.payload</strong> must be a single value between 0:65535.
-          For FC 16, <strong>msg.payload</strong> must be an array[] of comma separated values between 0:65535 each.
-      </p>
+          For FC 15, <strong>msg.payload</st$("#node-input-selected-fc option[value=" + node.lastSelectedFc + "]").attr("selected", "selected");
   
        <p>Output 1: all given data, modbus response Buffer, input message</p>
        <p>Output 2: modbus response Buffer, all given data, input message</p>
