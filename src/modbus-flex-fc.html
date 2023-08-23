@@ -43,7 +43,7 @@
       oneditprepare: function () {
         let previous = null
         let node = this
-        let quantitySelector = $('#node-input-quantity')
+        //let quantitySelector = $('#node-input-quantity')
 
         let tabs = RED.tabs.create({
           id: "node-input-modbus-tabs",
@@ -95,15 +95,8 @@
             const name = code["name"];
             const description = code["shortDesc"]
             const desc = name + " - " + description;
-
-            if(id === node.lastSelectedFc) {
-              console.log("We are processing the selcted element", id);
-              $("#node-input-selected-fc").unshift("<option value='" + keys[i] + "'" + ">" + desc + "</option>");
-            } else {
-              console.log("We are adding a new option to our selectbox")
-              $("#node-input-selected-fc").append("<option value='" + keys[i] + "'" + ">" + desc + "</option>");
-            }
             
+            $("#node-input-selected-fc").append("<option value='" + keys[i] + "'" + ">" + desc + "</option>");
             $("#node-input-selected-fc").val(node.lastSelectedFc);
           }
         })
@@ -118,7 +111,6 @@
             const fc = node.lastSelectedFc;
             
             const requestCard = data["argumentCards"][fc]["requestMap"]
-            console.log(requestCard);
             const responseCard = data["argumentCards"][fc]["responseMap"]
 
             node.requestMapEditor.getModel().setValue(JSON.stringify(requestCard, null, " "))
@@ -130,7 +122,6 @@
         //Load the right template from the server and store it inside the request/response json objects, then set the editors to the right content
         $("#node-input-selected-fc").on("change", function() {
           const fc = $("#node-input-selected-fc").val();
-          console.log(fc, node.lastSelectedFc);
           if(node.lastSelectedFc === fc || fc === '') {
             return;
           }

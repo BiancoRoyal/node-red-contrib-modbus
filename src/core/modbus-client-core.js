@@ -178,8 +178,6 @@ de.biancoroyal.modbus.core.client.sendCustomFunctionCode = function (node, msg, 
   const coreClient = de.biancoroyal.modbus.core.client
   // const nodeLog = deb.biancoroyal.modbus.core.client.getLogFunction(node)
 
-  console.log('We are ready to make a request to the remote host !')
-  console.log(msg.payload.unitid, msg.payload.fc, msg.payload.requestCard, msg.payload.responseCard)
   node.client.sendCustomFc(msg.payload.unitid, msg.payload.fc, msg.payload.requestCard, msg.payload.responseCard).then(function (resp) {
     coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
   }).catch(function (err) {
@@ -213,7 +211,6 @@ de.biancoroyal.modbus.core.client.readModbusByFunctionCode = function (node, msg
 }
 
 de.biancoroyal.modbus.core.client.customModbusMessage = function (node, msg, cb, cberr) {
-  console.log('Trying to make a custom modbus function call')
   const coreClient = de.biancoroyal.modbus.core.client
   const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
   let delayTime = 1
@@ -248,12 +245,10 @@ de.biancoroyal.modbus.core.client.customModbusMessage = function (node, msg, cb,
 
     node.setUnitIdFromPayload(msg)
     node.client.setTimeout(node.clientTimeout)
-    console.log('reached end of custom modbus message')
+
     try {
-      console.log('reached the try stage')
       coreClient.sendCustomFunctionCode(node, msg, cb, cberr)
     } catch (err) {
-      console.log('reached the error stage')
       coreClient.activateSendingOnFailure(node, cberr, err, msg)
       nodeLog(err.message)
       node.modbusErrorHandling(err)
