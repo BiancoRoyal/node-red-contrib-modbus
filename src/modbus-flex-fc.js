@@ -4,12 +4,10 @@
  Copyright 2015,2016 - Mika Karaila, Valmet Automation Inc.
  All rights reserved.
  node-red-contrib-modbus
-
- @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  **/
 
 /**
- * Modbus Write node.
+ * Modbus Custom Function Code.
  * @module NodeRedModbusFlexFc
  *
  * @param RED
@@ -19,7 +17,6 @@ module.exports = function (RED) {
   // SOURCE-MAP-REQUIRED
   const mbBasics = require('./modbus-basics')
   const mbCore = require('./core/modbus-core')
-  const mbIOCore = require('./core/modbus-io-core')
   const internalDebugLog = require('debug')('contribModbus:read')
 
   function ModbusFlexFc (config) {
@@ -28,12 +25,6 @@ module.exports = function (RED) {
     this.name = config.name
     this.topic = config.topic
     this.unitid = config.unitid
-
-    this.rate = config.rate
-    this.rateUnit = config.rateUnit
-
-    this.delayOnStart = config.delayOnStart
-    this.startDelayTime = parseInt(config.startDelayTime) || 10
 
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
@@ -47,14 +38,9 @@ module.exports = function (RED) {
     this.fc = config.fc
     this.requestCard = config.requestCard
     this.responseCard = config.responseCard
-    this.functionCode = config.functionCode
 
     const node = this
-    let timeoutOccurred = false
-    node.INPUT_TIMEOUT_MILLISECONDS = 1000
     node.statusText = 'waiting'
-    node.delayTimerReading = false
-    node.intervalTimerIdReading = false
     setNodeStatusWithTimeTo(node.statusText)
 
     function verboseWarn (logMessage) {
@@ -75,9 +61,7 @@ module.exports = function (RED) {
 
     node.onModbusConnect = function () {
       setNodeStatusWithTimeTo('connected')
-      // node.resetAllReadingTimer()
-      // node.initializeReadingTimer()
-      node.modbusPollingRead()
+      node.modbusRead()
     }
 
     node.onModbusRegister = function () {
@@ -86,8 +70,6 @@ module.exports = function (RED) {
       }
 
       if (modbusClient.serialSendingAllowed) {
-        node.resetAllReadingTimer()
-        node.initializeReadingTimer()
         setNodeStatusWithTimeTo('connected')
       }
     }
@@ -102,10 +84,6 @@ module.exports = function (RED) {
 
     node.onModbusError = function (failureMsg) {
       setNodeStatusWithTimeTo('failure')
-      if (modbusClient.reconnectOnTimeout) {
-        node.resetAllReadingTimer()
-      }
-
       if (node.showErrors) {
         node.warn(failureMsg)
       }
@@ -113,15 +91,10 @@ module.exports = function (RED) {
 
     node.onModbusClose = function () {
       setNodeStatusWithTimeTo('closed')
-      node.resetAllReadingTimer()
     }
 
     node.onModbusBroken = function () {
       setNodeStatusWithTimeTo('broken')
-      if (modbusClient.reconnectOnTimeout) {
-        setNodeStatusWithTimeTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.')
-        node.resetAllReadingTimer()
-      }
     }
 
     node.onModbusReadDone = function (resp, msg) {
@@ -144,18 +117,14 @@ module.exports = function (RED) {
       mbBasics.setModbusError(node, modbusClient, err, msg)
     }
 
-    node.modbusPollingRead = function () {
-      console.log(modbusClient)
+    node.modbusRead = function () {
       if (!modbusClient.client) {
-        console.log('---> client is null')
         setNodeStatusWithTimeTo('waiting')
         return
       }
 
-      console.log('We have a modbusClient object with a valid client value !')
-
       const msg = {
-        topic: node.topic || 'polling',
+        topic: 'customFc',
         from: node.name,
         payload: {
           unitid: parseInt(node.unitid),
@@ -166,76 +135,11 @@ module.exports = function (RED) {
         }
       }
 
-      /* const fs = require('fs')
-      const filename = 'FC_0x' + node.functionCode + '.json'
-      console.log(filename)
-      console.log('extras/SI/' + filename)
-      console.log(fs.statSync('extras/SI/' + filename))
-
-      const rawArgMap = fs.readFileSync('extras/SI/' + filename, (error, data) => {
-        if (error) return error
-        return data
-      })
-
-      const ArgumentMap = JSON.parse(rawArgMap)
-      const requestsMap = ArgumentMap.requestMap
-
-      for (let i = 0; i < requestsMap.length; i++) {
-        const modifiedDescriptor = requestsMap[i]
-
-        const name = modifiedDescriptor.name
-        modifiedDescriptor.data = node.dataContainer[name]
-        console.log(modifiedDescriptor)
-        msg.payload.arguments.push(modifiedDescriptor)
-      } */
-
-      console.log(msg)
       if (node.showStatusActivities) {
-        setNodeStatusWithTimeTo('polling')
+        setNodeStatusWithTimeTo('reading')
       }
 
-      console.log('---> emitting phase')
       modbusClient.emit('customModbusMessage', msg, node.onModbusReadDone, node.onModbusReadError)
-    }
-
-    node.resetDelayTimerToRead = function (node) {
-      if (node.delayTimerReading) {
-        verboseWarn('resetDelayTimerToRead node ' + node.id)
-        clearTimeout(node.delayTimerReading)
-      }
-      node.delayTimerReading = null
-    }
-
-    node.resetIntervalToRead = function (node) {
-      if (node.intervalTimerIdReading) {
-        verboseWarn('resetIntervalToRead node ' + node.id)
-        clearInterval(node.intervalTimerIdReading)
-      }
-      node.intervalTimerIdReading = null
-    }
-
-    node.resetAllReadingTimer = function () {
-      node.resetDelayTimerToRead(node)
-      node.resetIntervalToRead(node)
-    }
-
-    node.resetAllReadingTimer()
-
-    node.startIntervalReading = function () {
-      if (!node.intervalTimerIdReading) {
-        verboseWarn('startIntervalReading node ' + node.id)
-        node.intervalTimerIdReading = setInterval(node.modbusPollingRead, mbBasics.calc_rateByUnit(node.rate, node.rateUnit))
-      }
-    }
-
-    node.initializeReadingTimer = function () {
-      node.resetAllReadingTimer()
-      if (node.delayOnStart) {
-        verboseWarn('initializeReadingTimer delay timer node ' + node.id)
-        node.delayTimerReading = setTimeout(node.startIntervalReading, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)
-      } else {
-        node.startIntervalReading()
-      }
     }
 
     node.removeNodeListenerFromModbusClient = function () {
@@ -258,93 +162,29 @@ module.exports = function (RED) {
       modbusClient.deregisterForModbus(node.id, done)
     })
 
-    function sendMessage (values, response, msg) {
+    function sendMessage(values, response, msg) {
       const topic = msg.topic || node.topic
-      if (node.useIOFile && node.ioFile.lastUpdatedAt) {
-        if (node.logIOActivities) {
-          mbIOCore.internalDebug('node.adr:' + node.adr + ' node.quantity:' + node.quantity)
-        }
 
-        const allValueNames = mbIOCore.nameValuesFromIOFile(node, msg, values, response, node.adr)
-        const valueNames = mbIOCore.filterValueNames(node, allValueNames, mbCore.functionCodeModbusRead(node.dataType), node.adr, node.quantity)
-
-        const origMsg = {
-          topic,
-          responseBuffer: response,
-          input: msg,
-          sendingNodeId: node.id
-        }
-
-        if (node.useIOForPayload) {
-          origMsg.payload = valueNames
-          origMsg.values = values
-        } else {
-          origMsg.payload = values
-          origMsg.valueNames = valueNames
-        }
-
-        node.send([
-          origMsg,
-          {
-            topic,
-            payload: response,
-            values,
-            input: msg,
-            valueNames,
-            sendingNodeId: node.id
-          }])
-      } else {
-        node.send([
-          {
-            topic,
-            payload: values,
-            responseBuffer: response,
-            input: msg,
-            sendingNodeId: node.id
-          },
-          {
-            topic,
-            payload: response,
-            values,
-            input: msg,
-            sendingNodeId: node.id
-          }
-        ])
-      }
+      node.send({
+        topic,
+        payload: response,
+        input: msg,
+        sendingNodeId: node.id
+      })
     }
 
     function setNodeStatusWithTimeTo (statusValue) {
-      if (statusValue === 'polling' && timeoutOccurred) {
-        return
-      }
-
       const statusOptions = mbBasics.setNodeStatusProperties(statusValue, node.showStatusActivities)
       const statusText = node.statusText
 
-      if (statusValue.search('active') !== -1 || statusValue === 'polling') {
-        const newStatusText = statusOptions.status + getTimeInfo()
-        timeoutOccurred = false
-        if (newStatusText !== statusText) {
-          node.status({
-            fill: statusOptions.fill,
-            shape: statusOptions.shape,
-            text: newStatusText
-          })
-        }
-      } else {
-        const newStatusText = statusOptions.status
-        if (newStatusText !== statusText) {
-          node.status({
-            fill: statusOptions.fill,
-            shape: statusOptions.shape,
-            text: newStatusText
-          })
-        }
+      const newStatusText = statusOptions.status
+      if (newStatusText !== statusText) {
+        node.status({
+          fill: statusOptions.fill,
+          shape: statusOptions.shape,
+          text: newStatusText
+        })
       }
-    }
-
-    function getTimeInfo () {
-      return ' ( ' + node.rate + ' ' + mbBasics.get_timeUnit_name(node.rateUnit) + ' ) '
     }
 
     if (node.showStatusActivities) {

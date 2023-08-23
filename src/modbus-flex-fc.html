@@ -14,7 +14,7 @@
       defaults: {
         name: {value: ''},
         showStatusActivities: {value: false},
-        showErrors: {value: false},
+        showErrors: {value: true},
         showWarnings: {value: true},
         unitid: {value: '', required: true },
         server: {type: 'modbus-client', required: true},
@@ -107,9 +107,6 @@
             $("#node-input-selected-fc").val(node.lastSelectedFc);
           }
         })
-
-        
-        
 
         //Reset the template back to the original values
         $("#node-input-reset-request").on("click", function() {
