@@ -27,7 +27,7 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config)
 
     // create an empty modbus client
-    const ModbusRTU = require('modbus-serial')
+    const ModbusRTU = require('@plus4nodered/modbus-serial')
 
     const unlimitedListeners = 0
     const minCommandDelayMilliseconds = 1
