@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-modbus",
-  "version": "5.27.0",
+  "version": "5.27.1",
   "private": false,
   "description": "The all in one Modbus TCP and Serial contribution package for Node-RED.",
   "dependencies": {
@@ -61,7 +61,8 @@
     "modbus",
     "supporter.js",
     "extras/argumentMaps/defaults",
-    "extras/argumentMaps/ArgumentMaps.md"
+    "extras/argumentMaps/ArgumentMaps.md",
+    ".npmrc"
   ],
   "bugs": {
     "url": "https://github.com/biancoroyal/node-red-contrib-modbus/issues/"
