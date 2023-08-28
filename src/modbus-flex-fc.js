@@ -207,12 +207,12 @@ module.exports = function (RED) {
 
   RED.httpAdmin.get('/modbus/fc/si', RED.auth.needsPermission('modbus.read'), function (req, res) {
     const fs = require('fs')
-    const filename = 'example.json'
-    if (!fs.existsSync('./extras/SI/' + filename)) {
+    const filename = 'codes.json'
+    if (!fs.existsSync('./extras/argumentMaps/defaults/' + filename)) {
       return
     }
 
-    fs.readFile('./extras/SI/' + filename, (error, data) => {
+    fs.readFile('./extras/argumentMaps/defaults/' + filename, (error, data) => {
       if (error) res.json([error])
 
       res.json(JSON.parse(data))

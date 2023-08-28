@@ -20,8 +20,6 @@
         server: {type: 'modbus-client', required: true},
         emptyMsgOnFail: {value: false},
         keepMsgProperties: {value: false},
-        delayOnStart: {value: false},
-        startDelayTime: {value: ''},
 
         selectedFc: {value: '' },
         fc: { value: '' },
@@ -63,14 +61,6 @@
           label: this._("modbus-contrib.tabs-label.options")
         })
   
-        if (this.delayOnStart) {
-          $('#node-delay').show()
-        }
-        else {
-          $('#node-delay').hide()
-          $('#node-input-delayOnStart').prop('checked', false)
-        }
-
         node.requestMapEditor = RED.editor.createEditor({
           id: 'node-input-request-map',
           mode: 'ace/mode/text',
@@ -85,11 +75,11 @@
 
         $.getJSON("modbus/fc/si", function(data) {
           console.log("Refreshing the select options");
-          const argumentCards = data["argumentCards"];
-          const keys = Object.keys(argumentCards);
+          const argumentMaps = data["argumentMaps"];
+          const keys = Object.keys(argumentMaps);
 
           for(let i = 0; i < keys.length; i++) {
-            const code = argumentCards[keys[i]];
+            const code = argumentMaps[keys[i]];
             const id = code["id"];
             const fcString = code["fc"];
             const name = code["name"];
@@ -110,8 +100,8 @@
           $.getJSON("modbus/fc/si", function(data) {
             const fc = node.lastSelectedFc;
             
-            const requestCard = data["argumentCards"][fc]["requestMap"]
-            const responseCard = data["argumentCards"][fc]["responseMap"]
+            const requestCard = data["argumentMaps"][fc]["requestMap"]
+            const responseCard = data["argumentMaps"][fc]["responseMap"]
 
             node.requestMapEditor.getModel().setValue(JSON.stringify(requestCard, null, " "))
             node.responseMapEditor.getModel().setValue(JSON.stringify(responseCard, null, " "))
@@ -127,29 +117,20 @@
           }
 
           $.getJSON("modbus/fc/si", function(data) {
-            const requestCard = data["argumentCards"][fc]["requestMap"]
-            const responseCard = data["argumentCards"][fc]["responseMap"]
+            const requestCard = data["argumentMaps"][fc]["requestMap"]
+            const responseCard = data["argumentMaps"][fc]["responseMap"]
 
             node.requestMapEditor.getModel().setValue(JSON.stringify(requestCard, null, " "))
             node.responseMapEditor.getModel().setValue(JSON.stringify(responseCard, null, " "))
 
             node.lastSelectedFc = fc;
-            node.fc = data["argumentCards"][fc]["fc"]
+            node.fc = data["argumentMaps"][fc]["fc"]
           })
         })
       },
 
       oneditsave: function() {
         let node = this;
-        
-        $('#node-input-delayOnStart').change(function () {
-          if ($(this).is(':checked')) {
-            $('#node-delay').show()
-          } else {
-            $('#node-delay').hide()
-          }
-        })
-
         node.selectedFc = node.lastSelectedFc;
 
         node.requestCard = JSON.parse(node.requestMapEditor.getValue())
@@ -187,10 +168,6 @@
                   <label for="node-input-unitid">Unit ID</label>
                   <input type="text" id="node-input-unitid">
               </div>
-              <div class="form-row" id="node-delay">
-                  <label for="node-input-startDelayTime"><i class="fa fa-clock-o"></i> <span data-i18n="modbus-contrib.label.startDelayTime"></span></label>
-                  <input type="text" id="node-input-startDelayTime" placeholder="10" style="width:80px">
-              </div>
               <div class="form-row">
                   <label for="node-input-server"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
                   <input type="text" id="node-input-server">
@@ -201,14 +178,14 @@
                 <select id="node-input-selected-fc">
                     <option value="">Select Map</option>
                 </select>
-                <button id="node-input-reset-request" type="button" class="red-ui-button">Reset Request Card</button>
+                <button id="node-input-reset-request" type="button" class="red-ui-button">Reset Maps</button>
               </div>
               <div class="form-row">
-                <label for="node-input-request-map">Request Argument Card</label>
+                <label for="node-input-request-map"><span data-i18n="modbus-contrib.label.requestMap"></span></label>
                 <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-request-map"></div>
               </div>
               <div class="form-row">
-                <label for="node-input-response-map">Response Argument Card</label>
+                <label for="node-input-response-map"><span data-i18n="modbus-contrib.label.responseMap"></span></label>
                 <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-response-map"></div>
               </div>
           </div>
@@ -217,16 +194,6 @@
                   <label style="min-width:190px" for="node-input-emptyMsgOnFail"><i class="fa fa-th"></i> <span
                   data-i18n="modbus-contrib.label.emptyMsgOnFail"></span></label>
                   <input type="checkbox" id="node-input-emptyMsgOnFail" style="max-width:30px">
-              </div>
-              <div class="form-row">
-                  <label style="min-width:190px" for="node-input-keepMsgProperties"><i class="fa fa-th"></i> <span
-                  data-i18n="modbus-contrib.label.keepMsgProperties"></span></label>
-                  <input type="checkbox" id="node-input-keepMsgProperties" style="max-width:30px">
-              </div>
-              <div class="form-row">
-                  <label style="min-width:190px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
-                  data-i18n="modbus-contrib.label.showActivities"></span></label>
-                  <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
               </div>
               <div class="form-row">
                   <label style="min-width:190px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
@@ -245,38 +212,39 @@
 
   
   <script type="text/x-red" data-help-name="modbus-flex-fc">
-      <p><strong>
-          If you have more than 10 nodes on one communication configuration,
-          use the Modbus-Flex-Writer or think about multiple connections to your Modbus device, please!
-      </strong></p>
-  
-      <p>Modbus TCP/Serial node triggered with <strong>msg.payload</strong> to write.</p>
-      <p>Connects to a Modbus TCP or serial to write coils/registers at each incoming msg.</p>
+      <p>Transmits and Recieves Answers for Nonstandard Functioncodes via MODBUS </p>
+      <p>Unit-ID - The Device Identification the Node tries to reach via MODBUS.</p>
       <p>
-          <h4>Function codes currently supported include:</h4>
-  
+        Choose a Custom Functioncode from the dropdown. The editors will then load the Argument Maps for this certain Code.
+      </p>
+      <p>
+        After selecting a Custom Functioncode you can make changes to the loaded ArgumentMaps.
+        If you made a mistake and want to reload the template values click the <strong>'Reset Maps'</strong> button this will reload all values from
+        the template data.
+      </p>
+      <p>
+        Every Custom Functioncode has two possible Argument Maps one for the Request and one for the
+        Response part of the code. These get loaded in their respective Editors where you can make changes
+        to the <strong>names,values, offsets or types</strong> of the arguments.
+      </p>
+
+      <p><strong>Request Map Editor -</strong> Data editor for the request of the custom function code.</p>
+      <p><strong>Response Map Editor -</strong> Data editor for the response of the custom function code.</p>
+      
+      <p>
+        layout of a argument map:
           <ul>
-            <li>FC 5: Force Single Coil</li>
-            <li>FC 6: Preset Single Register</li>
-            <li>FC 15: Force Multiple Coils</li>
-            <li>FC 16: Preset Multiple Registers</li>
+            <li><strong>Name -</strong> The Name of the Argument. On the <strong>Request side</strong> this will only be used for readability purposes, on the <strong>Response side</strong> the name is used to generate a valid 
+            JSON response object.</li>
+            <li><strong>Data -</strong> The Data value. The Argument get set to this value in the <strong>request</strong>. Has no effect on the <strong>response</strong> and should be set to <strong>zero</strong></li>
+            <li><strong>Offset -</strong> The Offset of the Data Value. The Offset is used by the Parser to put the Data in the right place of the function code. The 0 offset is the first argument after the functioncode.</li>
+            <li><strong>Type -</strong> The Datatype. In the <strong>Request</strong> this type will be written into the datastream. In the <strong>Response</strong> however this type will be read from the stream.</li>
+              <ul>
+                <li><strong>uint8be -</strong> The Argument is a 8Bit Unsigned Integer.</li>
+                <li><strong>uint16be -</strong> The Argument is a 16Bit Unsigned Integer encoded as Big Endian.</li>
+                <li><strong>uint32be -</strong> The Argument is a 32Bit Unsigned Integer encoded as Big Endian.</li>
+              </ul>
           </ul>
       </p>
-      <p>
-          Choose a function code (FC) from the dropdown menu,
-          select the coil/register start address (0:65535) and the quantity to write.
-          Choose or edit the Modbus TCP/serial server configuration to specify the server to connect to.
-      </p>
-  
-      <p>Unit-Id (0..255 tcp | 0..247 serial) - leave empty, otherwise it overrides the default Unit-ID of client
-       config</p>
-  
-      <p>
-          For FC 5, <strong>msg.payload</strong> must be a value of 1 or 0 or true or false.
-          For FC 15, <strong>msg.payload</st$("#node-input-selected-fc option[value=" + node.lastSelectedFc + "]").attr("selected", "selected");
-  
-       <p>Output 1: all given data, modbus response Buffer, input message</p>
-       <p>Output 2: modbus response Buffer, all given data, input message</p>
-  
   </script>
   
