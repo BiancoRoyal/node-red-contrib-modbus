@@ -27,7 +27,7 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config)
 
     // create an empty modbus client
-    const ModbusRTU = require('modbus-serial')
+    const ModbusRTU = require('@plus4nodered/modbus-serial')
 
     const unlimitedListeners = 0
     const minCommandDelayMilliseconds = 1
@@ -527,9 +527,12 @@ module.exports = function (RED) {
       node.stateService.send('CLOSE')
     }
 
+    node.on('customModbusMessage', function (msg, cb, cberr) {
+      // const state = node.actualServiceState
+      coreModbusClient.customModbusMessage(node, msg, cb, cberr)
+    })
     node.on('readModbus', function (msg, cb, cberr) {
       const state = node.actualServiceState
-
       if (node.isInactive()) {
         cberr(new Error('Client Not Ready To Read At State ' + state.value), msg)
       } else {

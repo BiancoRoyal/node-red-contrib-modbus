@@ -1,0 +1,250 @@
+<!--
+ Copyright (c) 2016,2017,2018,2019,2020,2021,2022 Klaus Landsdorf (http://node-red.plus/)
+ Copyright 2016 - Jason D. Harper, Argonne National Laboratory
+ Copyright 2015,2016 - Mika Karaila, Valmet Automation Inc.
+ All rights reserved.
+ node-red-contrib-modbus
+
+ @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
+-->
+<script type="text/javascript">
+    RED.nodes.registerType('modbus-flex-fc', {
+      category: 'modbus',
+      color: '#E9967A',
+      defaults: {
+        name: {value: ''},
+        showStatusActivities: {value: false},
+        showErrors: {value: true},
+        showWarnings: {value: true},
+        unitid: {value: '', required: true },
+        server: {type: 'modbus-client', required: true},
+        emptyMsgOnFail: {value: false},
+        keepMsgProperties: {value: false},
+
+        selectedFc: {value: '' },
+        fc: { value: '' },
+        requestCard: { value: {} },
+        responseCard: { value: {} },
+        
+        lastSelectedFc: { value: ''}
+      },
+      inputs: 0,
+      outputs: 1,
+      align: "right",
+      icon: 'modbus.png',
+      align: 'right',
+      paletteLabel: 'Modbus-Flex-Fc',
+
+      label: function () {
+        return this.name || 'Modbus Flex Function Code'
+      },
+      oneditprepare: function () {
+        let previous = null
+        let node = this
+        //let quantitySelector = $('#node-input-quantity')
+
+        let tabs = RED.tabs.create({
+          id: "node-input-modbus-tabs",
+          onchange: function (tab) {
+            $("#node-input-tabs-content").children().hide()
+            $("#" + tab.id).show()
+          }
+        })
+  
+        tabs.addTab({
+          id: "modbus-settings-tab",
+          label: this._("modbus-contrib.tabs-label.settings")
+        })
+  
+        tabs.addTab({
+          id: "modbus-options-tab",
+          label: this._("modbus-contrib.tabs-label.options")
+        })
+  
+        node.requestMapEditor = RED.editor.createEditor({
+          id: 'node-input-request-map',
+          mode: 'ace/mode/text',
+          value: JSON.stringify(node.requestCard, null, " "),
+        });
+
+        node.responseMapEditor = RED.editor.createEditor({
+          id: 'node-input-response-map',
+          mode: 'ace/mode/text',
+          value: JSON.stringify(node.responseCard, null, " "),
+        })
+
+        $.getJSON("modbus/fc/si", function(data) {
+          console.log("Refreshing the select options");
+          const argumentMaps = data["argumentMaps"];
+          const keys = Object.keys(argumentMaps);
+
+          for(let i = 0; i < keys.length; i++) {
+            const code = argumentMaps[keys[i]];
+            const id = code["id"];
+            const fcString = code["fc"];
+            const name = code["name"];
+            const description = code["shortDesc"]
+            const desc = name + " - " + description;
+            
+            $("#node-input-selected-fc").append("<option value='" + keys[i] + "'" + ">" + desc + "</option>");
+            $("#node-input-selected-fc").val(node.lastSelectedFc);
+          }
+        })
+
+        //Reset the template back to the original values
+        $("#node-input-reset-request").on("click", function() {
+          if(node.lastSelectedFc === '') {
+            return;
+          }
+
+          $.getJSON("modbus/fc/si", function(data) {
+            const fc = node.lastSelectedFc;
+            
+            const requestCard = data["argumentMaps"][fc]["requestMap"]
+            const responseCard = data["argumentMaps"][fc]["responseMap"]
+
+            node.requestMapEditor.getModel().setValue(JSON.stringify(requestCard, null, " "))
+            node.responseMapEditor.getModel().setValue(JSON.stringify(responseCard, null, " "))
+          })
+        })
+
+
+        //Load the right template from the server and store it inside the request/response json objects, then set the editors to the right content
+        $("#node-input-selected-fc").on("change", function() {
+          const fc = $("#node-input-selected-fc").val();
+          if(node.lastSelectedFc === fc || fc === '') {
+            return;
+          }
+
+          $.getJSON("modbus/fc/si", function(data) {
+            const requestCard = data["argumentMaps"][fc]["requestMap"]
+            const responseCard = data["argumentMaps"][fc]["responseMap"]
+
+            node.requestMapEditor.getModel().setValue(JSON.stringify(requestCard, null, " "))
+            node.responseMapEditor.getModel().setValue(JSON.stringify(responseCard, null, " "))
+
+            node.lastSelectedFc = fc;
+            node.fc = data["argumentMaps"][fc]["fc"]
+          })
+        })
+      },
+
+      oneditsave: function() {
+        let node = this;
+        node.selectedFc = node.lastSelectedFc;
+
+        node.requestCard = JSON.parse(node.requestMapEditor.getValue())
+        node.responseCard = JSON.parse(node.responseMapEditor.getValue())
+
+        node.requestMapEditor.destroy();
+        delete node.requestMapEditor;
+        node.responseMapEditor.destroy();
+        delete node.requestMapEditor;
+      },
+
+      oneditcancel: function() {
+        let node = this;
+        
+        node.requestMapEditor.destroy();
+        delete node.requestMapEditor;
+        node.responseMapEditor.destroy();
+        delete node.responseMapEditor;
+      }
+    })
+  </script>
+  
+  
+  <script type="text/x-red" data-template-name="modbus-flex-fc">
+      <div class="form-row">
+          <ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="node-input-modbus-tabs"></ul>
+      </div>
+      <div id="node-input-tabs-content" style="min-height: 170px;">
+          <div id="modbus-settings-tab" style="display:none">
+              <div class="form-row">
+                  <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+                  <input type="text" id="node-input-name" placeholder="Name">
+              </div>
+              <div class="form-row">
+                  <label for="node-input-unitid">Unit ID</label>
+                  <input type="text" id="node-input-unitid">
+              </div>
+              <div class="form-row">
+                  <label for="node-input-server"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
+                  <input type="text" id="node-input-server">
+              </div>
+              
+              <div class="form-row">
+                <label for="node-input-selected-fc"><i class="icon-list"></i> <span data-i18n="modbus-contrib.label.functioncode"></span></label>
+                <select id="node-input-selected-fc">
+                    <option value="">Select Map</option>
+                </select>
+                <button id="node-input-reset-request" type="button" class="red-ui-button">Reset Maps</button>
+              </div>
+              <div class="form-row">
+                <label for="node-input-request-map"><span data-i18n="modbus-contrib.label.requestMap"></span></label>
+                <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-request-map"></div>
+              </div>
+              <div class="form-row">
+                <label for="node-input-response-map"><span data-i18n="modbus-contrib.label.responseMap"></span></label>
+                <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-response-map"></div>
+              </div>
+          </div>
+          <div id="modbus-options-tab" style="display:none">
+              <div class="form-row">
+                  <label style="min-width:190px" for="node-input-emptyMsgOnFail"><i class="fa fa-th"></i> <span
+                  data-i18n="modbus-contrib.label.emptyMsgOnFail"></span></label>
+                  <input type="checkbox" id="node-input-emptyMsgOnFail" style="max-width:30px">
+              </div>
+              <div class="form-row">
+                  <label style="min-width:190px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
+                  data-i18n="modbus-contrib.label.showErrors"></span></label>
+                  <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
+              </div>
+              <div class="form-row">
+                  <label style="min-width:190px" for="node-input-showWarnings"><i class="fa fa-th"></i> <span
+                  data-i18n="modbus-contrib.label.showWarnings"></span></label>
+                  <input type="checkbox" checked id="node-input-showWarnings" style="max-width:30px">
+              </div>
+
+          </div>
+      </div>
+  </script>
+
+  
+  <script type="text/x-red" data-help-name="modbus-flex-fc">
+      <p>Transmits and Recieves Answers for Nonstandard Functioncodes via MODBUS </p>
+      <p>Unit-ID - The Device Identification the Node tries to reach via MODBUS.</p>
+      <p>
+        Choose a Custom Functioncode from the dropdown. The editors will then load the Argument Maps for this certain Code.
+      </p>
+      <p>
+        After selecting a Custom Functioncode you can make changes to the loaded ArgumentMaps.
+        If you made a mistake and want to reload the template values click the <strong>'Reset Maps'</strong> button this will reload all values from
+        the template data.
+      </p>
+      <p>
+        Every Custom Functioncode has two possible Argument Maps one for the Request and one for the
+        Response part of the code. These get loaded in their respective Editors where you can make changes
+        to the <strong>names,values, offsets or types</strong> of the arguments.
+      </p>
+
+      <p><strong>Request Map Editor -</strong> Data editor for the request of the custom function code.</p>
+      <p><strong>Response Map Editor -</strong> Data editor for the response of the custom function code.</p>
+      
+      <p>
+        layout of a argument map:
+          <ul>
+            <li><strong>Name -</strong> The Name of the Argument. On the <strong>Request side</strong> this will only be used for readability purposes, on the <strong>Response side</strong> the name is used to generate a valid 
+            JSON response object.</li>
+            <li><strong>Data -</strong> The Data value. The Argument get set to this value in the <strong>request</strong>. Has no effect on the <strong>response</strong> and should be set to <strong>zero</strong></li>
+            <li><strong>Offset -</strong> The Offset of the Data Value. The Offset is used by the Parser to put the Data in the right place of the function code. The 0 offset is the first argument after the functioncode.</li>
+            <li><strong>Type -</strong> The Datatype. In the <strong>Request</strong> this type will be written into the datastream. In the <strong>Response</strong> however this type will be read from the stream.</li>
+              <ul>
+                <li><strong>uint8be -</strong> The Argument is a 8Bit Unsigned Integer.</li>
+                <li><strong>uint16be -</strong> The Argument is a 16Bit Unsigned Integer encoded as Big Endian.</li>
+                <li><strong>uint32be -</strong> The Argument is a 32Bit Unsigned Integer encoded as Big Endian.</li>
+              </ul>
+          </ul>
+      </p>
+  </script>
+  

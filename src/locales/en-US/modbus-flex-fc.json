@@ -1,0 +1,16 @@
+{
+    "modbus-contrib": {
+      "label": {
+        "showErrors": "Show Errors",
+        "showWarnings": "Show Warnings",
+        "emptyMsgOnFail": "Empty Message on Modbus failure",
+        "server": "Server",
+        "requestMap": "Request Map Editor",
+        "responseMap": "Response Map Editor"
+      },
+      "tabs-label": {
+        "settings": "Settings",
+        "options": "Optionals"
+      }
+    }
+  }
