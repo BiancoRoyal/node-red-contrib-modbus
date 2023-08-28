@@ -1,6 +1,6 @@
-# Where to find the custom MODBUS Functioncodes
+# Where to find the custom MODBUS Function Codes
 
-You can find all MODBUS Customcodes inside the `extras/argumentMaps/defaults/codes.json` file
+You can find all MODBUS Custom Codes inside the `extras/argumentMaps/defaults/codes.json` file
 
 # How to define a new custom MODBUS code
 
@@ -8,7 +8,7 @@ The json file contains all codes we can use with the MODBUS Flex-FC node
 
 The layout and description of the `code.json` file is as following
 
-```json
+```
 {
     //argumentMaps is the object that contains all argument maps
     "argumentMaps": {
@@ -45,20 +45,20 @@ as described in the example above.
 
 # Argument Objects
 
-`requestMap` and `responseMap` can either be a empty array or they contain a list of Argument Objects.
+`requestMap` and `responseMap` can either be an empty array or they contain a list of Argument Objects.
 
-A argument object is a descriptor taken by the ArgumentMap parser which has important details about the parsed value i.e. it's position in the stream or the size.
+An argument object is a descriptor taken by the ArgumentMap parser which has important details about the parsed value i.e. it's position in the stream or the size.
 
 The descriptor has the following fields
 
 * Name   - The name of the argument. This field is used by the Response parser for generating a JSON Object with the values mapped to the name of the argument. __(Required)__
 * Data   - The value of this field is put into the request stream. Should be set to 0 for the Response Map. __(Required)__
-* Offset - The position where the parser should read or write the value into the stream. A offset of zero indicates the firstbyte after the functioncode. __(Required)__
+* Offset - The position where the parser should read or write the value into the stream. An offset of zero indicates the first byte after the function code. __(Required)__
 * Type   - The Type of the Argument. __(Required)__
 
-The value of the offset field has to be continous over all argument fields with no gaps inbetween i.e
+The value of the offset field has to be continuous over all argument fields with no gaps in between i.e.
 
-```json
+```
     "requestMap":
     [
         //Put a 16bit (2byte) value at position 0
@@ -76,4 +76,4 @@ The value of the offset field has to be continous over all argument fields with 
     ]
 ```
 
-This will lead to a parser error because of a empty byte on position 2 that is not described by the requestmap.
+This will lead to a parser error because of an empty byte on position 2 that is not described by the request map.
