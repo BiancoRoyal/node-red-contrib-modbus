@@ -1,0 +1,101 @@
+{
+    
+    "argumentMaps": {
+        "2813f7a2-40f4-11ee-a078-f7298669a6cf":
+        {
+            "fc": "0x01",
+            "name": "FC 01h",
+            "shortDesc": "Read Coil(s)",
+            "requestMap":
+            [
+                { "name": "startingAddress", "data": 0, "offset": 0, "type": "uint16be" },
+                { "name": "quantityCoils", "data": 8, "offset": 2, "type": "uint16be" }
+            ],
+            "responseMap": 
+            [
+                { "name": "byteCount", "data": 0, "offset": 0, "type": "uint8be" },
+                { "name": "coilStatus", "data": 0, "offset": 1, "type": "uint8be" }
+            ]
+        },
+        "4716b4b8-4190-11ee-87bb-878fc006dbef": 
+        {
+            "fc": "0x02",
+            "name": "FC 02h",
+            "shortDesc": "Read Discrete Inputs",
+            "requestMap":
+            [
+                { "name": "startingAddress", "data": 0, "offset": 0, "type": "uint16be" },
+                { "name": "quantityDiscreteInputs", "data": 2, "offset": 2, "type": "uint16be" }
+            ],
+            "responseMap": 
+            [
+                { "name": "byteCount", "data": 0, "offset": 0, "type": "uint8be" },
+                { "name": "inputStatus", "data": 0, "offset": 1, "type": "uint8be" }
+            ]
+        },
+        "bdd84caa-4191-11ee-989f-4384dc45e6c3": 
+        {
+            "fc": "0x03",
+            "name": "FC 03h",
+            "shortDesc": "Read Holding Register(s)",
+            "requestMap":
+            [
+                { "name":   "startingAddress", "data": 0, "offset": 0, "type": "uint16be" },
+                { "name": "quantityRegisters", "data": 1, "offset": 2, "type": "uint16be" }
+            ],
+            "responseMap":
+            [
+                { "name":     "byteCount", "data": 0, "offset": 0, "type": "uint8be"  },
+                { "name": "HoldingRegisterValue", "data": 0, "offset": 1, "type": "uint16be" }
+            ]
+        },
+        "656f1f56-4193-11ee-8eb6-07ee4f160ac8":
+        {
+            "fc": "0x04",
+            "name": "FC 04h",
+            "shortDesc": "Read Input Register(s)",
+            "requestMap":
+            [
+                { "name": "startingAddress", "data": 0, "offset": 0, "type": "uint16be" },
+                { "name": "quantityInputRegisters", "data": 1, "offset": 2, "type": "uint16be" }
+            ],
+            "responseMap":
+            [
+                { "name": "byteCount", "data": 0, "offset": 0, "type": "uint8be" },
+                { "name": "inputRegisterValue", "data": 0, "offset": 1, "type": "uint16be"}
+            ]
+        },
+        "41846e1e-4195-11ee-be5c-6377293e4ebe":
+        {
+            "fc": "0x05",
+            "name": "FC 05h",
+            "shortDesc": "Write Single Coil",
+            "requestMap":
+            [
+                { "name": "outputAddress", "data": 0, "offset": 0, "type": "uint16be" },
+                { "name": "outputValue", "data": 0, "offset": 2, "type": "uint16be" }
+            ],
+            "responseMap":
+            [
+                { "name": "outputAddress", "data": 0, "offset": 0, "type": "uint16be" },
+                { "name": "outputValue", "data": 0, "offset": 2, "type": "uint16be" }
+            ]
+        },
+        "fcdf0de4-4196-11ee-9c64-773f826599e6":
+        {
+            "fc": "0x06",
+            "name": "FC 06h",
+            "shortDesc": "Write Single Register",
+            "requestMap":
+            [
+                { "name": "registerAddress", "data": 0, "offset": 0, "type": "uint16be" },
+                { "name":   "registerValue", "data": 0, "offset": 2, "type": "uint16be" }
+            ],
+            "responseMap":
+            [
+                { "name": "registerAddress", "data": 0, "offset": 0, "type": "uint16be" },
+                { "name":  "registerValue", "data": 0, "offset": 2, "type": "uint16be" }
+            ]
+        }
+    }
+}
