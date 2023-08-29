@@ -9,7 +9,7 @@
     "debug": "~4.3.4",
     "jsmodbus": "~4.0.6",
     "line-by-line": "~0.1.6",
-    "@plus4nodered/modbus-serial": "8.1.0",
+    "@open-p4nr/modbus-serial": "https://dl.cloudsmith.io/public/iniationware-gmbh/plus4nodered/npm/open-p4nr/modbus-serial/8.1.0/modbus-serial-8.1.0.tgz#_gl=1*oezs8a*_gcl_au*NDk2NjE5MzkwLjE2ODc1MDQxODk.",
     "source-map-support": "~0.5.21",
     "underscore": "~1.13.6",
     "vm2": "~3.9.19"
