@@ -20,7 +20,7 @@
         server: {type: 'modbus-client', required: true},
         emptyMsgOnFail: {value: false},
         keepMsgProperties: {value: false},
-
+        mapPath: {value: "./node_modules/node-red-contrib-modbus/extras/argumentMaps/defaults/"},
         selectedFc: {value: '' },
         fc: { value: '' },
         requestCard: { value: {} },
@@ -73,22 +73,29 @@
           value: JSON.stringify(node.responseCard, null, " "),
         })
 
-        $.getJSON("modbus/fc/si", function(data) {
-          console.log("Refreshing the select options");
-          const argumentMaps = data["argumentMaps"];
-          const keys = Object.keys(argumentMaps);
+        $.ajax({
+          url: "modbus/fc/si/" + node.id,
+          type: "POST",
+          success: function(data) {
+            const argumentMaps = data["argumentMaps"];
+            const keys = Object.keys(argumentMaps);
 
-          for(let i = 0; i < keys.length; i++) {
-            const code = argumentMaps[keys[i]];
-            const id = code["id"];
-            const fcString = code["fc"];
-            const name = code["name"];
-            const description = code["shortDesc"]
-            const desc = name + " - " + description;
-            
-            $("#node-input-selected-fc").append("<option value='" + keys[i] + "'" + ">" + desc + "</option>");
-            $("#node-input-selected-fc").val(node.lastSelectedFc);
-          }
+            for(let i = 0; i < keys.length; i++) {
+              const code = argumentMaps[keys[i]];
+              const id = code["id"];
+              const fcString = code["fc"];
+              const name = code["name"];
+              const description = code["shortDesc"]
+              const desc = name + " - " + description;
+
+              $("#node-input-selected-fc").append("<option value='" + keys[i] + "'" + ">" + desc + "</option>");
+              $("#node-input-selected-fc").val(node.lastSelectedFc);
+            }
+          },
+        error: function (error) {
+          RED.notify("Getting custom fc file received an error: " + JSON.stringify(error))
+        },
+        data: {mapPath: node.mapPath}
         })
 
         //Reset the template back to the original values
@@ -97,14 +104,22 @@
             return;
           }
 
-          $.getJSON("modbus/fc/si", function(data) {
-            const fc = node.lastSelectedFc;
-            
-            const requestCard = data["argumentMaps"][fc]["requestMap"]
-            const responseCard = data["argumentMaps"][fc]["responseMap"]
+          $.ajax({
+            url: "modbus/fc/si/" + node.id,
+            type: "POST",
+            success: function(data) {
+              const fc = node.lastSelectedFc;
 
-            node.requestMapEditor.getModel().setValue(JSON.stringify(requestCard, null, " "))
-            node.responseMapEditor.getModel().setValue(JSON.stringify(responseCard, null, " "))
+              const requestCard = data["argumentMaps"][fc]["requestMap"]
+              const responseCard = data["argumentMaps"][fc]["responseMap"]
+
+              node.requestMapEditor.getModel().setValue(JSON.stringify(requestCard, null, " "))
+              node.responseMapEditor.getModel().setValue(JSON.stringify(responseCard, null, " "))
+            },
+            error: function (error) {
+              RED.notify("Getting custom fc file received an error: " + JSON.stringify(error))
+            },
+            data: {mapPath: node.mapPath}
           })
         })
 
@@ -115,16 +130,23 @@
           if(node.lastSelectedFc === fc || fc === '') {
             return;
           }
+          $.ajax({
+            url: "modbus/fc/si/" + node.id,
+            type: "POST",
+            success: function(data) {
+              const requestCard = data["argumentMaps"][fc]["requestMap"]
+              const responseCard = data["argumentMaps"][fc]["responseMap"]
 
-          $.getJSON("modbus/fc/si", function(data) {
-            const requestCard = data["argumentMaps"][fc]["requestMap"]
-            const responseCard = data["argumentMaps"][fc]["responseMap"]
+              node.requestMapEditor.getModel().setValue(JSON.stringify(requestCard, null, " "))
+              node.responseMapEditor.getModel().setValue(JSON.stringify(responseCard, null, " "))
 
-            node.requestMapEditor.getModel().setValue(JSON.stringify(requestCard, null, " "))
-            node.responseMapEditor.getModel().setValue(JSON.stringify(responseCard, null, " "))
-
-            node.lastSelectedFc = fc;
-            node.fc = data["argumentMaps"][fc]["fc"]
+              node.lastSelectedFc = fc;
+              node.fc = data["argumentMaps"][fc]["fc"]
+            },
+            error: function (error) {
+              RED.notify("Getting custom fc file received an error: " + JSON.stringify(error))
+            },
+            data: {mapPath: node.mapPath}
           })
         })
       },
@@ -171,6 +193,12 @@
               <div class="form-row">
                   <label for="node-input-server"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
                   <input type="text" id="node-input-server">
+              </div>
+              <div class="form-row">
+                  <label for="node-input-mapPath">
+                  <i class="icon-list"></i> <span data-i18n="modbus-contrib.label.mapPath">
+                  </label>
+                  <input type="text" id="node-input-mapPath" placeholder="./node_modules/node-red-contrib-modbus/extras/argumentMaps/defaults/">
               </div>
               
               <div class="form-row">

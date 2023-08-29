@@ -6,7 +6,9 @@
         "emptyMsgOnFail": "Empty Message on Modbus failure",
         "server": "Server",
         "requestMap": "Request Map Editor",
-        "responseMap": "Response Map Editor"
+        "responseMap": "Response Map Editor",
+        "functioncode": "Select FC Map",
+        "mapPath": "Path to Map JSON"
       },
       "tabs-label": {
         "settings": "Settings",

@@ -205,14 +205,16 @@ module.exports = function (RED) {
 
   RED.nodes.registerType('modbus-flex-fc', ModbusFlexFc)
 
-  RED.httpAdmin.get('/modbus/fc/si', RED.auth.needsPermission('modbus.read'), function (req, res) {
+  RED.httpAdmin.post('/modbus/fc/si/:id', RED.auth.needsPermission('modbus.read'), function (req, res) {
     const fs = require('fs')
+    const path = require('node:path')
+    const filapath = req.body.mapPath || './extras/argumentMaps/defaults/'
     const filename = 'codes.json'
-    if (!fs.existsSync('./extras/argumentMaps/defaults/' + filename)) {
+    if (!fs.existsSync(path.resolve(filapath, filename))) {
       return
     }
 
-    fs.readFile('./extras/argumentMaps/defaults/' + filename, (error, data) => {
+    fs.readFile(path.resolve(filapath, filename), (error, data) => {
       if (error) res.json([error])
 
       res.json(JSON.parse(data))
