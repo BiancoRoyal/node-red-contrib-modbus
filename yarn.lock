@@ -1200,10 +1200,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@plus4nodered/modbus-serial@8.1.0":
+"@open-p4nr/modbus-serial@https://dl.cloudsmith.io/public/iniationware-gmbh/plus4nodered/npm/open-p4nr/modbus-serial/8.1.0/modbus-serial-8.1.0.tgz?_gl=1*2xk2l5*_ga*MTY3MTYyNzYxLjE2NzA5MTc2MDg.*_ga_MT14FK8QKH*MTY5MzMwNTk2MS4xNzQuMS4xNjkzMzA1OTY1LjU2LjAuMA..#_gl=1*1liqgmi*_gcl_au*NDk2NjE5MzkwLjE2ODc1MDQxODk.":
   version "8.1.0"
-  resolved "https://npm.cloudsmith.io/iniationware-gmbh/plus4nodered/@plus4nodered/modbus-serial/-/8.1.0/modbus-serial-8.1.0.tgz"
-  integrity sha512-5mNwd6Vp5GTh/5VZv1/iUL/nzr0yDp/cPBJtoavFk3Y2MJ0K+PUH4q7ENAg6DvWt6Fb5j8+1BzPUkoMUxZqmnA==
+  resolved "https://dl.cloudsmith.io/public/iniationware-gmbh/plus4nodered/npm/open-p4nr/modbus-serial/8.1.0/modbus-serial-8.1.0.tgz?_gl=1*2xk2l5*_ga*MTY3MTYyNzYxLjE2NzA5MTc2MDg.*_ga_MT14FK8QKH*MTY5MzMwNTk2MS4xNzQuMS4xNjkzMzA1OTY1LjU2LjAuMA..#_gl=1*1liqgmi*_gcl_au*NDk2NjE5MzkwLjE2ODc1MDQxODk."
+  integrity sha512-ZXLgGFaLl1Hyi7iiC4iwDQqzsix2OE8zNj70DygP5CJzbBeurN8BpAif3yY9PisIrI0EuVqCIg4PbqQx9yIaiQ==
   dependencies:
     debug "^4.1.1"
     serialport "^10.4.0"
