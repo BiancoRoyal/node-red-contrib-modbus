@@ -11,3 +11,5 @@ coverage/
 pki/
 .vscode/
 .nyc_output/
+
+*.tgz
