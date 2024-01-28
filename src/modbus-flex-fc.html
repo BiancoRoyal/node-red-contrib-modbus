@@ -1,5 +1,5 @@
 <!--
- Copyright (c) 2016,2017,2018,2019,2020,2021,2022 Klaus Landsdorf (http://node-red.plus/)
+ Copyright (c) 2016,2017,2018,2019,2020,2021,2022,2023,2024 Klaus Landsdorf (http://node-red.plus/)
  Copyright 2016 - Jason D. Harper, Argonne National Laboratory
  Copyright 2015,2016 - Mika Karaila, Valmet Automation Inc.
  All rights reserved.
@@ -28,15 +28,15 @@
         
         lastSelectedFc: { value: ''}
       },
-      inputs: 0,
+      inputs: 1,
       outputs: 1,
       align: "right",
       icon: 'modbus.png',
       align: 'right',
-      paletteLabel: 'Modbus-Flex-Fc',
+      paletteLabel: 'Modbus-Flex-FC',
 
       label: function () {
-        return this.name || 'Modbus Flex Function Code'
+        return this.name || 'Modbus Flex-FC'
       },
       oneditprepare: function () {
         let previous = null
@@ -273,6 +273,33 @@
                 <li><strong>uint32be -</strong> The Argument is a 32Bit Unsigned Integer encoded as Big Endian.</li>
               </ul>
           </ul>
+      </p>
+
+      <p>
+      Example of a custom function code message:
+        <code>
+          msg = {
+              topic: 'customFc',
+              from: 'Requester-Name',
+              payload: {
+                unitid: 1,
+                fc: 3,
+                requestCard:[{
+                  name: 'Read Registers Request Definition',
+                  data: 0,
+                  offset: 0,
+                  type: 'uint16be'
+                }],
+                responseCard: [{
+                  name: 'Read Registers Answer Definition',
+                  data: 0,
+                  offset: 0,
+                  type: 'uint16be'
+                }]
+                messageId: mbCore.getObjectId()
+              }
+            }
+        </code>
       </p>
   </script>
   

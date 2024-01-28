@@ -1,15 +1,15 @@
 {
   "name": "node-red-contrib-modbus",
-  "version": "5.27.2",
+  "version": "5.28.0",
   "private": false,
   "description": "The all in one Modbus TCP and Serial contribution package for Node-RED.",
   "dependencies": {
     "@xstate/fsm": "~2.1.0",
     "bson": "~4.7.2",
     "debug": "~4.3.4",
-    "jsmodbus": "~4.0.6",
+    "jsmodbus": "~4.0.10",
     "line-by-line": "~0.1.6",
-    "@open-p4nr/modbus-serial": "https://dl.cloudsmith.io/public/iniationware-gmbh/plus4nodered/npm/open-p4nr/modbus-serial/8.1.0/modbus-serial-8.1.0.tgz#_gl=1*oezs8a*_gcl_au*NDk2NjE5MzkwLjE2ODc1MDQxODk.",
+    "@open-p4nr/modbus-serial": "https://dl.cloudsmith.io/public/iniationware-gmbh/plus4nodered/npm/open-p4nr/modbus-serial/8.1.0/modbus-serial-8.1.0.tgz",
     "source-map-support": "~0.5.21",
     "underscore": "~1.13.6",
     "vm2": "~3.9.19"
@@ -67,7 +67,7 @@
   "bugs": {
     "url": "https://github.com/biancoroyal/node-red-contrib-modbus/issues/"
   },
-  "homepage": "https://noderedplus.de/",
+  "homepage": "https://plus4nodered.com/",
   "scripts": {
     "changelog": "npm run rewrite-changelog",
     "test": "standard --fix && mocha ./test --parallel --recursive --reporter dot --timeout 5000",

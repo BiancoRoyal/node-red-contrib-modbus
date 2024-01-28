@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018,2019,2020,2021,2022 Klaus Landsdorf (http://node-red.plus/)
+ Copyright (c) 2016,2017,2018,2019,2020,2021,2022,2023,2024 Klaus Landsdorf (http://node-red.plus/)
  Copyright 2016 - Jason D. Harper, Argonne National Laboratory
  Copyright 2015,2016 - Mika Karaila, Valmet Automation Inc.
  All rights reserved.
@@ -53,6 +53,14 @@ module.exports = function (RED) {
     const modbusClient = RED.nodes.getNode(config.server)
     if (!modbusClient) {
       return
+    }
+
+    node.isReadyForInput = function () {
+      return (modbusClient.client && modbusClient.isActive())
+    }
+
+    node.isNotReadyForInput = function () {
+      return !node.isReadyForInput()
     }
 
     node.onModbusInit = function () {
@@ -153,6 +161,65 @@ module.exports = function (RED) {
       modbusClient.removeListener('mbregister', node.onModbusRegister)
       modbusClient.removeListener('mbderegister', node.onModbusClose)
     }
+
+    node.isValidCustomFc = function (origMsgInput) {
+      return origMsgInput.payload &&
+        origMsgInput.topic === 'customFc' &&
+        origMsgInput.payload.unitid &&
+        origMsgInput.payload.fc &&
+        origMsgInput.payload.requestCard &&
+        origMsgInput.payload.responseCard
+    }
+
+    node.buildNewMessageObject = function (origMsgInput) {
+      return (node.isValidCustomFc(origMsgInput))
+        ? origMsgInput
+        : {
+            topic: 'customFc',
+            payload: {
+              unitid: parseInt(node.unitid),
+              fc: parseInt(node.fc, 16),
+              requestCard: node.requestCard,
+              responseCard: node.responseCard,
+              from: node.name
+            }
+          }
+    }
+
+    node.on('input', function (msg) {
+      if (mbBasics.invalidPayloadIn(msg)) {
+        verboseWarn('Invalid message on input.')
+        return
+      }
+
+      if (node.isNotReadyForInput()) {
+        verboseWarn('Inject while node is not ready for input.')
+        return
+      }
+
+      if (modbusClient.isInactive()) {
+        verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
+        return
+      }
+
+      const origMsgInput = Object.assign({}, msg) // keep it origin
+      try {
+        // const newMsg = node.buildNewMessageObject(node, origMsgInput)
+
+        const msgToSend = node.buildNewMessageObject(origMsgInput)
+
+        msgToSend.payload.messageId = mbCore.getObjectId()
+
+        modbusClient.emit('customModbusMessage', msgToSend, node.onModbusReadDone, node.onModbusReadError)
+
+        if (node.showStatusActivities) {
+          mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
+        }
+      } catch (err) {
+        node.errorProtocolMsg(err, origMsgInput)
+        mbBasics.sendEmptyMsgOnFail(node, err, origMsgInput)
+      }
+    })
 
     this.on('close', function (done) {
       node.resetAllReadingTimer()
