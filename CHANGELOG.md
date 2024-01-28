@@ -1,6 +1,11 @@
 # [5.28.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.2...v5.28.0) (2024-01-28)
 
 
+### Features
+
+* **modbus:** new option for the flex-fc to get input msg ([5ff8167](https://github.com/biancoroyal/node-red-contrib-modbus/commit/5ff81672ac9c575a71bb241fc5861f25357012c8))
+
+
 
 ## [5.27.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.26.0...v5.27.2) (2023-08-29)
 
