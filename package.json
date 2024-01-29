@@ -15,7 +15,7 @@
     "vm2": "~3.9.19"
   },
   "optionalDependencies": {
-    "@serialport/list": "~10.4.0",
+    "@serialport/list": "~12.0.0",
     "serialport": "^10.4.0"
   },
   "keywords": [
