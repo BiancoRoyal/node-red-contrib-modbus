@@ -59,7 +59,6 @@
     "docs",
     "examples",
     "modbus",
-    "supporter.js",
     "extras/argumentMaps/defaults",
     "extras/argumentMaps/ArgumentMaps.md",
     ".npmrc"
@@ -86,7 +85,6 @@
     "release:beta": "standard-version --prerelease beta",
     "release:alpha": "standard-version --prerelease alpha",
     "rewrite-changelog": "gulp changelog",
-    "postinstall": "node ./supporter.js",
     "clean": "gulp clean",
     "dev-link": "npm i && npm run build && npm link",
     "dev-unlink": "npm unlink node-red-contrib-modbus -g",
