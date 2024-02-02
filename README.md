@@ -1,14 +1,16 @@
-![Platform Node-RED](http://b.repl.ca/v1/Platform-Node--RED-red.png)
-![Contribution Modbus](http://b.repl.ca/v1/Contribution-Modbus-orange.png)
-[![Financial Contributors on Open Collective](https://opencollective.com/node-red-contrib-modbus/all/badge.svg?label=financial+contributors)](https://opencollective.com/node-red-contrib-modbus) [![NPM version](https://badge.fury.io/js/node-red-contrib-modbus.png)](https://www.npmjs.com/package/node-red-contrib-modbus)
-![ES_Sourdce_Version](http://b.repl.ca/v1/JS_Source-ES2019-yellow.png)
-![ES_Deploy_Version](http://b.repl.ca/v1/JS_Deploy-ES2015-yellow.png)
-![NodeJS_Version](http://b.repl.ca/v1/NodeJS-LTS-green.png)
+![Platform Node-RED](https://img.shields.io/badge/Platform-Node--RED-red.png)
+![Contribution Modbus](https://img.shields.io/badge/Contribution-Modbus-orange.png)
+[![Financial Contributors on Open Collective](https://opencollective.com/node-red-contrib-modbus/all/badge.svg?label=financial+contributors)](https://opencollective.com/node-red-contrib-modbus)
+[![NPM version](https://badge.fury.io/js/node-red-contrib-modbus.png)](https://www.npmjs.com/package/node-red-contrib-modbus)
+![ES_Sourdce_Version](https://img.shields.io/badge/JS_Source-ES2019-yellow.png)
+![ES_Deploy_Version](https://img.shields.io/badge/JS_Deploy-ES2015-yellow.png)
+![NodeJS_Version](https://img.shields.io/badge/NodeJS-LTS-green.png)
 [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 [![NPM download](https://img.shields.io/npm/dm/node-red-contrib-modbus.svg)](https://npm-stat.com/charts.html?package=node-red-contrib-modbus)
 [![Build and publish](https://github.com/BiancoRoyal/node-red-contrib-modbus/actions/workflows/build.yml/badge.svg)](https://github.com/BiancoRoyal/node-red-contrib-modbus/actions/workflows/build.yml)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6cbeb40ab5604b3ab99e6badc9469e8a)](https://www.codacy.com/gh/BiancoRoyal/node-red-contrib-modbus?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=BiancoRoyal/node-red-contrib-modbus&amp;utm_campaign=Badge_Grade)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/BiancoRoyal/node-red-contrib-modbus)
+
 
 # node-red-contrib-modbus
 
