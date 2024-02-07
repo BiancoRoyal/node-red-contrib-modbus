@@ -24,7 +24,7 @@ body:
     attributes:
       label: Server
       description: |
-        Which type of OPC UA Server are you connected to?
+        Which type of Modbus Server are you connected to?
       multiple: false
       options:
         - Modbus-Server Node
