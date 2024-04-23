@@ -1,3 +1,19 @@
+# [5.31.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.2...v5.31.0) (2024-04-23)
+
+
+### Bug Fixes
+
+* **config:** [#442](https://github.com/biancoroyal/node-red-contrib-modbus/issues/442) fixing optional to save correct ([de88e25](https://github.com/biancoroyal/node-red-contrib-modbus/commit/de88e25b10e7e92ea8836d22ee91cb25796f3909))
+
+
+### Features
+
+* **flex-fc:** add load button ([04fb46e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/04fb46ed4d2764276b7bcfae1800f9ac342da85a))
+* **flex-fc:** add load button for an improved ui experience ([895f446](https://github.com/biancoroyal/node-red-contrib-modbus/commit/895f446bd99c8ea65bb5f96f7e4d0d79dec3da8e))
+* **modbus:** new option for the flex-fc to get input msg ([5ff8167](https://github.com/biancoroyal/node-red-contrib-modbus/commit/5ff81672ac9c575a71bb241fc5861f25357012c8))
+
+
+
 ## [5.27.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.1...v5.27.2) (2023-08-29)
 
 
