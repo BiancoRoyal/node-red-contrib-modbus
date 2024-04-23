@@ -20,13 +20,12 @@
         server: {type: 'modbus-client', required: true},
         emptyMsgOnFail: {value: false},
         keepMsgProperties: {value: false},
-        mapPath: {value: "./node_modules/node-red-contrib-modbus/extras/argumentMaps/defaults/"},
+        mapPath: {value: ""},
         selectedFc: {value: '' },
         fc: { value: '' },
         requestCard: { value: {} },
         responseCard: { value: {} },
-        
-        lastSelectedFc: { value: ''}
+        lastSelectedFc: { value: '0'}
       },
       inputs: 1,
       outputs: 1,
@@ -50,17 +49,17 @@
             $("#" + tab.id).show()
           }
         })
-  
+
         tabs.addTab({
           id: "modbus-settings-tab",
           label: this._("modbus-contrib.tabs-label.settings")
         })
-  
+
         tabs.addTab({
           id: "modbus-options-tab",
           label: this._("modbus-contrib.tabs-label.options")
         })
-  
+
         node.requestMapEditor = RED.editor.createEditor({
           id: 'node-input-request-map',
           mode: 'ace/mode/text',
@@ -73,10 +72,12 @@
           value: JSON.stringify(node.responseCard, null, " "),
         })
 
+        //NOTE(Kay): This needs to happen on load once!
         $.ajax({
-          url: "modbus/fc/si/" + node.id,
+          url: "modbus/fc/" + node.id,
           type: "POST",
           success: function(data) {
+            $("#node-input-selected-fc").empty();
             const argumentMaps = data["argumentMaps"];
             const keys = Object.keys(argumentMaps);
 
@@ -93,19 +94,76 @@
             }
           },
         error: function (error) {
-          RED.notify("Getting custom fc file received an error: " + JSON.stringify(error))
+          switch(xhr.status) {
+            case 404:
+              const errMessageNotFound = "File " + node.mapPath + " not found!";
+              RED.notify(errMessageNotFound);
+              break;
+            case 500:
+              const errMessageSyntax = "File " + node.mapPath + "contains syntax errors!";
+              RED.notify(errMessageSyntax);
+            default:
+              RED.notify("Unknown Error!");
+          }
         },
         data: {mapPath: node.mapPath}
         })
 
+        $("#node-input-loadMap").on("click", function() {
+          $.ajax({
+            url: "modbus/fc/" + node.id,
+            type: "POST",
+            success: function(data) {
+              $("#node-input-selected-fc").empty();
+
+              const argumentMaps = data["argumentMaps"];
+              const keys = Object.keys(argumentMaps);
+
+              for (let i = 0; i < keys.length; i++) {
+                const code = argumentMaps[keys[i]];
+                const id = code["id"];
+                const fcString = code["fc"];
+                const name = code["name"];
+                const description = code["shortDesc"]
+                const desc = name + " - " + description;
+
+                $("#node-input-selected-fc").append("<option value='" + keys[i] + "'" + ">" + desc + "</option>");
+                $("#node-input-selected-fc").val(node.lastSelectedFc);
+
+                const loadedMessage = "Loaded CFC " + name + " successfully ";
+
+                RED.notify(loadedMessage)
+              }
+            },
+            error: function (xhr, error) {
+              switch(xhr.status) {
+                case 404:
+                  const errMessageNotFound = "File " + node.mapPath + " not found!";
+                  RED.notify(errMessageNotFound);
+                  break;
+                case 500:
+                  const errMessageSyntax = "File " + node.mapPath + "contains syntax errors!";
+                  RED.notify(errMessageSyntax);
+                default:
+                  RED.notify("Unknown Error!");
+              }
+            },
+            data: {mapPath: node.mapPath}
+          })
+        })
+
+        $("#node-input-mapPath").on('input', function() {
+          node.mapPath = this.value
+        });
+
         //Reset the template back to the original values
         $("#node-input-reset-request").on("click", function() {
-          if(node.lastSelectedFc === '') {
+          if(node.lastSelectedFc === '0') {
             return;
           }
 
           $.ajax({
-            url: "modbus/fc/si/" + node.id,
+            url: "modbus/fc/" + node.id,
             type: "POST",
             success: function(data) {
               const fc = node.lastSelectedFc;
@@ -119,7 +177,7 @@
             error: function (error) {
               RED.notify("Getting custom fc file received an error: " + JSON.stringify(error))
             },
-            data: {mapPath: node.mapPath}
+            data: {mapPath: node.mapPath }
           })
         })
 
@@ -127,11 +185,23 @@
         //Load the right template from the server and store it inside the request/response json objects, then set the editors to the right content
         $("#node-input-selected-fc").on("change", function() {
           const fc = $("#node-input-selected-fc").val();
-          if(node.lastSelectedFc === fc || fc === '') {
+          if(fc === '0') {
+            const requestCard = {};
+            const responseCard = {};
+
+            node.requestMapEditor.getModel().setValue(JSON.stringify(requestCard, null, " "))
+            node.responseMapEditor.getModel().setValue(JSON.stringify(responseCard, null, " "))
+
+            node.lastSelectedFc = '0';
+          }
+
+          //Don't change anything if we selected the same code as before!
+          if(node.lastSelectedFc === fc) {
             return;
           }
+
           $.ajax({
-            url: "modbus/fc/si/" + node.id,
+            url: "modbus/fc/" + node.id,
             type: "POST",
             success: function(data) {
               const requestCard = data["argumentMaps"][fc]["requestMap"]
@@ -166,7 +236,7 @@
 
       oneditcancel: function() {
         let node = this;
-        
+
         node.requestMapEditor.destroy();
         delete node.requestMapEditor;
         node.responseMapEditor.destroy();
@@ -174,8 +244,8 @@
       }
     })
   </script>
-  
-  
+
+
   <script type="text/x-red" data-template-name="modbus-flex-fc">
       <div class="form-row">
           <ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="node-input-modbus-tabs"></ul>
@@ -198,13 +268,14 @@
                   <label for="node-input-mapPath">
                   <i class="icon-list"></i> <span data-i18n="modbus-contrib.label.mapPath">
                   </label>
-                  <input type="text" id="node-input-mapPath" placeholder="./node_modules/node-red-contrib-modbus/extras/argumentMaps/defaults/">
+                  <input type="text" id="node-input-mapPath" style="width: 60%" placeholder="/home/username/codes.json">
+                  <button id="node-input-loadMap" type="button" class="red-ui-button">Load</button>
               </div>
-              
+
               <div class="form-row">
                 <label for="node-input-selected-fc"><i class="icon-list"></i> <span data-i18n="modbus-contrib.label.functioncode"></span></label>
                 <select id="node-input-selected-fc">
-                    <option value="">Select Map</option>
+                    <option value="0">Select Map</option>
                 </select>
                 <button id="node-input-reset-request" type="button" class="red-ui-button">Reset Maps</button>
               </div>
@@ -238,10 +309,16 @@
       </div>
   </script>
 
-  
+
   <script type="text/x-red" data-help-name="modbus-flex-fc">
       <p>Transmits and Recieves Answers for Nonstandard Functioncodes via MODBUS </p>
       <p>Unit-ID - The Device Identification the Node tries to reach via MODBUS.</p>
+      <p>
+        Supply a JSON Custom Function Code map file in the <strong>Path to Map JSON</strong> textbox then press the load button the editor will then try to load the given file.
+        <strong>NOTE:</strong> If you want to specify a local file that is not relative to your current directory, you need to make sure that your path is <strong>absolute</strong>
+        and not relative. (i.e. <strong>"/home/username/codes/codes.json"</strong> will work while <strong>"./codes/codes.json"</strong> would not). You can name your codes.json file whatever you want just make
+        sure that it follows the specified layout below or take a look at the examples that are coming with the packages (extras/argumentMaps/defaults/codes.json)
+      </p>
       <p>
         Choose a Custom Functioncode from the dropdown. The editors will then load the Argument Maps for this certain Code.
       </p>
@@ -258,11 +335,11 @@
 
       <p><strong>Request Map Editor -</strong> Data editor for the request of the custom function code.</p>
       <p><strong>Response Map Editor -</strong> Data editor for the response of the custom function code.</p>
-      
+
       <p>
-        layout of a argument map:
+        layout of an argument map:
           <ul>
-            <li><strong>Name -</strong> The Name of the Argument. On the <strong>Request side</strong> this will only be used for readability purposes, on the <strong>Response side</strong> the name is used to generate a valid 
+            <li><strong>Name -</strong> The Name of the Argument. On the <strong>Request side</strong> this will only be used for readability purposes, on the <strong>Response side</strong> the name is used to generate a valid
             JSON response object.</li>
             <li><strong>Data -</strong> The Data value. The Argument get set to this value in the <strong>request</strong>. Has no effect on the <strong>response</strong> and should be set to <strong>zero</strong></li>
             <li><strong>Offset -</strong> The Offset of the Data Value. The Offset is used by the Parser to put the Data in the right place of the function code. The 0 offset is the first argument after the functioncode.</li>
@@ -302,4 +379,3 @@
         </code>
       </p>
   </script>
-  
