@@ -94,7 +94,17 @@
             }
           },
         error: function (error) {
-          RED.notify("Getting custom fc file received an error: " + JSON.stringify(error))
+          switch(xhr.status) {
+            case 404:
+              const errMessageNotFound = "File " + node.mapPath + " not found!";
+              RED.notify(errMessageNotFound);
+              break;
+            case 500:
+              const errMessageSyntax = "File " + node.mapPath + "contains syntax errors!";
+              RED.notify(errMessageSyntax);
+            default:
+              RED.notify("Unknown Error!");
+          }
         },
         data: {mapPath: node.mapPath}
         })
