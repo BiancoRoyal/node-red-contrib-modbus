@@ -109,14 +109,61 @@
         data: {mapPath: node.mapPath}
         })
 
+        $("#node-input-loadMap").on("click", function() {
+          $.ajax({
+            url: "modbus/fc/" + node.id,
+            type: "POST",
+            success: function(data) {
+              $("#node-input-selected-fc").empty();
+
+              const argumentMaps = data["argumentMaps"];
+              const keys = Object.keys(argumentMaps);
+
+              for (let i = 0; i < keys.length; i++) {
+                const code = argumentMaps[keys[i]];
+                const id = code["id"];
+                const fcString = code["fc"];
+                const name = code["name"];
+                const description = code["shortDesc"]
+                const desc = name + " - " + description;
+
+                $("#node-input-selected-fc").append("<option value='" + keys[i] + "'" + ">" + desc + "</option>");
+                $("#node-input-selected-fc").val(node.lastSelectedFc);
+
+                const loadedMessage = "Loaded CFC " + name + " successfully ";
+
+                RED.notify(loadedMessage)
+              }
+            },
+            error: function (xhr, error) {
+              switch(xhr.status) {
+                case 404:
+                  const errMessageNotFound = "File " + node.mapPath + " not found!";
+                  RED.notify(errMessageNotFound);
+                  break;
+                case 500:
+                  const errMessageSyntax = "File " + node.mapPath + "contains syntax errors!";
+                  RED.notify(errMessageSyntax);
+                default:
+                  RED.notify("Unknown Error!");
+              }
+            },
+            data: {mapPath: node.mapPath}
+          })
+        })
+
+        $("#node-input-mapPath").on('input', function() {
+          node.mapPath = this.value
+        });
+
         //Reset the template back to the original values
         $("#node-input-reset-request").on("click", function() {
-          if(node.lastSelectedFc === '') {
+          if(node.lastSelectedFc === '0') {
             return;
           }
 
           $.ajax({
-            url: "modbus/fc/si/" + node.id,
+            url: "modbus/fc/" + node.id,
             type: "POST",
             success: function(data) {
               const fc = node.lastSelectedFc;
