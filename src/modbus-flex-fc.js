@@ -272,7 +272,7 @@ module.exports = function (RED) {
 
   RED.nodes.registerType('modbus-flex-fc', ModbusFlexFc)
 
-  RED.httpAdmin.post('/modbus/fc/si/:id', RED.auth.needsPermission('modbus.read'), function (req, res) {
+  RED.httpAdmin.post('/modbus/fc/:id', RED.auth.needsPermission('modbus.read'), function (req, res) {
     const fs = require('fs')
     const path = require('node:path')
     const filapath = req.body.mapPath || './extras/argumentMaps/defaults/'
