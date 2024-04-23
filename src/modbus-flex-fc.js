@@ -275,16 +275,24 @@ module.exports = function (RED) {
   RED.httpAdmin.post('/modbus/fc/:id', RED.auth.needsPermission('modbus.read'), function (req, res) {
     const fs = require('fs')
     const path = require('node:path')
-    const filapath = req.body.mapPath || './extras/argumentMaps/defaults/'
+
     const filepath = req.body.mapPath || './extras/argumentMaps/defaults/codes.json'
-    if (!fs.existsSync(path.resolve(filapath, filename))) {
-      return
-    }
+    const resolvedPath = path.resolve(filepath)
 
-    fs.readFile(path.resolve(filapath, filename), (error, data) => {
-      if (error) res.json([error])
-
-      res.json(JSON.parse(data))
+    fs.readFile(resolvedPath, (error, data) => {
+      let response = {}
+      if (error) {
+        response = { code: 404, message: 'ERROR: File not found' }
+      } else {
+        try {
+          response.message = JSON.parse(data)
+          response.code = 200
+        } catch (error) {
+          response = { code: 500, message: 'ERROR: File contains invalid JSON' }
+        }
+      }
+      console.log('Sending: ', response)
+      res.status(response.code).json(response.message)
     })
   })
 }
