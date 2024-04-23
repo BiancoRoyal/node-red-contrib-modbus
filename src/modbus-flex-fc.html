@@ -196,6 +196,9 @@
 
             node.lastSelectedFc = '0';
           }
+
+          //Don't change anything if we selected the same code as before!
+          if(node.lastSelectedFc === fc) {
             return;
           }
 
