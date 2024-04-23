@@ -268,7 +268,7 @@
                   <label for="node-input-mapPath">
                   <i class="icon-list"></i> <span data-i18n="modbus-contrib.label.mapPath">
                   </label>
-                  <input type="text" id="node-input-mapPath" style="width: 60%" placeholder="absolute path to map file">
+                  <input type="text" id="node-input-mapPath" style="width: 60%" placeholder="/home/username/codes.json">
                   <button id="node-input-loadMap" type="button" class="red-ui-button">Load</button>
               </div>
 
@@ -313,6 +313,12 @@
   <script type="text/x-red" data-help-name="modbus-flex-fc">
       <p>Transmits and Recieves Answers for Nonstandard Functioncodes via MODBUS </p>
       <p>Unit-ID - The Device Identification the Node tries to reach via MODBUS.</p>
+      <p>
+        Supply a JSON Custom Function Code map file in the <strong>Path to Map JSON</strong> textbox then press the load button the editor will then try to load the given file.
+        <strong>NOTE:</strong> If you want to specify a local file that is not relative to your current directory, you need to make sure that your path is <strong>absolute</strong>
+        and not relative. (i.e. <strong>"/home/username/codes/codes.json"</strong> will work while <strong>"./codes/codes.json"</strong> would not). You can name your codes.json file whatever you want just make
+        sure that it follows the specified layout below or take a look at the examples that are coming with the packages (extras/argumentMaps/defaults/codes.json)
+      </p>
       <p>
         Choose a Custom Functioncode from the dropdown. The editors will then load the Argument Maps for this certain Code.
       </p>
