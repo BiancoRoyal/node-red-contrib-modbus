@@ -276,7 +276,7 @@ module.exports = function (RED) {
     const fs = require('fs')
     const path = require('node:path')
     const filapath = req.body.mapPath || './extras/argumentMaps/defaults/'
-    const filename = 'codes.json'
+    const filepath = req.body.mapPath || './extras/argumentMaps/defaults/codes.json'
     if (!fs.existsSync(path.resolve(filapath, filename))) {
       return
     }
