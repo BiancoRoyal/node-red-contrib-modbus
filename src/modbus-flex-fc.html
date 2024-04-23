@@ -190,6 +190,7 @@
           if(node.lastSelectedFc === fc || fc === '') {
             return;
           }
+
           $.ajax({
             url: "modbus/fc/si/" + node.id,
             type: "POST",
@@ -226,7 +227,7 @@
 
       oneditcancel: function() {
         let node = this;
-        
+
         node.requestMapEditor.destroy();
         delete node.requestMapEditor;
         node.responseMapEditor.destroy();
@@ -234,8 +235,8 @@
       }
     })
   </script>
-  
-  
+
+
   <script type="text/x-red" data-template-name="modbus-flex-fc">
       <div class="form-row">
           <ul style="background: #fff; min-width: 600px; margin-bottom: 20px;" id="node-input-modbus-tabs"></ul>
@@ -260,7 +261,7 @@
                   </label>
                   <input type="text" id="node-input-mapPath" placeholder="./node_modules/node-red-contrib-modbus/extras/argumentMaps/defaults/">
               </div>
-              
+
               <div class="form-row">
                 <label for="node-input-selected-fc"><i class="icon-list"></i> <span data-i18n="modbus-contrib.label.functioncode"></span></label>
                 <select id="node-input-selected-fc">
@@ -298,7 +299,7 @@
       </div>
   </script>
 
-  
+
   <script type="text/x-red" data-help-name="modbus-flex-fc">
       <p>Transmits and Recieves Answers for Nonstandard Functioncodes via MODBUS </p>
       <p>Unit-ID - The Device Identification the Node tries to reach via MODBUS.</p>
@@ -318,7 +319,7 @@
 
       <p><strong>Request Map Editor -</strong> Data editor for the request of the custom function code.</p>
       <p><strong>Response Map Editor -</strong> Data editor for the response of the custom function code.</p>
-      
+
       <p>
         layout of an argument map:
           <ul>
@@ -362,4 +363,3 @@
         </code>
       </p>
   </script>
-  
