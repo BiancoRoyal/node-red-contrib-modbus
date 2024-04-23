@@ -21,12 +21,13 @@
         emptyMsgOnFail: {value: false},
         keepMsgProperties: {value: false},
         //TODO(Kay): The path of the running NODE-Red Instance can only see it's local directory so everything specified
+        //           outside this path will not be visible for NODE-Red!
+        mapPath: {value: ""},
         selectedFc: {value: '' },
         fc: { value: '' },
         requestCard: { value: {} },
         responseCard: { value: {} },
-        
-        lastSelectedFc: { value: ''}
+        lastSelectedFc: { value: '0'}
       },
       inputs: 1,
       outputs: 1,
