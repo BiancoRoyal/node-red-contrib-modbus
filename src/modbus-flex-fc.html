@@ -51,17 +51,17 @@
             $("#" + tab.id).show()
           }
         })
-  
+
         tabs.addTab({
           id: "modbus-settings-tab",
           label: this._("modbus-contrib.tabs-label.settings")
         })
-  
+
         tabs.addTab({
           id: "modbus-options-tab",
           label: this._("modbus-contrib.tabs-label.options")
         })
-  
+
         node.requestMapEditor = RED.editor.createEditor({
           id: 'node-input-request-map',
           mode: 'ace/mode/text',
@@ -179,7 +179,7 @@
             error: function (error) {
               RED.notify("Getting custom fc file received an error: " + JSON.stringify(error))
             },
-            data: {mapPath: node.mapPath}
+            data: {mapPath: node.mapPath }
           })
         })
 
