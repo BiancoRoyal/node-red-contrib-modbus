@@ -187,7 +187,15 @@
         //Load the right template from the server and store it inside the request/response json objects, then set the editors to the right content
         $("#node-input-selected-fc").on("change", function() {
           const fc = $("#node-input-selected-fc").val();
-          if(node.lastSelectedFc === fc || fc === '') {
+          if(fc === '0') {
+            const requestCard = {};
+            const responseCard = {};
+
+            node.requestMapEditor.getModel().setValue(JSON.stringify(requestCard, null, " "))
+            node.responseMapEditor.getModel().setValue(JSON.stringify(responseCard, null, " "))
+
+            node.lastSelectedFc = '0';
+          }
             return;
           }
 
