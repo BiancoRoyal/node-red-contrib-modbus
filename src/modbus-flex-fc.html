@@ -20,8 +20,6 @@
         server: {type: 'modbus-client', required: true},
         emptyMsgOnFail: {value: false},
         keepMsgProperties: {value: false},
-        //TODO(Kay): The path of the running NODE-Red Instance can only see it's local directory so everything specified
-        //           outside this path will not be visible for NODE-Red!
         mapPath: {value: ""},
         selectedFc: {value: '' },
         fc: { value: '' },
@@ -335,7 +333,7 @@
       <p>
         layout of an argument map:
           <ul>
-            <li><strong>Name -</strong> The Name of the Argument. On the <strong>Request side</strong> this will only be used for readability purposes, on the <strong>Response side</strong> the name is used to generate a valid 
+            <li><strong>Name -</strong> The Name of the Argument. On the <strong>Request side</strong> this will only be used for readability purposes, on the <strong>Response side</strong> the name is used to generate a valid
             JSON response object.</li>
             <li><strong>Data -</strong> The Data value. The Argument get set to this value in the <strong>request</strong>. Has no effect on the <strong>response</strong> and should be set to <strong>zero</strong></li>
             <li><strong>Offset -</strong> The Offset of the Data Value. The Offset is used by the Parser to put the Data in the right place of the function code. The 0 offset is the first argument after the functioncode.</li>
