@@ -203,7 +203,7 @@
           }
 
           $.ajax({
-            url: "modbus/fc/si/" + node.id,
+            url: "modbus/fc/" + node.id,
             type: "POST",
             success: function(data) {
               const requestCard = data["argumentMaps"][fc]["requestMap"]
