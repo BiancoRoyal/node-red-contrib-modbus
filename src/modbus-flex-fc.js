@@ -291,7 +291,6 @@ module.exports = function (RED) {
           response = { code: 500, message: 'ERROR: File contains invalid JSON' }
         }
       }
-      console.log('Sending: ', response)
       res.status(response.code).json(response.message)
     })
   })
