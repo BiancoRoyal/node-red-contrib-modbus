@@ -74,10 +74,12 @@
           value: JSON.stringify(node.responseCard, null, " "),
         })
 
+        //NOTE(Kay): This needs to happen on load once!
         $.ajax({
-          url: "modbus/fc/si/" + node.id,
+          url: "modbus/fc/" + node.id,
           type: "POST",
           success: function(data) {
+            $("#node-input-selected-fc").empty();
             const argumentMaps = data["argumentMaps"];
             const keys = Object.keys(argumentMaps);
 
