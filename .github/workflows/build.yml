@@ -23,6 +23,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: npm install
+      - run: npm test
       - run: npm run build
       - run: tar -czvf distrib-${{ matrix.node }}.tar.gz modbus examples extras package.json docs index.js README.md CHANGELOG.md
       - uses: actions/upload-artifact@v4
@@ -40,6 +41,7 @@ jobs:
         with:
           node-version: 18
       - run: npm install
+      - run: npm test
       - uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }}
