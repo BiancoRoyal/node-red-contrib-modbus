@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018,2019,2020,2021,2022,2023,2024 Klaus Landsdorf (http://node-red.plus/)
+ Copyright (c) since the year 2016 Klaus Landsdorf (http://plus4nodered.com/)
  All rights reserved.
  node-red-contrib-modbus
 
@@ -11,7 +11,7 @@
 // eslint-disable-next-line no-var
 var de = de || { biancoroyal: { modbus: { core: {} } } } // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.core.internalDebug = de.biancoroyal.modbus.core.internalDebug || require('debug')('contribModbus:core') // eslint-disable-line no-use-before-define
-de.biancoroyal.modbus.core.ObjectID = de.biancoroyal.modbus.core.ObjectID || require('bson').ObjectID // eslint-disable-line no-use-before-define
+de.biancoroyal.modbus.core.ObjectID = de.biancoroyal.modbus.core.ObjectID || require('bson').BSON.ObjectId // eslint-disable-line no-use-before-define
 
 de.biancoroyal.modbus.core.getObjectId = function () {
   return new de.biancoroyal.modbus.core.ObjectID()

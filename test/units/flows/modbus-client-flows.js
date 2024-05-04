@@ -227,8 +227,8 @@ module.exports = {
       "useIOFile": false,
       "ioFile": "",
       "useIOForPayload": false,
-      "x": 410,
-      "y": 280,
+      "x": 490,
+      "y": 320,
       "wires": [
         [],
         []
@@ -259,7 +259,10 @@ module.exports = {
       "clientTimeout": "100",
       "reconnectOnTimeout": true,
       "reconnectTimeout": "200",
-      "parallelUnitIdsAllowed": false
+      "parallelUnitIdsAllowed": false,
+      "showErrors": false,
+      "showWarnings": true,
+      "showLogs": true
     }
   ]),
 

@@ -163,11 +163,12 @@ module.exports = {
       "topic": "",
       "payload": "",
       "payloadType": "date",
-      "x": 159,
-      "y": 144,
+      "x": 149,
+      "y": 204,
       "wires": [
         [
-          "391d65b9.85b07a"
+          "391d65b9.85b07a",
+          "bf1f319d3fcfb696"
         ]
       ]
     },
@@ -176,17 +177,19 @@ module.exports = {
       "type": "function",
       "z": "5b26a23d.a8a06c",
       "name": "Read 0-9 on Unit 1 FC3",
-      "func": "msg.payload = { input: msg.payload, 'fc': 3, 'unitid': 1, 'address': 0 , 'quantity': 10 }\nreturn msg;",
+      "func": "msg.payload = { \n    input: msg.payload, \n    'fc': 3, \n    'unitid': 1, \n    'address': 0 , \n    'quantity': 10 \n}\nreturn msg;",
       "outputs": 1,
+      "timeout": "",
       "noerr": 0,
       "initialize": "",
       "finalize": "",
       "libs": [],
-      "x": 459,
-      "y": 221,
+      "x": 449,
+      "y": 281,
       "wires": [
         [
-          "823b8c53.ee14b8"
+          "823b8c53.ee14b8",
+          "abedbb9eb9f5abc3"
         ]
       ]
     },
@@ -207,8 +210,8 @@ module.exports = {
       "keepMsgProperties": false,
       "delayOnStart": true,
       "startDelayTime": "3",
-      "x": 705,
-      "y": 221,
+      "x": 695,
+      "y": 281,
       "wires": [
         [
           "23156c303a59c400"
@@ -237,11 +240,12 @@ module.exports = {
       "topic": "",
       "payload": "",
       "payloadType": "date",
-      "x": 158,
-      "y": 181,
+      "x": 148,
+      "y": 241,
       "wires": [
         [
-          "391d65b9.85b07a"
+          "391d65b9.85b07a",
+          "bf1f319d3fcfb696"
         ]
       ]
     },
@@ -266,11 +270,12 @@ module.exports = {
       "topic": "",
       "payload": "",
       "payloadType": "date",
-      "x": 158,
-      "y": 218,
+      "x": 148,
+      "y": 278,
       "wires": [
         [
-          "391d65b9.85b07a"
+          "391d65b9.85b07a",
+          "bf1f319d3fcfb696"
         ]
       ]
     },
@@ -295,11 +300,12 @@ module.exports = {
       "topic": "",
       "payload": "",
       "payloadType": "date",
-      "x": 157,
-      "y": 255,
+      "x": 147,
+      "y": 315,
       "wires": [
         [
-          "391d65b9.85b07a"
+          "391d65b9.85b07a",
+          "bf1f319d3fcfb696"
         ]
       ]
     },
@@ -324,29 +330,14 @@ module.exports = {
       "topic": "",
       "payload": "",
       "payloadType": "date",
-      "x": 155,
-      "y": 289,
+      "x": 145,
+      "y": 349,
       "wires": [
         [
-          "391d65b9.85b07a"
+          "391d65b9.85b07a",
+          "bf1f319d3fcfb696"
         ]
       ]
-    },
-    {
-      "id": "23156c303a59c400",
-      "type": "helper",
-      "z": "5b26a23d.a8a06c",
-      "name": "helper 1",
-      "active": true,
-      "tosidebar": true,
-      "console": false,
-      "tostatus": false,
-      "complete": "false",
-      "statusVal": "",
-      "statusType": "auto",
-      "x": 920,
-      "y": 214,
-      "wires": []
     },
     {
       "id": "7e8ddc253adc0bd6",
@@ -363,7 +354,7 @@ module.exports = {
       "inputBufferSize": 10000,
       "discreteBufferSize": 10000,
       "showErrors": false,
-      "x": 543,
+      "x": 520,
       "y": 80,
       "wires": [
         [],
@@ -372,6 +363,54 @@ module.exports = {
         [],
         []
       ]
+    },
+    {
+      "id": "23156c303a59c400",
+      "type": "helper",
+      "z": "5b26a23d.a8a06c",
+      "name": "helper 1",
+      "active": true,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "false",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 930,
+      "y": 280,
+      "wires": []
+    },
+    {
+      "id": "bf1f319d3fcfb696",
+      "type": "helper",
+      "z": "5b26a23d.a8a06c",
+      "name": "helper 2",
+      "active": true,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "false",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 410,
+      "y": 220,
+      "wires": []
+    },
+    {
+      "id": "abedbb9eb9f5abc3",
+      "type": "helper",
+      "z": "5b26a23d.a8a06c",
+      "name": "helper 3",
+      "active": true,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "false",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 660,
+      "y": 220,
+      "wires": []
     },
     {
       "id": "352955bb.be6e6a",
