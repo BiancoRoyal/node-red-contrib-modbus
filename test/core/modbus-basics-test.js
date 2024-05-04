@@ -1,5 +1,5 @@
 /**
- Copyright (c) 2016,2017,2018,2019,2020,2021,2022,2023,2024 Klaus Landsdorf (http://node-red.plus/)
+ Copyright (c) since the year 2016 Klaus Landsdorf (http://plus4nodered.com/)
  All rights reserved.
  node-red-contrib-modbus - The BSD 3-Clause License
 
@@ -8,38 +8,38 @@
 
 'use strict'
 
-var assert = require('chai').assert
+const assert = require('assert')
 
 describe('Modbus Node basics Suite', function () {
-  var basic = require('../../src/modbus-basics')
+  const basic = require('../../src/modbus-basics')
 
   function checkStatus (statusProperty, fill, shape, text) {
-    assert.equal(statusProperty.fill, fill)
-    assert.equal(statusProperty.shape, shape)
-    assert.equal(statusProperty.status, text)
+    assert.strict.equal(statusProperty.fill, fill)
+    assert.strict.equal(statusProperty.shape, shape)
+    assert.strict.equal(statusProperty.status, text)
   }
 
   describe('when using basics', function () {
     it('statusLog can become true', function () {
-      assert.equal(false, basic.statusLog)
+      assert.strict.equal(false, basic.statusLog)
       basic.statusLog = true
-      assert.equal(true, basic.statusLog)
+      assert.strict.equal(true, basic.statusLog)
     })
 
     it('gives time-unit name by string', function () {
-      assert.equal(basic.get_timeUnit_name('ms'), 'msec.')
-      assert.equal(basic.get_timeUnit_name('s'), 'sec.')
-      assert.equal(basic.get_timeUnit_name('m'), 'min.')
-      assert.equal(basic.get_timeUnit_name('h'), 'h.')
-      assert.equal(basic.get_timeUnit_name(''), '')
+      assert.strict.equal(basic.get_timeUnit_name('ms'), 'msec.')
+      assert.strict.equal(basic.get_timeUnit_name('s'), 'sec.')
+      assert.strict.equal(basic.get_timeUnit_name('m'), 'min.')
+      assert.strict.equal(basic.get_timeUnit_name('h'), 'h.')
+      assert.strict.equal(basic.get_timeUnit_name(''), '')
     })
 
     it('calculating right rate by Unit', function () {
-      assert.equal(basic.calc_rateByUnit(1, 'ms'), 1)
-      assert.equal(basic.calc_rateByUnit(1, 's'), 1000)
-      assert.equal(basic.calc_rateByUnit(1, 'm'), 60000)
-      assert.equal(basic.calc_rateByUnit(1, 'h'), 3600000)
-      assert.equal(basic.calc_rateByUnit(1, ''), 10000) // default is 10 sec.
+      assert.strict.equal(basic.calc_rateByUnit(1, 'ms'), 1)
+      assert.strict.equal(basic.calc_rateByUnit(1, 's'), 1000)
+      assert.strict.equal(basic.calc_rateByUnit(1, 'm'), 60000)
+      assert.strict.equal(basic.calc_rateByUnit(1, 'h'), 3600000)
+      assert.strict.equal(basic.calc_rateByUnit(1, ''), 10000) // default is 10 sec.
     })
 
     it('Node status properties for connecting status', function () {

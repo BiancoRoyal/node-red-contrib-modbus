@@ -1,7 +1,7 @@
 /*
  The MIT License
 
- Copyright (c) 2017-2022 Klaus Landsdorf (http://node-red.plus/)
+ Copyright (c) since the year 2017 Klaus Landsdorf (http://plus4nodered.com/)
  All rights reserved.
  node-red-contrib-modbus
  */
@@ -33,10 +33,6 @@ function docImages () {
 
 function releaseLocal () {
   return src('src/locales/**/*').pipe(dest('modbus/locales'))
-}
-
-function releasePublicData () {
-  return src('src/public/**/*').pipe(dest('modbus/public'))
 }
 
 function cleanProject () {
@@ -109,9 +105,9 @@ function doc (cb) {
     .pipe(jsdoc(cb))
 }
 
-exports.default = series(cleanProject, releaseWebContent, releaseJSContent, codeJSContent, releaseLocal, releasePublicData, releaseIcons, doc, docIcons, docImages, changelogUpdate)
+exports.default = series(cleanProject, releaseWebContent, releaseJSContent, codeJSContent, releaseLocal, releaseIcons, doc, docIcons, docImages, changelogUpdate)
 exports.clean = cleanProject
 exports.build = series(cleanProject, releaseWebContent, releaseJSContent, releaseLocal, codeJSContent)
 exports.buildDocs = series(doc, docIcons, docImages)
 exports.changelog = changelogUpdate
-exports.publish = series(cleanProject, releaseWebContent, releaseJSContent, releaseLocal, codeJSContent, releasePublicData, releaseIcons, doc, docIcons, docImages, changelogUpdate)
+exports.publish = series(cleanProject, releaseWebContent, releaseJSContent, releaseLocal, codeJSContent, releaseIcons, doc, docIcons, docImages, changelogUpdate)
