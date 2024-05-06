@@ -21,36 +21,48 @@ helper.init(require.resolve('node-red'))
 
 const testFlows = require('./flows/modbus-flex-fc-flows')
 
-describe('modbus flex fc unit test', function() {
-    before(function (done) {
-        helper.startServer(function () {
-          done()
-        })
-      })
-    
-      afterEach(function (done) {
-        helper.unload().then(function () {
-          done()
-        }).catch(function () {
-          done()
-        })
-      })
-    
-      after(function (done) {
-        helper.stopServer(function () {
-          done()
-        })
-      })
+describe('modbus flex fc unit test', function () {
+  before(function (done) {
+    helper.startServer(function () {
+      done()
+    })
+  })
 
-      it('should load without errors', function(done) {
-        const flow = Array.from(testFlows.modbusFlexFc)
-        this.timeout(40000);
-        helper.load(testFlexFcNodes, flow, function () {
-          const modbusFlexFc = helper.getNode('d975b1203f71a3b5')
-          modbusFlexFc.should.have.property('type', 'modbus-flex-fc')
-          done()
-        }, function () {
-          helper.log('function callback')
-        })
-      })
+  afterEach(function (done) {
+    helper.unload().then(function () {
+      done()
+    }).catch(function () {
+      done()
+    })
+  })
+
+  after(function (done) {
+    helper.stopServer(function () {
+      done()
+    })
+  })
+  it("should send correct payload when reading coils", function (done) {
+    helper.load(testFlow, function () {
+      const helperNode = helper.getNode("29dc12925bb8e2d4");
+      helperNode.on("input", function (msg) {
+        try {
+          expect(msg.payload).to.deep.equal([100, 200]);
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+  });
+  it('should load without errors', function (done) {
+    const flow = Array.from(testFlows.modbusFlexFc)
+    this.timeout(40000);
+    helper.load(testFlexFcNodes, flow, function () {
+      const modbusFlexFc = helper.getNode('d975b1203f71a3b5')
+      modbusFlexFc.should.have.property('type', 'modbus-flex-fc')
+      done()
+    }, function () {
+      helper.log('function callback')
+    })
+  })
 })

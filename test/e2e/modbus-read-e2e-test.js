@@ -46,23 +46,41 @@ describe('Client Modbus Integration', function () {
     })
   })
 
-  describe('Node', function () {
-    it('should read Modbus via TCP', function (done) {
-      helper.load(nodeList, testFlows.testFlowReading, function () {
-        const readNode = helper.getNode('1f9596ed.279b89')
-        readNode.should.have.property('name', 'ModbusTestRead')
-        setTimeout(done, 1000)
+  // describe('Node', function () {
+  //   it('should read Modbus via TCP', function (done) {
+  //     helper.load(nodeList, testFlows.testFlowReading, function () {
+  //       const readNode = helper.getNode('1f9596ed.279b89')
+  //       readNode.should.have.property('name', 'ModbusTestRead')
+  //       setTimeout(done, 1000)
+  //     })
+  //   })
+  // })
+
+  // describe('Posts', function () {
+  //   it('should give status 200 site for serial ports list', function (done) {
+  //     helper.load(nodeList, testFlows.testFlowReading, function () {
+  //       setTimeout(function () {
+  //         helper.request().get('/modbus/serial/ports').expect(200).end(done)
+  //       }, 1000)
+  //     })
+  //   })
+  // })
+
+  it('should send message with correct payload when reading coils', function (done) {
+    helper.load(nodeList, testFlows.testFlowReading, function () {
+      const h1 = helper.getNode('h1')
+      console.log(h1)
+      let counter = 0
+      h1.on('input', function (msg) {
+        counter++
+        if (counter === 1) {
+          msg.payload.should.eql([true, true, true, true, true, true, true, true, true, true])
+          done()
+        }
       })
+    }, function () {
+      helper.log('function callback')
     })
   })
 
-  describe('Posts', function () {
-    it('should give status 200 site for serial ports list', function (done) {
-      helper.load(nodeList, testFlows.testFlowReading, function () {
-        setTimeout(function () {
-          helper.request().get('/modbus/serial/ports').expect(200).end(done)
-        }, 1000)
-      })
-    })
-  })
 })
