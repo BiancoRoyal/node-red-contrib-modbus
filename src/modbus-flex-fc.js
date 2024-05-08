@@ -39,12 +39,16 @@ module.exports = function (RED) {
     this.requestCard = config.requestCard
     this.responseCard = config.responseCard
 
+    // __WARN__: These properties are for testing the Node and they should not be used in the Code directly!
+    // NOTE(Kay): We cache the verbosity level of the RED object to make verboseWarn testable!
+    this.environmentVerbosity = RED.settings.verbose
+
     const node = this
     node.statusText = 'waiting'
     setNodeStatusWithTimeTo(node.statusText)
 
     function verboseWarn (logMessage) {
-      if (RED.settings.verbose && node.showWarnings) {
+      if (node.environmentVerbosity && node.showWarnings) {
         node.warn('Read -> ' + logMessage + ' address: ' + node.adr)
       }
     }
@@ -246,6 +250,7 @@ module.exports = function (RED) {
 
       const newStatusText = statusOptions.status
       if (newStatusText !== statusText) {
+        node.statusText = newStatusText
         node.status({
           fill: statusOptions.fill,
           shape: statusOptions.shape,
