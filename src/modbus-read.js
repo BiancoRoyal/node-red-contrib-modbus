@@ -63,7 +63,7 @@ module.exports = function (RED) {
     setNodeStatusWithTimeTo(node.statusText)
 
     function verboseWarn (logMessage) {
-      if (RED.settings.verbose && node.showWarnings) {
+      if (node.verboseLogging && node.showWarnings) {
         node.warn('Read -> ' + logMessage + ' address: ' + node.adr)
       }
     }
