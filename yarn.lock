@@ -1314,6 +1314,14 @@
   resolved "https://registry.npmjs.org/@serialport/bindings-interface/-/bindings-interface-1.2.2.tgz"
   integrity sha512-CJaUd5bLvtM9c5dmO9rPBHPXTa9R2UwpkJ0wdh9JCYcbrPWsKz+ErvR0hBLeo7NPeiFdjFO4sonRljiw4d2XiA==
 
+"@serialport/list@~10.5.0":
+  version "10.5.0"
+  resolved "https://registry.npmjs.org/@serialport/list/-/list-10.5.0.tgz"
+  integrity sha512-fPjCt7eeV9D/RoXBSj4J6LpKjlR+RIPeJLFU4N80tMftQF573ECP9yDjFH7Qr3t7YBH5r9N1+ntVXwzbmQPUHQ==
+  dependencies:
+    "@serialport/bindings-cpp" "10.8.0"
+    commander "^9.0.0"
+
 "@serialport/list@~12.0.0":
   version "12.0.0"
   resolved "https://registry.npmjs.org/@serialport/list/-/list-12.0.0.tgz"
@@ -1620,12 +1628,12 @@ acorn-jsx@^5.3.2:
   resolved "https://registry.npmjs.org/acorn-jsx/-/acorn-jsx-5.3.2.tgz"
   integrity sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==
 
-acorn-walk@8.2.0:
+acorn-walk@^8.2.0, acorn-walk@8.2.0:
   version "8.2.0"
   resolved "https://registry.npmjs.org/acorn-walk/-/acorn-walk-8.2.0.tgz"
   integrity sha512-k+iyHEuPgSw6SbuDpGQM+06HQUa04DZ3o+F6CSzXMvvI5KMvnaEqXe+YVe555R9nn6GPt404fos4wcgpw12SDA==
 
-"acorn@^6.0.0 || ^7.0.0 || ^8.0.0", acorn@8.8.2:
+"acorn@^6.0.0 || ^7.0.0 || ^8.0.0", acorn@^8.7.0, acorn@8.8.2:
   version "8.8.2"
   resolved "https://registry.npmjs.org/acorn/-/acorn-8.8.2.tgz"
   integrity sha512-xjIYgE8HBrkpd/sJqOGNspf8uHG+NOHGOw6a/Urj8taM2EXfdNAH2oFcPeIFfsv3+kz/mJrS5VuMqbNLjCa2vw==
@@ -2372,6 +2380,13 @@ browserslist@^4.22.2, browserslist@^4.23.0, "browserslist@>= 4.21.0":
     node-releases "^2.0.14"
     update-browserslist-db "^1.0.13"
 
+bson@~4.7.2:
+  version "4.7.2"
+  resolved "https://registry.npmjs.org/bson/-/bson-4.7.2.tgz"
+  integrity sha512-Ry9wCtIZ5kGqkJoi6aD8KjxFZEx78guTQDnpXWiNthsxzrxAK/i8E6pCHAIZTbaEFWcOCvbecMukfK7XUvyLpQ==
+  dependencies:
+    buffer "^5.6.0"
+
 bson@~6.7.0:
   version "6.7.0"
   resolved "https://registry.npmjs.org/bson/-/bson-6.7.0.tgz"
@@ -2387,7 +2402,7 @@ buffer-from@^1.0.0:
   resolved "https://registry.npmjs.org/buffer-from/-/buffer-from-1.1.2.tgz"
   integrity sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==
 
-buffer@^5.5.0:
+buffer@^5.5.0, buffer@^5.6.0:
   version "5.7.1"
   resolved "https://registry.npmjs.org/buffer/-/buffer-5.7.1.tgz"
   integrity sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==
@@ -2824,6 +2839,11 @@ commander@^4.0.1:
   version "4.1.1"
   resolved "https://registry.npmjs.org/commander/-/commander-4.1.1.tgz"
   integrity sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==
+
+commander@^9.0.0:
+  version "9.5.0"
+  resolved "https://registry.npmjs.org/commander/-/commander-9.5.0.tgz"
+  integrity sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ==
 
 commander@~2.19.0:
   version "2.19.0"
@@ -7345,6 +7365,24 @@ node-red-admin@^3.1.3:
   optionalDependencies:
     bcrypt "5.1.1"
 
+node-red-contrib-modbus-flex-server@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/node-red-contrib-modbus-flex-server/-/node-red-contrib-modbus-flex-server-1.0.0.tgz"
+  integrity sha512-5qoPakJeDeic2BgOGhCs2eqb4TxZkoRnENMIkl63SK8y19GMaIEEd/2tyK80Nl+t8b0PviPy1Y577kLjmHkClQ==
+  dependencies:
+    "@open-p4nr/modbus-serial" "https://dl.cloudsmith.io/public/iniationware-gmbh/plus4nodered/npm/open-p4nr/modbus-serial/8.1.0/modbus-serial-8.1.0.tgz"
+    "@xstate/fsm" "~2.1.0"
+    bson "~4.7.2"
+    debug "~4.3.4"
+    jsmodbus "~4.0.10"
+    line-by-line "~0.1.6"
+    source-map-support "~0.5.21"
+    underscore "~1.13.6"
+    vm2 "~3.9.19"
+  optionalDependencies:
+    "@serialport/list" "~10.5.0"
+    serialport "^10.5.0"
+
 node-red-node-test-helper@^0.3.4:
   version "0.3.4"
   resolved "https://registry.npmjs.org/node-red-node-test-helper/-/node-red-node-test-helper-0.3.4.tgz"
@@ -9058,6 +9096,26 @@ serialport@^10.4.0:
     "@serialport/stream" "10.5.0"
     debug "^4.3.3"
 
+serialport@^10.5.0:
+  version "10.5.0"
+  resolved "https://registry.npmjs.org/serialport/-/serialport-10.5.0.tgz"
+  integrity sha512-7OYLDsu5i6bbv3lU81pGy076xe0JwpK6b49G6RjNvGibstUqQkI+I3/X491yBGtf4gaqUdOgoU1/5KZ/XxL4dw==
+  dependencies:
+    "@serialport/binding-mock" "10.2.2"
+    "@serialport/bindings-cpp" "10.8.0"
+    "@serialport/parser-byte-length" "10.5.0"
+    "@serialport/parser-cctalk" "10.5.0"
+    "@serialport/parser-delimiter" "10.5.0"
+    "@serialport/parser-inter-byte-timeout" "10.5.0"
+    "@serialport/parser-packet-length" "10.5.0"
+    "@serialport/parser-readline" "10.5.0"
+    "@serialport/parser-ready" "10.5.0"
+    "@serialport/parser-regex" "10.5.0"
+    "@serialport/parser-slip-encoder" "10.5.0"
+    "@serialport/parser-spacepacket" "10.5.0"
+    "@serialport/stream" "10.5.0"
+    debug "^4.3.3"
+
 serialport@^12.0.0:
   version "12.0.0"
   resolved "https://registry.npmjs.org/serialport/-/serialport-12.0.0.tgz"
@@ -10411,6 +10469,14 @@ vinyl@^2.0.0, vinyl@^2.1.0:
     cloneable-readable "^1.0.0"
     remove-trailing-separator "^1.0.1"
     replace-ext "^1.0.0"
+
+vm2@~3.9.19:
+  version "3.9.19"
+  resolved "https://registry.npmjs.org/vm2/-/vm2-3.9.19.tgz"
+  integrity sha512-J637XF0DHDMV57R6JyVsTak7nIL8gy5KH4r1HiwWLf/4GBbb5MKL5y7LpmF4A8E2nR6XmzpmMFQ7V7ppPTmUQg==
+  dependencies:
+    acorn "^8.7.0"
+    acorn-walk "^8.2.0"
 
 walkdir@~0.0.12:
   version "0.0.12"

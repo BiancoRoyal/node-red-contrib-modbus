@@ -43,6 +43,16 @@ describe('Core Client Testing', function () {
         done()
       })
 
+      it('should check with failure the TCP UnitId undefined', function (done) {
+        assert.strict.equal(coreClientUnderTest.checkUnitId(undefined, 'tcp'), false)
+        done()
+      })
+
+      it('should check with failure the TCP UnitId 0 from undefined payload', function (done) {
+        assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'tcp', unit_id: 0 }, { payload: { } }), 0)
+        done()
+      })
+
       it('should check with success the TCP UnitId 1 from payload', function (done) {
         assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'tcp', unit_id: 0 }, { payload: { unitid: 1 } }), 1)
         done()
@@ -60,6 +70,11 @@ describe('Core Client Testing', function () {
 
       it('should check with success the TCP UnitId 0 from queueid', function (done) {
         assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'tcp', unit_id: 1 }, { queueUnitId: 0 }), 0)
+        done()
+      })
+
+      it('should check with failure the TCP UnitId undefined', function (done) {
+        assert.strict.equal(coreClientUnderTest.checkUnitId(undefined, 'tcp'), false)
         done()
       })
 
