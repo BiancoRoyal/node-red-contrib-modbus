@@ -85,7 +85,7 @@ module.exports = function (RED) {
 
     node.prepareMsg = function (msg) {
       if (typeof msg === 'string') {
-        //NOTE: The operation can fail!
+        // NOTE: The operation can fail!
         msg = JSON.parse(msg)
       }
 

@@ -4,12 +4,12 @@
   "private": false,
   "description": "The all in one Modbus TCP and Serial contribution long term supported package for Node-RED.",
   "dependencies": {
+    "@open-p4nr/modbus-serial": "https://dl.cloudsmith.io/public/iniationware-gmbh/plus4nodered/npm/open-p4nr/modbus-serial/8.1.0/modbus-serial-8.1.0.tgz",
     "@xstate/fsm": "~2.1.0",
     "bson": "~6.7.0",
     "debug": "~4.3.4",
     "jsmodbus": "~4.0.10",
     "line-by-line": "~0.1.6",
-    "@open-p4nr/modbus-serial": "https://dl.cloudsmith.io/public/iniationware-gmbh/plus4nodered/npm/open-p4nr/modbus-serial/8.1.0/modbus-serial-8.1.0.tgz",
     "source-map-support": "~0.5.21",
     "underscore": "~1.13.6"
   },
@@ -96,7 +96,7 @@
     "codacy-coverage": "^3.4.0",
     "conventional-changelog-cli": "^5.0.0",
     "coveralls": "^3.1.1",
-    "gulp": "^5.0.0",
+    "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-clean": "^0.4.0",
     "gulp-conventional-changelog": "^5.0.0",

@@ -6,18 +6,16 @@
  node-red-contrib-modbus
  */
 
-'use strict'
-
-const { series, src, dest } = require('gulp')
-const htmlmin = require('gulp-htmlmin')
-const jsdoc = require('gulp-jsdoc3')
+const { src, dest, series } = require('gulp')
 const clean = require('gulp-clean')
-const uglify = require('gulp-uglify')
+const jsdoc = require('gulp-jsdoc3')
 const babel = require('gulp-babel')
-const sourcemaps = require('gulp-sourcemaps')
+const uglify = require('gulp-uglify')
 const pump = require('pump')
+const sourcemaps = require('gulp-sourcemaps')
 const replace = require('gulp-replace')
 const changelog = require('gulp-conventional-changelog')
+const htmlmin = require('gulp-htmlmin')
 
 function releaseIcons () {
   return src('src/icons/**/*').pipe(dest('modbus/icons'))
