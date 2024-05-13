@@ -281,7 +281,16 @@ module.exports = function (RED) {
     const fs = require('fs')
     const path = require('node:path')
 
-    const filepath = req.body.mapPath || './extras/argumentMaps/defaults/codes.json'
+    const mapPath = req.body.mapPath
+
+    if (req.body.mapPath) {
+      if (req.body.mapPath.endsWith('.json') === false) {
+        res.status(400).json({ code: 400, message: 'ERROR: Invalid file extension' })
+        return
+      }
+    }
+
+    const filepath = mapPath || './extras/argumentMaps/defaults/codes.json'
     const resolvedPath = path.resolve(filepath)
 
     fs.readFile(resolvedPath, (error, data) => {
