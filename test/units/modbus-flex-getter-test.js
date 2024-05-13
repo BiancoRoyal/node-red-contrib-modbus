@@ -272,6 +272,42 @@ describe('Flex Getter node Testing', function () {
         })
       })
     })
+    it('should handle null or undefined input message', function (done) {
+      const flow = Array.from(testFlows.testFlexGetterFlow)
+      flow[1].serverPort = "50113"
+      helper.load(testFlexGetterNodes, flow, function () {
+        const modbusGetterNode = helper.getNode('bc5a61b6.a3972')
+        setTimeout(() => {
+          let isReady = modbusGetterNode.isReadyForInput(null)
+          isReady.should.be.false
+          isReady = modbusGetterNode.isReadyForInput(undefined)
+          isReady.should.be.false
+          done()
+        } , 1500)
+      })
+    })
+    // it('should return true for valid Modbus message', function (done) {
+    //   const modbusMsg = {
+    //     payload: {
+    //       fc: 1,
+    //       address: 10,
+    //       quantity: 5
+    //     }
+    //   }
+    //   const flow = Array.from(testFlows.testFlexGetterFlow)
+    //   flow[1].serverPort = "50114"
+    //   helper.load(testFlexGetterNodes, flow, function () {
+    //     const n1 = helper.getNode('bc5a61b6.a3972');
+    //     setTimeout(() => {
+    //     n1.on('input', function (msg) {
+    //       console.log(msg)
+    //     const isValid = n1.isValidModbusMsg(msg)
+    //     isValid.should.be.true
+    //     done() } , 1500)
+    //   })
+
+    // })
+    // })
 /**
     it('should not be ready for input - no client', function (done) {
       const flow = Array.from(testFlows.testFlexGetterShowWarningsWithoutClientFlow)

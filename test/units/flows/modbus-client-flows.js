@@ -197,7 +197,72 @@ module.exports = {
       "parallelUnitIdsAllowed": false
     }
   ]),
-
+  "testForFailureLogEnabled": helperExtensions.cleanFlowPositionData([
+    {
+      "id": "b3c94e07c24b7584",
+      "type": "tab",
+      "label": "Should Be TCP Default",
+      "disabled": false,
+      "info": "",
+      "env": []
+    },
+    {
+      "id": "384fb9f1.e96296",
+      "type": "modbus-read",
+      "z": "b3c94e07c24b7584",
+      "name": "",
+      "topic": "",
+      "showStatusActivities": false,
+      "logIOActivities": false,
+      "showErrors": false,
+      "unitid": "",
+      "dataType": "Coil",
+      "adr": "0",
+      "quantity": "10",
+      "rate": "4",
+      "rateUnit": "s",
+      "delayOnStart": false,
+      "startDelayTime": "",
+      "server": "466860d5.3f6358",
+      "useIOFile": false,
+      "ioFile": "",
+      "useIOForPayload": false,
+      "emptyMsgOnFail": false,
+      "x": 390,
+      "y": 320,
+      "wires": [
+        [],
+        []
+      ]
+    },
+    {
+      "id": "466860d5.3f6358",
+      "type": "modbus-client",
+      "name": "ModbusClientTCPDefault",
+      "clienttype": "tcp",
+      "bufferCommands": true,
+      "stateLogEnabled": true,
+      "queueLogEnabled": true,
+      "failureLogEnabled": true, // Set to true
+      "tcpHost": "127.0.0.1",
+      "tcpPort": "502",
+      "tcpType": "DEFAULT",
+      "serialPort": "/dev/ttyUSB",
+      "serialType": "RTU-BUFFERD",
+      "serialBaudrate": "9600",
+      "serialDatabits": "8",
+      "serialStopbits": "1",
+      "serialParity": "none",
+      "serialConnectionDelay": "50",
+      "serialAsciiResponseStartDelimiter": "",
+      "unit_id": "1",
+      "commandDelay": "1",
+      "clientTimeout": "100",
+      "reconnectOnTimeout": true,
+      "reconnectTimeout": "200",
+      "parallelUnitIdsAllowed": false
+    }
+  ]),
   "testShouldBeWrongTcpFlow": helperExtensions.cleanFlowPositionData([
     {
       "id": "bca7a6988613ce93",
