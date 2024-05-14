@@ -38,7 +38,7 @@ const msgWriteInput = {
   }
 }
 
-const msgMulipleWriteInput = {
+const msgMultipleWriteInput = {
   payload: {
     value: [101, 201, 102, 202, 103, 203, 104, 204, 105, 205, 106, 206],
     register: 'input',
@@ -282,7 +282,7 @@ describe('Core Server Testing', function () {
       })
 
       it('should write multiple buffers to input', function (done) {
-        assert.strict.equal(coreServerUnderTest.writeModbusServerMemory(modbusServerNode, msgMulipleWriteInput), true)
+        assert.strict.equal(coreServerUnderTest.writeModbusServerMemory(modbusServerNode, msgMultipleWriteInput), true)
         assert.strict.equal(modbusServerNode.modbusServer.input.readUInt8(0), 101)
         assert.strict.equal(modbusServerNode.modbusServer.input.readUInt8(1), 201)
         assert.strict.equal(modbusServerNode.modbusServer.input.readUInt8(2), 102)
@@ -299,7 +299,7 @@ describe('Core Server Testing', function () {
       })
 
       it('should write multiple buffer to input', function (done) {
-        assert.strict.equal(coreServerUnderTest.writeModbusFlexServerMemory(modbusFlexServerNode, msgMulipleWriteInput), true)
+        assert.strict.equal(coreServerUnderTest.writeModbusFlexServerMemory(modbusFlexServerNode, msgMultipleWriteInput), true)
         assert.strict.equal(modbusFlexServerNode.registers.readUInt8(0), 101)
         assert.strict.equal(modbusFlexServerNode.registers.readUInt8(1), 201)
         assert.strict.equal(modbusFlexServerNode.registers.readUInt8(2), 102)
@@ -309,3 +309,162 @@ describe('Core Server Testing', function () {
     })
   })
 })
+
+describe('Modbus server core function Copy Flex Buffer', () => {
+
+  let node = {
+    registers: Buffer.alloc(2),
+    coils: Buffer.alloc(1)
+  };
+
+  it('should handle `holding` case', () => {
+    const msg = {
+      payload: { register: 'holding' },
+      bufferData: Buffer.alloc(2 , 22),
+      bufferSplitAddress: 0
+    };
+
+    const result = coreServerUnderTest.copyToModbusFlexBuffer(node, msg);
+    assert.strict.equal(result, true)
+    assert.strict.deepEqual(node.registers, msg.bufferData);
+  });
+
+  it('should handle `holding` case just on 16 Bit', () => {
+    const msg = {
+      payload: { register: 'holding' },
+      bufferData: Buffer.alloc(4 , 22),
+      bufferSplitAddress: 0
+    };
+
+    const result = coreServerUnderTest.copyToModbusFlexBuffer(node, msg);
+    assert.strict.equal(result, true)
+    assert.strict.deepEqual(node.registers.readUInt16BE(0), msg.bufferData.readUInt16BE(0));
+  });
+
+  it('should handle `coils` case', () => {
+    const msg = {
+      payload: { register: 'coils' },
+      bufferData: Buffer.alloc(1, 33),
+      bufferAddress: 0
+    };
+
+    const result = coreServerUnderTest.copyToModbusFlexBuffer(node, msg);
+    assert.strict.equal(result, true)
+    assert.strict.deepEqual(node.coils, msg.bufferData);
+  });
+
+  it('should handle `discrete` case', () => {
+    const msg = {
+      payload: { register: 'discrete' },
+      bufferData: Buffer.alloc(1, 11),
+      bufferAddress: 0
+    };
+
+    const result = coreServerUnderTest.copyToModbusFlexBuffer(node, msg);
+    assert.strict.equal(result, true)
+    assert.strict.deepEqual(node.coils, msg.bufferData);
+  });
+
+  it('should handle `discrete` case on 8 Bit', () => {
+    const msg = {
+      payload: { register: 'discrete' },
+      bufferData: Buffer.alloc(2, 11),
+      bufferAddress: 0
+    };
+
+    const result = coreServerUnderTest.copyToModbusFlexBuffer(node, msg);
+    assert.strict.equal(result, true)
+    assert.strict.deepEqual(node.coils.readUInt8(0), msg.bufferData.readUInt8(0));
+  });
+
+  it('should handle `input` case', () => {
+    const msg = {
+      payload: { register: 'input' },
+      bufferData: Buffer.alloc(2, 66),
+      bufferAddress: 0
+    };
+
+    const result = coreServerUnderTest.copyToModbusFlexBuffer(node, msg);
+    assert.strict.equal(result, true)
+    assert.strict.deepEqual(node.registers, msg.bufferData);
+  });
+
+  it('should return false for invalid case', () => {
+    const msg = {
+      payload: { register: 'invalid' },
+      bufferData: Buffer.from([1, 2, 3, 4]),
+      bufferAddress: 0
+    };
+
+    const result = coreServerUnderTest.copyToModbusFlexBuffer(node, msg);
+    assert.strict.equal(result, false)
+  });
+});
+
+
+describe('Modbus server core function Write Flex Buffer', () => {
+
+  let node = {
+    registers: Buffer.alloc(2),
+    coils: Buffer.alloc(1)
+  };
+
+  it('should handle `holding` case', () => {
+    const msg = {
+      payload: { register: 'holding' },
+      bufferPayload: Buffer.alloc(2, 255),
+      bufferSplitAddress: 0
+    };
+
+    const result = coreServerUnderTest.writeToModbusFlexBuffer(node, msg);
+    assert.strict.equal(result, true)
+    assert.strict.deepEqual(node.registers, msg.bufferPayload);
+  });
+
+  it('should handle `coils` case', () => {
+    const msg = {
+      payload: { register: 'coils' },
+      bufferPayload: Buffer.alloc(1, 88),
+      bufferSplitAddress: 0
+    };
+
+    const result = coreServerUnderTest.writeToModbusFlexBuffer(node, msg);
+    assert.strict.equal(result, true)
+    assert.strict.deepEqual(node.coils, msg.bufferPayload);
+  });
+
+  it('should handle `discrete` case', () => {
+    const msg = {
+      payload: { register: 'discrete' },
+      bufferPayload: Buffer.alloc(1, 88),
+      bufferAddress: 0
+    };
+
+    const result = coreServerUnderTest.writeToModbusFlexBuffer(node, msg);
+    assert.strict.equal(result, true)
+    assert.strict.deepEqual(node.coils, msg.bufferPayload);
+  });
+
+  it('should handle `input` case', () => {
+    const msg = {
+      payload: { register: 'input' },
+      bufferPayload: Buffer.alloc(2, 255),
+      bufferAddress: 0
+    };
+
+    const result = coreServerUnderTest.writeToModbusFlexBuffer(node, msg);
+    assert.strict.equal(result, true)
+    assert.strict.deepEqual(node.registers, msg.bufferPayload);
+  });
+
+  it('should return false for invalid case', () => {
+    const msg = {
+      payload: { register: 'invalid' },
+      bufferPayload: Buffer.from([1, 2, 3, 4]),
+      bufferAddress: 0
+    };
+
+    const result = coreServerUnderTest.writeToModbusFlexBuffer(node, msg);
+    assert.strict.equal(result, false)
+  });
+});
