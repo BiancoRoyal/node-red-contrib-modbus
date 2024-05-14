@@ -1,8 +1,10 @@
-# [5.40.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.2...v5.40.0) (2024-05-13)
+# [5.40.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.2...v5.40.0) (2024-05-14)
 
 
 ### Bug Fixes
 
+* **buffer:** nodejs Buffer alloc update ([9a6350c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/9a6350cd67361f10310629a145f8a595e9f3d85c))
+* **codeql:** version codeql ([163101f](https://github.com/biancoroyal/node-red-contrib-modbus/commit/163101f91c784a5202acd86b0a10302a22414495))
 * **config:** [#442](https://github.com/biancoroyal/node-red-contrib-modbus/issues/442) fixing optional to save correct ([de88e25](https://github.com/biancoroyal/node-red-contrib-modbus/commit/de88e25b10e7e92ea8836d22ee91cb25796f3909))
 
 
@@ -10,7 +12,7 @@
 
 * **flex-fc:** add load button ([04fb46e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/04fb46ed4d2764276b7bcfae1800f9ac342da85a))
 * **flex-fc:** add load button for an improved ui experience ([895f446](https://github.com/biancoroyal/node-red-contrib-modbus/commit/895f446bd99c8ea65bb5f96f7e4d0d79dec3da8e))
-* **flex-fc:** map file needs to be json ([74d4522](https://github.com/biancoroyal/node-red-contrib-modbus/commit/74d452254264e8c805a48afac5921a7c5cd68c49))
+* **flex-fc:** map file needs to be json ([28f6010](https://github.com/biancoroyal/node-red-contrib-modbus/commit/28f60102e07b54d4bd5b86660b4d382341dd54b3))
 * **modbus:** new option for the flex-fc to get input msg ([5ff8167](https://github.com/biancoroyal/node-red-contrib-modbus/commit/5ff81672ac9c575a71bb241fc5861f25357012c8))
 
 
