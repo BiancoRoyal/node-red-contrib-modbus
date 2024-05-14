@@ -12,7 +12,7 @@
 
 const assert = require('assert')
 const coreClientUnderTest = require('../../src/core/modbus-client-core')
-
+const sinon = require('sinon')
 describe('Core Client Testing', function () {
   describe('Core Client', function () {
     it('should give the units internalDebugLog', function (done) {
@@ -49,7 +49,7 @@ describe('Core Client Testing', function () {
       })
 
       it('should check with failure the TCP UnitId 0 from undefined payload', function (done) {
-        assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'tcp', unit_id: 0 }, { payload: { } }), 0)
+        assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'tcp', unit_id: 0 }, { payload: {} }), 0)
         done()
       })
 
@@ -130,6 +130,103 @@ describe('Core Client Testing', function () {
         done()
       })
     })
+    it('should create a valid state machine', function () {
+      const stateMachine = coreClientUnderTest.createStateMachineService()
+      assert.strict.equal(typeof stateMachine, 'object')
+    })
+    it('should set clientTimeout if msg.payload.clientTimeout exists', function (done) {
+      const node = { clientTimeout: 1000 }
+      const msg = { payload: { clientTimeout: 2000 } }
+
+      coreClientUnderTest.setNewNodeOptionalSettings(node, msg)
+
+      assert.strict.equal(node.clientTimeout, 2000)
+      done()
+    })
+    it('should set commandDelay if msg.payload.commandDelay exists', function (done) {
+      const node = { commandDelay: 100 }
+      const msg = { payload: { commandDelay: 200 } }
+
+      coreClientUnderTest.setNewNodeOptionalSettings(node, msg)
+
+      assert.strict.equal(node.commandDelay, 200)
+      done()
+    })
+    it('should send READ state if bufferCommands is false and clienttype is not tcp', function (done) {
+      const node = {
+        bufferCommands: false,
+        clienttype: 'serial',
+        stateService: {
+          send: function (state) {
+            assert.strictEqual(state, 'READ');
+          }
+        }
+      };
+
+      coreClientUnderTest.readModbus(node, {});
+      done();
+
+    });
+    describe('setNewNodeOptionalSettings', function () {
+      it('should set unit_id to msg.payload.unitId if it is a valid unitId', function () {
+        const node = {
+          unit_id: 1,
+          clienttype: 'tcp',
+          checkUnitId: sinon.stub().returns(true)
+        };
+        const msg = {
+          payload: {
+            unitId: 2
+          }
+        };
+
+        coreClientUnderTest.setNewNodeOptionalSettings(node, msg);
+        assert.strictEqual(node.unit_id, 2);
+      });
+
+      it('should set unit_id to node.unit_id if msg.payload.unitId is not a valid unitId', function () {
+        const node = {
+          unit_id: 1,
+          clienttype: 'tcp',
+          checkUnitId: sinon.stub().returns(false)
+        };
+        const msg = {
+          payload: {
+            unitId: 'invalid'
+          }
+        };
+        coreClientUnderTest.setNewNodeOptionalSettings(node, msg);
+
+        assert.strictEqual(node.unit_id, 1);
+      });
+
+      it('should set commandDelay to msg.payload.commandDelay if it is defined', function () {
+        const node = {
+          commandDelay: 100,
+        };
+
+        const msg = {
+          payload: {
+            commandDelay: 200
+          }
+        };
+
+        coreClientUnderTest.setNewNodeOptionalSettings(node, msg);
+        assert.strictEqual(node.commandDelay, 200);
+      });
+
+      it('should keep commandDelay unchanged if msg.payload.commandDelay is not defined', function () {
+        const node = {
+          commandDelay: 100,
+        };
+        const msg = {
+          payload: {}
+        };
+        coreClientUnderTest.setNewNodeOptionalSettings(node, msg);
+        assert.strictEqual(node.commandDelay, 100);
+      });
+
+    });
 
     describe('Core Client Modbus Actions', function () {
       it('should call read Modbus with empty node', function (done) {

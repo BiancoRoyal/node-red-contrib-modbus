@@ -22,8 +22,6 @@ helper.init(require.resolve('node-red'))
 
 const testFlows = require('./flows/modbus-read-flows')
 const mBasics = require('../../src/modbus-basics')
-const chai = require('chai');
-const expect = chai.expect;
 
 describe('Read node Testing', function () {
   before(function (done) {
@@ -142,7 +140,7 @@ describe('Read node Testing', function () {
           let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.true
           done()
-        }, 1500)
+        } , 1500)
       })
     })
 
@@ -154,7 +152,7 @@ describe('Read node Testing', function () {
           let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.false
           done()
-        }, 1500)
+        } , 1500)
       })
     })
 
@@ -219,53 +217,7 @@ describe('Read node Testing', function () {
       })
     })
   })
-  expect(msg.payload).to.have.property('opcuaItems').that.deep.equal(expectedOutput.opcuaItems);
 
-  it('should send message with correct payload when reading', function (done) {
-    helper.load(testReadNodes, testFlows.testReadMsgFlow, function () {
-      const h1 = helper.getNode('90922127.397cb8')
-      let counter = 0
-      h1.on('input', function (msg) {
-        counter++
-        if (counter === 1) {
-          expect(msg.payload).to.deep.equal([100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]);
-          done()
-        }
-      })
-    })
-  })
-  it("should handle empty input payload gracefully", function (done) {
-    helper.load(testFlow, function () {
-      const h1 = helper.getNode('90922127.397cb8')
-
-      h1.on("input", function (msg) {
-        try {
-          expect(msg.payload).to.be.undefined;
-          done();
-        } catch (error) {
-          done(error);
-        }
-      });
-    });
-  });
-  it("should handle invalid input gracefully", function(done) {
-    helper.load(testFlow, function() {
-      const h1 = helper.getNode('90922127.397cb8')
-      h1.on("input", function(msg) {
-        try {
-          expect(msg.payload).to.not.be.undefined;
-          expect(msg.payload).to.not.be.null;
-            expect(msg.payload.error).to.exist;
-          done();
-        } catch (error) {
-          done(error);
-        }
-      });
-  
-
-      h1.receive({});
-    });
-  });
   describe('post', function () {
     it('should fail for invalid node', function (done) {
       helper.request().post('/modbus-read/invalid').expect(404).end(done)

@@ -13,3 +13,5 @@ pki/
 .nyc_output/
 
 *.tgz
+
+.DS_Store

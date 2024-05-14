@@ -327,3 +327,5 @@ describe('modbus flex fc unit test', function() {
       //  - isValidCustomFC()
       //  - modbusRead()
 })
+})
+})

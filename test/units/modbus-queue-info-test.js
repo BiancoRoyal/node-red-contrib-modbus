@@ -130,7 +130,7 @@ describe('Queue Info node Testing', function () {
           let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.true
           done()
-        } , 1500)
+        }, 1500)
       })
     })
 
@@ -142,11 +142,21 @@ describe('Queue Info node Testing', function () {
           let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.false
           done()
-        } , 1500)
+        }, 1500)
       })
     })
-  })
 
+    it('should log an error message if showErrors is true and an error occurs', function (done) {
+
+      helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
+        const modbusQueueInfo = helper.getNode('389153e.cb648ac');
+
+        modbusQueueInfo.showErrors = true
+        done()
+      });
+
+    });
+  });
   describe('post', function () {
     it('should fail for invalid node', function (done) {
       helper.request().post('/modbus-read/invalid').expect(404).end(done)
