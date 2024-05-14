@@ -202,7 +202,7 @@ describe('Core Client Testing', function () {
 
       it('should set commandDelay to msg.payload.commandDelay if it is defined', function () {
         const node = {
-          commandDelay: 100,
+          commandDelay: 100, 
         };
 
         const msg = {
@@ -217,17 +217,43 @@ describe('Core Client Testing', function () {
 
       it('should keep commandDelay unchanged if msg.payload.commandDelay is not defined', function () {
         const node = {
-          commandDelay: 100,
+          commandDelay: 100, 
         };
         const msg = {
-          payload: {}
+          payload: {} 
         };
         coreClientUnderTest.setNewNodeOptionalSettings(node, msg);
-        assert.strictEqual(node.commandDelay, 100);
+       assert.strictEqual(node.commandDelay, 100);
       });
 
     });
 
+    // Successfully writes a coil with a true value
+    it('should successfully write a coil with a true value', () => {
+      // Arrange
+      const node = {
+        client: {
+          writeCoil: sinon.stub().resolves({ address: 123, value: true }),
+          getID: sinon.stub().returns(0)
+        },
+        modbusErrorHandling: sinon.spy()
+      };
+    
+      const msg = {
+        payload: {
+          address: 123,
+          value: true
+        }
+      };
+    
+      const cb = sinon.spy();
+      const cberr = sinon.spy();
+    
+      coreClientUnderTest.writeModbusByFunctionCodeFive(node, msg, cb, cberr);
+          sinon.assert.calledWithExactly(node.client.writeCoil, 123, true);
+      sinon.assert.notCalled(cberr);
+      sinon.assert.notCalled(node.modbusErrorHandling);
+    });
     describe('Core Client Modbus Actions', function () {
       it('should call read Modbus with empty node', function (done) {
         coreClientUnderTest.readModbus({})

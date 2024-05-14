@@ -23,55 +23,18 @@ de.biancoroyal.modbus.core.client.networkErrors = ['ESOCKETTIMEDOUT', 'ETIMEDOUT
 de.biancoroyal.modbus.core.client.createStateMachineService = function () {
   this.stateLogEnabled = false
 
-  // failure is a general gate point in states to jump between states
   return this.XStateFSM.createMachine({
     id: 'modbus',
     initial: 'new',
     states: {
-      new: {
-        on: { INIT: 'init', BREAK: 'broken', STOP: 'stopped' }
-      },
-      broken: {
-        on: { INIT: 'init', STOP: 'stopped', FAILURE: 'failed', ACTIVATE: 'activated', RECONNECT: 'reconnecting' }
-      },
-      reconnecting: {
-        on: { INIT: 'init', STOP: 'stopped' }
-      },
-      init: {
-        on: { OPENSERIAL: 'opened', CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' }
-      },
-      opened: {
-        on: { CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', STOP: 'stopped', SWITCH: 'switch' }
-      },
-      connected: {
-        on: { CLOSE: 'closed', ACTIVATE: 'activated', QUEUE: 'queueing', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' }
-      },
-      activated: {
-        on: {
-          READ: 'reading',
-          WRITE: 'writing',
-          QUEUE: 'queueing',
-          BREAK: 'broken',
-          CLOSE: 'closed',
-          FAILURE: 'failed',
-          STOP: 'stopped',
-          SWITCH: 'switch'
-        }
-      },
-      queueing: {
-        on: {
-          ACTIVATE: 'activated',
-          SEND: 'sending',
-          READ: 'reading',
-          WRITE: 'writing',
-          EMPTY: 'empty',
-          BREAK: 'broken',
-          CLOSE: 'closed',
-          FAILURE: 'failed',
-          STOP: 'stopped',
-          SWITCH: 'switch'
-        }
-      },
+      new: { on: { INIT: 'init', BREAK: 'broken', STOP: 'stopped' } },
+      broken: { on: { INIT: 'init', STOP: 'stopped', FAILURE: 'failed', ACTIVATE: 'activated', RECONNECT: 'reconnecting' } },
+      reconnecting: { on: { INIT: 'init', STOP: 'stopped' } },
+      init: { on: { OPENSERIAL: 'opened', CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' } },
+      opened: { on: { CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', STOP: 'stopped', SWITCH: 'switch' } },
+      connected: { on: { CLOSE: 'closed', ACTIVATE: 'activated', QUEUE: 'queueing', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' } },
+      activated: { on: { READ: 'reading', WRITE: 'writing', QUEUE: 'queueing', BREAK: 'broken', CLOSE: 'closed', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' } },
+      queueing: { on: { ACTIVATE: 'activated', SEND: 'sending', READ: 'reading', WRITE: 'writing', EMPTY: 'empty', BREAK: 'broken', CLOSE: 'closed', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' } },
       empty: { on: { QUEUE: 'queueing', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', STOP: 'stopped', SWITCH: 'switch' } },
       sending: { on: { ACTIVATE: 'activated', READ: 'reading', WRITE: 'writing', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' } },
       reading: { on: { ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' } },
@@ -155,14 +118,18 @@ de.biancoroyal.modbus.core.client.readModbusByFunctionCodeTwo = function (node, 
 }
 
 de.biancoroyal.modbus.core.client.readModbusByFunctionCodeThree = function (node, msg, cb, cberr) {
-  const coreClient = de.biancoroyal.modbus.core.client
-  node.client.readHoldingRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-    coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
-  }).catch(function (err) {
-    coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
-    node.modbusErrorHandling(err)
-  })
-}
+  const { client, modbusErrorHandling } = de.biancoroyal.modbus.core.client;
+  const { address, quantity } = msg.payload;
+
+  client.readHoldingRegisters(parseInt(address), parseInt(quantity))
+    .then(resp => {
+      activateSendingOnSuccess(node, cb, cberr, resp, msg);
+    })
+    .catch(err => {
+      activateSendingOnFailure(node, cberr, new Error(err.message), msg);
+      modbusErrorHandling(err);
+    });
+};
 
 de.biancoroyal.modbus.core.client.readModbusByFunctionCodeFour = function (node, msg, cb, cberr) {
   const coreClient = de.biancoroyal.modbus.core.client
@@ -257,27 +224,28 @@ de.biancoroyal.modbus.core.client.customModbusMessage = function (node, msg, cb,
 }
 
 de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
-  const coreClient = de.biancoroyal.modbus.core.client
-  const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
-  let delayTime = 1
+  const coreClient = de.biancoroyal.modbus.core.client;
+  const nodeLog = coreClient.getLogFunction(node);
+  let delayTime = 1;
 
   if (!node.client) {
-    nodeLog('Client Not Ready As Object On Reading Modbus')
-    return
+    nodeLog('Client Not Ready As Object On Reading Modbus');
+    return;
   }
 
-  if (node.client._port && node.client._port._client && !node.client._port._client.readable) {
+  const port = node.client._port;
+  if (port && port._client && !port._client.readable) {
     if (!node.connectClient()) {
-      coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg)
-      return
+      coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg);
+      return;
     }
-    delayTime = 500
+    delayTime = 500;
   }
 
   setTimeout(function () {
     if (!node.bufferCommands) {
       if (node.clienttype !== 'tcp') {
-        node.stateService.send('READ')
+        node.stateService.send('READ');
       }
     } else {
       node.queueLog(JSON.stringify({
@@ -286,44 +254,50 @@ de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
         queueUnitId: msg.queueUnitId,
         timeout: node.client.getTimeout(),
         state: node.actualServiceState.value
-      }))
+      }));
     }
 
-    node.setUnitIdFromPayload(msg)
-    node.client.setTimeout(node.clientTimeout)
+    node.setUnitIdFromPayload(msg);
+    node.client.setTimeout(node.clientTimeout);
 
     try {
-      coreClient.readModbusByFunctionCode(node, msg, cb, cberr)
+      coreClient.readModbusByFunctionCode(node, msg, cb, cberr);
     } catch (err) {
-      coreClient.activateSendingOnFailure(node, cberr, err, msg)
-      nodeLog(err.message)
-      node.modbusErrorHandling(err)
+      coreClient.activateSendingOnFailure(node, cberr, err, msg);
+      nodeLog(err.message);
+      node.modbusErrorHandling(err);
     }
-  }, delayTime)
-}
+  }, delayTime);
+};
 
 de.biancoroyal.modbus.core.client.writeModbusByFunctionCodeFive = function (node, msg, cb, cberr) {
-  const coreClient = de.biancoroyal.modbus.core.client
-  if (msg.payload.value) {
-    msg.payload.value = true
-  } else {
-    msg.payload.value = false
-  }
-  node.client.writeCoil(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
-    coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
-  }).catch(function (err) {
-    if (node.client.getID() === 0) {
-      const resp = {
-        address: parseInt(msg.payload.address),
-        value: parseInt(msg.payload.value)
+  const coreClient = de.biancoroyal.modbus.core.client;
+  const { address, value } = msg.payload;
+  const isBroadcast = node.client.getID() === 0;
+
+  const resp = {
+    address: parseInt(address),
+    value: parseInt(value)
+  };
+
+  const handleSuccess = () => coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg);
+  const handleFailure = (err) => {
+    coreClient.activateSendingOnFailure(node, cberr, err, msg);
+    node.modbusErrorHandling(err);
+  };
+
+  msg.payload.value = !!value;
+
+  node.client.writeCoil(parseInt(address), msg.payload.value)
+    .then(handleSuccess)
+    .catch(() => {
+      if (isBroadcast) {
+        handleSuccess();
+      } else {
+        handleFailure();
       }
-      coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
-    } else {
-      coreClient.activateSendingOnFailure(node, cberr, err, msg)
-      node.modbusErrorHandling(err)
-    }
-  })
-}
+    });
+};
 
 de.biancoroyal.modbus.core.client.writeModbusByFunctionCodeFifteen = function (node, msg, cb, cberr) {
   const coreClient = de.biancoroyal.modbus.core.client
@@ -367,49 +341,57 @@ de.biancoroyal.modbus.core.client.writeModbusByFunctionCodeSix = function (node,
 }
 
 de.biancoroyal.modbus.core.client.writeModbusByFunctionCodeSixteen = function (node, msg, cb, cberr) {
-  const coreClient = de.biancoroyal.modbus.core.client
-  if (parseInt(msg.payload.value.length) !== parseInt(msg.payload.quantity)) {
-    coreClient.activateSendingOnFailure(node, cberr, new Error('Quantity should be less or equal to register payload array length: ' +
-      msg.payload.value.length + ' Addr: ' + msg.payload.address + ' Q: ' + msg.payload.quantity), msg)
+  const coreClient = de.biancoroyal.modbus.core.client;
+  const { address, quantity, value } = msg.payload;
+
+  if (value.length !== quantity) {
+    const error = new Error(`Quantity should be less or equal to register payload array length: ${value.length} Addr: ${address} Q: ${quantity}`);
+    coreClient.activateSendingOnFailure(node, cberr, error, msg);
   } else {
-    node.client.writeRegisters(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
-      coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
-    }).catch(function (err) {
-      if (node.client.getID() === 0) {
-        const resp = {
-          address: parseInt(msg.payload.address),
-          value: parseInt(msg.payload.value)
+    node.client.writeRegisters(parseInt(address), value)
+      .then(function (resp) {
+        coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg);
+      })
+      .catch(function (err) {
+        if (node.client.getID() === 0) {
+          const resp = {
+            address: parseInt(address),
+            value: parseInt(value)
+          };
+          coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg);
+        } else {
+          coreClient.activateSendingOnFailure(node, cberr, err, msg);
+          node.modbusErrorHandling(err);
         }
-        coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
-      } else {
-        coreClient.activateSendingOnFailure(node, cberr, err, msg)
-        node.modbusErrorHandling(err)
-      }
-    })
+      });
   }
-}
+};
 
 de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) {
-  const coreClient = de.biancoroyal.modbus.core.client
-  const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
-  let delayTime = 1
+  const coreClient = de.biancoroyal.modbus.core.client;
+  const nodeLog = coreClient.getLogFunction(node);
+  let delayTime = 1;
+
   if (!node.client) {
-    nodeLog('Client Not Ready As Object On Writing Modbus')
-    return
+    nodeLog('Client Not Ready As Object On Writing Modbus');
+    return;
   }
 
-  if (node.client._port && node.client._port._client && !node.client._port._client.writable) {
+  const port = node.client._port;
+  const client = port && port._client;
+
+  if (client && !client.writable) {
     if (!node.connectClient()) {
-      coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg)
-      return
+      coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg);
+      return;
     }
-    delayTime = 500
+    delayTime = 500;
   }
 
   setTimeout(function () {
     if (!node.bufferCommands) {
       if (node.clienttype !== 'tcp') {
-        node.stateService.send('WRITE')
+        node.stateService.send('WRITE');
       }
     } else {
       node.queueLog(JSON.stringify({
@@ -418,38 +400,38 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
         queueUnitId: msg.queueUnitId,
         timeout: node.client.getTimeout(),
         state: node.actualServiceState.value
-      }))
+      }));
     }
 
-    node.setUnitIdFromPayload(msg)
-    node.client.setTimeout(node.clientTimeout)
+    node.setUnitIdFromPayload(msg);
+    node.client.setTimeout(node.clientTimeout);
 
     try {
       switch (parseInt(msg.payload.fc)) {
         case 15: // FC: 15
-          coreClient.writeModbusByFunctionCodeFifteen(node, msg, cb, cberr)
-          break
+          coreClient.writeModbusByFunctionCodeFifteen(node, msg, cb, cberr);
+          break;
         case 5: // FC: 5
-          coreClient.writeModbusByFunctionCodeFive(node, msg, cb, cberr)
-          break
+          coreClient.writeModbusByFunctionCodeFive(node, msg, cb, cberr);
+          break;
         case 16: // FC: 16
-          coreClient.writeModbusByFunctionCodeSixteen(node, msg, cb, cberr)
-          break
+          coreClient.writeModbusByFunctionCodeSixteen(node, msg, cb, cberr);
+          break;
         case 6: // FC: 6
-          coreClient.writeModbusByFunctionCodeSix(node, msg, cb, cberr)
-          break
+          coreClient.writeModbusByFunctionCodeSix(node, msg, cb, cberr);
+          break;
         default:
-          coreClient.activateSendingOnFailure(node, cberr, new Error('Function Code Unknown'), msg)
-          nodeLog('Function Code Unknown %s', msg.payload.fc)
-          break
+          coreClient.activateSendingOnFailure(node, cberr, new Error('Function Code Unknown'), msg);
+          nodeLog('Function Code Unknown %s', msg.payload.fc);
+          break;
       }
     } catch (err) {
-      coreClient.activateSendingOnFailure(node, cberr, err, msg)
-      nodeLog(err.message)
-      node.modbusErrorHandling(err)
+      coreClient.activateSendingOnFailure(node, cberr, err, msg);
+      nodeLog(err.message);
+      node.modbusErrorHandling(err);
     }
-  }, delayTime)
-}
+  }, delayTime);
+};
 
 de.biancoroyal.modbus.core.client.setNewTCPNodeSettings = function (node, msg) {
   node.clienttype = 'tcp'
@@ -512,33 +494,35 @@ de.biancoroyal.modbus.core.client.setNewNodeOptionalSettings = function (node, m
 }
 
 de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
-  const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
-  const coreClient = de.biancoroyal.modbus.core.client
+  const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node);
+  const coreClient = de.biancoroyal.modbus.core.client;
 
   if (!msg) {
-    nodeLog('New Connection message invalid.')
-    return false
+    nodeLog('New Connection message invalid.');
+    return false;
   }
 
-  switch (msg.payload.connectorType.toUpperCase()) {
+  const { connectorType } = msg.payload;
+
+  switch (connectorType.toUpperCase()) {
     case 'TCP':
-      coreClient.setNewTCPNodeSettings(node, msg)
-      nodeLog('New Connection TCP Settings ' + node.tcpHost + ' ' + node.tcpPort + ' ' + node.tcpType)
-      break
+      coreClient.setNewTCPNodeSettings(node, msg);
+      nodeLog(`New Connection TCP Settings ${node.tcpHost} ${node.tcpPort} ${node.tcpType}`);
+      break;
 
     case 'SERIAL':
-      coreClient.setNewSerialNodeSettings(node, msg)
-      nodeLog('New Connection Serial Settings ' + node.serialPort + ' ' + node.serialBaudrate + ' ' + node.serialType)
-      break
+      coreClient.setNewSerialNodeSettings(node, msg);
+      nodeLog(`New Connection Serial Settings ${node.serialPort} ${node.serialBaudrate} ${node.serialType}`);
+      break;
 
     default:
-      nodeLog('Unknown Dynamic Reconnect Type ' + msg.payload.connectorType)
+      nodeLog(`Unknown Dynamic Reconnect Type ${connectorType}`);
   }
 
-  coreClient.setNewNodeOptionalSettings(node, msg)
+  coreClient.setNewNodeOptionalSettings(node, msg);
 
-  return true
-}
+  return true;
+};
 
 de.biancoroyal.modbus.core.client.messageAllowedStates = ['activated', 'queueing', 'sending', 'empty', 'connected']
 
