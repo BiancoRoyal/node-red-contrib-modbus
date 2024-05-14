@@ -26,7 +26,7 @@
     "biancoroyal"
   ],
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
   },
   "repository": {
     "type": "git",
@@ -99,7 +99,7 @@
     "codacy-coverage": "^3.4.0",
     "conventional-changelog-cli": "^5.0.0",
     "coveralls": "^3.1.1",
-    "gulp": "^5.0.0",
+    "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-clean": "^0.4.0",
     "gulp-conventional-changelog": "^5.0.0",
@@ -114,6 +114,7 @@
     "mocha": "^10.4.0",
     "nock": "^13.5.4",
     "node-red": "^3.1.9",
+    "node-red-contrib-modbus-flex-server": "^1.0.0",
     "node-red-node-test-helper": "^0.3.4",
     "nyc": "^15.1.0",
     "pump": "^3.0.0",

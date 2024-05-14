@@ -2,9 +2,9 @@ version: 2
 updates:
   - package-ecosystem: 'npm'
     directory: '/'
-    target-branch: "develop"
+    target-branch: "master"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     allow:
       - dependency-type: "production"
     ignore:

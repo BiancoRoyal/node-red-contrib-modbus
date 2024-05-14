@@ -157,6 +157,67 @@ describe('Read node Testing', function () {
         }, 1500)
       })
     })
+
+    it('the read node should log a warning when it receives an error with onModbusError', function(done) {
+      helper.load(testReadNodes, testFlows.testReadWithClientFlow, function () {
+        const readNode = helper.getNode('09846c74de630616')
+        readNode.showErrors = true;
+        let mock_message = "";
+        readNode.warn = function(message) { mock_message = message; }
+
+        readNode.onModbusError("Failure test message!")
+        mock_message.should.equal("Failure test message!")
+        done()
+      })
+    })
+    it('the read node can log with node.warn when node.verboseLogging and node.showErrors are true', function(done) {
+      helper.load(testReadNodes, testFlows.testReadWithClientFlow, function () {
+        const readNode = helper.getNode('09846c74de630616')
+        readNode.verboseLogging = true
+        readNode.showErrors = true
+        let mock_message = ""
+        readNode.warn = function(message) { mock_message = message }
+
+        readNode.onModbusError("Failure test message!")
+        mock_message.should.equal("Failure test message!")
+        done()
+      })
+    })
+
+    it('onModbusReadError should call errorProtcolMessage and log a message when node.showError is true', function(done) {
+      helper.load(testReadNodes, testFlows.testReadWithClientFlow, function () {
+        const readNode = helper.getNode('09846c74de630616')
+        readNode.verboseLogging = true
+        readNode.showErrors = true
+        let mock_message_output = "";
+        readNode.errorProtocolMsg = function(err, msg) {
+          if(readNode.showErrors) {
+            mock_message_output = msg
+          }
+        }
+
+        readNode.onModbusReadError({}, "This should be logged in our mock errorProtocol")
+        mock_message_output.should.equal("This should be logged in our mock errorProtocol")
+        done()
+      })
+    })
+
+    it('verbosewarn should log a message when the verbosity level and showWarnings are enabled', function(done) {
+      helper.load(testReadNodes, testFlows.testReadWithClientFlow, function () {
+        const readNode = helper.getNode('09846c74de630616')
+
+        readNode.verboseLogging = true
+        readNode.showWarnings = true
+        readNode.delayTimerReading = true;
+
+        let mock_message_output = "";
+        readNode.warn = function(message) { mock_message_output = message }
+
+        readNode.resetDelayTimerToRead(readNode);
+        mock_message_output.should.equal("Read -> resetDelayTimerToRead node 09846c74de630616 address: 0")
+        done()
+      })
+    })
   })
   expect(msg.payload).to.have.property('opcuaItems').that.deep.equal(expectedOutput.opcuaItems);
 

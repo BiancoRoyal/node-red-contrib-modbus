@@ -73,7 +73,7 @@ describe('Flex Sequencer node Testing', function () {
         helper.log('function callback')
       })
     })
-    
+
     it('should be inactive if message not allowed', function (done) {
       helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
@@ -99,7 +99,7 @@ describe('Flex Sequencer node Testing', function () {
         } , 1500)
       })
     })
-    
+
     it('should be state queueing - ready to send', function (done) {
       helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
@@ -119,6 +119,85 @@ describe('Flex Sequencer node Testing', function () {
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
           let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.false
+          done()
+        } , 1500)
+      })
+    })
+
+    it('prepareMessage will convert a message in string format into a unified format', function (done) {
+      helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
+        setTimeout(() => {
+          const flexSequencer = helper.getNode('bc5a61b6.a3972')
+          const result = flexSequencer.prepareMsg("{ \"fc\": 1, \"unitid\": 1, \"address\": 0, \"quantity\": 1 }")
+
+          result.fc.should.equal(1)
+          result.unitid.should.equal(1)
+          result.address.should.equal(0)
+          result.quantity.should.equal(1)
+          done()
+        } , 1500)
+      })
+    })
+
+    it('prepareMessage will convert a message in json format into a unified format', function (done) {
+      helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
+        setTimeout(() => {
+          const flexSequencer = helper.getNode('bc5a61b6.a3972')
+
+          let message = { fc: 1, unitid: 1, address: 0, quantity: 1 }
+          const result = flexSequencer.prepareMsg(message)
+
+          result.fc.should.equal(1)
+          result.unitid.should.equal(1)
+          result.address.should.equal(0)
+          result.quantity.should.equal(1)
+          done()
+        } , 1500)
+      })
+    })
+
+    it('the user can supply function code strings "FC1,FC2..." these will internally converted into the right values', function (done) {
+      helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
+        setTimeout(() => {
+          const flexSequencer = helper.getNode('bc5a61b6.a3972')
+          let message = { fc: 1, unitid: 1, address: 0, quantity: 1 }
+
+
+          for(let currentFc = 1; currentFc < 5; currentFc++) {
+            const fc_identifier = "FC" + currentFc;
+            message.fc = fc_identifier
+            const result = flexSequencer.prepareMsg(message)
+
+            result.fc.should.equal(currentFc)
+            result.unitid.should.equal(1)
+            result.address.should.equal(0)
+            result.quantity.should.equal(1)
+          }
+          done()
+        } , 1500)
+      })
+    })
+
+    it('isValidModbusMessage checks if the passed message is actually valid', function (done) {
+      helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
+        setTimeout(() => {
+          const flexSequencer = helper.getNode('bc5a61b6.a3972')
+          let validModbusMessage = { fc: 1, unitid: 1, address: 0, quantity: 1 }
+          const validMessage = flexSequencer.isValidModbusMsg(validModbusMessage)
+          validMessage.should.equal(true)
+
+          let invalidUnitIdModbusMessage = { fc: 1, unitid: -10, address: 0, quantity: 1 }
+          const invalidUnitId = flexSequencer.isValidModbusMsg(invalidUnitIdModbusMessage)
+          invalidUnitId.should.equal(false)
+
+          let invalidAddressModbusMessage = { fc: 1, unitid: 1, address: 65537, quantity: 10 }
+          const invalidAddress = flexSequencer.isValidModbusMsg(invalidAddressModbusMessage)
+          invalidAddress.should.equal(false)
+
+          let invalidQuantityModbusMessage = { fc: 1, unitid: 1, address: 10, quantity: 65537}
+          const invalidQuantity = flexSequencer.isValidModbusMsg(invalidQuantityModbusMessage)
+          invalidQuantity.should.equal(false)
+
           done()
         } , 1500)
       })

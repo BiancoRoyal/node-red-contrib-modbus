@@ -85,6 +85,7 @@ module.exports = function (RED) {
 
     node.prepareMsg = function (msg) {
       if (typeof msg === 'string') {
+        // NOTE: The operation can fail!
         msg = JSON.parse(msg)
       }
 
@@ -111,32 +112,31 @@ module.exports = function (RED) {
     }
 
     node.isValidModbusMsg = function (msg) {
-      let isValid = true
-
+      // let isValid = true
+      // The original author did isValid &= false i replaced it with a simple early return if that breaks something
+      // we should change it back to the original value.
       if (!(Number.isInteger(msg.unitid) &&
           msg.unitid >= 0 &&
           msg.unitid <= 255)) {
         node.error('Unit ID Not Valid', msg)
-        isValid &= false
+        return false
       }
 
-      if (isValid &&
-        !(Number.isInteger(msg.address) &&
+      if (!(Number.isInteger(msg.address) &&
           msg.address >= 0 &&
           msg.address <= 65535)) {
         node.error('Address Not Valid', msg)
-        isValid &= false
+        return false
       }
 
-      if (isValid &&
-        !(Number.isInteger(msg.quantity) &&
+      if (!(Number.isInteger(msg.quantity) &&
           msg.quantity >= 1 &&
           msg.quantity <= 65535)) {
         node.error('Quantity Not Valid', msg)
-        isValid &= false
+        return false
       }
 
-      return isValid
+      return true
     }
 
     node.buildNewMessageObject = function (node, msg) {
