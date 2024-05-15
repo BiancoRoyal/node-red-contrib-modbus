@@ -42,7 +42,7 @@ module.exports = function (RED) {
     this.verboseLogging = RED.settings.verbose
 
     this.delayOnStart = config.delayOnStart
-    this.startDelayTime = parseInt(config.startDelayTime) || 10
+    this.startDelayTime = Number(config.startDelayTime) || 10
 
     const node = this
     node.bufferMessageList = new Map()
@@ -54,8 +54,9 @@ module.exports = function (RED) {
 
     const modbusClient = RED.nodes.getNode(config.server)
     if (!modbusClient) {
-      return
+      throw new Error('Modbus client not found')
     }
+
     modbusClient.registerForModbus(node)
     mbBasics.initModbusClientEvents(node, modbusClient)
 
@@ -83,7 +84,7 @@ module.exports = function (RED) {
       node.emit('modbusFlexSequencerNodeError')
     }
 
-    node.prepareMsg = function (msg) {
+    node.prepareMsg = (msg) => {
       if (typeof msg === 'string') {
         // NOTE: The operation can fail!
         msg = JSON.parse(msg)
@@ -194,7 +195,7 @@ module.exports = function (RED) {
 
     node.initializeInputDelayTimer()
 
-    node.on('input', function (msg) {
+    node.on('input', (msg) => {
       if (mbBasics.invalidPayloadIn(msg)) {
         verboseWarn('Invalid message on input.')
         return
@@ -232,7 +233,7 @@ module.exports = function (RED) {
       }
     })
 
-    node.on('close', function (done) {
+    node.on('close', (done) => {
       mbBasics.setNodeStatusTo('closed', node)
       node.bufferMessageList.clear()
       modbusClient.deregisterForModbus(node.id, done)
