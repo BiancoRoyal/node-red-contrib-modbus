@@ -167,7 +167,6 @@ module.exports = function (RED) {
       }
 
       if (node.showStatusActivities) {
-        console.log(node.showStatusActivities)
         setNodeStatusWithTimeTo('polling')
       }
 
