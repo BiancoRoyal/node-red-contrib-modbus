@@ -84,7 +84,9 @@ describe('IO Config node Testing', function () {
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      helper.request().post('/modbus-io-config/invalid').expect(404).end(done)
+      helper.load(testIoConfigNodes, testFlows.testShouldBeReadyToSendFlow, function () {
+        helper.request().post('/modbus-io-config/invalid').expect(404).end(done)
+      })
     })
   })
 })
