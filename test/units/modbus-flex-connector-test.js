@@ -141,7 +141,9 @@ describe('Flex Connector node Testing', function () {
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      helper.request().post('/modbus-flex-connector/invalid').expect(404).end(done)
+      helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
+        helper.request().post('/modbus-flex-connector/invalid').expect(404).end(done)
+      })
     })
   })
 })

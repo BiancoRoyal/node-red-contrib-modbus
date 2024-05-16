@@ -195,7 +195,9 @@ describe('Write node Testing', function () {
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      helper.request().post('/modbus-write/invalid').expect(404).end(done)
+      helper.load(testSimpleWriteParametersNodes, testFlows.testSimpleWriteFlow, function () {
+        helper.request().post('/modbus-write/invalid').expect(404).end(done)
+      })
     })
   })
 })
