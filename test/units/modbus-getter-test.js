@@ -207,7 +207,9 @@ describe('Getter node Testing', function () {
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      helper.request().post('/modbus-getter/invalid').expect(404).end(done)
+      helper.load(testGetterNodes, testFlows.testGetterFlowWithInjectIo, function () {
+        helper.request().post('/modbus-getter/invalid').expect(404).end(done)
+      })
     })
   })
 })

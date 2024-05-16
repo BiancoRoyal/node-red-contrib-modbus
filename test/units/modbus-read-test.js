@@ -220,11 +220,15 @@ describe('Read node Testing', function () {
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      helper.request().post('/modbus-read/invalid').expect(404).end(done)
+      helper.load([clientNode, serverNode, readNode], testFlows.testReadWithClientFlow, function () {
+        helper.request().post('/modbus-read/invalid').expect(404).end(done)
+      })
     })
 
     it('should fail for unloaded node', function (done) {
-      helper.request().post('/modbus/read/inject/8ecaae3e.4b8928').expect(404).end(done)
+      helper.load([clientNode, serverNode, readNode], testFlows.testReadWithClientFlow, function () {
+        helper.request().post('/modbus/read/inject/8ecaae3e.4b8928').expect(404).end(done)
+      })
     })
 
     it('should inject on valid node', function (done) {

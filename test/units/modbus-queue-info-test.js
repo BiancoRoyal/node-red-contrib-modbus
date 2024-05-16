@@ -149,7 +149,9 @@ describe('Queue Info node Testing', function () {
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      helper.request().post('/modbus-read/invalid').expect(404).end(done)
+      helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
+        helper.request().post('/modbus-read/invalid').expect(404).end(done)
+      })
     })
   })
 })
