@@ -17,6 +17,8 @@ const readNode = require('../../src/modbus-read.js')
 const serverNode = require('../../src/modbus-server.js')
 const nodeUnderTest = require('../../src/modbus-queue-info.js')
 const catchNode = require('@node-red/nodes/core/common/25-catch')
+const chai = require('chai');
+const expect = chai.expect;
 
 const testQueueInfoNodes = [catchNode, injectNode, functionNode, clientNode, serverNode, nodeUnderTest, readNode]
 
@@ -63,6 +65,74 @@ describe('Queue Info node Testing', function () {
         done()
       }, function () {
         helper.log('function callback')
+      })
+    })
+    it('should initialize ModbusQueueInfo node with provided configuration', function (done) {
+
+      const mockNode = {
+        name: 'testNode',
+        topic: 'testTopic',
+        unitid: '0',
+        lowLowLevel: '5',
+        lowLevel: '10',
+        highLevel: '20',
+        highHighLevel: '30',
+        errorOnHighLevel: true,
+        queueReadIntervalTime: '1000',
+        showStatusActivities: true,
+        updateOnAllQueueChanges: true,
+        updateOnAllUnitQueues: false,
+        queueReadInterval: null,
+        updateStatusRunning: false,
+        unitsWithQueue: new Map(),
+        checkLowLevelReached: () => { },
+        initUnitQueueStates: () => { },
+        resetStates: () => { },
+        errorProtocolMsg: () => { },
+        checkLowLevelReached: () => { },
+        checkHighLevelReached: () => { },
+        checkHighHighLevelReached: () => { },
+        getStatusSituationFillColor: () => { },
+        setNodeStatusByActivity: () => { },
+        readFromQueue: () => { },
+        readFromAllUnitQueues: () => { },
+        checkQueueStates: () => { },
+        registerModbusQueueActionsToNode: () => { },
+        removeModbusQueueActionsFromNode: () => { },
+      }
+
+      helper.load(testQueueInfoNodes, testFlows.testToReadFromAllUnitQueues, function () {
+        expect(mockNode.name).to.equal('testNode');
+        expect(mockNode.name).to.equal('testNode');
+        expect(mockNode.topic).to.equal('testTopic');
+        expect(mockNode.unitid).to.equal('0');
+        expect(mockNode.lowLowLevel).to.equal('5');
+        expect(mockNode.lowLevel).to.equal('10');
+        expect(mockNode.highLevel).to.equal('20');
+        expect(mockNode.highHighLevel).to.equal('30');
+        expect(mockNode.errorOnHighLevel).to.equal(true);
+        expect(mockNode.queueReadIntervalTime).to.equal('1000');
+        expect(mockNode.showStatusActivities).to.equal(true);
+        expect(mockNode.updateOnAllQueueChanges).to.equal(true);
+        expect(mockNode.updateOnAllUnitQueues).to.equal(false);
+        expect(mockNode.queueReadInterval).to.be.null;
+        expect(mockNode.updateStatusRunning).to.equal(false);
+        expect(mockNode.unitsWithQueue).to.be.an.instanceOf(Map);
+        expect(mockNode.checkLowLevelReached).to.be.a('function');
+        expect(mockNode.initUnitQueueStates).to.be.a('function');
+        expect(mockNode.resetStates).to.be.a('function');
+        expect(mockNode.errorProtocolMsg).to.be.a('function');
+        expect(mockNode.checkLowLevelReached).to.be.a('function');
+        expect(mockNode.checkHighLevelReached).to.be.a('function');
+        expect(mockNode.checkHighHighLevelReached).to.be.a('function');
+        expect(mockNode.getStatusSituationFillColor).to.be.a('function');
+        expect(mockNode.setNodeStatusByActivity).to.be.a('function');
+        expect(mockNode.readFromQueue).to.be.a('function');
+        expect(mockNode.readFromAllUnitQueues).to.be.a('function');
+        expect(mockNode.checkQueueStates).to.be.a('function');
+        expect(mockNode.registerModbusQueueActionsToNode).to.be.a('function');
+        expect(mockNode.removeModbusQueueActionsFromNode).to.be.a('function');
+        done();
       })
     })
 
