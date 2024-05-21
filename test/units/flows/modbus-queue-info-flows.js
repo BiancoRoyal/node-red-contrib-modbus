@@ -907,9 +907,9 @@ module.exports = {
         "topic": "testTopic",
         "unitid": "0",
         "queueReadIntervalTime": 1000,
-        "lowLowLevel": "5",
-        "lowLevel": "10",
-        "highLevel": "20",
+        "lowLowLevel": "3",
+        "lowLevel": "5",
+        "highLevel": "10",
         "highHighLevel": "30",
         "server": "a477577e.9e0bc",
         "errorOnHighLevel": true,
@@ -971,6 +971,6 @@ module.exports = {
         "showLogs": true
     }
 ]    
-)
+),
 
 }
