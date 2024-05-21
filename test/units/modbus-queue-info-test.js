@@ -186,6 +186,29 @@ describe('Queue Info node Testing', function () {
         modbusQueueInfoNodeInstance.checkHighLevelReached(modbusQueueInfoNodeInstance, 11, 1);
       });
     });
+
+    it('should send a message and raise an error when high high level queue threshold is reached', function (done) {
+      helper.load(testQueueInfoNodes, testFlows.testToReadFromAllUnitQueues, function () {
+        const modbusQueueInfoNodeInstance = helper.getNode('1b72b5d207427b00');
+        const helperNode = helper.getNode('1aac12eebc4bd7cb');
+        modbusQueueInfoNodeInstance.unitsWithQueue = new Map();
+        modbusQueueInfoNodeInstance.unitsWithQueue.set(1, { highHighLevelReached: false });
+        modbusQueueInfoNodeInstance.highLevel = 20;
+        modbusQueueInfoNodeInstance.highHighLevel = 30;
+
+        helperNode.on('input', function (msg) {
+          try {
+            msg.should.have.property('state', 'high high level reached');
+            msg.should.have.property('unitid', 1);
+            msg.should.have.property('bufferCommandListLength', 35);
+            done();
+          } catch (err) {
+            done(err);
+          }
+        });
+        modbusQueueInfoNodeInstance.checkHighHighLevelReached(modbusQueueInfoNodeInstance, 35, 1);
+      });
+    });
     it('simple flow with old reset inject should be loaded', function (done) {
       helper.load(testQueueInfoNodes, testFlows.testOldResetInjectShouldBeLoadedFlow, function () {
         const h1 = helper.getNode('h1')
