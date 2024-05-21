@@ -41,24 +41,18 @@ module.exports = function (RED) {
     mbBasics.initModbusClientEvents(node, modbusClient)
 
     node.onConfigDone = function (msg) {
-      if (node.showStatusActivities) {
+      const shouldShowStatus = node.showStatusActivities
+      if (shouldShowStatus) {
         mbBasics.setNodeStatusTo('config done', node)
       }
-      msg.config_change = 'emitted'
-      node.send(msg)
-    }
-
-    node.onConfigError = function (err, msg) {
-      internalDebugLog(err.message)
-      if (node.showErrors) {
-        node.error(err, msg)
+      if (shouldShowStatus) {
+        mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
       }
 
-      if (err && err.message) {
-        msg.error = err
-      } else {
-        msg.error = new Error(err)
+      if (!shouldShowStatus) {
+        mbBasics.setNodeDefaultStatus(node)
       }
+
       msg.error.nodeStatus = node.statusText
 
       if (node.emptyMsgOnFail) {
@@ -82,7 +76,7 @@ module.exports = function (RED) {
       }
 
       if (msg.payload.connectorType) {
-        internalDebugLog('dynamicReconnect: ' + JSON.stringify(msg.payload))
+        internalDebugLog(`dynamicReconnect: ${JSON.stringify(msg.payload)}`)
         msg.payload.emptyQueue = node.emptyQueue
         modbusClient.emit('dynamicReconnect', msg, node.onConfigDone, node.onConfigError)
       } else {
