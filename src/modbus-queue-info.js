@@ -65,12 +65,12 @@ module.exports = function (RED) {
       unitWithQueue.highHighLevelReached = false
     }
 
-    node.errorProtocolMsg = function (err, msg) {
+    function handleErrors (err, msg) {
       if (node.showErrors) {
         mbBasics.logMsgError(node, err, msg)
       }
     }
-
+    node.errorProtocolMsg = handleErrors
     node.initUnitQueueStates()
 
     node.checkLowLevelReached = function (node, bufferCommandListLength, unit) {
@@ -164,7 +164,7 @@ module.exports = function (RED) {
         node.status({
           fill: node.getStatusSituationFillColor(node.unitid),
           shape: 'ring',
-          text: (bufferCommandListLength) ? 'active unit ' + unit + ' queue items: ' + bufferCommandListLength : 'active (Unit-Id: ' + unit + ') empty'
+          text: (bufferCommandListLength) ? `active unit ${unit} queue items: ${bufferCommandListLength}` : `active (Unit-Id: ${unit}) empty`
         })
       }
     }
@@ -192,30 +192,6 @@ module.exports = function (RED) {
       }
     }
 
-    node.readFromAllUnitQueues = async function () {
-      if (node.updateStatusRunning) {
-        return
-      }
-
-      if (modbusClient.bufferCommands) {
-        try {
-          node.updateStatusRunning = true
-          let bufferCommandListLength = 0
-          for (let unit = 0; unit < 256; unit += 1) {
-            bufferCommandListLength = modbusClient.bufferCommandList.get(unit).length
-            console.log(bufferCommandListLength, 'bufferCommandListLength')
-            if (!bufferCommandListLength) {
-              continue
-            }
-            node.checkQueueStates(bufferCommandListLength, unit)
-          }
-          node.updateStatusRunning = false
-        } catch (err) {
-          node.updateStatusRunning = false
-          throw err
-        }
-      }
-    }
     node.checkQueueStates = function (bufferCommandListLength, unit) {
       const unitWithQueue = node.unitsWithQueue.get(unit)
       if (!unitWithQueue.lowLowLevelReached && bufferCommandListLength < node.lowLowLevel) {
