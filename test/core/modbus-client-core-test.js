@@ -13,6 +13,7 @@
 const assert = require('assert')
 const coreClientUnderTest = require('../../src/core/modbus-client-core')
 const sinon = require('sinon')
+const chai = require('chai')
 describe('Core Client Testing', function () {
   describe('Core Client', function () {
     it('should give the units internalDebugLog', function (done) {
@@ -143,6 +144,23 @@ describe('Core Client Testing', function () {
       assert.strict.equal(node.clientTimeout, 2000)
       done()
     })
+    it('should call callback cb with resp and msg when activateSending resolves', async () => {
+      const node = {
+        activateSending: sinon.stub(),
+        stateService: { send: sinon.spy() }
+      };
+
+      const cb = sinon.spy();
+      const cberr = sinon.spy();
+      const resp = { data: 'some data' };
+      const msg = { payload: { address: 123, value: 1 } };
+
+      node.activateSending.resolves();
+
+      coreClientUnderTest.activateSendingOnSuccess(node, cb, cberr, resp, msg);
+
+      sinon.assert.calledWith(node.activateSending, { payload: { address: 123, value: 1 } });
+    });
     it('should set commandDelay if msg.payload.commandDelay exists', function (done) {
       const node = { commandDelay: 100 }
       const msg = { payload: { commandDelay: 200 } }
@@ -202,7 +220,7 @@ describe('Core Client Testing', function () {
 
       it('should set commandDelay to msg.payload.commandDelay if it is defined', function () {
         const node = {
-          commandDelay: 100, 
+          commandDelay: 100,
         };
 
         const msg = {
@@ -217,20 +235,18 @@ describe('Core Client Testing', function () {
 
       it('should keep commandDelay unchanged if msg.payload.commandDelay is not defined', function () {
         const node = {
-          commandDelay: 100, 
+          commandDelay: 100,
         };
         const msg = {
-          payload: {} 
+          payload: {}
         };
         coreClientUnderTest.setNewNodeOptionalSettings(node, msg);
-       assert.strictEqual(node.commandDelay, 100);
+        assert.strictEqual(node.commandDelay, 100);
       });
 
     });
 
-    // Successfully writes a coil with a true value
     it('should successfully write a coil with a true value', () => {
-      // Arrange
       const node = {
         client: {
           writeCoil: sinon.stub().resolves({ address: 123, value: true }),
@@ -238,19 +254,19 @@ describe('Core Client Testing', function () {
         },
         modbusErrorHandling: sinon.spy()
       };
-    
+
       const msg = {
         payload: {
           address: 123,
           value: true
         }
       };
-    
+
       const cb = sinon.spy();
       const cberr = sinon.spy();
-    
+
       coreClientUnderTest.writeModbusByFunctionCodeFive(node, msg, cb, cberr);
-          sinon.assert.calledWithExactly(node.client.writeCoil, 123, true);
+      sinon.assert.calledWithExactly(node.client.writeCoil, 123, true);
       sinon.assert.notCalled(cberr);
       sinon.assert.notCalled(node.modbusErrorHandling);
     });
