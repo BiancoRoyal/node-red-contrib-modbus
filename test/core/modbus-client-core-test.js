@@ -240,7 +240,7 @@ describe('Core Client Testing', function () {
       const msg = { payload: { unitid: 1, fc: 2, requestCard: {}, responseCard: {} } };
       const cb = sinon.spy();
       const cberr = sinon.spy();
-       coreClientUnderTest.sendCustomFunctionCode(node, msg, cb, cberr);
+      coreClientUnderTest.sendCustomFunctionCode(node, msg, cb, cberr);
 
       sinon.assert.calledWith(node.client.sendCustomFc, 1, 2, {}, {})
 
@@ -253,7 +253,7 @@ describe('Core Client Testing', function () {
           sendCustomFc: sinon.stub().rejects(new Error(errorMessage)),
         },
         modbusErrorHandling: sinon.spy()
-      }; 
+      };
       const msg = { payload: { unitid: 2, fc: 4, requestCard: {}, responseCard: {} } };
       const cb = sinon.spy();
       const cberr = sinon.spy();
@@ -263,6 +263,30 @@ describe('Core Client Testing', function () {
       sinon.assert.calledWith(node.client.sendCustomFc, 2, 4, {}, {});
     });
 
+    it('should execute readModbus successfully when client is ready and readable', () => {
+      const node = {
+        client: {
+          _port: {
+            _client: {
+              readable: true
+            }
+          },
+          setTimeout: sinon.spy(),
+          getTimeout: sinon.stub().returns(1000)
+        },
+        connectClient: sinon.stub().returns(true),
+        setUnitIdFromPayload: sinon.spy(),
+        bufferCommands: true, 
+        actualServiceState: { value: 'some_value' }, 
+        queueLog: sinon.spy()
+      };
+      const msg = { payload: 'test', queueUnitId: 1 };
+      const cb = sinon.spy();
+      const cberr = sinon.spy();
+      coreClientUnderTest.readModbusByFunctionCode = sinon.spy();
+
+      coreClientUnderTest.readModbus(node, msg, cb, cberr);
+    });
     it('should set commandDelay if msg.payload.commandDelay exists', function (done) {
       const node = { commandDelay: 100 }
       const msg = { payload: { commandDelay: 200 } }
