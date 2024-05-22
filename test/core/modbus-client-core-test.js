@@ -177,6 +177,25 @@ describe('Core Client Testing', function () {
       sinon.assert.calledWith(node.client.writeRegister, 123, 456);
       done();
     });
+    it('should call onFailure callback when writeRegister fails', async (done) => {
+      const errorMessage = 'Failed to write register';
+      const node = {
+        client: {
+          writeRegister: sinon.stub().rejects(errorMessage),
+          getID: sinon.stub().returns(1),
+          modbusErrorHandling: sinon.spy()
+        }
+      };
+      const msg = { payload: { address: '123', value: '456' } };
+      const cb = sinon.spy();
+      const cberr = sinon.spy();
+
+      coreClientUnderTest.writeModbusByFunctionCodeSix(node, msg, cb, cberr);
+
+      sinon.assert.calledWith(node.client.writeRegister, 123, 456);
+      done()
+    });
+
     it('should call readDiscreteInputs and activateSendingOnSuccess when successful', function (done) {
       const node = {
         client: {
@@ -216,6 +235,21 @@ describe('Core Client Testing', function () {
       sinon.assert.calledWith(node.client.readDiscreteInputs, 255, 2);
     });
 
+    it('should call activateSendingOnSuccess when sendCustomFc resolves', async () => {
+      const node = { client: { sendCustomFc: sinon.stub().resolves('rqesponse') } };
+      const msg = { payload: { unitid: 1, fc: 2, requestCard: {}, responseCard: {} } };
+      const cb = sinon.spy();
+      const cberr = sinon.spy();
+
+      coreClientUnderTest.activateSendingOnSuccess = sinon.spy();
+      coreClientUnderTest.activateSendingOnFailure = sinon.spy();
+
+      await coreClientUnderTest.sendCustomFunctionCode(node, msg, cb, cberr);
+
+      sinon.assert.calledWith(node.client.sendCustomFc, 1, 2, {}, {});
+      sinon.assert.calledWith(coreClientUnderTest.activateSendingOnSuccess, node, cb, cberr, 'response', msg);
+    })
+    
     it('should set commandDelay if msg.payload.commandDelay exists', function (done) {
       const node = { commandDelay: 100 }
       const msg = { payload: { commandDelay: 200 } }
