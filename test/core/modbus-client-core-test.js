@@ -287,6 +287,26 @@ describe('Core Client Testing', function () {
 
       coreClientUnderTest.readModbus(node, msg, cb, cberr);
     });
+    it('should call activateSendingOnFailure when client connection fails', () => {
+      const node = {
+        client: {
+          _port: {
+            _client: {
+              readable: false
+            }
+          }
+        },
+        connectClient: sinon.stub().returns(false),
+      };
+      const msg = { payload: 'test' };
+      const cb = sinon.spy();
+      const cberr = sinon.spy();
+      coreClientUnderTest.activateSendingOnFailure = sinon.spy();
+
+      coreClientUnderTest.readModbus(node, msg, cb, cberr);
+    });
+    
+    
     it('should set commandDelay if msg.payload.commandDelay exists', function (done) {
       const node = { commandDelay: 100 }
       const msg = { payload: { commandDelay: 200 } }
