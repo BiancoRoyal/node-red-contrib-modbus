@@ -181,6 +181,31 @@ describe('Core Client Testing', function () {
 
       done();
     });
+
+
+    it('should call activateSendingOnFailure and modbusErrorHandling when unsuccessful', async function () {
+      const errorMessage = 'Failed to read inputs';
+      const node = {
+        client: {
+          readDiscreteInputs: sinon.stub().rejects(new Error(errorMessage))
+        },
+        activateSending: sinon.stub().rejects(),
+        stateService: { send: sinon.spy() },
+        modbusErrorHandling: sinon.spy()
+      };
+
+      const msg = { payload: { address: 255, quantity: 2 } };
+      const cb = sinon.spy();
+      const cberr = sinon.spy();
+
+      try {
+        await coreClientUnderTest.readModbusByFunctionCodeTwo(node, msg, cb, cberr);
+        throw new Error('Expected promise to be rejected');
+      } catch (err) {
+        sinon.assert.calledWith(node.client.readDiscreteInputs, 255, 2);
+      }
+    });
+
     it('should set commandDelay if msg.payload.commandDelay exists', function (done) {
       const node = { commandDelay: 100 }
       const msg = { payload: { commandDelay: 200 } }
