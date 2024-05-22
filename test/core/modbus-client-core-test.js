@@ -149,7 +149,6 @@ describe('Core Client Testing', function () {
         activateSending: sinon.stub(),
         stateService: { send: sinon.spy() }
       };
-
       const cb = sinon.spy();
       const cberr = sinon.spy();
       const resp = { data: 'some data' };
@@ -162,6 +161,22 @@ describe('Core Client Testing', function () {
       sinon.assert.calledWith(node.activateSending, { payload: { address: 123, value: 1 } });
     });
 
+    it('should trigger onSuccess callback with custom response when writeRegister is successful and ID is 0', async (done) => {
+      const node = {
+        client: {
+          writeRegister: sinon.stub().resolves({ success: true }),
+          getID: sinon.stub().returns(0)
+        }
+      };
+      const msg = { payload: { address: '123', value: '456' } };
+      const cb = sinon.spy();
+      const cberr = sinon.spy();
+
+      coreClientUnderTest.writeModbusByFunctionCodeSix(node, msg, cb, cberr);
+
+      sinon.assert.calledWith(node.client.writeRegister, 123, 456);
+      done();
+    });
     it('should call readDiscreteInputs and activateSendingOnSuccess when successful', function (done) {
       const node = {
         client: {
@@ -187,10 +202,8 @@ describe('Core Client Testing', function () {
       const errorMessage = 'Failed to read inputs';
       const node = {
         client: {
-          readDiscreteInputs: sinon.stub().rejects(new Error(errorMessage))
+          readDiscreteInputs: sinon.stub().rejects(errorMessage)
         },
-        activateSending: sinon.stub().rejects(),
-        stateService: { send: sinon.spy() },
         modbusErrorHandling: sinon.spy()
       };
 
@@ -198,12 +211,9 @@ describe('Core Client Testing', function () {
       const cb = sinon.spy();
       const cberr = sinon.spy();
 
-      try {
-        await coreClientUnderTest.readModbusByFunctionCodeTwo(node, msg, cb, cberr);
-        throw new Error('Expected promise to be rejected');
-      } catch (err) {
-        sinon.assert.calledWith(node.client.readDiscreteInputs, 255, 2);
-      }
+      coreClientUnderTest.readModbusByFunctionCodeTwo(node, msg, cb, cberr);
+
+      sinon.assert.calledWith(node.client.readDiscreteInputs, 255, 2);
     });
 
     it('should set commandDelay if msg.payload.commandDelay exists', function (done) {
