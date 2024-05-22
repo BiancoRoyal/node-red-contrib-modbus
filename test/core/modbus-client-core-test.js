@@ -161,6 +161,26 @@ describe('Core Client Testing', function () {
 
       sinon.assert.calledWith(node.activateSending, { payload: { address: 123, value: 1 } });
     });
+
+    it('should call readDiscreteInputs and activateSendingOnSuccess when successful', function (done) {
+      const node = {
+        client: {
+          readDiscreteInputs: sinon.stub().resolves([1, 0, 1, 0, 1, 0, 1, 0])
+        },
+        activateSending: sinon.spy(),
+        stateService: { send: sinon.spy() }
+      };
+
+      const msg = { payload: { address: 123, quantity: 8 } };
+      const cb = sinon.spy();
+      const cberr = sinon.spy();
+
+      coreClientUnderTest.readModbusByFunctionCodeTwo(node, msg, cb, cberr);
+
+      sinon.assert.calledWith(node.client.readDiscreteInputs, 123, 8);
+
+      done();
+    });
     it('should set commandDelay if msg.payload.commandDelay exists', function (done) {
       const node = { commandDelay: 100 }
       const msg = { payload: { commandDelay: 200 } }
