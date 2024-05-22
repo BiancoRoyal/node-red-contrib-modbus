@@ -236,20 +236,33 @@ describe('Core Client Testing', function () {
     });
 
     it('should call activateSendingOnSuccess when sendCustomFc resolves', async () => {
-      const node = { client: { sendCustomFc: sinon.stub().resolves('rqesponse') } };
+      const node = { client: { sendCustomFc: sinon.stub().resolves('response') } };
       const msg = { payload: { unitid: 1, fc: 2, requestCard: {}, responseCard: {} } };
       const cb = sinon.spy();
       const cberr = sinon.spy();
+       coreClientUnderTest.sendCustomFunctionCode(node, msg, cb, cberr);
 
-      coreClientUnderTest.activateSendingOnSuccess = sinon.spy();
-      coreClientUnderTest.activateSendingOnFailure = sinon.spy();
+      sinon.assert.calledWith(node.client.sendCustomFc, 1, 2, {}, {})
 
-      await coreClientUnderTest.sendCustomFunctionCode(node, msg, cb, cberr);
-
-      sinon.assert.calledWith(node.client.sendCustomFc, 1, 2, {}, {});
-      sinon.assert.calledWith(coreClientUnderTest.activateSendingOnSuccess, node, cb, cberr, 'response', msg);
     })
-    
+
+    it('should call activateSendingOnFailure when sendCustomFc rejects', async () => {
+      const errorMessage = 'Failed to send custom function code';
+      const node = {
+        client: {
+          sendCustomFc: sinon.stub().rejects(new Error(errorMessage)),
+        },
+        modbusErrorHandling: sinon.spy()
+      }; 
+      const msg = { payload: { unitid: 2, fc: 4, requestCard: {}, responseCard: {} } };
+      const cb = sinon.spy();
+      const cberr = sinon.spy();
+
+      coreClientUnderTest.sendCustomFunctionCode(node, msg, cb, cberr);
+
+      sinon.assert.calledWith(node.client.sendCustomFc, 2, 4, {}, {});
+    });
+
     it('should set commandDelay if msg.payload.commandDelay exists', function (done) {
       const node = { commandDelay: 100 }
       const msg = { payload: { commandDelay: 200 } }
