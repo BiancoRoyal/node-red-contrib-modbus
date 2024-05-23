@@ -368,6 +368,25 @@ describe('Core Client Testing', function () {
       assert.strict.equal(node.commandDelay, 200)
       done()
     })
+        it('should return false and log an error when msg is null', () => {
+          const node = {};
+          const msg = null;
+          const mockLogFunction =sinon.spy();
+      
+          sinon.stub(coreClientUnderTest, 'getLogFunction').returns(mockLogFunction);
+
+      
+          const result = coreClientUnderTest.setNewNodeSettings(node, msg);
+
+        
+          coreClientUnderTest.setNewNodeOptionalSettings(node, msg);
+        
+          sinon.assert.calledWith(coreClientUnderTest.getLogFunction, node);
+
+      
+          expect(mockLogFunction).toHaveBeenCalledWith('New Connection message invalid.');
+          expect(result).toBe(false);
+        });
     it('should send READ state if bufferCommands is false and clienttype is not tcp', function (done) {
       const node = {
         bufferCommands: false,
