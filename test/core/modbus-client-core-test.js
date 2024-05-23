@@ -326,10 +326,38 @@ describe('Core Client Testing', function () {
       sinon.stub(coreClientUnderTest, 'writeModbusByFunctionCodeSixteen');
 
       coreClientUnderTest.writeModbus(node, msg, cb, cberr);
-
+      done()
     });
 
-   
+    it('should reconnect and process write command when node client is not writable', () => {
+      const node = {
+        client: {
+          _port: {
+            _client: { writable: false }
+          },
+          setTimeout: sinon.spy(),
+          getTimeout: sinon.stub().returns(1000)
+        },
+        connectClient: sinon.stub().returns(false),
+        stateService: { send: sinon.spy() },
+        queueLog: sinon.spy(),
+        setUnitIdFromPayload: sinon.spy(),
+        clientTimeout: 1000,
+        writeModbusByFunctionCodeSixteen: sinon.spy()
+      };
+      const msg = { payload: { fc: 16 } };
+      const cb = sinon.spy();
+      const cberr = sinon.spy();
+      coreClientUnderTest.activateSendingOnFailure = sinon.spy();
+      coreClientUnderTest.writeModbusByFunctionCodeSixteen = sinon.spy();
+
+
+      coreClientUnderTest.writeModbus(node, msg, cb, cberr);
+
+      sinon.assert.calledWith(coreClientUnderTest.activateSendingOnFailure);
+      done()
+
+    });
 
     it('should set commandDelay if msg.payload.commandDelay exists', function (done) {
       const node = { commandDelay: 100 }
