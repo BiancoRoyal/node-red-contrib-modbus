@@ -306,7 +306,7 @@ describe('Core Client Testing', function () {
       coreClientUnderTest.readModbus(node, msg, cb, cberr);
     });
 
-    it('should process function code 16 when node client is ready and writable', () => {
+    it('should process function code 16 when node client is ready and writable', (done) => {
       const node = {
         clienttype: 'serial',
         client: {
@@ -329,7 +329,7 @@ describe('Core Client Testing', function () {
       done()
     });
 
-    it('should reconnect and process write command when node client is not writable', () => {
+    it('should reconnect and process write command when node client is not writable', (done) => {
       const node = {
         client: {
           _port: {
@@ -383,6 +383,18 @@ describe('Core Client Testing', function () {
       done();
 
     });
+    it('should correctly parse and set unitId when provided with a valid integer', () => {
+      const node = { unit_id: 1, checkUnitId: sinon.spy() };
+      const msg = { payload: { unitId: '123' } };
+      const nodeLog = sinon.spy();
+      sinon.stub(coreClientUnderTest, 'getLogFunction').returns(nodeLog);
+    
+      coreClientUnderTest.setNewNodeOptionalSettings(node, msg);
+    
+      sinon.assert.calledWith(coreClientUnderTest.getLogFunction, node);
+      sinon.assert.calledWith(node.checkUnitId, 123, node.clienttype);
+    });
+    
     describe('setNewNodeOptionalSettings', function () {
       it('should set unit_id to msg.payload.unitId if it is a valid unitId', function () {
         const node = {
