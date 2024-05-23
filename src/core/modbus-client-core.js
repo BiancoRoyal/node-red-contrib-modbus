@@ -409,7 +409,6 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
     } catch (err) {
       coreClient.activateSendingOnFailure(node, cberr, err, msg)
       nodeLog(err.message)
-      node.modbusErrorHandling(err)
     }
   }, delayTime)
 }

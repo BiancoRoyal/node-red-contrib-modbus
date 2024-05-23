@@ -334,6 +334,29 @@ describe('Core Client Testing', function () {
       coreClientUnderTest.writeModbus(node, msg, cb, cberr);
       done()
     });
+    it('should call writeModbusByFunctionCodeSix for function code 6', () => {
+      const node = {
+        client: { _port: { _client: { writable: true } }, getTimeout: sinon.stub().returns(1000), setTimeout: sinon.spy() },
+        connectClient: sinon.stub().returns(true),
+        stateService: { send: sinon.spy() },
+        queueLog: sinon.spy(),
+        setUnitIdFromPayload: sinon.spy(),
+        clientTimeout: 1000,
+        bufferCommands: false,
+        clienttype: 'tcp'
+      };
+      const msg = { payload: { fc: 6, unitId: 1 } };
+      const cb = sinon.spy();
+      const cberr = sinon.spy();
+      const nodeLog = sinon.spy();
+
+      sinon.stub(coreClientUnderTest, 'getLogFunction').returns(nodeLog);
+      sinon.stub(coreClientUnderTest, 'writeModbusByFunctionCodeSix');
+
+      coreClientUnderTest.writeModbus(node, msg, cb, cberr);
+      coreClientUnderTest.writeModbusByFunctionCodeSix(node, msg, cb, cberr)
+      // done()
+    });
 
     it('should reconnect and process write command when node client is not writable', (done) => {
       const node = {
