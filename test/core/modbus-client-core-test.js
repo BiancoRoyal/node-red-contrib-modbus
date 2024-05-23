@@ -276,8 +276,8 @@ describe('Core Client Testing', function () {
         },
         connectClient: sinon.stub().returns(true),
         setUnitIdFromPayload: sinon.spy(),
-        bufferCommands: true, 
-        actualServiceState: { value: 'some_value' }, 
+        bufferCommands: true,
+        actualServiceState: { value: 'some_value' },
         queueLog: sinon.spy()
       };
       const msg = { payload: 'test', queueUnitId: 1 };
@@ -305,8 +305,32 @@ describe('Core Client Testing', function () {
 
       coreClientUnderTest.readModbus(node, msg, cb, cberr);
     });
-    
-    
+
+    it('should process function code 16 when node client is ready and writable', () => {
+      const node = {
+        clienttype: 'serial',
+        client: {
+          _port: {
+            _client: { writable: true }
+          },
+          setTimeout: sinon.spy(),
+          getTimeout: sinon.stub().returns(1000)
+        },
+        stateService: { send: sinon.spy() },
+        connectClient: sinon.spy(),
+        setUnitIdFromPayload: sinon.spy()
+      };
+      const msg = { payload: { fc: 16 } };
+      const cb = sinon.spy();
+      const cberr = sinon.spy();
+      sinon.stub(coreClientUnderTest, 'writeModbusByFunctionCodeSixteen');
+
+      coreClientUnderTest.writeModbus(node, msg, cb, cberr);
+
+    });
+
+   
+
     it('should set commandDelay if msg.payload.commandDelay exists', function (done) {
       const node = { commandDelay: 100 }
       const msg = { payload: { commandDelay: 200 } }
