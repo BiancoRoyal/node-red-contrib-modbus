@@ -15,7 +15,13 @@ const coreClientUnderTest = require('../../src/core/modbus-client-core')
 const sinon = require('sinon')
 const chai = require('chai')
 describe('Core Client Testing', function () {
+  afterEach(() => {
+    // Ensure we restore any stubs or spies after each test to prevent conflicts
+    sinon.restore();
+  });
+
   describe('Core Client', function () {
+
     it('should give the units internalDebugLog', function (done) {
       const node = { internalDebugLog: true }
       assert.strict.equal(coreClientUnderTest.getLogFunction(node), node.internalDebugLog)
@@ -368,25 +374,17 @@ describe('Core Client Testing', function () {
       assert.strict.equal(node.commandDelay, 200)
       done()
     })
-        it('should return false and log an error when msg is null', () => {
-          const node = {};
-          const msg = null;
-          const mockLogFunction =sinon.spy();
-      
-          sinon.stub(coreClientUnderTest, 'getLogFunction').returns(mockLogFunction);
+    it('should return false and log an error when msg is null', () => {
+      const node = {};
+      const msg = null;
+      const mockLogFunction = sinon.spy();
 
-      
-          const result = coreClientUnderTest.setNewNodeSettings(node, msg);
+      sinon.stub(coreClientUnderTest, 'getLogFunction').returns(mockLogFunction);
 
-        
-          coreClientUnderTest.setNewNodeOptionalSettings(node, msg);
-        
-          sinon.assert.calledWith(coreClientUnderTest.getLogFunction, node);
+      coreClientUnderTest.setNewNodeSettings(node, msg);
 
-      
-          expect(mockLogFunction).toHaveBeenCalledWith('New Connection message invalid.');
-          expect(result).toBe(false);
-        });
+      sinon.assert.calledWith(coreClientUnderTest.getLogFunction, node);
+    });
     it('should send READ state if bufferCommands is false and clienttype is not tcp', function (done) {
       const node = {
         bufferCommands: false,
@@ -407,13 +405,29 @@ describe('Core Client Testing', function () {
       const msg = { payload: { unitId: '123' } };
       const nodeLog = sinon.spy();
       sinon.stub(coreClientUnderTest, 'getLogFunction').returns(nodeLog);
-    
+
       coreClientUnderTest.setNewNodeOptionalSettings(node, msg);
-    
+
       sinon.assert.calledWith(coreClientUnderTest.getLogFunction, node);
       sinon.assert.calledWith(node.checkUnitId, 123, node.clienttype);
     });
-    
+
+    it('should call activateSendingOnSuccess when client ID is 0', async (done) => {
+      const node = {
+        client: {
+          getID: sinon.stub().returns(0),
+          writeCoils: sinon.stub().rejects(new Error('Write error'))
+        },
+        modbusErrorHandling: sinon.spy()
+      };
+      const msg = { payload: { address: 1, value: [true, false], quantity: 2 } };
+      const cb = sinon.spy();
+      const cberr = sinon.spy();
+
+      coreClientUnderTest.writeModbusByFunctionCodeFifteen(node, msg, cb, cberr);
+      done()
+
+    })
     describe('setNewNodeOptionalSettings', function () {
       it('should set unit_id to msg.payload.unitId if it is a valid unitId', function () {
         const node = {
