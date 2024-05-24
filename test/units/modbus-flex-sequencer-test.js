@@ -334,6 +334,19 @@ describe('Flex Sequencer node Testing', function () {
 
     resetInputDelayTimerSpy.restore();
   });
+  it('should send a message with IO data and emit an event when Modbus read is done', function (done) {
+    helper.load(testFlexSequencerNodes, testFlows.testNodeWithInjectNodeFlow, function () {
+      const flexSequencerNode = helper.getNode('42c7ed2cf52e284e');
+
+      const resp = { data: [1, 2, 3], someOtherData: 'test' };
+      const msg = { payload: 'test' };
+      const setNodeStatusToStub = sinon.stub(mBasics, 'setNodeStatusTo');
+      flexSequencerNode.onModbusReadDone(resp, msg);
+      sinon.assert.calledWith(setNodeStatusToStub, 'reading done', flexSequencerNode);
+
+      done()
+    });
+  });
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {

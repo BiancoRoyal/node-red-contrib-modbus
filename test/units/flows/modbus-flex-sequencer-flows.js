@@ -159,7 +159,7 @@ module.exports = {
               }
           ],
           "server": "92e7bf63.2efd7",
-          "showStatusActivities": false,
+          "showStatusActivities": true,
           "showErrors": false,
           "showWarnings": true,
           "logIOActivities": false,
