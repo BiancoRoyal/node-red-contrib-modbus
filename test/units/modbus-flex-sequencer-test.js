@@ -313,7 +313,27 @@ describe('Flex Sequencer node Testing', function () {
       }, 100);
     });
   });
+  const sinon = require('sinon');
+  it('should reset the input delay timer, log a warning, and set a timeout when delayOnStart is true', async function () {
+    await helper.load(testFlexSequencerNodes, testFlows.testNodeWithInjectNodeFlow);
+    const flexSequencerNode = helper.getNode('42c7ed2cf52e284e');
 
+    flexSequencerNode.delayOnStart = true;
+    flexSequencerNode.startDelayTime = 2;
+    flexSequencerNode.id = 'test-flexSequencerNode-id';
+
+    const resetInputDelayTimerSpy = sinon.spy(flexSequencerNode, 'resetInputDelayTimer');
+    flexSequencerNode.verboseWarn = sinon.stub();
+    const verboseWarnSpy = flexSequencerNode.verboseWarn;
+
+    await flexSequencerNode.initializeInputDelayTimer();
+    expect(resetInputDelayTimerSpy.calledOnce).to.be.true;
+    expect(verboseWarnSpy.calledOnceWithExactly('initialize input delay timer node test-flexSequencerNode-id')).to.be.false;
+    expect(flexSequencerNode.inputDelayTimer).to.be.an('object'),
+      expect(flexSequencerNode.delayOccured).to.be.false;
+
+    resetInputDelayTimerSpy.restore();
+  });
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
