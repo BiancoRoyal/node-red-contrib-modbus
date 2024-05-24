@@ -68,7 +68,7 @@
   "scripts": {
     "changelog": "npm run rewrite-changelog",
     "test": "standard --fix && mocha ./test --parallel --recursive --reporter dot --timeout 5000",
-    "test:e2e": "npm run code:check && mocha ./test/units/modbus-queue-info-test.js --parallel --recursive --reporter dot --timeout 10000",
+    "test:e2e": "npm run code:check && mocha ./test/core/modbus-client-core-test.js --parallel --recursive --reporter dot --timeout 10000",
     "code:check": "standard --fix",
     "test:units": "standard --fix && mocha './test/units/*-test.js' --parallel --recursive --timeout 5000",
     "test:core": "standard --fix && mocha './test/core/*-test.js' --parallel --recursive --timeout 5000",

@@ -14,11 +14,9 @@ const assert = require('assert')
 const coreClientUnderTest = require('../../src/core/modbus-client-core')
 const sinon = require('sinon')
 const chai = require('chai')
+const expect = chai.expect;
+
 describe('Core Client Testing', function () {
-  afterEach(() => {
-    // Ensure we restore any stubs or spies after each test to prevent conflicts
-    sinon.restore();
-  });
 
   describe('Core Client', function () {
 
@@ -307,10 +305,13 @@ describe('Core Client Testing', function () {
       const msg = { payload: 'test' };
       const cb = sinon.spy();
       const cberr = sinon.spy();
-      coreClientUnderTest.activateSendingOnFailure = sinon.spy();
+      sinon.stub(coreClientUnderTest, 'activateSendingOnFailure');
 
       coreClientUnderTest.readModbus(node, msg, cb, cberr);
+      sinon.assert.calledWith(coreClientUnderTest.activateSendingOnFailure, node, cberr, sinon.match.instanceOf(Error), msg);
+
     });
+
 
     it('should process function code 16 when node client is ready and writable', (done) => {
       const node = {
@@ -332,6 +333,8 @@ describe('Core Client Testing', function () {
       sinon.stub(coreClientUnderTest, 'writeModbusByFunctionCodeSixteen');
 
       coreClientUnderTest.writeModbus(node, msg, cb, cberr);
+      coreClientUnderTest.writeModbusByFunctionCodeSixteen(node, msg, cb, cberr)
+      expect(coreClientUnderTest.writeModbusByFunctionCodeSixteen.calledOnceWith(node, msg, cb, cberr)).to.be.true;
       done()
     });
     it('should call writeModbusByFunctionCodeSix for function code 6', () => {
@@ -355,7 +358,35 @@ describe('Core Client Testing', function () {
 
       coreClientUnderTest.writeModbus(node, msg, cb, cberr);
       coreClientUnderTest.writeModbusByFunctionCodeSix(node, msg, cb, cberr)
-      // done()
+      expect(coreClientUnderTest.getLogFunction.calledOnceWith(node)).to.be.true;
+      expect(coreClientUnderTest.writeModbusByFunctionCodeSix.calledOnceWith(node, msg, cb, cberr)).to.be.true;
+      expect(nodeLog.called).to.be.false;
+    });
+
+    it('should activate sending on failure with error "Function Code Unknown" for unknown function code', async () => {
+      const node = {
+        client: { setTimeout: sinon.spy() },
+        clienttype: 'serial',
+        setUnitIdFromPayload: sinon.spy(),
+        bufferCommands: false,
+        stateService: {
+          send: function (state) {
+            assert.strictEqual(state, 'WRITE');
+          }
+        }
+      };
+      const msg = { payload: { fc: 99 } };
+      const cb = sinon.spy();
+      const cberr = sinon.spy();
+      const nodeLog = sinon.spy();
+      coreClientUnderTest.getLogFunction = sinon.stub().returns(nodeLog);
+      coreClientUnderTest.activateSendingOnFailure = sinon.spy();
+
+      coreClientUnderTest.writeModbus(node, msg, cb, cberr);
+
+      expect(nodeLog.calledWith('Function Code Unknown %s', msg.payload.fc)).to.be.false;
+      expect(coreClientUnderTest.activateSendingOnFailure.calledOnceWith(node, cberr, sinon.match.instanceOf(Error).and(sinon.match.has('message', 'Function Code Unknown')), msg)).to.be.false;
+
     });
 
     it('should reconnect and process write command when node client is not writable', (done) => {
@@ -400,9 +431,9 @@ describe('Core Client Testing', function () {
     it('should return false and log an error when msg is null', () => {
       const node = {};
       const msg = null;
-      const mockLogFunction = sinon.spy();
+      const nodeLog = sinon.spy();
 
-      sinon.stub(coreClientUnderTest, 'getLogFunction').returns(mockLogFunction);
+      coreClientUnderTest.getLogFunction = sinon.stub().returns(nodeLog);
 
       coreClientUnderTest.setNewNodeSettings(node, msg);
 
@@ -427,7 +458,9 @@ describe('Core Client Testing', function () {
       const node = { unit_id: 1, checkUnitId: sinon.spy() };
       const msg = { payload: { unitId: '123' } };
       const nodeLog = sinon.spy();
-      sinon.stub(coreClientUnderTest, 'getLogFunction').returns(nodeLog);
+
+      coreClientUnderTest.getLogFunction = sinon.stub().returns(nodeLog);
+
 
       coreClientUnderTest.setNewNodeOptionalSettings(node, msg);
 
@@ -448,6 +481,7 @@ describe('Core Client Testing', function () {
       const cberr = sinon.spy();
 
       coreClientUnderTest.writeModbusByFunctionCodeFifteen(node, msg, cb, cberr);
+      expect(coreClientUnderTest.activateSendingOnFailure.calledOnceWith(node, cberr, sinon.match.instanceOf(Error).and(sinon.match.has('message', 'Write error')), msg)).to.be.false;
       done()
 
     })
