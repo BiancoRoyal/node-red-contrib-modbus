@@ -253,6 +253,39 @@ describe('Flex Sequencer node Testing', function () {
     });
   })
 
+  it('should build a new message object correctly', function (done) {
+    helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
+ 
+      const flexSequencer = helper.getNode('bc5a61b6.a3972');
+
+      const msg = {
+        topic: "test-topic",
+        name: "test-name",
+        unitid: 1,
+        fc: 3,
+        address: 100,
+        quantity: 10
+      };
+
+      const newMessageObject = flexSequencer.buildNewMessageObject(flexSequencer, msg);
+
+      newMessageObject.should.have.property('topic', 'test-topic');
+      newMessageObject.should.have.property('messageId');
+      newMessageObject.payload.should.have.property('name', 'test-name');
+      newMessageObject.payload.should.have.property('unitid', 1);
+      newMessageObject.payload.should.have.property('fc', 3);
+      newMessageObject.payload.should.have.property('address', 100);
+      newMessageObject.payload.should.have.property('quantity', 10);
+      newMessageObject.payload.should.have.property('emptyMsgOnFail', false);
+      newMessageObject.payload.should.have.property('keepMsgProperties', false);
+      newMessageObject.payload.should.have.property('messageId', newMessageObject.messageId);
+
+      done();
+    });
+  
+});
+
+
   describe('post', function () {
     it('should fail for invalid node', function (done) {
       helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
