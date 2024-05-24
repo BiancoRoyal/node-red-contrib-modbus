@@ -23,7 +23,9 @@ const testFlexSequencerNodes = [injectNode, clientNode, serverNode, nodeUnderTes
 const testFlows = require('./flows/modbus-flex-sequencer-flows')
 const mBasics = require('../../src/modbus-basics')
 const _ = require('underscore')
-
+const sinon = require('sinon')
+const chai = require('chai')
+const expect = chai.expect;
 describe('Flex Sequencer node Testing', function () {
   before(function (done) {
     helper.startServer(function () {
@@ -255,7 +257,7 @@ describe('Flex Sequencer node Testing', function () {
 
   it('should build a new message object correctly', function (done) {
     helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
- 
+
       const flexSequencer = helper.getNode('bc5a61b6.a3972');
 
       const msg = {
@@ -282,8 +284,35 @@ describe('Flex Sequencer node Testing', function () {
 
       done();
     });
-  
-});
+
+  });
+  it('should handle invalid payload', function (done) {
+    helper.load(testFlexSequencerNodes, testFlows.testNodeWithInjectNodeFlow, function () {
+      const flexSequencerNode = helper.getNode('42c7ed2cf52e284e');
+      const invalidMsg = null;
+
+      flexSequencerNode.receive(invalidMsg);
+
+      setTimeout(() => {
+        helper.log().calledWith('Invalid message on input.').should.be.true;
+        done();
+      }, 100);
+    });
+  });
+  it('should handle not ready for input', function (done) {
+    helper.load(testFlexSequencerNodes, testFlows.testNodeWithInjectNodeFlow, function () {
+      const flexSequencerNode = helper.getNode('42c7ed2cf52e284e');
+      flexSequencerNode.delayOccured = false;
+      const validMsg = { payload: { sequences: [] } };
+
+      flexSequencerNode.receive(validMsg);
+
+      setTimeout(() => {
+        helper.log().calledWith('Inject while node is not ready for input.').should.be.true;
+        done();
+      }, 100);
+    });
+  });
 
 
   describe('post', function () {
