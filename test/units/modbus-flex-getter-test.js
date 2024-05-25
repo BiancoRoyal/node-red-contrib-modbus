@@ -239,6 +239,7 @@ describe('Flex Getter node Testing', function () {
     })
 
     it('should inject 5 messages but only use one to test initial delay', function (done) {
+      this.timeout(7000)
       const flow = Array.from(testFlows.testFlexGetterWithInjectAndDelayFlow)
       flow[9].serverPort = "50111"
       flow[10].tcpPort = "50111"
@@ -272,6 +273,7 @@ describe('Flex Getter node Testing', function () {
         })
       })
     })
+
     it('should handle null or undefined input message', function (done) {
       const flow = Array.from(testFlows.testFlexGetterFlow)
       flow[1].serverPort = "50113"

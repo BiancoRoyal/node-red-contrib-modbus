@@ -89,7 +89,6 @@ describe('Queue Info node Testing', function () {
         initUnitQueueStates: () => { },
         resetStates: () => { },
         errorProtocolMsg: () => { },
-        checkLowLevelReached: () => { },
         checkHighLevelReached: () => { },
         checkHighHighLevelReached: () => { },
         getStatusSituationFillColor: () => { },

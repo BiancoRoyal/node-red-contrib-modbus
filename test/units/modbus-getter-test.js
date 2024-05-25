@@ -91,10 +91,9 @@ describe('Getter node Testing', function () {
     })
 
     it('should work as simple flow with inject and IO', function (done) {
-      this.timeout(3000)
-      testFlows.testGetterFlowWithInjectIo[1].serverPort = 5810
-      testFlows.testGetterFlowWithInjectIo[5].tcpPort = 5810
       const flow = Array.from(testFlows.testGetterFlowWithInjectIo)
+      flow[1].serverPort = 5810
+      flow[5].tcpPort = 5810
       helper.load(testGetterNodes, flow, function () {
         const modbusGetter = helper.getNode('a9b0b8a7cec1de86')
         const h1 = helper.getNode('dee228d8d9eaea8a')
@@ -111,10 +110,9 @@ describe('Getter node Testing', function () {
     })
 
     it('should work as simple flow with inject and IO with read done', function (done) {
-      this.timeout(3000)
-      testFlows.testGetterFlowWithInjectIo[1].serverPort = 5811
-      testFlows.testGetterFlowWithInjectIo[5].tcpPort = 5811
       const flow = Array.from(testFlows.testGetterFlowWithInjectIo)
+      flow[1].serverPort = 5811
+      flow[5].tcpPort = 5811
       helper.load(testGetterNodes, flow, function () {
         const modbusGetter = helper.getNode('a9b0b8a7cec1de86')
         let counter = 0
@@ -130,9 +128,9 @@ describe('Getter node Testing', function () {
     })
 
     it('should work as simple flow with wrong write inject and IO', function (done) {
-      testFlows.testGetterFlow[1].serverPort = 5812
-      testFlows.testGetterFlow[4].tcpPort = 5812
       const flow = Array.from(testFlows.testGetterFlow)
+      flow[1].serverPort = 5812
+      flow[4].tcpPort = 5812
       helper.load(testGetterNodes, flow, function () {
         const modbusGetter = helper.getNode('cea01c8.36f8f6')
         setTimeout(function () {
@@ -145,9 +143,9 @@ describe('Getter node Testing', function () {
     })
 
     it('should work as simple flow with wrong address inject and IO', function (done) {
-      testFlows.testGetterFlow[1].serverPort = 5813
-      testFlows.testGetterFlow[4].tcpPort = 5813
       const flow = Array.from(testFlows.testGetterFlow)
+      flow[1].serverPort = 5813
+      flow[4].tcpPort = 5813
       helper.load(testGetterNodes, flow, function () {
         const modbusGetter = helper.getNode('cea01c8.36f8f6')
         setTimeout(function () {
@@ -160,9 +158,9 @@ describe('Getter node Testing', function () {
     })
 
     it('should work as simple flow with wrong quantity inject and IO', function (done) {
-      testFlows.testGetterFlow[1].serverPort = 5814
-      testFlows.testGetterFlow[4].tcpPort = 5814
       const flow = Array.from(testFlows.testGetterFlow)
+      flow[1].serverPort = 5814
+      flow[4].tcpPort = 5814
       helper.load(testGetterNodes, flow, function () {
         const modbusGetter = helper.getNode('cea01c8.36f8f6')
         setTimeout(function () {
@@ -175,9 +173,9 @@ describe('Getter node Testing', function () {
     })
 
     it('should be state queueing - ready to send', function (done) {
-      testFlows.testGetterFlowWithInjectIo[1].serverPort = 5815
-      testFlows.testGetterFlowWithInjectIo[5].tcpPort = 5815
       const flow = Array.from(testFlows.testGetterFlowWithInjectIo)
+      flow[1].serverPort = 5815
+      flow[5].tcpPort = 5815
       helper.load(testGetterNodes, flow, function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         setTimeout(() => {
@@ -190,9 +188,9 @@ describe('Getter node Testing', function () {
     })
 
     it('should be not state queueing - not ready to send', function (done) {
-      testFlows.testGetterFlowWithInjectIo[1].serverPort = 5816
-      testFlows.testGetterFlowWithInjectIo[5].tcpPort = 5816
       const flow = Array.from(testFlows.testGetterFlowWithInjectIo)
+      flow[1].serverPort = 5816
+      flow[5].tcpPort = 5816
       helper.load(testGetterNodes, flow, function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         setTimeout(() => {

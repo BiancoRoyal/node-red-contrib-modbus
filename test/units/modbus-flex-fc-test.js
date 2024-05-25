@@ -24,8 +24,6 @@ helper.init(require.resolve('node-red'), {
 });
 
 const testFlows = require('./flows/modbus-flex-fc-flows')
-const mBasics = require('../../src/modbus-basics')
-const { testFlexClientWithoutConnection } = require('./flows/modbus-flex-fc-flows')
 
 describe('modbus flex fc unit test', function () {
   before(function (done) {

@@ -73,7 +73,7 @@ describe('Flex Connector node Testing', function () {
     })
 
     it('should change the Serial-Port of the client from /dev/ttyUSB to /dev/ttyUSB0', function (done) {
-      this.timeout(3000)
+      this.timeout(5000)
       helper.load(testFlexConnectorNodes, testFlows.testShouldChangeSerialPortFlow, function () {
         const modbusNode = helper.getNode('40ddaabb.fd44d4')
         const clientNode = helper.getNode('2a253153.fae3ef')

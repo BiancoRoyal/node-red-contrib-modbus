@@ -66,7 +66,6 @@ describe('Write node Testing', function () {
     })
 
     it('simple flow with boolean injects and write should be loaded', function (done) {
-      this.timeout(3000)
       helper.load(testSimpleWriteParametersNodes, testFlows.testWriteCycleFlow, function () {
         const modbusWrite = helper.getNode('1ed908da.427ecf')
         const h1 = helper.getNode('h1')
@@ -157,7 +156,6 @@ describe('Write node Testing', function () {
 
 
     it('should inject at least 4 messages but only use one to test initial delay', function (done) {
-      this.timeout(3000)
       const flow = Array.from(testFlows.testWriteDelayFlow)
       flow[1].serverPort = 5803
       flow[10].tcpPort = 5803
