@@ -34,7 +34,7 @@ function releaseLocal () {
 }
 
 function cleanProject () {
-  return src(['modbus', 'docs/gen', 'jcoverage'], { allowEmpty: true })
+  return src(['modbus', 'docs/gen', 'jcoverage', 'coverage', 'code', '.nyc_output'], { allowEmpty: true })
     .pipe(clean({ force: true }))
 }
 

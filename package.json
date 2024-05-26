@@ -25,7 +25,7 @@
     "biancoroyal"
   ],
   "engines": {
-    "node": ">=16"
+    "node": ">=18.5"
   },
   "repository": {
     "type": "git",
@@ -113,8 +113,7 @@
     "js-beautify": "^1.15.1",
     "mocha": "^10.4.0",
     "nock": "^13.5.4",
-    "node-red": "^3.1.9",
-    "node-red-contrib-modbus-flex-server": "^1.0.0",
+    "node-red": "^4.0.0-beta.3-1",
     "node-red-node-test-helper": "^0.3.4",
     "nyc": "^15.1.0",
     "pump": "^3.0.0",
