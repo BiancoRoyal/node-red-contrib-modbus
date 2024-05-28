@@ -9,11 +9,15 @@
 'use strict'
 
 const assert = require('assert')
+const sinon = require('sinon')
+const helper = require('node-red-node-test-helper')
+helper.init(require.resolve('node-red'))
+
 
 describe('Modbus Node basics Suite', function () {
   const basic = require('../../src/modbus-basics')
 
-  function checkStatus (statusProperty, fill, shape, text) {
+  function checkStatus(statusProperty, fill, shape, text) {
     assert.strict.equal(statusProperty.fill, fill)
     assert.strict.equal(statusProperty.shape, shape)
     assert.strict.equal(statusProperty.status, text)
@@ -121,5 +125,23 @@ describe('Modbus Node basics Suite', function () {
       var status = basic.setNodeStatusProperties({ value: 'stopped' })
       checkStatus(status, 'red', 'dot', 'stopped')
     })
+
+    it('should send an empty message on failure when node.emptyMsgOnFail is true', function () {
+      const node = {
+        emptyMsgOnFail: true,
+        send: sinon.spy(),
+        statusText: 'error'
+      };
+      const err = new Error('Test error');
+      const msg = { payload: 'initial' };
+  
+      basic.sendEmptyMsgOnFail(node, err, msg);
+  
+      assert(node.send.calledOnce); 
+      assert.deepStrictEqual(msg.payload, ''); 
+      assert(err instanceof Error); 
+      assert.deepStrictEqual(msg.error, err); 
+      assert.strictEqual(msg.error.nodeStatus, 'error'); 
+    });
   })
 })
