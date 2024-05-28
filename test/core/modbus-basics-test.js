@@ -11,6 +11,8 @@
 const assert = require('assert')
 const sinon = require('sinon')
 const helper = require('node-red-node-test-helper')
+const { expect } = require('chai');
+
 helper.init(require.resolve('node-red'))
 
 
@@ -134,32 +136,33 @@ describe('Modbus Node basics Suite', function () {
       };
       const err = new Error('Test error');
       const msg = { payload: 'initial' };
-  
+
       basic.sendEmptyMsgOnFail(node, err, msg);
-  
-      assert(node.send.calledOnce); 
-      assert.deepStrictEqual(msg.payload, ''); 
-      assert(err instanceof Error); 
-      assert.deepStrictEqual(msg.error, err); 
-      assert.strictEqual(msg.error.nodeStatus, 'error'); 
+
+      assert(node.send.calledOnce);
+      assert.deepStrictEqual(msg.payload, '');
+      assert(err instanceof Error);
+      assert.deepStrictEqual(msg.error, err);
+      assert.strictEqual(msg.error.nodeStatus, 'error');
     });
     it('should set node status to \'not ready to reconnect\' when error message is \'FSM Not Ready To Reconnect\'', () => {
       const node = { showErrors: true };
       const modbusClient = {};
       const err = { message: 'FSM Not Ready To Reconnect' };
-  
-      // Stubbing setNodeStatusTo function
       const setNodeStatusTo = sinon.stub(basic, 'setNodeStatusTo');
-  
-      // Call the function under test
+
       basic.setModbusError(node, modbusClient, err, null);
-  
-      // Assert that setNodeStatusTo was called with the correct arguments
+
       assert(setNodeStatusTo.calledOnceWithExactly('not ready to reconnect', node));
-  
-      // Restore the stub after the test
+
       setNodeStatusTo.restore();
     });
-        
+    it('should set node status to blue and dot with text "waiting ..." when statusValue is "waiting"', () => {
+      const node = { status: sinon.spy() };
+      const response = 'waiting ...'
+      basic.setNodeStatusByResponseTo('waiting', response, node);
+      sinon.assert.calledWith(node.status,{ fill: 'blue', shape: 'dot', text: "'waiting ...'" })
+    });
+    
   })
 })
