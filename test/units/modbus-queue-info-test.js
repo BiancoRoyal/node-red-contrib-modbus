@@ -19,7 +19,7 @@ const nodeUnderTest = require('../../src/modbus-queue-info.js')
 const catchNode = require('@node-red/nodes/core/common/25-catch')
 const chai = require('chai');
 const expect = chai.expect;
-
+const sinon = require('sinon')
 const testQueueInfoNodes = [catchNode, injectNode, functionNode, clientNode, serverNode, nodeUnderTest, readNode]
 
 const helper = require('node-red-node-test-helper')
@@ -134,6 +134,7 @@ describe('Queue Info node Testing', function () {
         done();
       })
     })
+
     it('should send a message when low level queue threshold is reached', function (done) {
       helper.load(testQueueInfoNodes, testFlows.testToReadFromAllUnitQueues, function () {
         const modbusQueueInfoNodeInstance = helper.getNode('1b72b5d207427b00');
@@ -298,6 +299,72 @@ describe('Queue Info node Testing', function () {
       });
 
     });
+    it('should handle input event correctly when updateOnAllUnitQueues is false and parsing fails', function () {
+      helper.load(testQueueInfoNodes, testFlows.testToReadFromAllUnitQueues, function () {
+        const node = helper.getNode('1b72b5d207427b00');
+        const msg = {
+          payload: 'invalidPayload'
+        };
+
+        const modbusClient = {
+          bufferCommands: true,
+          bufferCommandList: new Map()
+        };
+
+        const config = {
+          name: 'TestModbusQueueInfo',
+          server: 'mockModbusServer',
+          unitid: 1,
+          lowLowLevel: 5,
+          lowLevel: 10,
+          highLevel: 20,
+          highHighLevel: 30,
+          errorOnHighLevel: true,
+          queueReadIntervalTime: 1000,
+          showStatusActivities: true,
+          updateOnAllQueueChanges: true,
+          updateOnAllUnitQueues: false
+        };
+        const errorProtocolMsgSpy = sinon.spy(node, 'errorProtocolMsg');
+        const sendEmptyMsgOnFailSpy = sinon.spy(mbBasics, 'sendEmptyMsgOnFail');
+        const initQueueSpy = sinon.spy(coreModbusQueue, 'initQueue');
+        const initUnitQueueStatesSpy = sinon.spy(node, 'initUnitQueueStates');
+        const warnSpy = sinon.spy(modbusClient, 'warn');
+        const statusSpy = sinon.spy(node, 'status');
+        const sendSpy = sinon.spy(node, 'send');
+
+        modbusClient.bufferCommandList.set(config.unitid, []);
+
+        node.client = modbusClient;
+
+        node.emit('input', msg);
+
+        sinon.assert.calledOnce(errorProtocolMsgSpy);
+        sinon.assert.calledWith(errorProtocolMsgSpy, sinon.match.any, sinon.match.any);
+
+        sinon.assert.calledOnce(sendEmptyMsgOnFailSpy);
+        sinon.assert.calledWith(sendEmptyMsgOnFailSpy, sinon.match.any, sinon.match.any, sinon.match.any);
+
+        sinon.assert.notCalled(initQueueSpy);
+        sinon.assert.notCalled(initUnitQueueStatesSpy);
+
+        sinon.assert.notCalled(warnSpy);
+        sinon.assert.notCalled(statusSpy);
+
+        sinon.assert.calledOnce(sendSpy);
+        sinon.assert.calledWith(sendSpy, sinon.match.has('payload', sinon.match({
+        })));
+
+        errorProtocolMsgSpy.restore();
+        sendEmptyMsgOnFailSpy.restore();
+        initQueueSpy.restore();
+        initUnitQueueStatesSpy.restore();
+        warnSpy.restore();
+        statusSpy.restore();
+        sendSpy.restore();
+      });
+    });
+
   });
   describe('post', function () {
     it('should fail for invalid node', function (done) {

@@ -59,34 +59,7 @@ describe('Flex Connector node Testing', function () {
                     done();
                 }, 0);
             });
-        });
-        it('should handle valid input message', function () {
-            helper.load(testFlexConnectorNodes, testFlows.testShouldBeFlow, () => {
-                let modbusFlexNode = helper.getNode('40ddaabb.fd44d4');
-                // const msg = {
-                //     payload: {
-                //     }
-                // };
-                console.log('bhhjhj')
-
-                // const errorStub = sinon.stub(node, 'error');
-
-                // const sendStub = sinon.stub(node, 'send');
-
-                modbusFlexNode.emit('input', msg)
-
-                // modbusFlexNode.on('input', function (msg) {
-                //     setTimeout(function () {
-                //         sinon.assert.calledWith(errorStub, sinon.match.instanceOf(Error), msg);
-                //         sinon.assert.calledWith(sendStub, msg);
-                //     }, 1500);
-                // });
-                console.log('bhhdfdhj')
-
-                //modbusFlexNode.receive(msg);
-
-            });
-        });
+        })
         it('should trigger dynamic reconnection when valid connector type is provided', () => {
             helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, async () => {
                 const modbusFlexNode = helper.getNode('eeef27e90296ce6b');
