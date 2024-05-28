@@ -2,7 +2,82 @@
 const helperExtensions = require('../../helper/test-helper-extensions')
 
 module.exports = {
-
+  "testClientFlow": helperExtensions.cleanFlowPositionData(
+    [
+      {
+          "id": "90d2529d94dbf5c8",
+          "type": "modbus-read",
+          "z": "3b249606fb2722a7",
+          "name": "",
+          "topic": "",
+          "showStatusActivities": false,
+          "logIOActivities": false,
+          "showErrors": false,
+          "showWarnings": true,
+          "unitid": "",
+          "dataType": "HoldingRegister",
+          "adr": "0",
+          "quantity": "10",
+          "rate": "5",
+          "rateUnit": "s",
+          "delayOnStart": false,
+          "startDelayTime": "",
+          "server": "3",
+          "useIOFile": false,
+          "ioFile": "",
+          "useIOForPayload": false,
+          "emptyMsgOnFail": false,
+          "x": 460,
+          "y": 600,
+          "wires": [
+              [
+                  "1990b6198cad893b"
+              ],
+              []
+          ]
+      },
+      {
+          "id": "1990b6198cad893b",
+          "type": "helper",
+          "z": "3b249606fb2722a7",
+          "name": "helper 16",
+          "active": true,
+          "tosidebar": true,
+          "console": false,
+          "tostatus": false,
+          "complete": "payload",
+          "targetType": "msg",
+          "statusVal": "",
+          "statusType": "auto",
+          "x": 840,
+          "y": 620,
+          "wires": []
+      },
+      {
+          "id": "3",
+          "type": "modbus-client",
+          "name": "Modbus Server",
+          "clienttype": "tcp",
+          "bufferCommands": true,
+          "stateLogEnabled": false,
+          "queueLogEnabled": false,
+          "failureLogEnabled": true,
+          "tcpHost": "127.0.0.1",
+          "tcpPort": "502",
+          "tcpType": "DEFAULT",
+          "serialPort": "",
+          "serialType": "RTU-BUFFERED",
+          "serialBaudrate": "9600",
+          "serialDatabits": "8",
+          "serialStopbits": "1",
+          "serialParity": "none",
+          "serialConnectionDelay": "100",
+          "unit_id": "1",
+          "commandDelay": "1",
+          "clientTimeout": "1000",
+          "reconnectTimeout": "2000"
+      }
+  ]),
   "testSimpleReadWithClientFlow": helperExtensions.cleanFlowPositionData([
     {
       "id": "467a879051898098",
