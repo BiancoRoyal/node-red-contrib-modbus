@@ -143,5 +143,23 @@ describe('Modbus Node basics Suite', function () {
       assert.deepStrictEqual(msg.error, err); 
       assert.strictEqual(msg.error.nodeStatus, 'error'); 
     });
+    it('should set node status to \'not ready to reconnect\' when error message is \'FSM Not Ready To Reconnect\'', () => {
+      const node = { showErrors: true };
+      const modbusClient = {};
+      const err = { message: 'FSM Not Ready To Reconnect' };
+  
+      // Stubbing setNodeStatusTo function
+      const setNodeStatusTo = sinon.stub(basic, 'setNodeStatusTo');
+  
+      // Call the function under test
+      basic.setModbusError(node, modbusClient, err, null);
+  
+      // Assert that setNodeStatusTo was called with the correct arguments
+      assert(setNodeStatusTo.calledOnceWithExactly('not ready to reconnect', node));
+  
+      // Restore the stub after the test
+      setNodeStatusTo.restore();
+    });
+        
   })
 })
