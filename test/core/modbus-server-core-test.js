@@ -528,7 +528,25 @@ it('should correctly write to memory when register type is "holding"', () => {
   coreServerUnderTest.copyToModbusBuffer(node, msg);
   sinon.assert.calledWith(copySpyCoil, node.modbusServer.coils, 0);
 
+  node = {
+    modbusServer: {
+      discrete: {
+        writeUInt8: sinon.spy()
+      }
+    }
+  };
+  msg = {
+    payload: {
+      register: 'discrete',
+      address: 1
+    },
+    bufferPayload: 255,
+    bufferAddress: 2
+  };
+  coreServerUnderTest.writeToModbusBuffer(node, msg); 
+  sinon.assert.calledWith(node.modbusServer.discrete.writeUInt8, 255, 2);
 });
+
 
 // I wrote this test but some of the test are failing  with error   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal: so i have to fixed previous test then i will uncomment this test 
 
@@ -545,12 +563,12 @@ it('should correctly write to memory when register type is "holding"', () => {
 //   coreServerUnderTest.writeToServerMemory(node, msg);
 //   sinon.assert.calledWith(coreServerUnderTest.writeModbusServerMemory, node, msg)
 
-  // coreServerUnderTest.writeToServerMemory(node, msg);
-  // sinon.assert.calledWith(coreServerUnderTest.writeModbusServerMemory , node,msg);
+// coreServerUnderTest.writeToServerMemory(node, msg);
+// sinon.assert.calledWith(coreServerUnderTest.writeModbusServerMemory , node,msg);
 
-  // sinon.assert.called(node.error)
+// sinon.assert.called(node.error)
 
 
-  // sinon.assert.notCalled(writeModbusServerMemorySpy);
-  // sinon.restore();
+// sinon.assert.notCalled(writeModbusServerMemorySpy);
+// sinon.restore();
 // });
