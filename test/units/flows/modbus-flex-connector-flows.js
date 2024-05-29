@@ -4,14 +4,7 @@ const helperExtensions = require('../../helper/test-helper-extensions')
 module.exports = {
 
   "testShouldBeLoadedFlow": helperExtensions.cleanFlowPositionData([
-    {
-      "id": "43f07d0e121df598",
-      "type": "tab",
-      "label": "Should Be Loaded",
-      "disabled": false,
-      "info": "",
-      "env": []
-    },
+
     {
       "id": "40ddaabb.fd44d4",
       "type": "modbus-flex-connector",
@@ -311,7 +304,24 @@ module.exports = {
           "showLogs": false
       }
   ]
+  ),
+  "testonConfigDone": helperExtensions.cleanFlowPositionData(
+  [
+    {
+        "id": "88170d215343af66",
+        "type": "modbus-flex-connector",
+        "z": "b9132d8cd4b074f4",
+        "name": "",
+        "maxReconnectsPerMinute": 4,
+        "emptyQueue": false,
+        "showStatusActivities": false,
+        "showErrors": false,
+        "x": 530,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    }
+]
   )
-
-
 }

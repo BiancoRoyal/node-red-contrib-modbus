@@ -73,71 +73,71 @@ describe('Flex Connector node Testing', function () {
       })
     })
 
-    // it('should change the Serial-Port of the client from /dev/ttyUSB to /dev/ttyUSB0', function (done) {
-    //   this.timeout(5000)
-    //   helper.load(testFlexConnectorNodes, testFlows.testShouldChangeSerialPortFlow, function () {
-    //     const modbusNode = helper.getNode('40ddaabb.fd44d4')
-    //     const clientNode = helper.getNode('2a253153.fae3ef')
-    //     modbusNode.should.have.property('name', 'FlexConnector')
-    //     modbusNode.should.have.property('emptyQueue', true)
-    //     setTimeout(function () {
-    //       modbusNode.receive({ payload: { connectorType: 'SERIAL', serialPort: '/dev/ttyUSB0', serialBaudrate: '9600' } })
-    //     }, 1000)
-    //     clientNode.on('mbinit', () => {
-    //       if (clientNode && clientNode.serialBaudrate === 9600 && clientNode.serialPort === '/dev/ttyUSB0') {
-    //         done()
-    //       }
-    //     })
-    //   })
-    // })
+    it('should change the Serial-Port of the client from /dev/ttyUSB to /dev/ttyUSB0', function (done) {
+      this.timeout(5000)
+      helper.load(testFlexConnectorNodes, testFlows.testShouldChangeSerialPortFlow, function () {
+        const modbusNode = helper.getNode('40ddaabb.fd44d4')
+        const clientNode = helper.getNode('2a253153.fae3ef')
+        modbusNode.should.have.property('name', 'FlexConnector')
+        modbusNode.should.have.property('emptyQueue', true)
+        setTimeout(function () {
+          modbusNode.receive({ payload: { connectorType: 'SERIAL', serialPort: '/dev/ttyUSB0', serialBaudrate: '9600' } })
+        }, 1000)
+        clientNode.on('mbinit', () => {
+          if (clientNode && clientNode.serialBaudrate === 9600 && clientNode.serialPort === '/dev/ttyUSB0') {
+            done()
+          }
+        })
+      })
+    })
 
-    // it('should be inactive if message not allowed', function (done) {
-    //   helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
-    //     const modbusClientNode = helper.getNode('2a253153.fae3ce')
-    //     _.isUndefined(modbusClientNode).should.be.false
+    it('should be inactive if message not allowed', function (done) {
+      helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
+        const modbusClientNode = helper.getNode('2a253153.fae3ce')
+        _.isUndefined(modbusClientNode).should.be.false
 
-    //     modbusClientNode.receive({payload: "test"})
-    //     let isInactive = modbusClientNode.isInactive()
-    //     isInactive.should.be.true
-    //     done()
-    //   })
-    // })
+        modbusClientNode.receive({payload: "test"})
+        let isInactive = modbusClientNode.isInactive()
+        isInactive.should.be.true
+        done()
+      })
+    })
 
-    // it('should be inactive if message empty', function (done) {
-    //   helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
-    //     const modbusClientNode = helper.getNode('2a253153.fae3ce')
-    //     setTimeout(() => {
-    //       modbusClientNode.messageAllowedStates = ['']
-    //       let isInactive = modbusClientNode.isInactive()
-    //       isInactive.should.be.true
-    //       done()
-    //     } , 1500)
-    //   })
-    // })
+    it('should be inactive if message empty', function (done) {
+      helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
+        const modbusClientNode = helper.getNode('2a253153.fae3ce')
+        setTimeout(() => {
+          modbusClientNode.messageAllowedStates = ['']
+          let isInactive = modbusClientNode.isInactive()
+          isInactive.should.be.true
+          done()
+        } , 1500)
+      })
+    })
 
-    // it('should be state queueing - ready to send', function (done) {
-    //   helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
-    //     const modbusClientNode = helper.getNode('2a253153.fae3ce')
-    //     setTimeout(() => {
-    //       mBasics.setNodeStatusTo('queueing', modbusClientNode)
-    //       let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-    //       isReady.should.be.true
-    //       done()
-    //     } , 1500)
-    //   })
-    // })
+    it('should be state queueing - ready to send', function (done) {
+      helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
+        const modbusClientNode = helper.getNode('2a253153.fae3ce')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('queueing', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.true
+          done()
+        } , 1500)
+      })
+    })
 
-    // it('should be not state queueing - not ready to send', function (done) {
-    //   helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
-    //     const modbusClientNode = helper.getNode('2a253153.fae3ce')
-    //     setTimeout(() => {
-    //       mBasics.setNodeStatusTo('stopped', modbusClientNode)
-    //       let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-    //       isReady.should.be.false
-    //       done()
-    //     } , 1500)
-    //   })
-    // })
+    it('should be not state queueing - not ready to send', function (done) {
+      helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
+        const modbusClientNode = helper.getNode('2a253153.fae3ce')
+        setTimeout(() => {
+          mBasics.setNodeStatusTo('stopped', modbusClientNode)
+          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          isReady.should.be.false
+          done()
+        } , 1500)
+      })
+    })
 
     it('should process the flow as expected', function () {
       helper.load(testFlexConnectorNodes, testFlows.testFlowAsExpected,function(){

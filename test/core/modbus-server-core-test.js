@@ -12,6 +12,7 @@
 
 const assert = require('assert')
 const coreServerUnderTest = require('../../src/core/modbus-server-core')
+const sinon = require('sinon')
 
 const defaultBufferSize = 1024
 
@@ -320,7 +321,7 @@ describe('Modbus server core function Copy Flex Buffer', () => {
   it('should handle `holding` case', () => {
     const msg = {
       payload: { register: 'holding' },
-      bufferData: Buffer.alloc(2 , 22),
+      bufferData: Buffer.alloc(2, 22),
       bufferSplitAddress: 0
     };
 
@@ -332,7 +333,7 @@ describe('Modbus server core function Copy Flex Buffer', () => {
   it('should handle `holding` case just on 16 Bit', () => {
     const msg = {
       payload: { register: 'holding' },
-      bufferData: Buffer.alloc(4 , 22),
+      bufferData: Buffer.alloc(4, 22),
       bufferSplitAddress: 0
     };
 
@@ -467,4 +468,31 @@ describe('Modbus server core function Write Flex Buffer', () => {
     const result = coreServerUnderTest.writeToModbusFlexBuffer(node, msg);
     assert.strict.equal(result, false)
   });
+});
+it('should correctly write to memory when register type is "holding"', () => {
+  let node = {
+    id: "445454e4.968564",
+    type: "modbus-server",
+    z: "a60ca8c447c6bf61",
+    name: "",
+    logEnabled: true,
+    hostname: "127.0.0.1",
+    serverPort: "7502",
+    responseDelay: 100,
+    delayUnit: "ms",
+    coilsBufferSize: 10000,
+    holdingBufferSize: 10000,
+    inputBufferSize: 10000,
+    discreteBufferSize: 10000,
+    showErrors: false,
+    x: 240,
+    y: 120,
+    wires: [[], [], [], [], []]
+  };
+  node = { error: sinon.spy() };
+
+  const msg = { payload: { register: 'holding' } };
+
+  coreServerUnderTest.writeToFlexServerMemory(node, msg);
+  sinon.assert.called(node.error)
 });
