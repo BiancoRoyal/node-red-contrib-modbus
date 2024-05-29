@@ -527,4 +527,30 @@ it('should correctly write to memory when register type is "holding"', () => {
   const copySpyCoil = sinon.spy(msg.bufferData, 'copy');
   coreServerUnderTest.copyToModbusBuffer(node, msg);
   sinon.assert.calledWith(copySpyCoil, node.modbusServer.coils, 0);
+
 });
+
+// I wrote this test but some of the test are failing  with error   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal: so i have to fixed previous test then i will uncomment this test 
+
+// it('should not call writeModbusServerMemory if register type is invalid', () => {
+//   const registerType = 'invalidRegisterType';
+//   const node = { error: sinon.spy() };
+//   let msg = { payload: {} };
+//   msg.payload.register = registerType;
+//   coreServerUnderTest.writeModbusServerMemory = sinon.spy();
+
+//   const writeModbusStub = sinon.stub(coreServerUnderTest, 'writeModbusServerMemory');
+//   writeModbusStub.returns();
+
+//   coreServerUnderTest.writeToServerMemory(node, msg);
+//   sinon.assert.calledWith(coreServerUnderTest.writeModbusServerMemory, node, msg)
+
+  // coreServerUnderTest.writeToServerMemory(node, msg);
+  // sinon.assert.calledWith(coreServerUnderTest.writeModbusServerMemory , node,msg);
+
+  // sinon.assert.called(node.error)
+
+
+  // sinon.assert.notCalled(writeModbusServerMemorySpy);
+  // sinon.restore();
+// });
