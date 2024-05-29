@@ -299,6 +299,34 @@ describe('Queue Info node Testing', function () {
       });
 
     });
+    it('should return the correct color based on queue levels reached', function () {
+      helper.load(testQueueInfoNodes, testFlows.testToupdateOnAllUnitQueues, function () {
+        const node = helper.getNode('07a7c865d5cb3125');
+        node.unitsWithQueue.set(1, {});
+        let color = node.getStatusSituationFillColor(1);
+        expect(color).to.equal('blue');
+    
+        node.unitsWithQueue.set(2, { lowLevelReached: true });
+        color = node.getStatusSituationFillColor(2);
+        expect(color).to.equal('green');
+    
+        node.unitsWithQueue.set(3, { highLevelReached: true });
+        node.errorOnHighLevel = false;
+        color = node.getStatusSituationFillColor(3);
+        expect(color).to.equal('yellow');
+    
+        node.unitsWithQueue.set(4, { highLevelReached: true });
+        node.errorOnHighLevel = true;
+        color = node.getStatusSituationFillColor(4);
+        expect(color).to.equal('red');
+    
+        node.unitsWithQueue.set(5, { highHighLevelReached: true });
+        color = node.getStatusSituationFillColor(5);
+        expect(color).to.equal('red');
+      });
+    });
+    
+
     it('should handle input event correctly when updateOnAllUnitQueues is false and parsing fails', function () {
       helper.load(testQueueInfoNodes, testFlows.testToReadFromAllUnitQueues, function () {
         const node = helper.getNode('1b72b5d207427b00');

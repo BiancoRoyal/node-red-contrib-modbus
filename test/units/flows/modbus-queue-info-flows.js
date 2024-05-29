@@ -972,5 +972,134 @@ module.exports = {
     }
 ]    
 ),
+"testToupdateOnAllUnitQueues": helperExtensions.cleanFlowPositionData(
+  [
+    {
+        "id": "583f973601239168",
+        "type": "inject",
+        "z": "3b249606fb2722a7",
+        "name": "injectNode",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"resetQueue\":true,\"unitId\":1}",
+        "payloadType": "json",
+        "x": 380,
+        "y": 840,
+        "wires": [
+            [
+                "07a7c865d5cb3125"
+            ]
+        ]
+    },
+    {
+        "id": "07a7c865d5cb3125",
+        "type": "modbus-queue-info",
+        "z": "3b249606fb2722a7",
+        "name": "",
+        "topic": "",
+        "unitid": 1,
+        "queueReadIntervalTime": 1000,
+        "lowLowLevel": 25,
+        "lowLevel": 75,
+        "highLevel": 150,
+        "highHighLevel": 300,
+        "server": "115bd58ae573c942",
+        "errorOnHighLevel": false,
+        "showStatusActivities": true,
+        "updateOnAllQueueChanges": false,
+        "updateOnAllUnitQueues": false,
+        "x": 600,
+        "y": 820,
+        "wires": [
+            [
+                "aff130d1e57795b4"
+            ]
+        ]
+    },
+    {
+        "id": "aff130d1e57795b4",
+        "type": "helper",
+        "z": "3b249606fb2722a7",
+        "name": "helper 17",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 860,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "ad20e2342ee3d48c",
+        "type": "modbus-server",
+        "z": "3b249606fb2722a7",
+        "name": "",
+        "logEnabled": false,
+        "hostname": "0.0.0.0",
+        "serverPort": 10502,
+        "responseDelay": 100,
+        "delayUnit": "ms",
+        "coilsBufferSize": 10000,
+        "holdingBufferSize": 10000,
+        "inputBufferSize": 10000,
+        "discreteBufferSize": 10000,
+        "showErrors": false,
+        "x": 660,
+        "y": 740,
+        "wires": [
+            [],
+            [],
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "115bd58ae573c942",
+        "type": "modbus-client",
+        "name": "12 Channel 192.168.0.41",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "failureLogEnabled": false,
+        "tcpHost": "127.0.0.1",
+        "tcpPort": "10512",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": 41,
+        "commandDelay": 100,
+        "clientTimeout": 1000,
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": 2000,
+        "parallelUnitIdsAllowed": false,
+        "showErrors": false,
+        "showWarnings": false,
+        "showLogs": false
+    }
+]
 
+)
 }
