@@ -209,9 +209,7 @@ describe('Getter node Testing', function () {
         const msg = { payload: 'test' };
 
         getterNode.onModbusCommandError(errorMessage, msg);
-        console.log('line1')
         sinon.assert.calledWith(node.internalDebugLog, errorMessage)
-        console.log(modbusClientNode)
 
         modbusClientNode.internalDebugLog = sinon.spy();
         modbusClientNode.errorProtocolMsg = sinon.spy();

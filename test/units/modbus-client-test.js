@@ -428,7 +428,6 @@ describe('Client node Testing', function () {
 
       helper.load(testModbusClientNodes, testFlows.testClientFlow, function () {
         let modbusReadNode = helper.getNode('90d2529d94dbf5c8');
-        console.log(modbusReadNode)
         modbusReadNode.actualServiceState = { value: 'opened' };
         modbusReadNode.unit_id = 1;
         modbusReadNode.clientTimeout = 1;

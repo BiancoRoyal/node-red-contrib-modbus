@@ -142,7 +142,6 @@ describe('Flex Connector node Testing', function () {
     it('should process the flow as expected', function () {
       helper.load(testFlexConnectorNodes, testFlows.testFlowAsExpected,function(){
         const flexNode=helper.getNode('1b4644a214cfdec6')
-        console.log(flexNode)
       })
       // done()
 

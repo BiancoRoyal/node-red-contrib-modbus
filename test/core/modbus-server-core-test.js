@@ -491,8 +491,40 @@ it('should correctly write to memory when register type is "holding"', () => {
   };
   node = { error: sinon.spy() };
 
-  const msg = { payload: { register: 'holding' } };
+  let msg = { payload: { register: 'holding' } };
 
   coreServerUnderTest.writeToFlexServerMemory(node, msg);
   sinon.assert.called(node.error)
+
+  msg = {
+    payload: {
+      register: 'holding',
+      address: 0
+    },
+    bufferData: Buffer.from([1, 2, 3, 4]),
+    bufferAddress: 0
+  };
+  const copySpy = sinon.spy(msg.bufferData, 'copy');
+  node = {
+    modbusServer: {
+      holding: Buffer.alloc(10),
+      coils: Buffer.alloc(10),
+      input: Buffer.alloc(10),
+      discrete: Buffer.alloc(10)
+    }
+  };
+  coreServerUnderTest.copyToModbusBuffer(node, msg)
+  sinon.assert.calledWith(copySpy, node.modbusServer.holding, 0);
+
+  msg = {
+    payload: {
+      register: 'coils',
+      address: 0
+    },
+    bufferData: Buffer.from([1, 2, 3, 4]),
+    bufferAddress: 0
+  };
+  const copySpyCoil = sinon.spy(msg.bufferData, 'copy');
+  coreServerUnderTest.copyToModbusBuffer(node, msg);
+  sinon.assert.calledWith(copySpyCoil, node.modbusServer.coils, 0);
 });
