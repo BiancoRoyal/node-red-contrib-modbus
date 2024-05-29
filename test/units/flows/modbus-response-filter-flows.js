@@ -332,6 +332,70 @@ module.exports = {
       "format": "utf8",
       "addressOffset": ""
     }
-  ])
+  ]),
+ "testFlowResponse": helperExtensions.cleanFlowPositionData([
+    {
+        "id": "4f8c0e22.48b8b4",
+        "type": "modbus-response-filter",
+        "z": "c16c7ae547655379",
+        "name": "Filter",
+        "filter": "Test Filter",
+        "registers": "5",
+        "filterResponseBuffer": false,
+        "filterValues": false,
+        "filterInput": false,
+        "showStatusActivities": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "x": 550,
+        "y": 540,
+        "wires": [
+            [
+                "119f217c24184589"
+            ]
+        ]
+    },
+    {
+        "id": "f11d36da.0e3af8",
+        "type": "inject",
+        "z": "c16c7ae547655379",
+        "name": "",
+        "props": [
+            {
+                "p": "payload",
+                "v": "[1,2,3]",
+                "vt": "json"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 360,
+        "y": 540,
+        "wires": [
+            [
+                "4f8c0e22.48b8b4"
+            ]
+        ]
+    },
+    {
+        "id": "119f217c24184589",
+        "type": "helper",
+        "z": "c16c7ae547655379",
+        "name": "helper 18",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 540,
+        "wires": []
+    }
+])
 
 }

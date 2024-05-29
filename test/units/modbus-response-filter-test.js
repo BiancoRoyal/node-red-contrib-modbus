@@ -17,7 +17,7 @@ const nodeIOConfig = require('../../src/modbus-io-config.js')
 const clientNode = require('../../src/modbus-client.js')
 const serverNode = require('../../src/modbus-server.js')
 const flexGetterNode = require('../../src/modbus-flex-getter.js')
-
+const sinon = require('sinon')
 const testResponseFilterNodes = [functionNode, injectNode, nodeUnderTest, nodeIOConfig, clientNode, serverNode, flexGetterNode]
 
 const helper = require('node-red-node-test-helper')
@@ -106,7 +106,7 @@ describe('Response Filter node Testing', function () {
         const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
         _.isUndefined(modbusClientNode).should.be.false
 
-        modbusClientNode.receive({payload: "test"})
+        modbusClientNode.receive({ payload: "test" })
         let isInactive = modbusClientNode.isInactive()
         isInactive.should.be.true
         done()
@@ -123,19 +123,20 @@ describe('Response Filter node Testing', function () {
           let isInactive = modbusClientNode.isInactive()
           isInactive.should.be.true
           done()
-        } , 1500)
+        }, 1500)
       })
     })
 
     it('should be state queueing - ready to send', function (done) {
       helper.load(testResponseFilterNodes, testFlows.testWorkWithFlexGetterFlow, function () {
         const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
+        console.log(modbusClientNode)
         setTimeout(() => {
           mBasics.setNodeStatusTo('queueing', modbusClientNode)
           let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.true
           done()
-        } , 1500)
+        }, 1500)
       })
     })
 
@@ -147,10 +148,57 @@ describe('Response Filter node Testing', function () {
           let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.false
           done()
-        } , 1500)
+        }, 1500)
       })
     })
+
   })
+  it('should call internalDebug with appropriate debug messages', () => {
+    helper.load(testResponseFilterNodes, testFlows.testWorkWithFlexGetterFlow, function () {
+      modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
+      console.log(modbusClientNode)
+      let mbBasics = {
+        invalidPayloadIn: sinon.stub().returns(false)
+      };
+      let mbCore = {
+        internalDebug: sinon.stub(),
+      };
+      let msg = {
+        payload: [{ name: 'testFilter' }, { name: 'otherFilter' }]
+      };
+      modbusClientNode = {
+        registers: 5,
+        showErrors: true,
+        showWarnings: true,
+        filterFromPayload: sinon.stub(),
+        send: sinon.stub(),
+        error: sinon.stub()
+      };
+
+      console.log(modbusClientNode, 'njjj')
+      console.log(modbusClientNode)
+      node.emit('input', msg);
+      sinon.assert.notCalled(node.send);
+      sinon.assert.notCalled(node.error);
+      sinon.assert.notCalled(mbCore.internalDebug)
+      msg = { payload: [1, 2, 3] };
+
+      node.on('input', msg);
+
+      sinon.assert.notCalled(node.send);
+      sinon.assert.calledOnce(node.error);
+      sinon.assert.calledWith(mbCore.internalDebug, '2 Registers And Filter Length Of 2 Does Not Match');
+      msg = { payload: [1, 2, 3] };
+      node.registers = 0;
+
+      node.on('input', msg);
+
+      sinon.assert.calledOnce(node.send);
+      sinon.assert.notCalled(node.error);
+      sinon.assert.notCalled(mbCore.internalDebug);
+    });
+  });
+
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
