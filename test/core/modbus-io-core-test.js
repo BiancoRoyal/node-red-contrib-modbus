@@ -167,7 +167,31 @@ describe('Core IO Testing', function () {
         expect(result[0].value).to.deep.equal(null);
         expect(result[1].value).to.deep.equal(null);
 
-      })
+      });
+      it('should correctly map word type input addresses', () => {
+        const mapping = { name: 'wTest', valueAddress: '%IW100' };
+        const offset = 10;
+        const readingOffset = 5;
+        const logging = false;
+        const result = coreIOUnderTest.buildInputAddressMapping('MB-INPUTS', mapping, offset, readingOffset, logging);
+    
+        expect(result).to.deep.equal({
+          register: 'MB-INPUTS',
+          name: 'wTest',
+          addressStart: 100,
+          addressOffset: 1,
+          addressOffsetIO: 10,
+          addressStartIO: 90,
+          registerAddress: 85,
+          coilStart: 0,
+          bitAddress: null,
+          Bit: 0,
+          bits: 16,
+          dataType: 'Word',
+          type: 'input'
+        });
+      });
+  
     })
 
     describe('Core IO File', function () {
