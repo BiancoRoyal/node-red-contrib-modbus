@@ -12,11 +12,12 @@
 
 const assert = require('assert')
 const coreIOUnderTest = require('../../src/core/modbus-io-core')
+const sinon = require('sinon')
 
-describe ('Core IO Testing', function () {
-  describe ('Core IO', function () {
+describe('Core IO Testing', function () {
+  describe('Core IO', function () {
 
-    describe ('Core IO Simple', function () {
+    describe('Core IO Simple', function () {
       it('should know type from first char of Word', function (done) {
         assert.strict.equal(coreIOUnderTest.getDataTypeFromFirstCharType('w'), 'Word')
         done()
@@ -56,15 +57,41 @@ describe ('Core IO Testing', function () {
         assert.strict.equal(coreIOUnderTest.getDataTypeFromFirstCharType('u'), 'Unsigned Integer')
         done()
       })
+      it('should build message with IO when useIOFile and lastUpdatedAt are set', function (done) {
+        let node = {
+          bufferMessageList: [], useIOFile: true,
+          ioFile: { lastUpdatedAt: Date.now() },
+          useIOForPayload: true,
+          logIOActivities: true
+        };
+        let values = [1, 2, 3];
+        const response = [4, 5, 6];
+        const msg = { payload: { address: 1, fc: 3, quantity: 2 }, topic: 'test' };
+        const allValueNames = coreIOUnderTest.nameValuesFromIOFile(node, msg, values, response, parseInt(msg.payload.address) || 0);
+
+        const valueNames = coreIOUnderTest.filterValueNames(node, allValueNames, parseInt(msg.payload.fc) || 3, parseInt(msg.payload.address) || 0, parseInt(msg.payload.quantity) || 1, node.logIOActivities);
+
+        const getOriginalMessageStub = sinon.stub(coreIOUnderTest.core, 'getOriginalMessage').returns({ modbusRequest: {} });
+        const [origMsg, rawMsg] = coreIOUnderTest.buildMessageWithIO(node, values, response, msg);
+        sinon.assert.calledWith(getOriginalMessageStub, node.bufferMessageList, msg);
+        sinon.assert.match(origMsg.payload, valueNames);
+        sinon.assert.match(origMsg.values, values);
+        node.useIOForPayload = false
+        values = [];
+        coreIOUnderTest.buildMessageWithIO(node, values, response, msg);
+        sinon.assert.calledWith(getOriginalMessageStub, node.bufferMessageList, msg);
+        done()
+      })
+
     })
 
-    describe ('Core IO File', function () {
+    describe('Core IO File', function () {
       it('should ...', function (done) {
         done()
       })
     })
 
-    describe ('Core IO Mapping', function () {
+    describe('Core IO Mapping', function () {
       it('should do mapping of ...', function (done) {
         done()
       })
