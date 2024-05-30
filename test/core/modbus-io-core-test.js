@@ -195,34 +195,53 @@ describe('Core IO Testing', function () {
           type: 'output'
         });
       });
-        it('should handle unsigned integer type correctly', () => {
-          const mapping = {
-            name: 'unsignedIntRegister',
-            valueAddress: 'UR123'
-          };
-          const offset = 0;
-          const readingOffset = 0;
-          const logging = true;
-      
-          const result = coreIOUnderTest.buildOutputAddressMapping('unsignedIntRegister', mapping, offset, readingOffset, logging);
-      
-          expect(result).to.deep.equal({
-            register: 'unsignedIntRegister',
-            name: 'unsignedIntRegister',
-            addressStart: 23,
-            addressOffset: 1,
-            addressOffsetIO: 0,
-            addressStartIO: 23,
-            registerAddress: 23,
-            coilStart: 0,
-            bitAddress: null,
-            Bit: 0,
-            bits: 16,
-            dataType: 'Unsigned Integer',
-            type: 'output'
-          });
+      it('should handle unsigned integer type correctly', () => {
+        const mapping = {
+          name: 'unsignedIntRegister',
+          valueAddress: 'UR123'
+        };
+        const offset = 0;
+        const readingOffset = 0;
+        const logging = true;
+
+        const result = coreIOUnderTest.buildOutputAddressMapping('unsignedIntRegister', mapping, offset, readingOffset, logging);
+
+        expect(result).to.deep.equal({
+          register: 'unsignedIntRegister',
+          name: 'unsignedIntRegister',
+          addressStart: 23,
+          addressOffset: 1,
+          addressOffsetIO: 0,
+          addressStartIO: 23,
+          registerAddress: 23,
+          coilStart: 0,
+          bitAddress: null,
+          Bit: 0,
+          bits: 16,
+          dataType: 'Unsigned Integer',
+          type: 'output'
         });
-      
+      });
+      it('should return item with wrong bufferOffset (negative)', () => {
+        const buffer = Buffer.from([0x00, 0x01]);
+        const item = { dataType: 'Integer', bits: '16', registerAddress: 0 };
+        const result = coreIOUnderTest.getValueFromBufferByDataType(item, -1, buffer, true);
+        expect(result).to.deep.equal(item);
+      });
+      it('should return item with wrong bufferOffset (greater than buffer length)', () => {
+        const buffer = Buffer.from([0x00, 0x01]);
+        const item = { dataType: 'Integer', bits: '16', registerAddress: 0 };
+        const result = coreIOUnderTest.getValueFromBufferByDataType(item, buffer.length + 1, buffer, true);
+        expect(result).to.deep.equal(item);
+      });
+
+      it('should process valid bufferOffset correctly', () => {
+        const buffer = Buffer.from([0x00, 0x01]);
+        const item = { dataType: 'Integer', bits: '16', registerAddress: 0 };
+        const result = coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, true);
+        expect(result.value).to.equal(1);
+      });
+
       it('should correctly map word type input addresses', () => {
         const mapping = { name: 'wTest', valueAddress: '%IW100' };
         const offset = 10;
