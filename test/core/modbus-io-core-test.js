@@ -307,7 +307,81 @@ describe('Core IO Testing', function () {
           type: 'input'
         });
       });
-
+      it('should correctly map 32-bit integer data type', () => {
+        const registerName = 'MB-INPUTS';
+        const mapping = { name: 'integerTest', valueAddress: '%IW300' };
+        const offset = 0;
+        const readingOffset = 0;
+        const logging = false;
+    
+        const result = coreIOUnderTest.buildInputAddressMapping(registerName, mapping, offset, readingOffset, logging);
+    
+        expect(result).to.deep.equal({
+          register: registerName,
+          name: mapping.name,
+          addressStart: 300,
+          addressOffset: 1,
+          addressOffsetIO: 0,
+          addressStartIO: 300,
+          registerAddress: 300,
+          coilStart: 0,
+          bitAddress: null,
+          Bit: 0,
+          bits: 16,
+          dataType: 'Integer',
+          type: 'input'
+        });
+      });
+      it('should correctly map long data type', () => {
+        const registerName = 'MB-INPUTS';
+        const mapping = { name: 'longTest', valueAddress: '%QXL200' };
+        const offset = 0;
+        const readingOffset = 0;
+        const logging = false;
+    
+        const result = coreIOUnderTest.buildInputAddressMapping(registerName, mapping, offset, readingOffset, logging);
+    
+        expect(result).to.deep.equal({
+          register: registerName,
+          name: mapping.name,
+          addressStart: NaN,
+          addressOffset: 5,
+          addressOffsetIO: 0,
+          addressStartIO: NaN,
+          registerAddress: NaN,
+          coilStart: 0,
+          bitAddress: null,
+          Bit: 0,
+          bits: 80,
+          dataType: 'Long',
+          type: 'input'
+        });
+      });
+      it('should correctly map float data type', () => {
+        const registerName = 'MB-OUTPUTS';
+        const mapping = { name: 'floatTest', valueAddress: '%QRF200' };
+        const offset = 0;
+        const readingOffset = 0;
+        const logging = false;
+    
+        const result = coreIOUnderTest.buildOutputAddressMapping(registerName, mapping, offset, readingOffset, logging);
+    
+        expect(result).to.deep.equal({
+          register: registerName,
+          name: mapping.name,
+          addressStart: NaN,
+          addressOffset: 2,
+          addressOffsetIO: 0,
+          addressStartIO: NaN,
+          registerAddress: NaN,
+          coilStart: 0,
+          bitAddress: null,
+          Bit: 0,
+          bits: 32,
+          dataType: 'Float',
+          type: 'output'
+        });
+      });
     })
 
     describe('Core IO File', function () {
