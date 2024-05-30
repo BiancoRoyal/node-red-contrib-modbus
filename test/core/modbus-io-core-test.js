@@ -142,8 +142,13 @@ describe('Core IO Testing', function () {
         expect(result.value).to.deep.equal(0x12);
       });
 
-      const assert = require('assert');
-
+      it('should read 32-bit integer value for Integer data type', () => {
+        const buffer = Buffer.from([0x00, 0x00, 0x01, 0x00]);
+        const item = { dataType: 'Integer', bits: '32', registerAddress: 0 };
+        const result = coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, false);
+        expect(result.value).to.equal(256);
+      });
+    
       it('should correctly set item.value for bits equal to 80', () => {
         const valueNames = [
           { registerAddress: 0, bits: 80 },
@@ -235,11 +240,11 @@ describe('Core IO Testing', function () {
         expect(result).to.deep.equal(item);
       });
 
-      it('should process valid bufferOffset correctly', () => {
-        const buffer = Buffer.from([0x00, 0x01]);
-        const item = { dataType: 'Integer', bits: '16', registerAddress: 0 };
-        const result = coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, true);
-        expect(result.value).to.equal(1);
+      it('should read 8-bit negative integer value for Integer data type', () => {
+        const buffer = Buffer.from([0xFF]); // -1 in decimal (two's complement)
+        const item = { dataType: 'Integer', bits: '8', registerAddress: 0 };
+        const result = coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, false);
+        expect(result.value).to.equal(-1); // 0xFF as signed 8-bit integer is -1
       });
 
       it('should correctly map word type input addresses', () => {
