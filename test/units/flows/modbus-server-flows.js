@@ -4,14 +4,6 @@ module.exports = {
 
   "testSimpleNodeShouldBeLoadedFlow": helperExtensions.cleanFlowPositionData([
     {
-      "id": "284e074e58afd989",
-      "type": "tab",
-      "label": "Should Be Loaded",
-      "disabled": false,
-      "info": "",
-      "env": []
-    },
-    {
       "id": "178284ea.5055ab",
       "type": "modbus-server",
       "z": "284e074e58afd989",

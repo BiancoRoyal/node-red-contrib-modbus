@@ -85,19 +85,20 @@ describe('Flex Connector node Testing', function () {
                 sinon.assert.calledOnce(onInputCallback);
             });
         });
-        // it('should set payload to empty string and send message when emptyMsgOnFail is true', () => {
-        //     helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, async () => {
-        //         let modbusFlexNode = helper.getNode('a39e174edce1a54b');
-        //         modbusFlexNode.emptyMsgOnFail = true;
-        //         const msg = { payload: 'originalPayload' };
+        it('should set payload to empty string and send message when emptyMsgOnFail is true', function (done) {
+            helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
+                let modbusFlexNode = helper.getNode('a39e174edce1a54b');
+                modbusFlexNode.emptyMsgOnFail = true;
+                const msg = { payload: 'originalPayload' };
 
-        //         modbusFlexNode.onConfigDone = sinon.stub();
+                modbusFlexNode.onConfigDone = sinon.stub();
 
-        //         expect(msg.payload).to.equal('');
-        //         sinon.assert.calledOnce(sendSpy);
-        //         sinon.assert.calledWith(sendSpy, msg);
-        //     });
-        // })
+                expect(msg.payload).to.equal('');
+                sinon.assert.calledOnce(sendSpy);
+                sinon.assert.calledWith(sendSpy, msg);
+                done()
+            });
+        })
 
     })
 
