@@ -126,6 +126,43 @@ describe('Core IO Testing', function () {
         done()
 
       });
+      it('should read 80-bit long value for Long data type', () => {
+        const buffer = Buffer.from([0x40, 0x59, 0x0C, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCD]);
+        const item = { dataType: 'Long', bits: '80', registerAddress: 0 };
+        const result = coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, false);
+        expect(result.value).to.equal(100.19999999999999); 
+      });
+    
+      it('should read 8-bit unsigned integer value for default data type', () => {
+        const buffer = Buffer.from([0x7F]);
+        const item = { dataType: 'Unknown', bits: '8', registerAddress: 0 };
+        const result = coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, false);
+        expect(result.value).to.equal(127); 
+      });
+    
+      it('should read 32-bit unsigned integer value for default data type', () => {
+        const buffer = Buffer.from([0x00, 0x00, 0x01, 0x00]);
+        const item = { dataType: 'Unknown', bits: '32', registerAddress: 0 };
+        const result = coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, false);
+        expect(result.value).to.equal(256); 
+      });
+    
+      it('should read 16-bit unsigned integer value for default data type', () => {
+        const buffer = Buffer.from([0x00, 0x01]);
+        const item = { dataType: 'Unknown', bits: '16', registerAddress: 0 };
+        const result = coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, false);
+        expect(result.value).to.equal(1);
+        expect(result.convertedValue).to.be.false;
+      });
+    
+      it('should read 16-bit unsigned integer value for default data type', () => {
+        const buffer = Buffer.from([0x00, 0x01]);
+        const item = { dataType: 'Unknown', bits: '16', registerAddress: 0 };
+        const result = coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, false);
+        expect(result.value).to.equal(1); 
+        expect(result.convertedValue).to.be.false;
+      });
+
       it('should set item.value correctly for dataType "Word" and bits other than "8"', () => {
         const buffer = Buffer.from([0x12, 0x34]);
         const item = { dataType: 'Word', bits: '16', registerAddress: 0 };
@@ -241,10 +278,10 @@ describe('Core IO Testing', function () {
       });
 
       it('should read 8-bit negative integer value for Integer data type', () => {
-        const buffer = Buffer.from([0xFF]); // -1 in decimal (two's complement)
+        const buffer = Buffer.from([0xFF]); 
         const item = { dataType: 'Integer', bits: '8', registerAddress: 0 };
         const result = coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, false);
-        expect(result.value).to.equal(-1); // 0xFF as signed 8-bit integer is -1
+        expect(result.value).to.equal(-1); 
       });
 
       it('should correctly map word type input addresses', () => {
