@@ -126,6 +126,21 @@ describe('Core IO Testing', function () {
         done()
 
       });
+      it('should set item.value correctly for dataType "Word" and bits other than "8"', () => {
+        const buffer = Buffer.from([0x12, 0x34]);
+              const item = { dataType: 'Word', bits: '16', registerAddress: 0 };
+      
+        const result = coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, false);
+      
+        expect(result.value).to.deep.equal(0x1234);
+      });
+      
+    it('should correctly read 8-bit Word values from buffer', () => {
+      const buffer = Buffer.from([0x12, 0x34]); 
+      const item = { dataType: 'Word', bits: '8', registerAddress: 0 };
+      const result =coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, false);
+      expect(result.value).to.deep.equal(0x12);
+    });
 
     })
 
