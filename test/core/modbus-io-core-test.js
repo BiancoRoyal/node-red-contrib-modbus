@@ -195,7 +195,34 @@ describe('Core IO Testing', function () {
           type: 'output'
         });
       });
-
+        it('should handle unsigned integer type correctly', () => {
+          const mapping = {
+            name: 'unsignedIntRegister',
+            valueAddress: 'UR123'
+          };
+          const offset = 0;
+          const readingOffset = 0;
+          const logging = true;
+      
+          const result = coreIOUnderTest.buildOutputAddressMapping('unsignedIntRegister', mapping, offset, readingOffset, logging);
+      
+          expect(result).to.deep.equal({
+            register: 'unsignedIntRegister',
+            name: 'unsignedIntRegister',
+            addressStart: 23,
+            addressOffset: 1,
+            addressOffsetIO: 0,
+            addressStartIO: 23,
+            registerAddress: 23,
+            coilStart: 0,
+            bitAddress: null,
+            Bit: 0,
+            bits: 16,
+            dataType: 'Unsigned Integer',
+            type: 'output'
+          });
+        });
+      
       it('should correctly map word type input addresses', () => {
         const mapping = { name: 'wTest', valueAddress: '%IW100' };
         const offset = 10;
