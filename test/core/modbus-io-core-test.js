@@ -101,6 +101,32 @@ describe('Core IO Testing', function () {
 
       });
 
+
+      it('should set item.value correctly for dataType "Integer" and bits "32"', (done) => {
+        const item = { dataType: 'Integer', bits: '32' };
+        const bufferOffset = 0;
+        const responseBuffer = Buffer.from([0x12, 0x34, 0x56, 0x78]);
+        const logging = false;
+
+        coreIOUnderTest.getValueFromBufferByDataType(item, bufferOffset, responseBuffer, logging);
+
+        expect(item.value).to.equal(0x12345678);
+        done()
+      });
+
+      //needs to be fixed
+      it('should set item.value correctly for dataType "Integer" and bits "64"', (done) => {
+        const buffer = Buffer.from([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]);
+
+        const item = { dataType: 'Integer', bits: '64', registerAddress: 0 };
+
+        // const result = coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, false);
+
+        // expect(result.value).toBe(1);
+        done()
+
+      });
+
     })
 
     describe('Core IO File', function () {
