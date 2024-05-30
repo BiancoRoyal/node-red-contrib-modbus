@@ -531,7 +531,13 @@ it('should correctly write to memory when register type is "holding"', () => {
   node = {
     modbusServer: {
       discrete: {
-        writeUInt8: sinon.spy()
+        writeUInt8: sinon.spy(),
+      },
+      holding:{
+        writeUInt16BE:sinon.spy()
+      },
+      coils:{
+        writeUInt8:sinon.spy()
       }
     }
   };
@@ -545,6 +551,25 @@ it('should correctly write to memory when register type is "holding"', () => {
   };
   coreServerUnderTest.writeToModbusBuffer(node, msg); 
   sinon.assert.calledWith(node.modbusServer.discrete.writeUInt8, 255, 2);
+  msg = {
+    payload: {
+      register: 'holding'
+    },
+    bufferPayload: 10,
+    bufferAddress: 0
+  };
+  coreServerUnderTest.writeToModbusBuffer(node, msg); 
+  sinon.assert.calledWith(node.modbusServer.holding.writeUInt16BE,10, 0);
+  msg = {
+    payload: {
+      register: 'coils'
+    },
+    bufferPayload: Buffer.from([0x01]),
+    bufferAddress: 0
+  };
+  coreServerUnderTest.writeToModbusBuffer(node, msg); 
+
+  sinon.assert.calledWith(node.modbusServer.coils.writeUInt8,1, 0);
 });
 
 
