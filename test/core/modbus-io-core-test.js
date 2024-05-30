@@ -128,20 +128,46 @@ describe('Core IO Testing', function () {
       });
       it('should set item.value correctly for dataType "Word" and bits other than "8"', () => {
         const buffer = Buffer.from([0x12, 0x34]);
-              const item = { dataType: 'Word', bits: '16', registerAddress: 0 };
-      
+        const item = { dataType: 'Word', bits: '16', registerAddress: 0 };
+
         const result = coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, false);
-      
+
         expect(result.value).to.deep.equal(0x1234);
       });
-      
-    it('should correctly read 8-bit Word values from buffer', () => {
-      const buffer = Buffer.from([0x12, 0x34]); 
-      const item = { dataType: 'Word', bits: '8', registerAddress: 0 };
-      const result =coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, false);
-      expect(result.value).to.deep.equal(0x12);
-    });
 
+      it('should correctly read 8-bit Word values from buffer', () => {
+        const buffer = Buffer.from([0x12, 0x34]);
+        const item = { dataType: 'Word', bits: '8', registerAddress: 0 };
+        const result = coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, false);
+        expect(result.value).to.deep.equal(0x12);
+      });
+
+      const assert = require('assert');
+
+      it('should correctly set item.value for bits equal to 80', () => {
+        const valueNames = [
+          { registerAddress: 0, bits: 80 },
+        ];
+        const register = [0x12, 0x34, 0x56, 0x78, 0x9A];
+        const logging = true;
+        const result = coreIOUnderTest.insertValues(valueNames, register, logging);
+        const expectedValue = Number(result[0].value);
+        assert.strictEqual(expectedValue, 8126686);
+      });
+      it('should set item.value to null for unknown bits size', () => {
+        const valueNames = [
+          { registerAddress: 0, bits: '12' },
+          { registerAddress: 1, bits: '24' },
+        ];
+        const register = [1, 2, 3];
+        const logging = false;
+
+        const result = coreIOUnderTest.insertValues(valueNames, register, logging);
+
+        expect(result[0].value).to.deep.equal(null);
+        expect(result[1].value).to.deep.equal(null);
+
+      })
     })
 
     describe('Core IO File', function () {
