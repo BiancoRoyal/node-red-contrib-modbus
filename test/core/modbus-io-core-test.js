@@ -168,13 +168,41 @@ describe('Core IO Testing', function () {
         expect(result[1].value).to.deep.equal(null);
 
       });
+      it('should handle long type correctly', () => {
+        const mapping = {
+          name: 'longRegister',
+          valueAddress: 'HR12345'
+        };
+        const offset = 0;
+        const readingOffset = 0;
+        const logging = true;
+
+        const result = coreIOUnderTest.buildOutputAddressMapping('longRegister', mapping, offset, readingOffset, logging);
+
+        expect(result).to.deep.equal({
+          register: 'longRegister',
+          name: 'longRegister',
+          addressStart: 2345,
+          addressOffset: 5,
+          addressOffsetIO: 0,
+          addressStartIO: 2345,
+          registerAddress: 2345,
+          coilStart: 0,
+          bitAddress: null,
+          Bit: 0,
+          bits: 80,
+          dataType: 'Long',
+          type: 'output'
+        });
+      });
+
       it('should correctly map word type input addresses', () => {
         const mapping = { name: 'wTest', valueAddress: '%IW100' };
         const offset = 10;
         const readingOffset = 5;
         const logging = false;
         const result = coreIOUnderTest.buildInputAddressMapping('MB-INPUTS', mapping, offset, readingOffset, logging);
-    
+
         expect(result).to.deep.equal({
           register: 'MB-INPUTS',
           name: 'wTest',
@@ -191,7 +219,7 @@ describe('Core IO Testing', function () {
           type: 'input'
         });
       });
-  
+
     })
 
     describe('Core IO File', function () {
