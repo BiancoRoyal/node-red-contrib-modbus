@@ -62,7 +62,7 @@ describe('Flex Connector node Testing', function () {
         })
         it('should trigger dynamic reconnection when valid connector type is provided', () => {
             helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, async () => {
-                const modbusFlexNode = helper.getNode('eeef27e90296ce6b');
+                const modbusFlexNode = helper.getNode('a39e174edce1a54b');
 
                 const msg = { payload: { connectorType: 'validType' } };
                 const onInputCallback = sinon.spy();

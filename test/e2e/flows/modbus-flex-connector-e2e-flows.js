@@ -6,27 +6,27 @@ module.exports = {
     "testShouldBeLoadedFlow": helperExtensions.cleanFlowPositionData(
         [
             {
-                "id": "eeef27e90296ce6b",
+                "id": "a39e174edce1a54b",
                 "type": "modbus-flex-connector",
-                "z": "440d3c0aa1f20a63",
-                "name": "FlexConnector",
+                "z": "94b3ae6e28cbb7e3",
+                "name": "modbus flex connector",
                 "maxReconnectsPerMinute": 4,
                 "emptyQueue": false,
-                "showStatusActivities": true,
-                "showErrors": true,
+                "showStatusActivities": false,
+                "showErrors": false,
                 "server": "a477577e.9e0bc",
-                "x": 550,
-                "y": 200,
+                "x": 650,
+                "y": 420,
                 "wires": [
                     [
-                        "9a8b80ec35507158"
+                        "ac5a2e2afa548a79"
                     ]
                 ]
             },
             {
-                "id": "0cefac770588a086",
+                "id": "96ba2fdb64280034",
                 "type": "inject",
-                "z": "440d3c0aa1f20a63",
+                "z": "94b3ae6e28cbb7e3",
                 "name": "",
                 "props": [
                     {
@@ -42,41 +42,24 @@ module.exports = {
                 "once": false,
                 "onceDelay": 0.1,
                 "topic": "",
-                "payload": "{   \"connectorType\": \"TCP\",   \"tcpHost\": \"127.0.0.1\",   \"tcpPort\": \"10512\" }",
+                "payload": "{     \"connectorType\": \"TCP\",     \"tcpHost\": \"127.0.0.1\",     \"tcpPort\": \"12512\" }",
                 "payloadType": "json",
-                "x": 310,
-                "y": 140,
+                "x": 410,
+                "y": 400,
                 "wires": [
                     [
-                        "eeef27e90296ce6b"
+                        "a39e174edce1a54b"
                     ]
-                ],
-                "l": false
+                ]
             },
             {
-                "id": "9a8b80ec35507158",
-                "type": "helper",
-                "z": "440d3c0aa1f20a63",
-                "name": "helper 15",
-                "active": true,
-                "tosidebar": true,
-                "console": false,
-                "tostatus": false,
-                "complete": "false",
-                "statusVal": "",
-                "statusType": "auto",
-                "x": 820,
-                "y": 200,
-                "wires": []
-            },
-            {
-                "id": "326135b2c28a74bf",
+                "id": "34eef8f58d93edd4",
                 "type": "modbus-server",
-                "z": "440d3c0aa1f20a63",
-                "name": "",
+                "z": "94b3ae6e28cbb7e3",
+                "name": "modbus server node",
                 "logEnabled": false,
                 "hostname": "0.0.0.0",
-                "serverPort": "10512",
+                "serverPort": 10502,
                 "responseDelay": 100,
                 "delayUnit": "ms",
                 "coilsBufferSize": 10000,
@@ -84,16 +67,31 @@ module.exports = {
                 "inputBufferSize": 10000,
                 "discreteBufferSize": 10000,
                 "showErrors": false,
-                "x": 595,
-                "y": 80,
+                "x": 700,
+                "y": 240,
                 "wires": [
                     [],
                     [],
                     [],
                     [],
                     []
-                ],
-                "l": false
+                ]
+            },
+            {
+                "id": "ac5a2e2afa548a79",
+                "type": "helper",
+                "z": "94b3ae6e28cbb7e3",
+                "name": "helper 16",
+                "active": true,
+                "tosidebar": true,
+                "console": false,
+                "tostatus": false,
+                "complete": "false",
+                "statusVal": "",
+                "statusType": "auto",
+                "x": 1060,
+                "y": 400,
+                "wires": []
             },
             {
                 "id": "a477577e.9e0bc",
@@ -115,11 +113,11 @@ module.exports = {
                 "serialParity": "none",
                 "serialConnectionDelay": "100",
                 "serialAsciiResponseStartDelimiter": "",
-                "unit_id": 1,
-                "commandDelay": 1,
-                "clientTimeout": 1000,
+                "unit_id": "1",
+                "commandDelay": "1",
+                "clientTimeout": "1000",
                 "reconnectOnTimeout": true,
-                "reconnectTimeout": 2000,
+                "reconnectTimeout": "2000",
                 "parallelUnitIdsAllowed": true,
                 "showErrors": false,
                 "showWarnings": true,
