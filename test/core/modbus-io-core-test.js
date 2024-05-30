@@ -13,6 +13,7 @@
 const assert = require('assert')
 const coreIOUnderTest = require('../../src/core/modbus-io-core')
 const sinon = require('sinon')
+const expect = require("chai").expect;
 
 describe('Core IO Testing', function () {
   describe('Core IO', function () {
@@ -82,6 +83,23 @@ describe('Core IO Testing', function () {
         sinon.assert.calledWith(getOriginalMessageStub, node.bufferMessageList, msg);
         done()
       })
+      it('should handle non-Buffer responseBuffer gracefully', () => {
+        const valueNames = [{ dataType: 'int16', registerAddress: 0, bits: 16 }];
+        const register = [0];
+        let responseBuffer = { buffer: {} };
+        const logging = false;
+        const internalDebugSpy = sinon.spy(coreIOUnderTest, 'internalDebug');
+
+        coreIOUnderTest.convertValuesByType(valueNames, register, responseBuffer, logging);
+
+        expect(internalDebugSpy.calledWith('Response Buffer Is Not A Buffer')).to.be.false;
+
+        internalDebugSpy.restore();
+        responseBuffer = {};
+        expect(internalDebugSpy.calledWith('Response Buffer Is Not A Buffer')).to.be.false;
+        internalDebugSpy.restore();
+
+      });
 
     })
 
