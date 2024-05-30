@@ -2,7 +2,6 @@
 const helperExtensions = require('../../helper/test-helper-extensions')
 
 module.exports = {
-
     "testShouldBeLoadedFlow": helperExtensions.cleanFlowPositionData(
         [
             {

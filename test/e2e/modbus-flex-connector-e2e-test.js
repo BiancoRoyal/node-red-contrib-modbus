@@ -12,16 +12,18 @@
 
 const nodeUnderTest = require('../../src/modbus-flex-connector.js')
 const serverNode = require('../../src/modbus-server.js')
-const nodeClient = require('../../src/modbus-client.js')
+const clientNode = require('../../src/modbus-client.js')
 const injectNode = require('@node-red/nodes/core/common/20-inject.js')
 const sinon = require('sinon')
-const testFlexConnectorNodes = [nodeUnderTest, serverNode, nodeClient, injectNode]
 const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
 const testFlows = require('./flows/modbus-flex-connector-e2e-flows.js')
-const mbBasics = require('../../src/modbus-basics')
 const _ = require('underscore')
+
+
+const testFlexConnectorNodes = [nodeUnderTest, serverNode, clientNode, injectNode]
+
 
 describe('Flex Connector node Testing', function () {
     before(function (done) {
@@ -83,6 +85,20 @@ describe('Flex Connector node Testing', function () {
                 sinon.assert.calledOnce(onInputCallback);
             });
         });
+        // it('should set payload to empty string and send message when emptyMsgOnFail is true', () => {
+        //     helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, async () => {
+        //         let modbusFlexNode = helper.getNode('a39e174edce1a54b');
+        //         modbusFlexNode.emptyMsgOnFail = true;
+        //         const msg = { payload: 'originalPayload' };
+
+        //         modbusFlexNode.onConfigDone = sinon.stub();
+
+        //         expect(msg.payload).to.equal('');
+        //         sinon.assert.calledOnce(sendSpy);
+        //         sinon.assert.calledWith(sendSpy, msg);
+        //     });
+        // })
+
     })
 
     describe('post', function () {
