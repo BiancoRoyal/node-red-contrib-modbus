@@ -307,31 +307,7 @@ describe('Core IO Testing', function () {
           type: 'input'
         });
       });
-      it('should correctly map 32-bit integer data type', () => {
-        const registerName = 'MB-INPUTS';
-        const mapping = { name: 'integerTest', valueAddress: '%IW300' };
-        const offset = 0;
-        const readingOffset = 0;
-        const logging = false;
-    
-        const result = coreIOUnderTest.buildInputAddressMapping(registerName, mapping, offset, readingOffset, logging);
-    
-        expect(result).to.deep.equal({
-          register: registerName,
-          name: mapping.name,
-          addressStart: 300,
-          addressOffset: 1,
-          addressOffsetIO: 0,
-          addressStartIO: 300,
-          registerAddress: 300,
-          coilStart: 0,
-          bitAddress: null,
-          Bit: 0,
-          bits: 16,
-          dataType: 'Integer',
-          type: 'input'
-        });
-      });
+      
       it('should correctly map long data type', () => {
         const registerName = 'MB-INPUTS';
         const mapping = { name: 'longTest', valueAddress: '%QXL200' };
@@ -357,6 +333,47 @@ describe('Core IO Testing', function () {
           type: 'input'
         });
       });
+
+      // to be fixed
+      it('should correctly read 64-bit unsigned integer value', () => {
+        const buffer = Buffer.alloc(8);
+        buffer.writeUInt8(0x01, 0); 
+        const item = { dataType: 'Integer', bits: '64', registerAddress: 0 };
+        const bufferOffset = 0;
+        const logging = false;
+      
+        const result =coreIOUnderTest.getValueFromBufferByDataType(item, bufferOffset, buffer, logging);
+      
+        expect(result.value).to.equal(1); 
+      });
+      
+      
+        it('should correctly map 32-bit integer data type when not a W register type', () => {
+          const registerName = 'MB-INPUTS';
+          const mapping = { name: 'integerTest', valueAddress: '%IQ400' };
+          const offset = 0;
+          const readingOffset = 0;
+          const logging = false;
+      
+          const result = coreIOUnderTest.buildInputAddressMapping(registerName, mapping, offset, readingOffset, logging);
+      
+          expect(result).to.deep.equal({
+            register: registerName,
+            name: mapping.name,
+            addressStart: 400,
+            addressOffset: 2,
+            addressOffsetIO: 0,
+            addressStartIO: 400,
+            registerAddress: 400,
+            coilStart: 0,
+            bitAddress: null,
+            Bit: 0,
+            bits: 32,
+            dataType: 'Integer',
+            type: 'input'
+          });
+        });
+            
       it('should correctly map float data type', () => {
         const registerName = 'MB-OUTPUTS';
         const mapping = { name: 'floatTest', valueAddress: '%QRF200' };
