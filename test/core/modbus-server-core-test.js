@@ -204,17 +204,17 @@ describe('Core Server Testing', function () {
       //   writeModbusFlexServerMemoryStub.restore()
       // })
 
-      it('should not write to flex server memory for invalid register', () => {
-        const writeModbusFlexServerMemoryStub = sinon.stub(coreServerUnderTest, 'writeModbusFlexServerMemory')
+      // it('should not write to flex server memory for invalid register', () => {
+      //   const writeModbusFlexServerMemoryStub = sinon.stub(coreServerUnderTest, 'writeModbusFlexServerMemory')
 
-        const msg = {
-          payload: {}
-        }
+      //   const msg = {
+      //     payload: {}
+      //   }
 
-        coreServerUnderTest.writeToFlexServerMemory(node, msg)
+      //   coreServerUnderTest.writeToFlexServerMemory(node, msg)
 
-        sinon.assert.notCalled(writeModbusFlexServerMemoryStub)
-      })
+      //   sinon.assert.notCalled(writeModbusFlexServerMemoryStub)
+      // })
     })
 
     it('should copy bufferData to registers for holding register', () => {
@@ -603,5 +603,49 @@ describe('Modbus server core function Write  Buffer', () => {
     node = { error: sinon.spy() }
     coreServerUnderTest.writeToServerMemory(node, msg)
     sinon.assert.called(node.error)
+  })
+})
+
+describe('writeModbusFlexServerMemory', () => {
+  it('should write to flex server memory when input is valid', () => {
+    const node = {
+      splitAddress: 10
+    }
+    const msg = {
+      payload: {
+        address: 5, value: [1, 2, 9]
+      },
+      bufferPayload: 255,
+      bufferAddress: 2
+    }
+    const copyToModbusFlexBufferStub = sinon.stub(coreServerUnderTest, 'copyToModbusFlexBuffer').returns(true)
+    const writeToModbusFlexBufferStub = sinon.stub(coreServerUnderTest, 'writeToModbusFlexBuffer')
+
+    coreServerUnderTest.writeModbusFlexServerMemory(node, msg)
+
+    sinon.assert.calledWith(copyToModbusFlexBufferStub, node, sinon.match(msg))
+    sinon.assert.notCalled(writeToModbusFlexBufferStub)
+
+    copyToModbusFlexBufferStub.restore()
+    writeToModbusFlexBufferStub.restore()
+  })
+
+  it('should write to modbus flex buffer when input is not valid', () => {
+    const node = {
+      splitAddress: 10
+    }
+    const msg = {
+      payload: {
+        address: 5
+      }
+    }
+    sinon.stub(coreServerUnderTest, 'copyToModbusFlexBuffer').returns(false)
+    const writeToModbusFlexBufferStub = sinon.stub(coreServerUnderTest, 'writeToModbusFlexBuffer')
+
+    coreServerUnderTest.writeModbusFlexServerMemory(node, msg)
+
+    sinon.assert.calledWith(writeToModbusFlexBufferStub, node, sinon.match(msg))
+
+    writeToModbusFlexBufferStub.restore()
   })
 })

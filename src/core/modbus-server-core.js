@@ -93,8 +93,8 @@ de.biancoroyal.modbus.core.server.writeModbusFlexServerMemory = function (node, 
 
 de.biancoroyal.modbus.core.server.convertInputForBufferWrite = function (msg) {
   let isMultipleWrite = false
-  if (msg.payload.value.length) {
-    msg.bufferPayload = new Uint8Array(msg.payload.value)
+  if (msg.payload.value?.length) {
+    msg.bufferPayload = new Uint8Array(msg.payload?.value)
     msg.bufferData = Buffer.alloc(msg.bufferPayload.buffer.byteLength, msg.bufferPayload)
     isMultipleWrite = true
     msg.wasMultipleWrite = true
