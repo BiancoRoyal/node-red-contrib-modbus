@@ -163,5 +163,13 @@ describe('Modbus Node basics Suite', function () {
       basic.setNodeStatusByResponseTo('waiting', response, node)
       sinon.assert.calledWith(node.status, { fill: 'blue', shape: 'dot', text: '\'waiting ...\'' })
     })
+    it('should return correct properties for "error" status', function () {
+      const status = basic.setNodeStatusProperties({ value: 'error' })
+      assert.deepStrictEqual(status, {
+        fill: 'red',
+        shape: 'ring',
+        status: 'error'
+      })
+    })
   })
 })

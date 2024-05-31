@@ -151,7 +151,7 @@ describe('Response Filter node Testing', function () {
       })
     })
   })
-  // circular dependency error 
+  // circular dependency error
   it('should be state queueing - ready to send', function () {
     helper.load(testResponseFilterNodes, testFlows.testFlowForE2E, function () {
       const modbusClientNode = helper.getNode('542529cd4e4e8a14')
