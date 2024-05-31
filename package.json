@@ -132,6 +132,12 @@
   },
   "standard": {
     "env": ["mocha"],
+    "globals": [
+      "chai",
+      "expect",
+      "should",
+      "assert"
+    ],
     "ignore": [
       "code/",
       "node_modules/",

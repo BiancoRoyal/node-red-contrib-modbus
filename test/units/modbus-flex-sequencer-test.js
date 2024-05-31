@@ -25,6 +25,7 @@ const mBasics = require('../../src/modbus-basics')
 const _ = require('underscore')
 
 const chai = require('chai')
+const sinon = require('sinon')
 const expect = chai.expect
 
 describe('Flex Sequencer node Testing', function () {
