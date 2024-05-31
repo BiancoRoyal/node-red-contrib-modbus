@@ -99,7 +99,7 @@ de.biancoroyal.modbus.core.server.convertInputForBufferWrite = function (msg) {
     isMultipleWrite = true
     msg.wasMultipleWrite = true
   } else {
-    msg.bufferPayload = parseInt(msg.payload.value)
+    msg.bufferPayload = Number(msg.payload.value)
     msg.wasMultipleWrite = false
   }
 

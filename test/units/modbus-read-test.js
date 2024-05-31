@@ -106,7 +106,7 @@ describe('Read node Testing', function () {
       helper.load(testReadNodes, testFlows.testReadWithClientIoFlow, function () {
         const h1 = helper.getNode('h1')
         let countMsg = 0
-        h1.on('input', function (msg) {
+        h1.on('input', function () {
           countMsg++
           if (countMsg === 4) {
             done()
@@ -121,7 +121,7 @@ describe('Read node Testing', function () {
       helper.load(testReadNodes, testFlows.testReadWithClientIoPayloadFlow, function () {
         const h1 = helper.getNode('h1')
         let countMsg = 0
-        h1.on('input', function (msg) {
+        h1.on('input', function () {
           countMsg++
           if (countMsg === 4) {
             done()
@@ -137,10 +137,10 @@ describe('Read node Testing', function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         setTimeout(() => {
           mBasics.setNodeStatusTo('queueing', modbusClientNode)
-          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.true
           done()
-        } , 1500)
+        }, 1500)
       })
     })
 
@@ -149,70 +149,71 @@ describe('Read node Testing', function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         setTimeout(() => {
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
-          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.false
           done()
-        } , 1500)
+        }, 1500)
       })
     })
 
-    it('the read node should log a warning when it receives an error with onModbusError', function(done) {
+    it('the read node should log a warning when it receives an error with onModbusError', function (done) {
       helper.load(testReadNodes, testFlows.testReadWithClientFlow, function () {
         const readNode = helper.getNode('09846c74de630616')
-        readNode.showErrors = true;
-        let mock_message = "";
-        readNode.warn = function(message) { mock_message = message; }
-
-        readNode.onModbusError("Failure test message!")
-        mock_message.should.equal("Failure test message!")
-        done()
-      })
-    })
-    it('the read node can log with node.warn when node.verboseLogging and node.showErrors are true', function(done) {
-      helper.load(testReadNodes, testFlows.testReadWithClientFlow, function () {
-        const readNode = helper.getNode('09846c74de630616')
-        readNode.verboseLogging = true
         readNode.showErrors = true
-        let mock_message = ""
-        readNode.warn = function(message) { mock_message = message }
+        let mock_message = ''
+        readNode.warn = function (message) { mock_message = message }
 
-        readNode.onModbusError("Failure test message!")
-        mock_message.should.equal("Failure test message!")
+        readNode.onModbusError('Failure test message!')
+        mock_message.should.equal('Failure test message!')
         done()
       })
     })
 
-    it('onModbusReadError should call errorProtcolMessage and log a message when node.showError is true', function(done) {
+    it('the read node can log with node.warn when node.verboseLogging and node.showErrors are true', function (done) {
       helper.load(testReadNodes, testFlows.testReadWithClientFlow, function () {
         const readNode = helper.getNode('09846c74de630616')
         readNode.verboseLogging = true
         readNode.showErrors = true
-        let mock_message_output = "";
-        readNode.errorProtocolMsg = function(err, msg) {
-          if(readNode.showErrors) {
+        let mock_message = ''
+        readNode.warn = function (message) { mock_message = message }
+
+        readNode.onModbusError('Failure test message!')
+        mock_message.should.equal('Failure test message!')
+        done()
+      })
+    })
+
+    it('onModbusReadError should call errorProtcolMessage and log a message when node.showError is true', function (done) {
+      helper.load(testReadNodes, testFlows.testReadWithClientFlow, function () {
+        const readNode = helper.getNode('09846c74de630616')
+        readNode.verboseLogging = true
+        readNode.showErrors = true
+        let mock_message_output = ''
+        readNode.errorProtocolMsg = function (err, msg) {
+          if (readNode.showErrors) {
             mock_message_output = msg
           }
         }
 
-        readNode.onModbusReadError({}, "This should be logged in our mock errorProtocol")
-        mock_message_output.should.equal("This should be logged in our mock errorProtocol")
+        readNode.onModbusReadError({}, 'This should be logged in our mock errorProtocol')
+        mock_message_output.should.equal('This should be logged in our mock errorProtocol')
         done()
       })
     })
 
-    it('verbosewarn should log a message when the verbosity level and showWarnings are enabled', function(done) {
+    it('verbosewarn should log a message when the verbosity level and showWarnings are enabled', function (done) {
       helper.load(testReadNodes, testFlows.testReadWithClientFlow, function () {
         const readNode = helper.getNode('09846c74de630616')
 
         readNode.verboseLogging = true
         readNode.showWarnings = true
-        readNode.delayTimerReading = true;
+        readNode.delayTimerReading = true
 
-        let mock_message_output = "";
-        readNode.warn = function(message) { mock_message_output = message }
+        let mock_message_output = ''
+        readNode.warn = function (message) { mock_message_output = message }
 
-        readNode.resetDelayTimerToRead(readNode);
-        mock_message_output.should.equal("Read -> resetDelayTimerToRead node 09846c74de630616 address: 0")
+        readNode.resetDelayTimerToRead(readNode)
+        mock_message_output.should.equal('Read -> resetDelayTimerToRead node 09846c74de630616 address: 0')
         done()
       })
     })

@@ -15,7 +15,7 @@ const nodeUnderTest = require('../../src/modbus-client.js')
 const readNode = require('../../src/modbus-read.js')
 const flexGetterNode = require('../../src/modbus-flex-getter.js')
 const mBasics = require('../../src/modbus-basics.js')
-const sinon = require('sinon');
+const sinon = require('sinon')
 const testModbusClientNodes = [serverNode, nodeUnderTest, readNode, flexGetterNode]
 
 const helper = require('node-red-node-test-helper')
@@ -30,11 +30,11 @@ describe('Client node Testing', function () {
     })
   })
   afterEach(function (done) {
-    helper.unload();
+    helper.unload()
     helper.stopServer(function () {
-      done();
-    });
-  });
+      done()
+    })
+  })
   after(function (done) {
     helper.stopServer(function () {
       done()
@@ -110,7 +110,7 @@ describe('Client node Testing', function () {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
         const h1 = helper.getNode('h1')
         let counter = 0
-        h1.on('input', function (msg) {
+        h1.on('input', function () {
           counter++
           if (counter === 1) {
             done()
@@ -132,7 +132,7 @@ describe('Client node Testing', function () {
         const modbusClientNode = helper.getNode('53f6fb33a3f90ead')
         setTimeout(() => {
           modbusClientNode.messageAllowedStates = ['']
-          let isInactive = modbusClientNode.isInactive()
+          const isInactive = modbusClientNode.isInactive()
           isInactive.should.be.true
           done()
         }, 1500)
@@ -144,29 +144,32 @@ describe('Client node Testing', function () {
         const modbusClientNode = helper.getNode('466860d5.3f6358')
         setTimeout(() => {
           mBasics.setNodeStatusTo('queueing', modbusClientNode)
-          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.true
           done()
         }, 1500)
       })
     })
+
     it('should be inactive when first loaded', function (done) {
       helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
         const modbusReadNode = helper.getNode('466860d5.3f6358')
-        let isInactive = modbusReadNode.isInactive()
+        const isInactive = modbusReadNode.isInactive()
         isInactive.should.be.true
         done()
       })
     })
+
     it('should be active when it receives a message', function (done) {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
         const modbusReadNode = helper.getNode('466860d5.3f6358')
         modbusReadNode.receive({ payload: 'test message' })
-        let isActive = modbusReadNode.isActive()
+        const isActive = modbusReadNode.isActive()
         isActive.should.be.true
         done()
       })
     })
+
     it('should send a message to the server when it receives a message', function (done) {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
         const modbusReadNode = helper.getNode('466860d5.3f6358')
@@ -179,6 +182,7 @@ describe('Client node Testing', function () {
         done()
       })
     })
+
     it('should send a message to the server with the correct Modbus function code', function (done) {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
         const modbusReadNode = helper.getNode('466860d5.3f6358')
@@ -192,6 +196,7 @@ describe('Client node Testing', function () {
         done()
       })
     })
+
     it('should send a message to the server with the correct slave ID', function (done) {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
         const modbusReadNode = helper.getNode('466860d5.3f6358')
@@ -205,6 +210,7 @@ describe('Client node Testing', function () {
         done()
       })
     })
+
     it('should send a message to the server with the correct starting address', function (done) {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
         const modbusReadNode = helper.getNode('466860d5.3f6358')
@@ -218,6 +224,7 @@ describe('Client node Testing', function () {
         done()
       })
     })
+
     it('should send a message to the server with the correct number of registers', function (done) {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
         const modbusReadNode = helper.getNode('466860d5.3f6358')
@@ -231,6 +238,7 @@ describe('Client node Testing', function () {
         done()
       })
     })
+
     it('should send a message to the server with the correct data type', function (done) {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
         const modbusReadNode = helper.getNode('466860d5.3f6358')
@@ -244,6 +252,7 @@ describe('Client node Testing', function () {
         done()
       })
     })
+
     it('should send a message to the server with the correct unit ID', function (done) {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
         const modbusReadNode = helper.getNode('466860d5.3f6358')
@@ -257,6 +266,7 @@ describe('Client node Testing', function () {
         done()
       })
     })
+
     it('should send a message to the server with the correct TCP host', function (done) {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
         const modbusReadNode = helper.getNode('466860d5.3f6358')
@@ -270,6 +280,7 @@ describe('Client node Testing', function () {
         done()
       })
     })
+
     it('should send a message to the server with the correct TCP port', function (done) {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
         const modbusReadNode = helper.getNode('466860d5.3f6358')
@@ -283,6 +294,7 @@ describe('Client node Testing', function () {
         done()
       })
     })
+
     it('should send a message to the server with the correct serial port', function (done) {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
         const modbusReadNode = helper.getNode('466860d5.3f6358')
@@ -296,6 +308,7 @@ describe('Client node Testing', function () {
         done()
       })
     })
+
     it('should send a message to the server with the correct serial baud rate', function (done) {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
         const modbusReadNode = helper.getNode('466860d5.3f6358')
@@ -312,34 +325,33 @@ describe('Client node Testing', function () {
 
     it('should close client connection when no registered nodes', function () {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
-        let modbusClientNode = helper.getNode('466860d5.3f6358');
-        modbusClientNode.registeredNodeList = {};
+        const modbusClientNode = helper.getNode('466860d5.3f6358')
+        modbusClientNode.registeredNodeList = {}
         modbusClientNode.closingModbus = true
         modbusClientNode.actualServiceState.value = 'started'
-        let mockClient = {
+        const mockClient = {
           isOpen: true,
           close: function (inner) {
             inner()
           }
-        };
-        modbusClientNode.setStoppedState = sinon.spy();
-        modbusClientNode.client = mockClient;
+        }
+        modbusClientNode.setStoppedState = sinon.spy()
+        modbusClientNode.client = mockClient
         const _done = sinon.spy()
         const clientUserNodeId = sinon.spy()
 
         modbusClientNode.closeConnectionWithoutRegisteredNodes(clientUserNodeId, _done)
 
-        sinon.assert.calledWith(modbusClientNode.setStoppedState, clientUserNodeId, _done);
+        sinon.assert.calledWith(modbusClientNode.setStoppedState, clientUserNodeId, _done)
         mockClient.isOpen = false
         modbusClientNode.closeConnectionWithoutRegisteredNodes(clientUserNodeId, _done)
 
-        sinon.assert.calledWith(modbusClientNode.setStoppedState, clientUserNodeId, _done);
+        sinon.assert.calledWith(modbusClientNode.setStoppedState, clientUserNodeId, _done)
         modbusClientNode.actualServiceState.value = 'stopped'
         modbusClientNode.closeConnectionWithoutRegisteredNodes(clientUserNodeId, _done)
-        sinon.assert.calledWith(modbusClientNode.setStoppedState, clientUserNodeId, _done);
-
-      });
-    });
+        sinon.assert.calledWith(modbusClientNode.setStoppedState, clientUserNodeId, _done)
+      })
+    })
 
     it('should send a message to the server with the correct serial data bits', function (done) {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
@@ -354,6 +366,7 @@ describe('Client node Testing', function () {
         done()
       })
     })
+
     it('should send a message to the server with the correct serial stop bits', function (done) {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
         const modbusReadNode = helper.getNode('466860d5.3f6358')
@@ -367,6 +380,7 @@ describe('Client node Testing', function () {
         done()
       })
     })
+
     it('should have correct messageAllowedStates property', function (done) {
       helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
         const modbusReadNode = helper.getNode('466860d5.3f6358')
@@ -374,6 +388,7 @@ describe('Client node Testing', function () {
         done()
       })
     })
+
     it('should fail for unsupported function code', function (done) {
       helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
         const h1 = helper.getNode('466860d5.3f6358')
@@ -383,9 +398,9 @@ describe('Client node Testing', function () {
         })
         h1.receive({ payload: 'test message', modbus: { functionCode: 64 } })
         done()
-
       })
     })
+
     it('should fail for invalid slave ID', function (done) {
       helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
         const h1 = helper.getNode('466860d5.3f6358')
@@ -395,10 +410,9 @@ describe('Client node Testing', function () {
         })
         h1.receive({ payload: 'test message', modbus: { slave: 256 } })
         done()
-
       })
-
     })
+
     it('should fail for invalid unit ID', function (done) {
       const modbusClientNode = helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
         const h1 = helper.getNode('466860d5.3f6358')
@@ -409,8 +423,8 @@ describe('Client node Testing', function () {
         h1.receive({ payload: 'test message', modbus: { unitId: 256 } })
         done()
       })
-
     })
+
     it('should fail for invalid TCP host', function (done) {
       helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
         const h1 = helper.getNode('466860d5.3f6358')
@@ -421,16 +435,14 @@ describe('Client node Testing', function () {
         h1.receive({ payload: 'test message', modbus: { tcpHost: 'invalid-host' } })
         done()
       })
-
     })
 
     it('should open serial client if actualServiceState is opened', function () {
-
       helper.load(testModbusClientNodes, testFlows.testClientFlow, function () {
-        let modbusReadNode = helper.getNode('90d2529d94dbf5c8');
-        modbusReadNode.actualServiceState = { value: 'opened' };
-        modbusReadNode.unit_id = 1;
-        modbusReadNode.clientTimeout = 1;
+        const modbusReadNode = helper.getNode('90d2529d94dbf5c8')
+        modbusReadNode.actualServiceState = { value: 'opened' }
+        modbusReadNode.unit_id = 1
+        modbusReadNode.clientTimeout = 1
         modbusReadNode.client = {
           setID: sinon.spy(),
           setTimeout: sinon.spy(),
@@ -443,12 +455,12 @@ describe('Client node Testing', function () {
 
         sinon.assert.calledWith(modbusReadNode.client.setTimeout, 1)
         sinon.assert.calledWith(modbusReadNode.client.setID, 1)
-        sinon.assert.calledWith(modbusReadNode.client._port.on, 'close', modbusReadNode.onModbusClose);
-        sinon.assert.calledWith(modbusReadNode.stateService.send, 'CONNECT');
-        modbusReadNode.client.setID.restore();
-      });
-    });
-  });
+        sinon.assert.calledWith(modbusReadNode.client._port.on, 'close', modbusReadNode.onModbusClose)
+        sinon.assert.calledWith(modbusReadNode.stateService.send, 'CONNECT')
+        modbusReadNode.client.setID.restore()
+      })
+    })
+  })
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {

@@ -106,8 +106,8 @@ describe('Response Filter node Testing', function () {
         const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
         _.isUndefined(modbusClientNode).should.be.false
 
-        modbusClientNode.receive({ payload: "test" })
-        let isInactive = modbusClientNode.isInactive()
+        modbusClientNode.receive({ payload: 'test' })
+        const isInactive = modbusClientNode.isInactive()
         isInactive.should.be.true
         done()
       })
@@ -115,12 +115,12 @@ describe('Response Filter node Testing', function () {
 
     it('should be inactive if message empty', function (done) {
       const flow = Array.from(testFlows.testWorkWithFlexGetterFlow)
-      flow[1].serverPort = "50201"
+      flow[1].serverPort = '50201'
       helper.load(testResponseFilterNodes, flow, function () {
         const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
         setTimeout(() => {
           modbusClientNode.messageAllowedStates = ['']
-          let isInactive = modbusClientNode.isInactive()
+          const isInactive = modbusClientNode.isInactive()
           isInactive.should.be.true
           done()
         }, 1500)
@@ -132,7 +132,7 @@ describe('Response Filter node Testing', function () {
         const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
         setTimeout(() => {
           mBasics.setNodeStatusTo('queueing', modbusClientNode)
-          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.true
           done()
         }, 1500)
@@ -144,41 +144,40 @@ describe('Response Filter node Testing', function () {
         const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
         setTimeout(() => {
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
-          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.false
           done()
         }, 1500)
       })
     })
-
   })
+
   it('should call internalDebug with appropriate debug messages', () => {
     helper.load(testResponseFilterNodes, testFlows.testFlowResponse, function () {
       const modbusClientNode = helper.getNode('4f8c0e22.48b8b4')
       console.log(modbusClientNode, 'njjj')
-      let mbBasics = {
+      const mbBasics = {
         invalidPayloadIn: sinon.stub().returns(false)
-      };
-      let mbCore = {
-        internalDebug: sinon.stub(),
-      };
-      let msg = {
+      }
+      const mbCore = {
+        internalDebug: sinon.stub()
+      }
+      const msg = {
         payload: [{ name: 'testFilter' }, { name: 'otherFilter' }]
-      };
+      }
       modbusClientNode.registers = 7
       modbusClientNode.showErrors = true
       modbusClientNode.showWarnings = true
       modbusClientNode.filterFromPayload = sinon.stub()
-      modbusClientNode.sinon.stub() = sinon.stub()
       modbusClientNode.error = sinon.stub()
-      modbusClientNode.emit('input', msg);
-      assert(mbBasics.invalidPayloadIn.calledOnceWith(msg));
-      assert(modbusClientNode.error.calledWithMatch(sinon.match.instanceOf(Error).and(sinon.match.has('message', '2 does not match 3'))));
-      assert(mbCore.internalDebug.calledOnceWith('2 Registers And Filter Length Of 3 Does Not Match'));
-      assert(modbusClientNode.send.notCalled);
 
-    });
-  });
+      modbusClientNode.emit('input', msg)
+      assert(mbBasics.invalidPayloadIn.calledOnceWith(msg))
+      assert(modbusClientNode.error.calledWithMatch(sinon.match.instanceOf(Error).and(sinon.match.has('message', '2 does not match 3'))))
+      assert(mbCore.internalDebug.calledOnceWith('2 Registers And Filter Length Of 3 Does Not Match'))
+      assert(modbusClientNode.send.notCalled)
+    })
+  })
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {

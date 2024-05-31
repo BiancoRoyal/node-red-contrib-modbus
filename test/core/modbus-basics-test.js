@@ -11,15 +11,13 @@
 const assert = require('assert')
 const sinon = require('sinon')
 const helper = require('node-red-node-test-helper')
-const { expect } = require('chai');
 
 helper.init(require.resolve('node-red'))
-
 
 describe('Modbus Node basics Suite', function () {
   const basic = require('../../src/modbus-basics')
 
-  function checkStatus(statusProperty, fill, shape, text) {
+  function checkStatus (statusProperty, fill, shape, text) {
     assert.strict.equal(statusProperty.fill, fill)
     assert.strict.equal(statusProperty.shape, shape)
     assert.strict.equal(statusProperty.status, text)
@@ -49,82 +47,82 @@ describe('Modbus Node basics Suite', function () {
     })
 
     it('Node status properties for connecting status', function () {
-      var status = basic.setNodeStatusProperties('connecting')
+      const status = basic.setNodeStatusProperties('connecting')
       checkStatus(status, 'yellow', 'ring', 'connecting')
     })
 
     it('Node status properties for connected status', function () {
-      var status = basic.setNodeStatusProperties('connected')
+      const status = basic.setNodeStatusProperties('connected')
       checkStatus(status, 'green', 'ring', 'connected')
     })
 
     it('Node status properties for initialized status', function () {
-      var status = basic.setNodeStatusProperties('initialized')
+      const status = basic.setNodeStatusProperties('initialized')
       checkStatus(status, 'yellow', 'dot', 'initialized')
     })
 
     it('Node status properties for active status', function () {
-      var status = basic.setNodeStatusProperties('active')
+      const status = basic.setNodeStatusProperties('active')
       checkStatus(status, 'green', 'dot', 'active')
     })
 
     it('Node status properties for active reading status', function () {
-      var status = basic.setNodeStatusProperties('active reading', true)
+      const status = basic.setNodeStatusProperties('active reading', true)
       checkStatus(status, 'green', 'dot', 'active reading')
     })
 
     it('Node status properties for active writing status', function () {
-      var status = basic.setNodeStatusProperties('active writing', true)
+      const status = basic.setNodeStatusProperties('active writing', true)
       checkStatus(status, 'green', 'dot', 'active writing')
     })
 
     it('Node status properties for active reading status not active', function () {
-      var status = basic.setNodeStatusProperties('active reading', false)
+      const status = basic.setNodeStatusProperties('active reading', false)
       checkStatus(status, 'green', 'dot', 'active')
     })
 
     it('Node status properties for active writing status not active', function () {
-      var status = basic.setNodeStatusProperties('active writing', false)
+      const status = basic.setNodeStatusProperties('active writing', false)
       checkStatus(status, 'green', 'dot', 'active')
     })
 
     it('Node status properties for test status', function () {
-      var status = basic.setNodeStatusProperties('test')
+      const status = basic.setNodeStatusProperties('test')
       checkStatus(status, 'yellow', 'ring', 'test')
     })
 
     it('Node status properties for disconnected status', function () {
-      var status = basic.setNodeStatusProperties('disconnected')
+      const status = basic.setNodeStatusProperties('disconnected')
       checkStatus(status, 'red', 'ring', 'disconnected')
     })
 
     it('Node status properties for terminated status', function () {
-      var status = basic.setNodeStatusProperties('terminated')
+      const status = basic.setNodeStatusProperties('terminated')
       checkStatus(status, 'red', 'ring', 'terminated')
     })
 
     it('Node status properties for polling status', function () {
-      var status = basic.setNodeStatusProperties('polling', true)
+      const status = basic.setNodeStatusProperties('polling', true)
       checkStatus(status, 'green', 'ring', 'polling')
     })
 
     it('Node status properties for polling status', function () {
-      var status = basic.setNodeStatusProperties('polling', false)
+      const status = basic.setNodeStatusProperties('polling', false)
       checkStatus(status, 'green', 'dot', 'active')
     })
 
     it('Node status properties for polling status', function () {
-      var status = basic.setNodeStatusProperties()
+      const status = basic.setNodeStatusProperties()
       checkStatus(status, 'blue', 'ring', 'waiting ...')
     })
 
     it('Node status properties for polling status', function () {
-      var status = basic.setNodeStatusProperties('waiting')
+      const status = basic.setNodeStatusProperties('waiting')
       checkStatus(status, 'blue', 'ring', 'waiting ...')
     })
 
     it('Node status properties for stopped status value', function () {
-      var status = basic.setNodeStatusProperties({ value: 'stopped' })
+      const status = basic.setNodeStatusProperties({ value: 'stopped' })
       checkStatus(status, 'red', 'dot', 'stopped')
     })
 
@@ -133,36 +131,37 @@ describe('Modbus Node basics Suite', function () {
         emptyMsgOnFail: true,
         send: sinon.spy(),
         statusText: 'error'
-      };
-      const err = new Error('Test error');
-      const msg = { payload: 'initial' };
+      }
+      const err = new Error('Test error')
+      const msg = { payload: 'initial' }
 
-      basic.sendEmptyMsgOnFail(node, err, msg);
+      basic.sendEmptyMsgOnFail(node, err, msg)
 
-      assert(node.send.calledOnce);
-      assert.deepStrictEqual(msg.payload, '');
-      assert(err instanceof Error);
-      assert.deepStrictEqual(msg.error, err);
-      assert.strictEqual(msg.error.nodeStatus, 'error');
-    });
+      assert(node.send.calledOnce)
+      assert.deepStrictEqual(msg.payload, '')
+      assert(err instanceof Error)
+      assert.deepStrictEqual(msg.error, err)
+      assert.strictEqual(msg.error.nodeStatus, 'error')
+    })
+
     it('should set node status to \'not ready to reconnect\' when error message is \'FSM Not Ready To Reconnect\'', () => {
-      const node = { showErrors: true };
-      const modbusClient = {};
-      const err = { message: 'FSM Not Ready To Reconnect' };
-      const setNodeStatusTo = sinon.stub(basic, 'setNodeStatusTo');
+      const node = { showErrors: true }
+      const modbusClient = {}
+      const err = { message: 'FSM Not Ready To Reconnect' }
+      const setNodeStatusTo = sinon.stub(basic, 'setNodeStatusTo')
 
-      basic.setModbusError(node, modbusClient, err, null);
+      basic.setModbusError(node, modbusClient, err, null)
 
-      assert(setNodeStatusTo.calledOnceWithExactly('not ready to reconnect', node));
+      assert(setNodeStatusTo.calledOnceWithExactly('not ready to reconnect', node))
 
-      setNodeStatusTo.restore();
-    });
+      setNodeStatusTo.restore()
+    })
+
     it('should set node status to blue and dot with text "waiting ..." when statusValue is "waiting"', () => {
-      const node = { status: sinon.spy() };
+      const node = { status: sinon.spy() }
       const response = 'waiting ...'
-      basic.setNodeStatusByResponseTo('waiting', response, node);
-      sinon.assert.calledWith(node.status,{ fill: 'blue', shape: 'dot', text: "'waiting ...'" })
-    });
-    
+      basic.setNodeStatusByResponseTo('waiting', response, node)
+      sinon.assert.calledWith(node.status, { fill: 'blue', shape: 'dot', text: '\'waiting ...\'' })
+    })
   })
 })

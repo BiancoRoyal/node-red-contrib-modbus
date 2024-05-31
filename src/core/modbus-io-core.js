@@ -340,7 +340,9 @@ de.biancoroyal.modbus.io.core.getValueFromBufferByDataType = function (item, buf
           item.value = responseBuffer.readInt32BE(bufferOffset)
           break
         case '64':
-          item.value = responseBuffer.readIntBE(bufferOffset, 8)
+          const lowBits = responseBuffer.readUInt32BE(4)
+          const highBits = responseBuffer.readUInt32BE(0)
+          item.value = highBits * 2 ** 32 + lowBits
           break
         default:
           item.value = responseBuffer.readInt16BE(bufferOffset)

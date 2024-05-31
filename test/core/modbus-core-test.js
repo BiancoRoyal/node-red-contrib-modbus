@@ -13,10 +13,9 @@
 const assert = require('assert')
 const coreUnderTest = require('../../src/core/modbus-core')
 
-describe ('Core Testing', function () {
-  describe ('Core', function () {
-
-    describe ('Core Simple', function () {
+describe('Core Testing', function () {
+  describe('Core', function () {
+    describe('Core Simple', function () {
       it('should know function code number of Coil', function (done) {
         assert.strict.equal(coreUnderTest.functionCodeModbusRead('Coil'), 1)
         done()

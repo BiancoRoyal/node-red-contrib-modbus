@@ -10,18 +10,18 @@
 
 'use strict'
 
-var injectNode = require('@node-red/nodes/core/common/20-inject.js')
+const injectNode = require('@node-red/nodes/core/common/20-inject.js')
 
-var clientNode = require('../../src/modbus-client.js')
-var serverNode = require('../../src/modbus-server.js')
-var nodeUnderTest = require('../../src/modbus-write.js')
+const clientNode = require('../../src/modbus-client.js')
+const serverNode = require('../../src/modbus-server.js')
+const nodeUnderTest = require('../../src/modbus-write.js')
 
-var helper = require('node-red-node-test-helper')
+const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
-var testSimpleWriteParametersNodes = [injectNode, clientNode, serverNode, nodeUnderTest]
+const testSimpleWriteParametersNodes = [injectNode, clientNode, serverNode, nodeUnderTest]
 
-var testFlows = require('./flows/modbus-write-flows')
+const testFlows = require('./flows/modbus-write-flows')
 
 describe('Write node Testing', function () {
   before(function (done) {
@@ -47,16 +47,16 @@ describe('Write node Testing', function () {
   describe('Node', function () {
     it('simple Node should be loaded without client config', function (done) {
       helper.load(testSimpleWriteParametersNodes, testFlows.testWriteFlow, function () {
-        var inject = helper.getNode('67dded7e.025904')
+        const inject = helper.getNode('67dded7e.025904')
         inject.should.have.property('name', 'injectTrue')
 
-        var modbusServer = helper.getNode('e54529b9.952ea8')
+        const modbusServer = helper.getNode('e54529b9.952ea8')
         modbusServer.should.have.property('name', 'modbusServer')
 
-        var modbusClient = helper.getNode('1f258d73662d6493')
+        const modbusClient = helper.getNode('1f258d73662d6493')
         modbusClient.should.have.property('name', 'modbusClient')
 
-        var modbusWrite = helper.getNode('8ad2951c.2df708')
+        const modbusWrite = helper.getNode('8ad2951c.2df708')
         modbusWrite.should.have.property('name', 'modbusWrite')
 
         done()
@@ -69,7 +69,7 @@ describe('Write node Testing', function () {
       helper.load(testSimpleWriteParametersNodes, testFlows.testWriteCycleFlow, function () {
         const modbusWrite = helper.getNode('1ed908da.427ecf')
         const h1 = helper.getNode('h1')
-        h1.on('input', function (msg) {
+        h1.on('input', function () {
           if (modbusWrite.bufferMessageList.size === 0) {
             done()
           }
@@ -86,7 +86,7 @@ describe('Write node Testing', function () {
           modbusWrite.receive({ payload: { value: 'false', fc: 5, unitid: 1, address: 0, quantity: 1 } })
         }, 800)
         const h1 = helper.getNode('h1')
-        h1.on('input', function (msg) {
+        h1.on('input', function () {
           if (modbusWrite.bufferMessageList.size === 0) {
             done()
           }
@@ -105,7 +105,7 @@ describe('Write node Testing', function () {
           modbusWrite.receive({ payload: { value: 'true', fc: 5, unitid: 1, address: 0, quantity: 1 } })
         }, 800)
         const h1 = helper.getNode('h1')
-        h1.on('input', function (msg) {
+        h1.on('input', function () {
           if (modbusWrite.bufferMessageList.size === 0) {
             done()
           }
@@ -123,8 +123,8 @@ describe('Write node Testing', function () {
         setTimeout(function () {
           modbusWrite.receive({ payload: { value: 'true', fc: 5, unitid: 1, address: 0, quantity: 1 } })
         }, 800)
-        const h1 = helper.getNode('h1')
-        modbusWrite.on('modbusWriteNodeDone', function (msg) {
+
+        modbusWrite.on('modbusWriteNodeDone', () => {
           if (modbusWrite.bufferMessageList.size === 0) {
             done()
           }
@@ -139,7 +139,7 @@ describe('Write node Testing', function () {
       testFlows.testSimpleWriteFlow[4].tcpPort = 5802
       helper.load(testSimpleWriteParametersNodes, testFlows.testSimpleWriteFlow, function () {
         const h1 = helper.getNode('h1')
-        h1.on('input', function (msg) {
+        h1.on('input', function () {
           if (modbusWrite.bufferMessageList.size === 0) {
             done()
           }
@@ -153,8 +153,6 @@ describe('Write node Testing', function () {
       })
     })
 
-
-
     it('should inject at least 4 messages but only use one to test initial delay', function (done) {
       const flow = Array.from(testFlows.testWriteDelayFlow)
       flow[1].serverPort = 5803
@@ -167,19 +165,19 @@ describe('Write node Testing', function () {
         let startingTimestamp = null
         let endTimestamp = null
 
-        writeNode.on('input', (msg) => {
+        writeNode.on('input', () => {
           getterCounter++
 
-          if(getterCounter === 1){
+          if (getterCounter === 1) {
             startingTimestamp = Date.now()
           }
           endTimestamp = Date.now()
         })
 
-        helperNode.on('input', (msg) => {
+        helperNode.on('input', () => {
           helperCounter++
 
-          let difBetweenTimestamps = endTimestamp - startingTimestamp
+          const difBetweenTimestamps = endTimestamp - startingTimestamp
           getterCounter.should.be.greaterThanOrEqual(6)
           helperCounter.should.be.greaterThanOrEqual(1)
           helperCounter.should.be.greaterThanOrEqual(3)
