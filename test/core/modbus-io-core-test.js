@@ -58,7 +58,6 @@ describe('Core IO Testing', function () {
         done()
       })
 
-
       it('should handle non-Buffer responseBuffer gracefully', () => {
         const valueNames = [{ dataType: 'int16', registerAddress: 0, bits: 16 }]
         const register = [0]
@@ -86,7 +85,6 @@ describe('Core IO Testing', function () {
         expect(item.value).to.equal(0x12345678)
         done()
       })
-
 
       it('should set item.value correctly for dataType "Integer" and bits "64"', (done) => {
         const buffer = Buffer.from([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01])
@@ -376,7 +374,57 @@ describe('Core IO Testing', function () {
           type: 'output'
         })
       })
+
+      it('should correctly map integer type with 16 bits when registerType is W', () => {
+        const mapping = { name: 'intTest', valueAddress: '%QIW ' }
+        const offset = 0
+        const readingOffset = 0
+        const logging = false
+
+        const result = coreIOUnderTest.buildOutputAddressMapping('MB-OUTPUTS', mapping, offset, readingOffset, logging)
+
+        expect(result).to.deep.equal({
+          register: 'MB-OUTPUTS',
+          name: 'intTest',
+          addressStart: NaN,
+          addressOffset: 2,
+          addressOffsetIO: 0,
+          addressStartIO: NaN,
+          registerAddress: NaN,
+          coilStart: 0,
+          bitAddress: null,
+          Bit: 0,
+          bits: 32,
+          dataType: 'Integer',
+          type: 'output'
+        })
+      })
+      it('should correctly map integer type with 32 bits when registerType is not W', () => {
+        const mapping = { name: 'int32Test', valueAddress: '%QID400' }
+        const offset = 0
+        const readingOffset = 0
+        const logging = false
+
+        const result = coreIOUnderTest.buildOutputAddressMapping('MB-OUTPUTS', mapping, offset, readingOffset, logging)
+
+        expect(result).to.deep.equal({
+          register: 'MB-OUTPUTS',
+          name: 'int32Test',
+          addressStart: NaN,
+          addressOffset: 2,
+          addressOffsetIO: 0,
+          addressStartIO: NaN,
+          registerAddress: NaN,
+          coilStart: 0,
+          bitAddress: null,
+          Bit: 0,
+          bits: 32,
+          dataType: 'Integer',
+          type: 'output'
+        })
+      })
     })
+
     describe('filterValueNames', () => {
       it('should filter valueNames correctly based on address range and function type', () => {
         const node = { logIOActivities: false }
