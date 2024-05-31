@@ -374,6 +374,32 @@ describe('Core IO Testing', function () {
           type: 'output'
         })
       })
+      it('should correctly handle bit - boolean type when registerType is X', () => {
+        const mapping = { name: 'bitTest', valueAddress: '%QX400.3' }
+        const offset = 0
+        const readingOffset = 0
+        const logging = true
+
+        const result = coreIOUnderTest.buildOutputAddressMapping('MB-OUTPUTS', mapping, offset, readingOffset, logging)
+
+        expect(result).to.deep.equal({
+          register: 'MB-OUTPUTS',
+          name: 'bitTest',
+          addressStart: 200,
+          addressOffset: 1,
+          addressOffsetIO: 0,
+          addressStartIO: 200,
+          registerAddress: 200,
+          coilStart: 3203,
+          bitAddress: ['400', '3'],
+          Bit: 3203,
+          bits: 1,
+          type: 'output',
+          dataType: 'Boolean'
+        })
+
+        // expect(internalDebugStub.called).to.equal(false)
+      })
 
       it('should correctly map integer type with 16 bits when registerType is W', () => {
         const mapping = { name: 'intTest', valueAddress: '%QIW ' }
