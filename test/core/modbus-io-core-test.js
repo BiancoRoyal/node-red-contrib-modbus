@@ -425,6 +425,31 @@ describe('Core IO Testing', function () {
       })
     })
 
+    // Test case to cover the condition where registerType is 'X' for boolean type
+    it('should correctly map boolean type with 1 bit when registerType is X', () => {
+      const mapping = { name: 'boolTest', valueAddress: '%IX100.3' }
+      const offset = 0
+      const readingOffset = 0
+      const logging = false
+
+      const result = coreIOUnderTest.buildInputAddressMapping('MB-INPUTS', mapping, offset, readingOffset, logging)
+
+      expect(result).to.deep.equal({
+        register: 'MB-INPUTS',
+        name: 'boolTest',
+        addressStart: 50,
+        addressOffset: 1,
+        addressOffsetIO: 0,
+        addressStartIO: 50,
+        registerAddress: 50,
+        coilStart: 803,
+        bitAddress: ['100', '3'],
+        Bit: 803,
+        bits: 1,
+        dataType: 'Boolean',
+        type: 'input'
+      })
+    })
     describe('filterValueNames', () => {
       it('should filter valueNames correctly based on address range and function type', () => {
         const node = { logIOActivities: false }
