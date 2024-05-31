@@ -123,15 +123,9 @@ describe('Modbus Flow E2E Test', function () {
       if (event === 'error') callback(new Error('test error'))
     })
 
-    // sinon.stub(coreIO, 'LineByLineReader').returns({
-    //     on: lineByLineReaderOnStub
-    // });
-    // sinon.stub(coreIO, 'internalDebug');
-    const fsWatchFileStub = sinon.stub(fs, 'watchFile').callsFake((path, callback) => {
-      setTimeout(() => {
-        callback({ mtime: new Date() }, { mtime: new Date(Date.now() - 1000) })
-      }, 1000)
-    })
+        setTimeout(() => {
+            expect(modbusConfigNode.configData).to.deep.equal([]);
+             expect(modbusConfigNode).to.have.property('lastUpdatedAt').that.is.not.null;
 
     setTimeout(() => {
       expect(modbusConfigNode.configData).to.deep.equal([{ key: 'value' }])

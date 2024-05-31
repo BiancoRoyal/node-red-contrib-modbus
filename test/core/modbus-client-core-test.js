@@ -332,58 +332,109 @@ describe('Core Client Testing', function () {
         clienttype: 'tcp',
         setUnitIdFromPayload: sinon.stub(),
         clientTimeout: 500
-      }
+      };
 
-      const msg = {}
-      const cb = sinon.stub()
-      const cberr = sinon.stub()
+      const msg = {};
+      const cb = sinon.stub();
+      const cberr = sinon.stub();
 
-      coreClientUnderTest.customModbusMessage(node, msg, cb, cberr)
+      coreClientUnderTest.customModbusMessage(node, msg, cb, cberr);
 
-      sinon.assert.calledOnce(node.connectClient)
-      sinon.assert.notCalled(node.stateService.send)
-      // sinon.assert.calledWithExactly(setTimeout, sinon.match.func, 500);
-    })
+      sinon.assert.calledOnce(node.connectClient);
+      sinon.assert.notCalled(node.stateService.send);
+      // sinon.assert.calledWithExactly(setTimeout, sinon.match.func, 500); 
+    });
+    it('should handle when the client port is not readable and connection fails', () => {
+      let node = {
+        client: {
+          _port: {
+            _client: {
+              readable: true
+            }
+          },
+          getTimeout: sinon.stub().returns(100),
+          setTimeout: sinon.spy()
+        },
+        // connectClient: sinon.stub().returns(false), 
+        // connectClient: sinon.stub().returns(true), // Stub the connectClient method
+        connectClient: sinon.spy(),
+        stateService: { send: sinon.spy() },
+        clienttype: 'tcp',
+        queueLog: sinon.spy(),
+        setUnitIdFromPayload: sinon.spy(),
+        clientTimeout: 500,
+        bufferCommands: false,
+        clienttype: 'serial',
+        modbusErrorHandling: sinon.spy(),
+        actualServiceState: { value: 'connected' }
+        // stateService: {
+        //   send: function (state) {
+        //     assert.strictEqual(state, 'READ');
+        //   }
+        // }
 
-    // it('should handle the setTimeout function correctly', () => {
-    //   const node = {
-    //     client: {
-    //       _port: {
-    //         _client: {
-    //           readable: false
-    //         }
-    //       },
-    //       getTimeout: sinon.stub().returns(100),
+      };
 
-    //       setTimeout: sinon.stub()
-    //     },
-    //     bufferCommands: false,
-    //     stateService: { send: sinon.stub() },
-    //     clienttype: 'tcp',
-    //     setUnitIdFromPayload: sinon.stub(),
-    //     clientTimeout: 500
-    //   };
+      let msg = {};
+      let cb = sinon.spy();
+      let cberr = sinon.spy();
+      coreClientUnderTest.activateSendingOnFailure = sinon.spy();
+      let clock3 = sinon.useFakeTimers();
 
-    //   const msg = {};
-    //   const cb = sinon.stub();
-    //   const cberr = sinon.stub();
+      coreClientUnderTest.customModbusMessage(node, msg, cb, cberr);
+      clock3.tick(1);
 
-    //   sinon.useFakeTimers();
+      sinon.assert.calledOnce(node.stateService.send);
+      sinon.assert.calledWithExactly(node.stateService.send, 'READ');
+      clock3.restore();
 
-    //
-    //   coreClientUnderTest.customModbusMessage(node, msg, cb, cberr);
+      const clock1 = sinon.useFakeTimers();
 
-    //   sinon.assert.calledOnce(node.client.setTimeout);
-    //   sinon.assert.calledWithExactly(node.client.setTimeout, 500);
+      msg = {
+        payload: 'testPayload',
+        queueUnitId: 1
+      };
 
-    //   sinon.clock.tick(1);
+      coreClientUnderTest.customModbusMessage(node, msg, cb, cberr);
 
-    //   sinon.assert.calledWithExactly(node.stateService.send, 'READ');
-    //   sinon.assert.calledOnce(node.setUnitIdFromPayload);
-    //   sinon.assert.calledOnce(coreClientUnderTest.sendCustomFunctionCode);
+      clock1.tick(1);
+      sinon.assert.calledWithExactly(node.client.setTimeout, 500);
+      clock1.restore();
 
-    //   sinon.restore();
-    // });
+      node = {
+        client: {
+          getTimeout: sinon.stub().returns(1000),
+          setTimeout: sinon.spy()
+
+        },
+        queueLog: sinon.spy(),
+        bufferCommands: true,
+        actualServiceState: { value: 'connected' },
+        setUnitIdFromPayload: sinon.spy(),
+        modbusErrorHandling: sinon.spy(),
+
+      };
+      msg = {
+        payload: 'test message',
+        queueUnitId: 1
+      };
+      cb = sinon.spy();
+      cberr = sinon.spy();
+
+      const clock2 = sinon.useFakeTimers();
+      coreClientUnderTest.customModbusMessage(node, msg, cb, cberr);
+
+      clock2.tick(1);
+      // sinon.assert.calledWith(node.queueLog, JSON.stringify({
+      //   info: 'read msg via Modbus',
+      //   message: 'testPayload',
+      //   queueUnitId: 1,
+      //   timeout: 100,
+      //   state: 'testState'
+      // }));
+
+      clock2.restore();
+    });
 
     it('should call readModbusByFunctionCodeOne for function code 1', () => {
       const node = {
