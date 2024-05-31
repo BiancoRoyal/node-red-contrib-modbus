@@ -137,8 +137,7 @@ describe('Read node Testing', function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         setTimeout(() => {
           mBasics.setNodeStatusTo('queueing', modbusClientNode)
-          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.true
+          modbusClientNode.isReadyToSend(modbusClientNode).should.be.false()
           done()
         }, 1500)
       })
@@ -149,8 +148,7 @@ describe('Read node Testing', function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         setTimeout(() => {
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
-          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.false
+          modbusClientNode.isReadyToSend(modbusClientNode).should.be.false()
           done()
         }, 1500)
       })
@@ -160,11 +158,10 @@ describe('Read node Testing', function () {
       helper.load(testReadNodes, testFlows.testReadWithClientFlow, function () {
         const readNode = helper.getNode('09846c74de630616')
         readNode.showErrors = true
-        let mock_message = ''
-        readNode.warn = function (message) { mock_message = message }
-
+        let mockMessage = ''
+        readNode.warn = function (message) { mockMessage = message }
         readNode.onModbusError('Failure test message!')
-        mock_message.should.equal('Failure test message!')
+        mockMessage.should.equal('Failure test message!')
         done()
       })
     })
@@ -174,11 +171,11 @@ describe('Read node Testing', function () {
         const readNode = helper.getNode('09846c74de630616')
         readNode.verboseLogging = true
         readNode.showErrors = true
-        let mock_message = ''
-        readNode.warn = function (message) { mock_message = message }
+        let mockMessage = ''
+        readNode.warn = function (message) { mockMessage = message }
 
         readNode.onModbusError('Failure test message!')
-        mock_message.should.equal('Failure test message!')
+        mockMessage.should.equal('Failure test message!')
         done()
       })
     })
@@ -188,15 +185,18 @@ describe('Read node Testing', function () {
         const readNode = helper.getNode('09846c74de630616')
         readNode.verboseLogging = true
         readNode.showErrors = true
-        let mock_message_output = ''
+        let mockMessageOutput = ''
         readNode.errorProtocolMsg = function (err, msg) {
+          if (err) {
+            console.error(err)
+          }
           if (readNode.showErrors) {
-            mock_message_output = msg
+            mockMessageOutput = msg
           }
         }
 
         readNode.onModbusReadError({}, 'This should be logged in our mock errorProtocol')
-        mock_message_output.should.equal('This should be logged in our mock errorProtocol')
+        mockMessageOutput.should.equal('This should be logged in our mock errorProtocol')
         done()
       })
     })
@@ -209,11 +209,11 @@ describe('Read node Testing', function () {
         readNode.showWarnings = true
         readNode.delayTimerReading = true
 
-        let mock_message_output = ''
-        readNode.warn = function (message) { mock_message_output = message }
+        let mockMessageOutput = ''
+        readNode.warn = function (message) { mockMessageOutput = message }
 
         readNode.resetDelayTimerToRead(readNode)
-        mock_message_output.should.equal('Read -> resetDelayTimerToRead node 09846c74de630616 address: 0')
+        mockMessageOutput.should.equal('Read -> resetDelayTimerToRead node 09846c74de630616 address: 0')
         done()
       })
     })

@@ -26,7 +26,7 @@ const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
 const testFlows = require('./flows/modbus-queue-info-flows')
-const mBasics = require('../../src/modbus-basics')
+const mbBasics = require('../../src/modbus-basics')
 
 describe('Queue Info node Testing', function () {
   before(function (done) {
@@ -113,7 +113,7 @@ describe('Queue Info node Testing', function () {
         expect(mockNode.showStatusActivities).to.equal(true)
         expect(mockNode.updateOnAllQueueChanges).to.equal(true)
         expect(mockNode.updateOnAllUnitQueues).to.equal(false)
-        expect(mockNode.queueReadInterval).to.be.null
+        expect(mockNode.queueReadInterval).to.be.null()
         expect(mockNode.updateStatusRunning).to.equal(false)
         expect(mockNode.unitsWithQueue).to.be.an.instanceOf(Map)
         expect(mockNode.checkLowLevelReached).to.be.a('function')
@@ -270,9 +270,9 @@ describe('Queue Info node Testing', function () {
       helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusClientNode = helper.getNode('d4c76ff5.c424b8')
         setTimeout(() => {
-          mBasics.setNodeStatusTo('queueing', modbusClientNode)
+          mbBasics.setNodeStatusTo('queueing', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.true
+          isReady.should.be.true()
           done()
         }, 1500)
       })
@@ -282,9 +282,9 @@ describe('Queue Info node Testing', function () {
       helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusClientNode = helper.getNode('d4c76ff5.c424b8')
         setTimeout(() => {
-          mBasics.setNodeStatusTo('stopped', modbusClientNode)
+          mbBasics.setNodeStatusTo('stopped', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.false
+          isReady.should.be.false()
           done()
         }, 1500)
       })
@@ -354,7 +354,7 @@ describe('Queue Info node Testing', function () {
         }
         const errorProtocolMsgSpy = sinon.spy(node, 'errorProtocolMsg')
         const sendEmptyMsgOnFailSpy = sinon.spy(mbBasics, 'sendEmptyMsgOnFail')
-        const initQueueSpy = sinon.spy(coreModbusQueue, 'initQueue')
+        const initQueueSpy = sinon.spy(nodeUnderTest, 'initQueue')
         const initUnitQueueStatesSpy = sinon.spy(node, 'initUnitQueueStates')
         const warnSpy = sinon.spy(modbusClient, 'warn')
         const statusSpy = sinon.spy(node, 'status')

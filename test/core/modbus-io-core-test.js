@@ -75,7 +75,7 @@ describe('Core IO Testing', function () {
 
         const getOriginalMessageStub = sinon.stub(coreIOUnderTest.core, 'getOriginalMessage').returns({ modbusRequest: {} })
         const [origMsg, rawMsg] = coreIOUnderTest.buildMessageWithIO(node, values, response, msg)
-        expect(rawMsg).to.be.any
+        expect(rawMsg).to.be.any()
         sinon.assert.calledWith(getOriginalMessageStub, node.bufferMessageList, msg)
         sinon.assert.match(origMsg.payload, valueNames)
         sinon.assert.match(origMsg.values, values)
@@ -95,10 +95,10 @@ describe('Core IO Testing', function () {
 
         coreIOUnderTest.convertValuesByType(valueNames, register, responseBuffer, logging)
 
-        expect(internalDebugSpy.calledWith('Response Buffer Is Not A Buffer')).to.be.false
+        expect(internalDebugSpy.calledWith('Response Buffer Is Not A Buffer')).to.be.false()
 
         internalDebugSpy.restore()
-        expect(internalDebugSpy.calledWith('Response Buffer Is Not A Buffer')).to.be.false
+        expect(internalDebugSpy.calledWith('Response Buffer Is Not A Buffer')).to.be.false()
         internalDebugSpy.restore()
       })
 
@@ -158,7 +158,7 @@ describe('Core IO Testing', function () {
         const item = { dataType: 'Unknown', bits: '16', registerAddress: 0 }
         const result = coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, false)
         expect(result.value).to.equal(1)
-        expect(result.convertedValue).to.be.false
+        expect(result.convertedValue).to.be.false()
       })
 
       it('should read 16-bit unsigned integer value for default data type', () => {
@@ -166,7 +166,7 @@ describe('Core IO Testing', function () {
         const item = { dataType: 'Unknown', bits: '16', registerAddress: 0 }
         const result = coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, false)
         expect(result.value).to.equal(1)
-        expect(result.convertedValue).to.be.false
+        expect(result.convertedValue).to.be.false()
       })
 
       it('should set item.value correctly for dataType "Word" and bits other than "8"', () => {
@@ -406,8 +406,8 @@ describe('Core IO Testing', function () {
           bits: 32,
           dataType: 'Float',
           type: 'output'
-        });
-      });
+        })
+      })
     })
 
     describe('Core IO File', function () {

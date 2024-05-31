@@ -101,11 +101,11 @@ describe('Flex Connector node Testing', function () {
     it('should be inactive if message not allowed', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusClientNode = helper.getNode('2a253153.fae3ce')
-        _.isUndefined(modbusClientNode).should.be.false
+        _.isUndefined(modbusClientNode).should.be.false()
 
         modbusClientNode.receive({ payload: 'test' })
         const isInactive = modbusClientNode.isInactive()
-        isInactive.should.be.true
+        isInactive.should.be.true()
         done()
       })
     })
@@ -116,7 +116,7 @@ describe('Flex Connector node Testing', function () {
         setTimeout(() => {
           modbusClientNode.messageAllowedStates = ['']
           const isInactive = modbusClientNode.isInactive()
-          isInactive.should.be.true
+          isInactive.should.be.true()
           done()
         }, 1500)
       })
@@ -128,7 +128,7 @@ describe('Flex Connector node Testing', function () {
         setTimeout(() => {
           mBasics.setNodeStatusTo('queueing', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.true
+          isReady.should.be.true()
           done()
         }, 1500)
       })
@@ -140,7 +140,7 @@ describe('Flex Connector node Testing', function () {
         setTimeout(() => {
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.false
+          isReady.should.be.false()
           done()
         }, 1500)
       })
@@ -149,7 +149,7 @@ describe('Flex Connector node Testing', function () {
     it('should process the flow as expected', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testFlowAsExpected, function () {
         const flexNode = helper.getNode('1b4644a214cfdec6')
-        expect(flexNode).to.be.any
+        expect(flexNode).to.be.any()
       })
       done()
     })

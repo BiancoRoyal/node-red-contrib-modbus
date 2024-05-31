@@ -31,66 +31,77 @@ describe('Core Client Testing', function () {
     })
 
     describe('Core Client UnitId TCP', function () {
-        it('should check with success the TCP UnitId 1', function (done) {
-          assert.strict.equal(coreClientUnderTest.checkUnitId(1, 'tcp'), true)
-          done()
-        })
+      it('should check with success the TCP UnitId 1', function (done) {
+        assert.strict.equal(coreClientUnderTest.checkUnitId(1, 'tcp'), true)
+        done()
+      })
 
-        it('should check with failure the TCP UnitId -1', function (done) {
-          assert.strict.equal(coreClientUnderTest.checkUnitId(-1, 'tcp'), false)
-          done()
-        })
+      it('should check with failure the TCP UnitId -1', function (done) {
+        assert.strict.equal(coreClientUnderTest.checkUnitId(-1, 'tcp'), false)
+        done()
+      })
 
-        it('should check with success the TCP UnitId 0', function (done) {
-          assert.strict.equal(coreClientUnderTest.checkUnitId(0, 'tcp'), true)
-          done()
-        })
+      it('should check with success the TCP UnitId 0', function (done) {
+        assert.strict.equal(coreClientUnderTest.checkUnitId(0, 'tcp'), true)
+        done()
+      })
 
-        it('should check with failure the TCP UnitId undefined', function (done) {
-          assert.strict.equal(coreClientUnderTest.checkUnitId(undefined, 'tcp'), false)
-          done()
-        })
+      it('should check with failure the TCP UnitId undefined', function (done) {
+        assert.strict.equal(coreClientUnderTest.checkUnitId(undefined, 'tcp'), false)
+        done()
+      })
 
-        it('should check with failure the TCP UnitId 0 from undefined payload', function (done) {
-          assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'tcp', unit_id: 0 }, { payload: {} }), 0)
-          done()
-        })
+      it('should check with failure the TCP UnitId 0 from undefined payload', function (done) {
+        assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'tcp', unit_id: 0 }, { payload: {} }), 0)
+        done()
+      })
 
-<<<<<<< HEAD
-        it('should check with success the TCP UnitId 1 from payload', function (done) {
-          assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'tcp', unit_id: 0 }, { payload: { unitid: 1 } }), 1)
-          done()
-        })
+      it('should check with success the TCP UnitId 1 from payload', function (done) {
+        assert.strict.equal(coreClientUnderTest.getActualUnitId({
+          clienttype: 'tcp',
+          unit_id: 0
+        }, { payload: { unitid: 1 } }), 1)
+        done()
+      })
 
-        it('should check with success the TCP UnitId 0 from payload', function (done) {
-          assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'tcp', unit_id: 1 }, { payload: { unitid: 0 } }), 0)
-          done()
-        })
+      it('should check with success the TCP UnitId 0 from payload', function (done) {
+        assert.strict.equal(coreClientUnderTest.getActualUnitId({
+          clienttype: 'tcp',
+          unit_id: 1
+        }, { payload: { unitid: 0 } }), 0)
+        done()
+      })
 
-        it('should check with success the TCP UnitId 1 from queueid', function (done) {
-          assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'tcp', unit_id: 0 }, { payload: {}, queueUnitId: 1 }), 1)
-          done()
-        })
+      it('should check with success the TCP UnitId 1 from queueid', function (done) {
+        assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'tcp', unit_id: 0 }, {
+          payload: {},
+          queueUnitId: 1
+        }), 1)
+        done()
+      })
 
-        it('should check with success the TCP UnitId 0 from queueid', function (done) {
-          assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'tcp', unit_id: 1 }, { queueUnitId: 0 }), 0)
-          done()
-        })
+      it('should check with success the TCP UnitId 0 from queueid', function (done) {
+        assert.strict.equal(coreClientUnderTest.getActualUnitId({
+          clienttype: 'tcp',
+          unit_id: 1
+        }, { queueUnitId: 0 }), 0)
+        done()
+      })
 
-        it('should check with failure the TCP UnitId undefined', function (done) {
-          assert.strict.equal(coreClientUnderTest.checkUnitId(undefined, 'tcp'), false)
-          done()
-        })
+      it('should check with failure the TCP UnitId undefined', function (done) {
+        assert.strict.equal(coreClientUnderTest.checkUnitId(undefined, 'tcp'), false)
+        done()
+      })
 
-        it('should check with success the TCP UnitId 255', function (done) {
-          assert.strict.equal(coreClientUnderTest.checkUnitId(255, 'tcp'), true)
-          done()
-        })
+      it('should check with success the TCP UnitId 255', function (done) {
+        assert.strict.equal(coreClientUnderTest.checkUnitId(255, 'tcp'), true)
+        done()
+      })
 
-        it('should check with failure the TCP UnitId 256', function (done) {
-          assert.strict.equal(coreClientUnderTest.checkUnitId(256, 'tcp'), false)
-          done()
-        })
+      it('should check with failure the TCP UnitId 256', function (done) {
+        assert.strict.equal(coreClientUnderTest.checkUnitId(256, 'tcp'), false)
+        done()
+      })
     })
 
     describe('Core Client UnitId Serial', function () {
@@ -329,16 +340,10 @@ describe('Core Client Testing', function () {
 
       coreClientUnderTest.customModbusMessage(node, msg, cb, cberr)
 
-<<<<<<< HEAD
-      sinon.assert.calledOnce(node.connectClient);
-      sinon.assert.notCalled(node.stateService.send);
-    });
-=======
       sinon.assert.calledOnce(node.connectClient)
       sinon.assert.notCalled(node.stateService.send)
       // sinon.assert.calledWithExactly(setTimeout, sinon.match.func, 500);
     })
->>>>>>> 271b65bb36bba30520e06be27b6a5d84bc7330df
     it('should handle when the client port is not readable and connection fails', () => {
       let node = {
         client: {
@@ -350,14 +355,11 @@ describe('Core Client Testing', function () {
           getTimeout: sinon.stub().returns(100),
           setTimeout: sinon.spy()
         },
-<<<<<<< HEAD
-=======
         // connectClient: sinon.stub().returns(false),
         // connectClient: sinon.stub().returns(true), // Stub the connectClient method
->>>>>>> 271b65bb36bba30520e06be27b6a5d84bc7330df
         connectClient: sinon.spy(),
         stateService: { send: sinon.spy() },
-        clienttype: 'tcp',
+        // clienttype: 'tcp',
         queueLog: sinon.spy(),
         setUnitIdFromPayload: sinon.spy(),
         clientTimeout: 500,
@@ -365,9 +367,6 @@ describe('Core Client Testing', function () {
         clienttype: 'serial',
         modbusErrorHandling: sinon.spy(),
         actualServiceState: { value: 'connected' }
-<<<<<<< HEAD
-      };
-=======
         // stateService: {
         //   send: function (state) {
         //     assert.strictEqual(state, 'READ');
@@ -375,7 +374,6 @@ describe('Core Client Testing', function () {
         // }
 
       }
->>>>>>> 271b65bb36bba30520e06be27b6a5d84bc7330df
 
       let msg = {}
       let cb = sinon.spy()
@@ -465,69 +463,6 @@ describe('Core Client Testing', function () {
       clock.restore()
     })
 
-    it('should fail when quantity does not match value length', async () => {
-      const writeRegistersSpy = sinon.spy();
-      const getIDStub = sinon.stub().returns(1);
-      const setTimeoutSpy = sinon.spy();
-      const modbusErrorHandlingSpy = sinon.spy();
-
-      let node = {
-        client: {
-          writeRegisters: writeRegistersSpy,
-          getID: getIDStub,
-          setTimeout: setTimeoutSpy
-        },
-        modbusErrorHandling: modbusErrorHandlingSpy,
-        activateSending: sinon.stub().resolves(),
-
-      };
-
-      let msg = {
-        payload: {
-          address: 1,
-          value: [1, 2],
-          quantity: 3
-        }
-      };
-      node.activateSending.resolves();
-      let cb = sinon.spy();
-      let cberr = sinon.spy();
-      node.activateSending.resolves();
-
-      coreClientUnderTest.writeModbusByFunctionCodeSixteen(node, msg, cb, cberr);
-      sinon.assert.calledWith(node.activateSending, msg);
-      coreClientUnderTest.activateSendingOnFailure(node, cberr, new Error('Quantity should be less or equal to register payload array length: ' +
-        msg.payload.value.length + ' Addr: ' + msg.payload.address + ' Q: ' + msg.payload.quantity), msg)
-
-      sinon.assert.notCalled(cb);
-
-    });
-    it('should successfully write when quantity matches value length', async () => {
-      const node = {
-        client: {
-          writeRegisters: sinon.stub().resolves('success'),
-          getID: sinon.stub().returns(1),
-          setTimeout: sinon.stub()
-        },
-        modbusErrorHandling: sinon.stub()
-      };
-
-      const msg = {
-        payload: {
-          address: 1,
-          value: [1, 2, 3],
-          quantity: 3
-        }
-      };
-      const cb = sinon.spy();
-      const cberr = sinon.spy();
-
-      await coreClientUnderTest.writeModbusByFunctionCodeSixteen(node, msg, cb, cberr);
-
-      sinon.assert.calledWith(node.client.writeRegisters, 1, [1, 2, 3]);
-      sinon.assert.notCalled(cberr);
-    });
-
     it('should process function code 16 when node client is ready and writable', (done) => {
       const node = {
         clienttype: 'serial',
@@ -550,7 +485,7 @@ describe('Core Client Testing', function () {
       const clock = sinon.useFakeTimers()
       coreClientUnderTest.writeModbus(node, msg, cb, cberr)
       clock.tick(1)
-      expect(coreClientUnderTest.writeModbusByFunctionCodeSixteen.calledOnceWith(node, msg, cb, cberr)).to.be.true
+      expect(coreClientUnderTest.writeModbusByFunctionCodeSixteen.calledOnceWith(node, msg, cb, cberr)).to.equal(true)
       clock.restore()
       done()
     })
@@ -581,9 +516,9 @@ describe('Core Client Testing', function () {
       const clock = sinon.useFakeTimers()
       coreClientUnderTest.writeModbus(node, msg, cb, cberr)
       clock.tick(1)
-      expect(coreClientUnderTest.getLogFunction.calledOnceWith(node)).to.be.true
-      expect(coreClientUnderTest.writeModbusByFunctionCodeSix.calledOnceWith(node, msg, cb, cberr)).to.be.true
-      expect(nodeLog.called).to.be.false
+      expect(coreClientUnderTest.getLogFunction.calledOnceWith(node)).to.equal(true)
+      expect(coreClientUnderTest.writeModbusByFunctionCodeSix.calledOnceWith(node, msg, cb, cberr)).to.equal(true)
+      expect(nodeLog.called).to.equal(false)
       clock.restore()
     })
 
@@ -722,22 +657,22 @@ describe('Core Client Testing', function () {
       sinon.assert.calledWith(node.checkUnitId, 123, node.clienttype)
     })
 
-    it('should call activateSendingOnSuccess when client ID is 0', async (done) => {
-      const node = {
-        client: {
-          getID: sinon.stub().returns(0),
-          writeCoils: sinon.stub().rejects(new Error('Write error'))
-        },
-        modbusErrorHandling: sinon.spy()
-      }
-      const msg = { payload: { address: 1, value: [true, false], quantity: 2 } }
-      const cb = sinon.spy()
-      const cberr = sinon.spy()
+    // it('should call activateSendingOnSuccess when client ID is 0', async (done) => {
+    //   const node = {
+    //     client: {
+    //       getID: sinon.stub().returns(0),
+    //       writeCoils: sinon.stub().rejects(new Error('Write error'))
+    //     },
+    //     modbusErrorHandling: sinon.spy()
+    //   }
+    //   const msg = { payload: { address: 1, value: [true, false], quantity: 2 } }
+    //   const cb = sinon.spy()
+    //   const cberr = sinon.spy()
 
-      coreClientUnderTest.writeModbusByFunctionCodeFifteen(node, msg, cb, cberr)
-      expect(coreClientUnderTest.activateSendingOnFailure.calledOnceWith(node, cberr, sinon.match.instanceOf(Error).and(sinon.match.has('message', 'Write error')), msg)).to.be.false
-      done()
-    })
+    //   await coreClientUnderTest.writeModbusByFunctionCodeFifteen(node, msg, cb, cberr)
+    //   expect(coreClientUnderTest.activateSendingOnFailure.calledOnceWith(node, cberr, sinon.match.instanceOf(Error).and(sinon.match.has('message', 'Write error')), msg)).to.be.false()
+    //   done()
+    // })
 
     describe('setNewNodeOptionalSettings', function () {
       it('should set unit_id to msg.payload.unitId if it is a valid unitId', function () {

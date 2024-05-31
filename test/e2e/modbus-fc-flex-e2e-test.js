@@ -109,7 +109,6 @@ describe('Modbus Flex FC-Functionality tests', function () {
 
     it('the node can load the default files from the drive via a POST Request', function (done) {
       helper.load(nodeList, testFcFlexFlows.testFlexFCFunctionality, function () {
-        const flexNode = helper.getNode('4f80ae4fa5b8af80')
         helper.request().post('/modbus/fc/4f80ae4fa5b8af80').expect(200).end(done)
       })
     })

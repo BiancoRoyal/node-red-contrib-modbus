@@ -184,12 +184,12 @@ describe('Flex Getter node Testing', function () {
       flow[1].serverPort = '50107'
       helper.load(testFlexGetterNodes, flow, function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
-        _.isUndefined(modbusClientNode).should.be.false
+        _.isUndefined(modbusClientNode).should.be.false()
 
         setTimeout(() => {
           modbusClientNode.receive({ payload: 'test' })
           const isInactive = modbusClientNode.isInactive()
-          isInactive.should.be.true
+          isInactive.should.be.true()
           done()
         }, 1500)
       })
@@ -203,7 +203,7 @@ describe('Flex Getter node Testing', function () {
         setTimeout(() => {
           modbusClientNode.messageAllowedStates = ['']
           const isInactive = modbusClientNode.isInactive()
-          isInactive.should.be.true
+          isInactive.should.be.true()
           done()
         }, 1500)
       })
@@ -217,7 +217,7 @@ describe('Flex Getter node Testing', function () {
         setTimeout(() => {
           mBasics.setNodeStatusTo('queueing', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.true
+          isReady.should.be.true()
           done()
         }, 1500)
       })
@@ -231,7 +231,7 @@ describe('Flex Getter node Testing', function () {
         setTimeout(() => {
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.false
+          isReady.should.be.false()
           done()
         }, 1500)
       })
@@ -280,9 +280,9 @@ describe('Flex Getter node Testing', function () {
         const modbusGetterNode = helper.getNode('bc5a61b6.a3972')
         setTimeout(() => {
           let isReady = modbusGetterNode.isReadyForInput(null)
-          isReady.should.be.false
+          isReady.should.be.false()
           isReady = modbusGetterNode.isReadyForInput(undefined)
-          isReady.should.be.false
+          isReady.should.be.false()
           done()
         }, 1500)
       })

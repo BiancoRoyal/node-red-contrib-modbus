@@ -62,7 +62,7 @@ describe('IO Config node Testing', function () {
         setTimeout(() => {
           mBasics.setNodeStatusTo('queueing', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.true
+          isReady.should.be.true()
           done()
         }, 1500)
       })
@@ -74,7 +74,7 @@ describe('IO Config node Testing', function () {
         setTimeout(() => {
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.false
+          isReady.should.be.false()
           done()
         }, 1500)
       })

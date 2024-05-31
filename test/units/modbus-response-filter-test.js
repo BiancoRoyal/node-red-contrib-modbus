@@ -104,11 +104,11 @@ describe('Response Filter node Testing', function () {
     it('should be inactive if message not allowed', function (done) {
       helper.load(testResponseFilterNodes, testFlows.testWorkWithFlexGetterFlow, function () {
         const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
-        _.isUndefined(modbusClientNode).should.be.false
+        _.isUndefined(modbusClientNode).should.be.false()
 
         modbusClientNode.receive({ payload: 'test' })
         const isInactive = modbusClientNode.isInactive()
-        isInactive.should.be.true
+        isInactive.should.be.true()
         done()
       })
     })
@@ -121,7 +121,7 @@ describe('Response Filter node Testing', function () {
         setTimeout(() => {
           modbusClientNode.messageAllowedStates = ['']
           const isInactive = modbusClientNode.isInactive()
-          isInactive.should.be.true
+          isInactive.should.be.true()
           done()
         }, 1500)
       })
@@ -133,7 +133,7 @@ describe('Response Filter node Testing', function () {
         setTimeout(() => {
           mBasics.setNodeStatusTo('queueing', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.true
+          isReady.should.be.true()
           done()
         }, 1500)
       })
@@ -145,7 +145,7 @@ describe('Response Filter node Testing', function () {
         setTimeout(() => {
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.false
+          isReady.should.be.false()
           done()
         }, 1500)
       })

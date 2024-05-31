@@ -97,12 +97,12 @@ describe('modbus flex fc unit test', function () {
 
       // Catch the message that was put out by stubbing the node.warn method...
       node.environmentVerbosity = true
-      let mock_verbose_warn_message = ''
-      node.warn = function (message) { mock_verbose_warn_message = message }
+      let mockVerboseWarnMessage = ''
+      node.warn = function (message) { mockVerboseWarnMessage = message }
 
       node.isReadyForInput = function readForInputMock () { return true }
       node.receive({})
-      mock_verbose_warn_message.should.equal('Read -> Invalid message on input. address: undefined')
+      mockVerboseWarnMessage.should.equal('Read -> Invalid message on input. address: undefined')
       done()
     })
   })
@@ -112,14 +112,14 @@ describe('modbus flex fc unit test', function () {
       const node = helper.getNode('d975b1203f71a3b5')
       node.environmentVerbosity = true
       // Catch the message that was put out by stubbing the node.warn method...
-      let mock_verbose_warn_message = ''
-      node.warn = function (message) { mock_verbose_warn_message = message }
+      let mockVerboseWarnMessage = ''
+      node.warn = function (message) { mockVerboseWarnMessage = message }
       node.receive({
         topic: 'customFc',
         payload: { unitid: 0x01, fc: 0x01, requestCard: [0x00], responseCard: [0x00] }
       })
 
-      mock_verbose_warn_message.should.equal('Read -> Inject while node is not ready for input. address: undefined')
+      mockVerboseWarnMessage.should.equal('Read -> Inject while node is not ready for input. address: undefined')
       done()
     })
   })
@@ -128,15 +128,15 @@ describe('modbus flex fc unit test', function () {
     helper.load(testFlexFcNodes, testFlows.testReadCoilMode, function () {
       const node = helper.getNode('d975b1203f71a3b5')
       node.environmentVerbosity = true
-      let mock_verbose_warn_message = ''
-      node.warn = function (message) { mock_verbose_warn_message = message }
+      let mockVerboseWarnMessage = ''
+      node.warn = function (message) { mockVerboseWarnMessage = message }
       node.isNotReadyForInput = function () { return false }
       node.receive({
         topic: 'customFc',
         payload: { unitid: 0x01, fc: 0x01, requestCard: [0x00], responseCard: [0x00] }
       })
 
-      mock_verbose_warn_message.should.equal('Read -> You sent an input to inactive client. Please use initial delay on start or send data more slowly. address: undefined')
+      mockVerboseWarnMessage.should.equal('Read -> You sent an input to inactive client. Please use initial delay on start or send data more slowly. address: undefined')
       done()
     })
   })
@@ -147,14 +147,15 @@ describe('modbus flex fc unit test', function () {
       const client = helper.getNode('5c2b693859e05456')
 
       node.environmentVerbosity = true
-      let mock_verbose_warn_message = ''
-      node.warn = function (message) { mock_verbose_warn_message = message }
+      // let mockVerboseWarnMessage = ''
+      // node.warn = function (message) { mockVerboseWarnMessage = message }
 
       node.isNotReadyForInput = function () { return false }
       node.isInactive = function () { return false }
 
       node.onModbusReadDone = function () { } // TODO: Stub this out!
       node.onModbusReadError = function () { } // TODO: Stub this one as well!
+
       client.isInactive = function () { return false }
 
       node.receive({
@@ -171,7 +172,6 @@ describe('modbus flex fc unit test', function () {
 
       node.showStatusActivities = true
       node.onModbusRegister()
-      const activities = node.showStatusActivities
       const newStatus = node.statusText
 
       newStatus.should.be.equal('registered')
@@ -185,7 +185,6 @@ describe('modbus flex fc unit test', function () {
 
       node.showStatusActivities = true
       node.onModbusInit()
-      const activities = node.showStatusActivities
       const newStatus = node.statusText
 
       newStatus.should.be.equal('initialized')
@@ -199,7 +198,6 @@ describe('modbus flex fc unit test', function () {
 
       node.showStatusActivities = true
       node.onModbusActive()
-      const activities = node.showStatusActivities
       const newStatus = node.statusText
 
       newStatus.should.be.equal('active')
@@ -213,7 +211,6 @@ describe('modbus flex fc unit test', function () {
 
       node.showStatusActivities = true
       node.onModbusQueue()
-      const activities = node.showStatusActivities
       const newStatus = node.statusText
 
       newStatus.should.be.equal('queue')
@@ -227,7 +224,6 @@ describe('modbus flex fc unit test', function () {
 
       node.showStatusActivities = true
       node.onModbusError()
-      const activities = node.showStatusActivities
       const newStatus = node.statusText
 
       newStatus.should.be.equal('failure')
@@ -241,14 +237,13 @@ describe('modbus flex fc unit test', function () {
 
       node.showStatusActivities = false
       node.showErrors = true
-      let mock_error_message = ''
-      node.warn = function (message) { mock_error_message = message }
+      let mockMessage = ''
+      node.warn = function (message) { mockMessage = message }
       node.onModbusError('Test Error Message')
-      const activities = node.showStatusActivities
       const newStatus = node.statusText
 
       newStatus.should.be.equal('failure')
-      mock_error_message.should.be.equal('Test Error Message')
+      mockMessage.should.be.equal('Test Error Message')
       done()
     })
   })
@@ -258,14 +253,13 @@ describe('modbus flex fc unit test', function () {
       const node = helper.getNode('d975b1203f71a3b5')
 
       node.showErrors = false
-      let mock_error_message = ''
-      node.warn = function (message) { mock_error_message = message }
+      let mockMessage = ''
+      node.warn = function (message) { mockMessage = message }
       node.onModbusError('Test Error Message')
-      const activities = node.showStatusActivities
       const newStatus = node.statusText
 
       newStatus.should.be.equal('failure')
-      mock_error_message.should.be.equal('')
+      mockMessage.should.be.equal('')
       done()
     })
   })
@@ -276,7 +270,6 @@ describe('modbus flex fc unit test', function () {
 
       node.showStatusActivities = true
       node.onModbusBroken()
-      const activities = node.showStatusActivities
       const newStatus = node.statusText
 
       newStatus.should.be.equal('broken')
@@ -297,7 +290,6 @@ describe('modbus flex fc unit test', function () {
           responseCard: [0x00]
         }
       })
-      const activities = node.showStatusActivities
       const newStatus = node.statusText
 
       newStatus.should.be.equal('reading done')

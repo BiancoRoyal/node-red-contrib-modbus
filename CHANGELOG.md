@@ -1,4 +1,4 @@
-# [5.40.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.2...v5.40.0) (2024-05-17)
+# [5.40.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.2...v5.40.0) (2024-05-31)
 
 
 ### Bug Fixes
@@ -6,6 +6,8 @@
 * **buffer:** nodejs Buffer alloc update ([9a6350c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/9a6350cd67361f10310629a145f8a595e9f3d85c))
 * **codeql:** version codeql ([163101f](https://github.com/biancoroyal/node-red-contrib-modbus/commit/163101f91c784a5202acd86b0a10302a22414495))
 * **config:** [#442](https://github.com/biancoroyal/node-red-contrib-modbus/issues/442) fixing optional to save correct ([de88e25](https://github.com/biancoroyal/node-red-contrib-modbus/commit/de88e25b10e7e92ea8836d22ee91cb25796f3909))
+* **modbus-io-core:** fixed error  RangeError [ERR_OUT_OF_RANGE]: ([ab932f3](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ab932f3de4a3c362f73ba701da9fd1b0964fb21e))
+* **tests:** some test fixes ([45c3c86](https://github.com/biancoroyal/node-red-contrib-modbus/commit/45c3c86d137a7f2dc929d0e3b189efa026df88b5))
 
 
 ### Features
@@ -18,30 +20,22 @@
 
 
 
-## [5.27.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.1...v5.27.2) (2023-08-29)
-
-
-### Bug Fixes
-
-* **deps:** can now successfully install deps ([f8e0a64](https://github.com/biancoroyal/node-red-contrib-modbus/commit/f8e0a6491d4eeed9b295d327f065540e1b2027bd))
-* **deps:** updated scope names for requires ([9c643f6](https://github.com/biancoroyal/node-red-contrib-modbus/commit/9c643f6c5608a164d549fffbc9206341d4b6c75e))
-* **flexFC:** fixed routes for codes map ([e2e2cc5](https://github.com/biancoroyal/node-red-contrib-modbus/commit/e2e2cc525f3297d5bb113a68f4292dc444f43e36))
-
-
-
-## [5.27.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.0...v5.27.1) (2023-08-28)
+## [5.27.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.26.0...v5.27.2) (2023-08-29)
 
 
 ### Bug Fixes
 
 * added missing verbose warn ([4082952](https://github.com/biancoroyal/node-red-contrib-modbus/commit/4082952624d6336d9463d8793415d786d45a2d9f))
 * adjusted failing tests to tcp ports ([5db0e99](https://github.com/biancoroyal/node-red-contrib-modbus/commit/5db0e996c2b95b27cb245ee335cc53d82bdecb65))
+* **deps:** can now successfully install deps ([f8e0a64](https://github.com/biancoroyal/node-red-contrib-modbus/commit/f8e0a6491d4eeed9b295d327f065540e1b2027bd))
+* **deps:** updated scope names for requires ([9c643f6](https://github.com/biancoroyal/node-red-contrib-modbus/commit/9c643f6c5608a164d549fffbc9206341d4b6c75e))
 * fixed failing tests using same ports ([06080d4](https://github.com/biancoroyal/node-red-contrib-modbus/commit/06080d452b0efd71d5f516d14137c24161e984c7))
 * **flex-getter:** corrected isReadyForInput ([806ee4c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/806ee4cb33659744708e80fad7d51e9f7b7c9edc))
 * **flex-getter:** fixed failing tests ([1ab96b3](https://github.com/biancoroyal/node-red-contrib-modbus/commit/1ab96b30ec198aafffc288f1b81d626929c262a1))
 * **flex-getter:** revise DelayOnStart ([c9d246a](https://github.com/biancoroyal/node-red-contrib-modbus/commit/c9d246a1627dbadb7a0bbd3e3b39c9429a10f859))
 * **flex-server:** changed var to const ([d638d53](https://github.com/biancoroyal/node-red-contrib-modbus/commit/d638d5368b3e13700a0fd3aaaa434aae6be8d522))
 * **flex-write:** deleted unused flow ([2f0baee](https://github.com/biancoroyal/node-red-contrib-modbus/commit/2f0baee699a25d0c21eaf95773ab67f4dccd47f6))
+* **flexFC:** fixed routes for codes map ([e2e2cc5](https://github.com/biancoroyal/node-red-contrib-modbus/commit/e2e2cc525f3297d5bb113a68f4292dc444f43e36))
 * **flexGetter-verboseWarn:** node.serverInfo is left from client - removed ([94c58db](https://github.com/biancoroyal/node-red-contrib-modbus/commit/94c58db6b17d58097a5db413301b0e8b2bd43751))
 * **isReadyForInput:** now checks ONLY for readyforinput. Rest in onInput ([99f60a8](https://github.com/biancoroyal/node-red-contrib-modbus/commit/99f60a821d1a8192a9074016f668c7c04b0c740c))
 * Node-RED PLUS changed to PLUS for Node-RED ([f726949](https://github.com/biancoroyal/node-red-contrib-modbus/commit/f72694954b2d3d07e65766c00dcb9274ffb1fd66))
@@ -156,7 +150,7 @@
 
 
 
-# [5.14.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.13.3...v5.14.0) (2021-04-10)
+# [5.14.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.13.1...v5.14.0) (2021-04-10)
 
 
 ### Bug Fixes
@@ -278,7 +272,7 @@
 
 
 
-# [5.2.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/5.1.0-0...v5.2.0) (2019-12-08)
+# [5.2.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v4.1.3...v5.2.0) (2019-12-08)
 
 
 ### Bug Fixes
@@ -292,14 +286,6 @@
 ### Features
 
 * [#161](https://github.com/biancoroyal/node-red-contrib-modbus/issues/161) multiple RTU devices via UnitID ([b0b5011](https://github.com/biancoroyal/node-red-contrib-modbus/commit/b0b5011be4ab5e7c06ab44fd9df7b0ff5ddd0fd8))
-
-
-
-# [5.1.0-0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v4.1.3...5.1.0-0) (2019-11-24)
-
-
-### Features
-
 * new state machine from xstate ([57aef99](https://github.com/biancoroyal/node-red-contrib-modbus/commit/57aef9956187ee9d70e862b226f3a3ef5e091528))
 
 

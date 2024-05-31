@@ -23,7 +23,7 @@ helper.init(require.resolve('node-red'))
 const testGetterNodes = [injectNode, ioConfigNode, clientNode, serverNode, getterNode]
 
 const testFlows = require('./flows/modbus-getter-flows')
-const mBasics = require('../../src/modbus-basics')
+const mbBasics = require('../../src/modbus-basics')
 
 describe('Getter node Testing', function () {
   before(function (done) {
@@ -179,9 +179,9 @@ describe('Getter node Testing', function () {
       helper.load(testGetterNodes, flow, function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         setTimeout(() => {
-          mBasics.setNodeStatusTo('queueing', modbusClientNode)
+          mbBasics.setNodeStatusTo('queueing', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.true
+          isReady.should.be.true()
           done()
         }, 1500)
       })
@@ -194,9 +194,9 @@ describe('Getter node Testing', function () {
       helper.load(testGetterNodes, flow, function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         setTimeout(() => {
-          mBasics.setNodeStatusTo('stopped', modbusClientNode)
+          mbBasics.setNodeStatusTo('stopped', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.false
+          isReady.should.be.false()
           done()
         }, 1500)
       })
@@ -209,7 +209,7 @@ describe('Getter node Testing', function () {
         const msg = { payload: 'test' }
 
         getterNode.onModbusCommandError(errorMessage, msg)
-        sinon.assert.calledWith(node.internalDebugLog, errorMessage)
+        sinon.assert.calledWith(modbusClientNode.internalDebugLog, errorMessage)
 
         modbusClientNode.internalDebugLog = sinon.spy()
         modbusClientNode.errorProtocolMsg = sinon.spy()

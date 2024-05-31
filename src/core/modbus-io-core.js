@@ -316,7 +316,8 @@ de.biancoroyal.modbus.io.core.getValueFromBufferByDataType = function (item, buf
   if (logging) {
     ioCore.internalDebug('Get Value From Buffer By Data Type:' + item.dataType + ' Register:' + item.registerAddress + ' Bits:' + Number(item.bits))
   }
-
+  let lowBits
+  let highBits
   switch (item.dataType) {
     case 'Boolean':
       item.value = !!(responseBuffer.readUInt16BE(bufferOffset) & Math.pow(item.bitAddress[1], 2))
@@ -340,8 +341,8 @@ de.biancoroyal.modbus.io.core.getValueFromBufferByDataType = function (item, buf
           item.value = responseBuffer.readInt32BE(bufferOffset)
           break
         case '64':
-          const lowBits = responseBuffer.readUInt32BE(4)
-          const highBits = responseBuffer.readUInt32BE(0)
+          lowBits = responseBuffer.readUInt32BE(4)
+          highBits = responseBuffer.readUInt32BE(0)
           item.value = highBits * 2 ** 32 + lowBits
           break
         default:

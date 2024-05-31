@@ -81,11 +81,11 @@ describe('Flex Sequencer node Testing', function () {
     it('should be inactive if message not allowed', function (done) {
       helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
-        _.isUndefined(modbusClientNode).should.be.false
+        _.isUndefined(modbusClientNode).should.be.false()
 
         modbusClientNode.receive({ payload: 'test' })
         const isInactive = modbusClientNode.isInactive()
-        isInactive.should.be.true
+        isInactive.should.be.true()
         done()
       })
     })
@@ -98,7 +98,7 @@ describe('Flex Sequencer node Testing', function () {
         setTimeout(() => {
           modbusClientNode.messageAllowedStates = ['']
           const isInactive = modbusClientNode.isInactive()
-          isInactive.should.be.true
+          isInactive.should.be.true()
           done()
         }, 1500)
       })
@@ -110,7 +110,7 @@ describe('Flex Sequencer node Testing', function () {
         setTimeout(() => {
           mBasics.setNodeStatusTo('queueing', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.true
+          isReady.should.be.true()
           done()
         }, 1500)
       })
@@ -122,7 +122,7 @@ describe('Flex Sequencer node Testing', function () {
         setTimeout(() => {
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.false
+          isReady.should.be.false()
           done()
         }, 1500)
       })
@@ -295,7 +295,7 @@ describe('Flex Sequencer node Testing', function () {
       flexSequencerNode.receive(invalidMsg)
 
       setTimeout(() => {
-        helper.log().calledWith('Invalid message on input.').should.be.true
+        helper.log().calledWith('Invalid message on input.').should.be.true()
         done()
       }, 100)
     })
@@ -310,7 +310,7 @@ describe('Flex Sequencer node Testing', function () {
       flexSequencerNode.receive(validMsg)
 
       setTimeout(() => {
-        helper.log().calledWith('Inject while node is not ready for input.').should.be.true
+        helper.log().calledWith('Inject while node is not ready for input.').should.be.true()
         done()
       }, 100)
     })
@@ -329,10 +329,10 @@ describe('Flex Sequencer node Testing', function () {
     const verboseWarnSpy = flexSequencerNode.verboseWarn
 
     await flexSequencerNode.initializeInputDelayTimer()
-    expect(resetInputDelayTimerSpy.calledOnce).to.be.true
-    expect(verboseWarnSpy.calledOnceWithExactly('initialize input delay timer node test-flexSequencerNode-id')).to.be.false
+    expect(resetInputDelayTimerSpy.calledOnce).to.be.true()
+    expect(verboseWarnSpy.calledOnceWithExactly('initialize input delay timer node test-flexSequencerNode-id')).to.be.false()
     expect(flexSequencerNode.inputDelayTimer).to.be.an('object')
-    expect(flexSequencerNode.delayOccured).to.be.false
+    expect(flexSequencerNode.delayOccured).to.be.false()
 
     resetInputDelayTimerSpy.restore()
   })

@@ -133,7 +133,7 @@ describe('Client node Testing', function () {
         setTimeout(() => {
           modbusClientNode.messageAllowedStates = ['']
           const isInactive = modbusClientNode.isInactive()
-          isInactive.should.be.true
+          isInactive.should.be.true()
           done()
         }, 1500)
       })
@@ -145,7 +145,7 @@ describe('Client node Testing', function () {
         setTimeout(() => {
           mBasics.setNodeStatusTo('queueing', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.true
+          isReady.should.be.true()
           done()
         }, 1500)
       })
@@ -155,7 +155,7 @@ describe('Client node Testing', function () {
       helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
         const modbusReadNode = helper.getNode('466860d5.3f6358')
         const isInactive = modbusReadNode.isInactive()
-        isInactive.should.be.true
+        isInactive.should.be.true()
         done()
       })
     })
@@ -165,7 +165,7 @@ describe('Client node Testing', function () {
         const modbusReadNode = helper.getNode('466860d5.3f6358')
         modbusReadNode.receive({ payload: 'test message' })
         const isActive = modbusReadNode.isActive()
-        isActive.should.be.true
+        isActive.should.be.true()
         done()
       })
     })
@@ -414,7 +414,7 @@ describe('Client node Testing', function () {
     })
 
     it('should fail for invalid unit ID', function (done) {
-      const modbusClientNode = helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
+      helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
         const h1 = helper.getNode('466860d5.3f6358')
         h1.on('input', function (msg) {
           msg.should.have.property('payload', 'Invalid unit ID')
