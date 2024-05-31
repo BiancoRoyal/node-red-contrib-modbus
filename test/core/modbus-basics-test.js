@@ -171,5 +171,14 @@ describe('Modbus Node basics Suite', function () {
         status: 'error'
       })
     })
+
+    it('should return correct properties for "timeout" status', function () {
+      const status = basic.setNodeStatusProperties('timeout')
+      assert.deepStrictEqual(status, {
+        fill: 'red',
+        shape: 'ring',
+        status: 'timeout'
+      })
+    })
   })
 })
