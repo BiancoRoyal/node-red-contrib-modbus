@@ -188,8 +188,6 @@ describe('Core Server Testing', function () {
 
         writeModbusFlexServerMemoryStub.restore()
       })
-
-
     })
 
     it('should copy bufferData to registers for holding register', () => {
@@ -318,7 +316,6 @@ describe('Modbus server core function Copy  Buffer', () => {
     registers: Buffer.alloc(2),
     coils: Buffer.alloc(1)
   }
-
 
   it('should return false for invalid case', () => {
     const msg = {

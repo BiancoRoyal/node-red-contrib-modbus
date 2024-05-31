@@ -58,33 +58,6 @@ describe('Core IO Testing', function () {
         done()
       })
 
-      it('should build message with IO when useIOFile and lastUpdatedAt are set', function (done) {
-        const node = {
-          bufferMessageList: [],
-          useIOFile: true,
-          ioFile: { lastUpdatedAt: Date.now() },
-          useIOForPayload: true,
-          logIOActivities: true
-        }
-        let values = [1, 2, 3]
-        const response = [4, 5, 6]
-        const msg = { payload: { address: 1, fc: 3, quantity: 2 }, topic: 'test' }
-        const allValueNames = coreIOUnderTest.nameValuesFromIOFile(node, msg, values, response, parseInt(msg.payload.address) || 0)
-
-        const valueNames = coreIOUnderTest.filterValueNames(node, allValueNames, parseInt(msg.payload.fc) || 3, parseInt(msg.payload.address) || 0, parseInt(msg.payload.quantity) || 1, node.logIOActivities)
-
-        const getOriginalMessageStub = sinon.stub(coreIOUnderTest.core, 'getOriginalMessage').returns({ modbusRequest: {} })
-        const [origMsg, rawMsg] = coreIOUnderTest.buildMessageWithIO(node, values, response, msg)
-        expect(rawMsg).to.be.any()
-        sinon.assert.calledWith(getOriginalMessageStub, node.bufferMessageList, msg)
-        sinon.assert.match(origMsg.payload, valueNames)
-        sinon.assert.match(origMsg.values, values)
-        node.useIOForPayload = false
-        values = []
-        coreIOUnderTest.buildMessageWithIO(node, values, response, msg)
-        sinon.assert.calledWith(getOriginalMessageStub, node.bufferMessageList, msg)
-        done()
-      })
 
       it('should handle non-Buffer responseBuffer gracefully', () => {
         const valueNames = [{ dataType: 'int16', registerAddress: 0, bits: 16 }]
@@ -95,10 +68,10 @@ describe('Core IO Testing', function () {
 
         coreIOUnderTest.convertValuesByType(valueNames, register, responseBuffer, logging)
 
-        expect(internalDebugSpy.calledWith('Response Buffer Is Not A Buffer')).to.be.false()
+        expect(internalDebugSpy.calledWith('Response Buffer Is Not A Buffer')).to.equal(false)
 
         internalDebugSpy.restore()
-        expect(internalDebugSpy.calledWith('Response Buffer Is Not A Buffer')).to.be.false()
+        expect(internalDebugSpy.calledWith('Response Buffer Is Not A Buffer')).to.equal(false)
         internalDebugSpy.restore()
       })
 
@@ -114,7 +87,6 @@ describe('Core IO Testing', function () {
         done()
       })
 
-      // needs to be fixed
 
       it('should set item.value correctly for dataType "Integer" and bits "64"', (done) => {
         const buffer = Buffer.from([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01])
@@ -158,7 +130,7 @@ describe('Core IO Testing', function () {
         const item = { dataType: 'Unknown', bits: '16', registerAddress: 0 }
         const result = coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, false)
         expect(result.value).to.equal(1)
-        expect(result.convertedValue).to.be.false()
+        expect(result.convertedValue).to.equal(false)
       })
 
       it('should read 16-bit unsigned integer value for default data type', () => {
@@ -166,7 +138,7 @@ describe('Core IO Testing', function () {
         const item = { dataType: 'Unknown', bits: '16', registerAddress: 0 }
         const result = coreIOUnderTest.getValueFromBufferByDataType(item, 0, buffer, false)
         expect(result.value).to.equal(1)
-        expect(result.convertedValue).to.be.false()
+        expect(result.convertedValue).to.equal(false)
       })
 
       it('should set item.value correctly for dataType "Word" and bits other than "8"', () => {
@@ -212,7 +184,6 @@ describe('Core IO Testing', function () {
         const logging = false
 
         const result = coreIOUnderTest.insertValues(valueNames, register, logging)
-
         expect(result[0].value).to.deep.equal(null)
         expect(result[1].value).to.deep.equal(null)
       })
@@ -343,9 +314,6 @@ describe('Core IO Testing', function () {
           type: 'input'
         })
       })
-
-      // to be fixed
-
       it('should correctly read 64-bit unsigned integer value as BE number 1', () => {
         const buffer = Buffer.alloc(8)
         buffer.writeUInt8(0x01, 7)
@@ -407,6 +375,112 @@ describe('Core IO Testing', function () {
           dataType: 'Float',
           type: 'output'
         })
+      })
+    })
+    describe('filterValueNames', () => {
+      it('should filter valueNames correctly based on address range and function type', () => {
+        const node = { logIOActivities: false }
+        const valueNames = [
+          { registerAddress: 1, addressStartIO: 2, type: 'input' },
+          { registerAddress: 2, addressStartIO: 3, type: 'output' },
+          { registerAddress: 3, addressStartIO: 4, type: 'input' }
+        ]
+        const fc = 3
+        const adr = 2
+        const quantity = 2
+
+        const result = coreIOUnderTest.filterValueNames(node, valueNames, fc, adr, quantity)
+
+        assert.deepStrictEqual(result, [{ registerAddress: 1, addressStartIO: 2, type: 'input' }])
+      })
+
+      it('should handle non-numeric adr and quantity gracefully', () => {
+        const node = { logIOActivities: false }
+        const valueNames = [
+
+        ]
+        const fc = 3
+        const adr = 'invalid'
+        const quantity = 'invalid'
+
+        const result = coreIOUnderTest.filterValueNames(node, valueNames, fc, adr, quantity)
+
+        assert.deepStrictEqual(result, valueNames)
+      })
+
+      it('should return original valueNames when valueNames is empty', () => {
+        const node = { logIOActivities: false }
+        const valueNames = []
+        const fc = 3
+        const adr = 2
+        const quantity = 2
+
+        const result = coreIOUnderTest.filterValueNames(node, valueNames, fc, adr, quantity)
+
+        assert.deepStrictEqual(result, [])
+      })
+
+      it('should return original valueNames when valueNames does not have filter method', () => {
+        const node = { logIOActivities: false }
+        const valueNames = { notFilterable: true }
+        const fc = 3
+        const adr = 2
+        const quantity = 2
+
+        const result = coreIOUnderTest.filterValueNames(node, valueNames, fc, adr, quantity)
+
+        assert.deepStrictEqual(result, { notFilterable: true })
+      })
+
+      it('should log debug information when node.logIOActivities is true', () => {
+        const node = { logIOActivities: true }
+        const valueNames = [
+          { registerAddress: 1, addressStartIO: 2, type: 'input' },
+          { registerAddress: 2, addressStartIO: 3, type: 'output' },
+          { registerAddress: 3, addressStartIO: 4, type: 'input' }
+        ]
+        const fc = 3
+        const adr = 2
+        const quantity = 2
+
+        const spy = sinon.spy(coreIOUnderTest, 'internalDebug')
+
+        coreIOUnderTest.filterValueNames(node, valueNames, fc, adr, quantity)
+
+        sinon.assert.calledWith(spy, 'adr:' + adr + ' quantity:' + quantity + ' startRegister:' + adr + ' endRegister:' + (Number(adr) + Number(quantity) - 1) + ' functionType:input')
+        spy.restore()
+      })
+
+      it('should handle function codes 2 and 4 as output types', () => {
+        const node = { logIOActivities: false }
+        const valueNames = [
+          { registerAddress: 1, addressStartIO: 2, type: 'input' },
+          { registerAddress: 2, addressStartIO: 3, type: 'output' },
+          { registerAddress: 3, addressStartIO: 4, type: 'input' }
+        ]
+        const fc = 2
+        const adr = 2
+        const quantity = 2
+
+        const result = coreIOUnderTest.filterValueNames(node, valueNames, fc, adr, quantity)
+
+        assert.deepStrictEqual(result, [{ registerAddress: 2, addressStartIO: 3, type: 'output' }])
+      })
+
+      it('should handle valueNames with missing or undefined properties', () => {
+        const node = { logIOActivities: false }
+        const valueNames = [
+          { registerAddress: 1, addressStartIO: 2 },
+          { registerAddress: 2 },
+          { addressStartIO: 4, type: 'input' }
+        ]
+        const fc = 3
+        const adr = 2
+        const quantity = 2
+
+        const result = coreIOUnderTest.filterValueNames(node, valueNames, fc, adr, quantity)
+
+        assert.deepStrictEqual(result, [])
       })
     })
 

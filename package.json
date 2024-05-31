@@ -69,7 +69,7 @@
     "changelog": "npm run rewrite-changelog",
     "test": "npm run lint && mocha ./test --parallel --recursive --reporter dot --timeout 7000",
     "test:slow": "npm run lint && mocha ./test --recursive --reporter dot --timeout 7000",
-    "test:e2e": "npm run lint && mocha ./test/core/modbus-server-core-test.js --parallel --recursive --reporter dot --timeout 10000",
+    "test:e2e": "npm run lint && mocha ./test/core/modbus-io-core-test.js --parallel --recursive --reporter dot --timeout 10000",
     "lint": "standard --fix",
     "test:units": "npm run lint && mocha './test/units/*-test.js' --parallel --recursive --timeout 7000",
     "test:core": "npm run lint && mocha './test/core/*-test.js' --parallel --recursive --timeout 7000",
