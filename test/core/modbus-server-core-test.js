@@ -169,6 +169,53 @@ describe('Core Server Testing', function () {
         done()
       })
     })
+    describe('writeToFlexServerMemory', () => {
+      const node = {
+        error: sinon.spy()
+      }
+
+      it('should write to flex server memory for valid register', () => {
+        const writeModbusFlexServerMemoryStub = sinon.stub(coreServerUnderTest, 'writeModbusFlexServerMemory')
+
+        const msg = {
+          payload: { register: 'HOLDING' }
+        }
+
+        coreServerUnderTest.writeToFlexServerMemory(node, msg)
+
+        sinon.assert.calledOnce(writeModbusFlexServerMemoryStub)
+        sinon.assert.calledWithExactly(writeModbusFlexServerMemoryStub, node, msg)
+
+        writeModbusFlexServerMemoryStub.restore()
+      })
+
+      // it('should convert register to lowercase before writing', () => {
+      //   const writeModbusFlexServerMemoryStub = sinon.stub(coreServerUnderTest, 'writeModbusFlexServerMemory')
+
+      //   const msg = {
+      //     payload: { register: 'COILS' }
+      //   }
+
+      //   coreServerUnderTest.writeToFlexServerMemory(node, msg)
+
+      //   sinon.assert.calledOnce(writeModbusFlexServerMemoryStub)
+      //   sinon.assert.calledWithExactly(writeModbusFlexServerMemoryStub, node, sinon.match({ payload: { register: 'coils' } }))
+
+      //   writeModbusFlexServerMemoryStub.restore()
+      // })
+
+      it('should not write to flex server memory for invalid register', () => {
+        const writeModbusFlexServerMemoryStub = sinon.stub(coreServerUnderTest, 'writeModbusFlexServerMemory')
+
+        const msg = {
+          payload: {}
+        }
+
+        coreServerUnderTest.writeToFlexServerMemory(node, msg)
+
+        sinon.assert.notCalled(writeModbusFlexServerMemoryStub)
+      })
+    })
 
     it('should copy bufferData to registers for holding register', () => {
       const node = {

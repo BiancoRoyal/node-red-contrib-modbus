@@ -172,8 +172,7 @@ de.biancoroyal.modbus.core.server.writeToServerMemory = function (node, msg) {
 
 de.biancoroyal.modbus.core.server.writeToFlexServerMemory = function (node, msg) {
   const coreServer = de.biancoroyal.modbus.core.server
-  msg.payload.register = msg.payload.register.toLowerCase()
-  try {
+  msg.payload.register = msg.payload.register ? msg.payload.register.toLowerCase() : undefined; try {
     if (coreServer.memoryTypes.includes(msg.payload.register)) {
       coreServer.writeModbusFlexServerMemory(node, msg)
     }
