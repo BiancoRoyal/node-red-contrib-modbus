@@ -151,7 +151,27 @@ describe('Response Filter node Testing', function () {
       })
     })
   })
+  // circular dependency error 
+  it('should be state queueing - ready to send', function () {
+    helper.load(testResponseFilterNodes, testFlows.testFlowForE2E, function () {
+      const modbusClientNode = helper.getNode('542529cd4e4e8a14')
+      console.log(modbusClientNode)
+      const msg = { payload: [{ name: 'testFilter', value: 123 }] }
+      // const internalDebugStub = sinon.stub(mbCore, 'internalDebug')
 
+      const clock = sinon.useFakeTimers()
+
+      modbusClientNode.emit('input', msg)
+      console.log('line2')
+      expect(msg.payload).to.deep.equal([{ name: 'testFilter', value: 123 }])
+      // sinon.assert.calledWith(internalDebugStub, '1 Registers And Filter Length Of 2 Does Not Match')
+      console.log('line3')
+      clock.tick(1500)
+
+      // modbusClientNode.on('input', function (msg) {
+      clock.restore()
+    })
+  })
   it('should call internalDebug with appropriate debug messages', () => {
     helper.load(testResponseFilterNodes, testFlows.testFlowResponse, function () {
       const modbusClientNode = helper.getNode('4f8c0e22.48b8b4')

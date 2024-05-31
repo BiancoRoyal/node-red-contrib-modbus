@@ -395,6 +395,89 @@ module.exports = {
       y: 540,
       wires: []
     }
-  ])
+  ]),
+  testFlowForE2E: helperExtensions.cleanFlowPositionData(
+    [
+      {
+        id: 'de709d6f7838999b',
+        type: 'tab',
+        label: 'Flow 15',
+        disabled: false,
+        info: '',
+        env: []
+      },
+      {
+        id: '88c95ea2e2f8f892',
+        type: 'inject',
+        z: 'de709d6f7838999b',
+        name: 'Inject Payload',
+        props: [
+          {
+            p: 'payload'
+          }
+        ],
+        repeat: '',
+        crontab: '',
+        once: true,
+        onceDelay: 0.1,
+        topic: '',
+        payload: '[{"name": "filter1", "value": 123}, {"name": "filter2", "value": 456}]',
+        payloadType: 'json',
+        x: 480,
+        y: 340,
+        wires: [
+          [
+            '542529cd4e4e8a14'
+          ]
+        ]
+      },
+      {
+        id: '542529cd4e4e8a14',
+        type: 'modbus-response-filter',
+        z: 'de709d6f7838999b',
+        name: 'Filter Response',
+        filter: 'filter1',
+        registers: 2,
+        ioFile: '31912071bc331d18',
+        filterResponseBuffer: false,
+        filterValues: false,
+        filterInput: false,
+        showStatusActivities: false,
+        showErrors: true,
+        showWarnings: true,
+        x: 660,
+        y: 340,
+        wires: [
+          [
+            '408bd14812e503de'
+          ]
+        ]
+      },
+      {
+        id: '408bd14812e503de',
+        type: 'helper',
+        z: 'de709d6f7838999b',
+        name: 'helper 17',
+        active: true,
+        tosidebar: true,
+        console: false,
+        tostatus: false,
+        complete: 'false',
+        statusVal: '',
+        statusType: 'auto',
+        x: 840,
+        y: 340,
+        wires: []
+      },
+      {
+        id: '31912071bc331d18',
+        type: 'modbus-io-config',
+        name: 'IO File Node',
+        path: 'testPath',
+        format: 'json',
+        addressOffset: 0
+      }
+    ]
+  )
 
 }
