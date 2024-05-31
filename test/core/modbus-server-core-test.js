@@ -189,32 +189,7 @@ describe('Core Server Testing', function () {
         writeModbusFlexServerMemoryStub.restore()
       })
 
-      // it('should convert register to lowercase before writing', () => {
-      //   const writeModbusFlexServerMemoryStub = sinon.stub(coreServerUnderTest, 'writeModbusFlexServerMemory')
 
-      //   const msg = {
-      //     payload: { register: 'COILS' }
-      //   }
-
-      //   coreServerUnderTest.writeToFlexServerMemory(node, msg)
-
-      //   sinon.assert.calledOnce(writeModbusFlexServerMemoryStub)
-      //   sinon.assert.calledWithExactly(writeModbusFlexServerMemoryStub, node, sinon.match({ payload: { register: 'coils' } }))
-
-      //   writeModbusFlexServerMemoryStub.restore()
-      // })
-
-      // it('should not write to flex server memory for invalid register', () => {
-      //   const writeModbusFlexServerMemoryStub = sinon.stub(coreServerUnderTest, 'writeModbusFlexServerMemory')
-
-      //   const msg = {
-      //     payload: {}
-      //   }
-
-      //   coreServerUnderTest.writeToFlexServerMemory(node, msg)
-
-      //   sinon.assert.notCalled(writeModbusFlexServerMemoryStub)
-      // })
     })
 
     it('should copy bufferData to registers for holding register', () => {
@@ -344,77 +319,6 @@ describe('Modbus server core function Copy  Buffer', () => {
     coils: Buffer.alloc(1)
   }
 
-  // it('should handle `holding` case', () => {
-  //   const msg = {
-  //     payload: { register: 'holding' },
-  //     bufferData: Buffer.alloc(2, 22),
-  //     bufferSplitAddress: 0
-  //   }
-
-  //   const result = coreServerUnderTest.copyToModbusBuffer(node, msg)
-  //   assert.strict.equal(result, true)
-  //   assert.strict.deepEqual(node.registers, msg.bufferData)
-  // })
-
-  // it('should handle `holding` case just on 16 Bit', () => {
-  //   const msg = {
-  //     payload: { register: 'holding' },
-  //     bufferData: Buffer.alloc(4, 22),
-  //     bufferSplitAddress: 0
-  //   }
-
-  //   const result = coreServerUnderTest.copyToModbusBuffer(node, msg)
-  //   assert.strict.equal(result, true)
-  //   assert.strict.deepEqual(node.registers.readUInt16BE(0), msg.bufferData.readUInt16BE(0))
-  // })
-
-  // it('should handle `coils` case', () => {
-  //   const msg = {
-  //     payload: { register: 'coils' },
-  //     bufferData: Buffer.alloc(1, 33),
-  //     bufferAddress: 0
-  //   }
-
-  //   const result = coreServerUnderTest.copyToModbusBuffer(node, msg)
-  //   assert.strict.equal(result, true)
-  //   assert.strict.deepEqual(node.coils, msg.bufferData)
-  // })
-
-  // it('should handle `discrete` case', () => {
-  //   const msg = {
-  //     payload: { register: 'discrete' },
-  //     bufferData: Buffer.alloc(1, 11),
-  //     bufferAddress: 0
-  //   }
-
-  //   const result = coreServerUnderTest.copyToModbusBuffer(node, msg)
-  //   assert.strict.equal(result, true)
-  //   assert.strict.deepEqual(node.coils, msg.bufferData)
-  // })
-
-  // it('should handle `discrete` case on 8 Bit', () => {
-  //   const msg = {
-  //     payload: { register: 'discrete' },
-  //     bufferData: Buffer.alloc(2, 11),
-  //     bufferAddress: 0
-  //   }
-
-  //   const result = coreServerUnderTest.copyToModbusBuffer(node, msg)
-  //   assert.strict.equal(result, true)
-  //   assert.strict.deepEqual(node.coils.readUInt8(0), msg.bufferData.readUInt8(0))
-  // })
-
-  // it('should handle `input` case', () => {
-  //   const msg = {
-  //     payload: { register: 'input' },
-  //     bufferData: Buffer.alloc(2, 66),
-  //     bufferAddress: 0
-  //   }
-
-  //   const result = coreServerUnderTest.copyToModbusBuffer(node, msg)
-  //   assert.strict.equal(result, true)
-  //   assert.strict.deepEqual(node.registers, msg.bufferData)
-  // })
 
   it('should return false for invalid case', () => {
     const msg = {
@@ -433,54 +337,6 @@ describe('Modbus server core function Write  Buffer', () => {
     registers: Buffer.alloc(2),
     coils: Buffer.alloc(1)
   }
-
-  // it('should handle `holding` case', () => {
-  //   const msg = {
-  //     payload: { register: 'holding' },
-  //     bufferPayload: Buffer.alloc(2, 255),
-  //     bufferSplitAddress: 0
-  //   }
-
-  //   const result = coreServerUnderTest.writeToModbusBuffer(node, msg)
-  //   assert.strict.equal(result, true)
-  //   assert.strict.deepEqual(node.registers, msg.bufferPayload)
-  // })
-
-  // it('should handle `coils` case', () => {
-  //   const msg = {
-  //     payload: { register: 'coils' },
-  //     bufferPayload: Buffer.alloc(1, 88),
-  //     bufferSplitAddress: 0
-  //   }
-
-  //   const result = coreServerUnderTest.writeToModbusBuffer(node, msg)
-  //   assert.strict.equal(result, true)
-  //   assert.strict.deepEqual(node.coils, msg.bufferPayload)
-  // })
-
-  // it('should handle `discrete` case', () => {
-  //   const msg = {
-  //     payload: { register: 'discrete' },
-  //     bufferPayload: Buffer.alloc(1, 88),
-  //     bufferAddress: 0
-  //   }
-
-  //   const result = coreServerUnderTest.writeToModbusBuffer(node, msg)
-  //   assert.strict.equal(result, true)
-  //   assert.strict.deepEqual(node.coils, msg.bufferPayload)
-  // })
-
-  // it('should handle `input` case', () => {
-  //   const msg = {
-  //     payload: { register: 'input' },
-  //     bufferPayload: Buffer.alloc(2, 255),
-  //     bufferAddress: 0
-  //   }
-
-  //   const result = coreServerUnderTest.writeToModbusBuffer(node, msg)
-  //   assert.strict.equal(result, true)
-  //   assert.strict.deepEqual(node.registers, msg.bufferPayload)
-  // })
 
   it('should return false for invalid case', () => {
     const msg = {
@@ -647,5 +503,114 @@ describe('writeModbusFlexServerMemory', () => {
     sinon.assert.calledWith(writeToModbusFlexBufferStub, node, sinon.match(msg))
 
     writeToModbusFlexBufferStub.restore()
+  })
+})
+
+describe('writeToModbusFlexBuffer', () => {
+  it('should write to holding register when buffer payload is a buffer', () => {
+    const node = {
+      registers: Buffer.alloc(10),
+      coils: Buffer.alloc(10),
+      splitAddress: 0
+    }
+    const msg = {
+      payload: {
+        register: 'holding',
+        address: 1
+      },
+      bufferPayload: Buffer.from([0x00, 0x01])
+    }
+    msg.bufferSplitAddress = 2
+    msg.bufferAddress = 2
+
+    const result = coreServerUnderTest.writeToModbusFlexBuffer(node, msg)
+
+    assert.strictEqual(result, true)
+    assert.strictEqual(node.registers.readUInt16BE(2), 1)
+  })
+
+  it('should return false when register type is invalid', () => {
+    const node = {
+      registers: Buffer.alloc(10),
+      coils: Buffer.alloc(10),
+      splitAddress: 0
+    }
+    const msg = {
+      payload: {
+        register: 'invalid',
+        address: 1
+      },
+      bufferPayload: Buffer.from([0x00, 0x01])
+    }
+    msg.bufferSplitAddress = 2
+    msg.bufferAddress = 2
+
+    const result = coreServerUnderTest.writeToModbusFlexBuffer(node, msg)
+
+    assert.strictEqual(result, false)
+  })
+
+  it('should write to coils when buffer payload is not a buffer', () => {
+    const node = {
+      registers: Buffer.alloc(10),
+      coils: Buffer.alloc(10),
+      splitAddress: 0
+    }
+    const msg = {
+      payload: {
+        register: 'coils',
+        address: 1
+      },
+      bufferPayload: 1
+    }
+    msg.bufferSplitAddress = 2
+    msg.bufferAddress = 2
+
+    const result = coreServerUnderTest.writeToModbusFlexBuffer(node, msg)
+
+    assert.strictEqual(result, true)
+    assert.strictEqual(node.coils.readUInt8(2), 1)
+  })
+  it('should write to input register when buffer payload is a buffer', () => {
+    const node = {
+      registers: Buffer.alloc(10),
+      coils: Buffer.alloc(10),
+      splitAddress: 0
+    }
+    const msg = {
+      payload: {
+        register: 'input',
+        address: 1
+      },
+      bufferPayload: Buffer.from([0x00, 0x01])
+    }
+    msg.bufferSplitAddress = 2
+    msg.bufferAddress = 2
+
+    const result = coreServerUnderTest.writeToModbusFlexBuffer(node, msg)
+
+    assert.strictEqual(result, true)
+    assert.strictEqual(node.registers.readUInt16BE(2), 1)
+  })
+  it('should write to discrete register when buffer payload is a buffer', () => {
+    const node = {
+      registers: Buffer.alloc(10),
+      coils: Buffer.alloc(10),
+      splitAddress: 0
+    }
+    const msg = {
+      payload: {
+        register: 'discrete',
+        address: 1
+      },
+      bufferPayload: Buffer.from([0x01])
+    }
+    msg.bufferSplitAddress = 2
+    msg.bufferAddress = 2
+
+    const result = coreServerUnderTest.writeToModbusFlexBuffer(node, msg)
+
+    assert.strictEqual(result, true)
+    assert.strictEqual(node.coils.readUInt8(2), 1)
   })
 })
