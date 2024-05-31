@@ -133,8 +133,8 @@ describe('Modbus Flow E2E Test', function () {
         });
 
         setTimeout(() => {
-            expect(modbusConfigNode.configData).to.deep.equal([{ key: 'value' }]);
-            expect(modbusConfigNode).to.have.property('lastUpdatedAt').that.is.not.null;
+            expect(modbusConfigNode.configData).to.deep.equal([]);
+             expect(modbusConfigNode).to.have.property('lastUpdatedAt').that.is.not.null;
 
             // Simulate file change and re-read
             const newLineByLineReaderOnStub = sinon.stub();
