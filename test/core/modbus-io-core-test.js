@@ -425,7 +425,6 @@ describe('Core IO Testing', function () {
       })
     })
 
-    // Test case to cover the condition where registerType is 'X' for boolean type
     it('should correctly map boolean type with 1 bit when registerType is X', () => {
       const mapping = { name: 'boolTest', valueAddress: '%IX100.3' }
       const offset = 0
@@ -449,6 +448,27 @@ describe('Core IO Testing', function () {
         dataType: 'Boolean',
         type: 'input'
       })
+    })
+
+    it('should correctly assign boolean value for 1-bit items', () => {
+      const valueNames = [{ registerAddress: 0, bits: 1, bitAddress: [0, 1] }]
+      const register = [2]
+      const logging = false
+      const internalDebugStub = sinon.stub()
+
+      coreIOUnderTest.insertValues(valueNames, register, logging)
+
+      expect(internalDebugStub.called).to.equal(false)
+    })
+
+    it('should correctly handle 16-bit values', () => {
+      const valueNames = [{ registerAddress: 0, bits: 16 }]
+      const register = [255, 255]
+      const logging = true
+
+      coreIOUnderTest.insertValues(valueNames, register, logging)
+
+      expect(valueNames[0].value).to.equal(255)
     })
     describe('filterValueNames', () => {
       it('should filter valueNames correctly based on address range and function type', () => {
