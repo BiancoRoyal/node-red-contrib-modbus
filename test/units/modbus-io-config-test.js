@@ -26,7 +26,6 @@ const testIoConfigNodes = [catchNode, injectNode, functionNode, clientNode, serv
 const testFlows = require('./flows/modbus-io-config-flows')
 const mBasics = require('../../src/modbus-basics')
 
-
 describe('IO Config node Testing', function () {
   before(function (done) {
     helper.startServer(function () {
@@ -56,16 +55,16 @@ describe('IO Config node Testing', function () {
         done()
       })
     })
-    
+
     it('should be state queueing - ready to send', function (done) {
       helper.load(testIoConfigNodes, testFlows.testShouldBeReadyToSendFlow, function () {
         const modbusClientNode = helper.getNode('1b49af22a0d089c9')
         setTimeout(() => {
           mBasics.setNodeStatusTo('queueing', modbusClientNode)
-          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.true
           done()
-        } , 1500)
+        }, 1500)
       })
     })
 
@@ -74,10 +73,10 @@ describe('IO Config node Testing', function () {
         const modbusClientNode = helper.getNode('1b49af22a0d089c9')
         setTimeout(() => {
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
-          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.false
           done()
-        } , 1500)
+        }, 1500)
       })
     })
   })

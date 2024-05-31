@@ -17,10 +17,8 @@ const testServerNodes = [injectNode, serverNode]
 
 const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
-const sinon = require('sinon')
+
 const testFlows = require('./flows/modbus-server-flows.js')
-const assert = require('assert')
-const internalDebugLog = require('debug')('contribModbus:server')
 
 describe('Server node Testing', function () {
   before(function (done) {
@@ -69,13 +67,14 @@ describe('Server node Testing', function () {
     it('should send data on input', function (done) {
       helper.load(testServerNodes, testFlows.testShouldSendDataOnInputFlow, function () {
         const h1 = helper.getNode('h1')
-        h1.on('input', function (msg) {
+        h1.on('input', function () {
           done()
         })
       }, function () {
         helper.log('function callback')
       })
     })
+
     // it('should handle errors during server initialization', function (done) {
     //   helper.load(testServerNodes, testFlows.testSimpleNodeShouldBeLoadedFlow, function () {
     //     const modbusServer = helper.getNode('178284ea.5055ab')
@@ -97,7 +96,6 @@ describe('Server node Testing', function () {
     //   })
     // })
   })
-
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {

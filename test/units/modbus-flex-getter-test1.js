@@ -23,7 +23,6 @@
 
 // helper.init(require.resolve('node-red'))
 
-
 // const _ = require('underscore')
 
 // describe('Flex Getter node Testing', function () {
@@ -107,7 +106,6 @@
 //                 });
 //             });
 //         });
-
 
 //         // describe('isValidModbusMsg', function () {
 //         //     it('should return true for valid Modbus message', function (done) {

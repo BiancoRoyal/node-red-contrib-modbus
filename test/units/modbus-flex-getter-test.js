@@ -14,7 +14,7 @@ const injectNode = require('@node-red/nodes/core/common/20-inject.js')
 const clientNode = require('../../src/modbus-client.js')
 const serverNode = require('../../src/modbus-server.js')
 const nodeUnderTest = require('../../src/modbus-flex-getter.js')
-var functionNode = require('@node-red/nodes/core/function/10-function')
+const functionNode = require('@node-red/nodes/core/function/10-function')
 
 const testFlexGetterNodes = [injectNode, clientNode, serverNode, nodeUnderTest, functionNode]
 
@@ -24,7 +24,6 @@ helper.init(require.resolve('node-red'))
 const testFlows = require('./flows/modbus-flex-getter-flows')
 const mBasics = require('../../src/modbus-basics')
 const _ = require('underscore')
-const { Timestamp } = require('bson')
 
 describe('Flex Getter node Testing', function () {
   before(function (done) {
@@ -62,7 +61,7 @@ describe('Flex Getter node Testing', function () {
 
     it('simple Node should be loaded', function (done) {
       const flow = Array.from(testFlows.testNodeShouldBeLoadedFlow)
-      flow[2].serverPort = "50100"
+      flow[2].serverPort = '50100'
       helper.load(testFlexGetterNodes, flow, function () {
         const modbusServer = helper.getNode('996023fe.ea04b')
         modbusServer.should.have.property('name', 'modbusServer')
@@ -81,13 +80,13 @@ describe('Flex Getter node Testing', function () {
 
     it('simple flow with inject should be loaded', function (done) {
       const flow = Array.from(testFlows.testFlexGetterWithInjectFlow)
-      flow[1].serverPort = "50101"
-      flow[5].tcpPort = "50101"
+      flow[1].serverPort = '50101'
+      flow[5].tcpPort = '50101'
       helper.load(testFlexGetterNodes, flow, function () {
         const modbusGetter = helper.getNode('bc5a61b6.a3972')
         const h1 = helper.getNode('h1')
         let counter = 0
-        h1.on('input', function (msg) {
+        h1.on('input', function () {
           counter++
           if (modbusGetter.bufferMessageList.size === 0 && counter === 1) {
             done()
@@ -100,12 +99,12 @@ describe('Flex Getter node Testing', function () {
 
     it('simple flow with inject should be loaded and read be done', function (done) {
       const flow = Array.from(testFlows.testFlexGetterWithInjectFlow)
-      flow[1].serverPort = "50102"
-      flow[5].tcpPort = "50102"
+      flow[1].serverPort = '50102'
+      flow[5].tcpPort = '50102'
       helper.load(testFlexGetterNodes, flow, function () {
         const modbusGetter = helper.getNode('bc5a61b6.a3972')
         let counter = 0
-        modbusGetter.on('modbusFlexGetterNodeDone', function (msg) {
+        modbusGetter.on('modbusFlexGetterNodeDone', function () {
           counter++
           if (modbusGetter.bufferMessageList.size === 0 && counter === 1) {
             done()
@@ -118,13 +117,13 @@ describe('Flex Getter node Testing', function () {
 
     it('simple flow should be loaded and with receive got input', function (done) {
       const flow = Array.from(testFlows.testFlexGetterFlow)
-      flow[1].serverPort = "50103"
-      flow[4].tcpPort = "50103"
+      flow[1].serverPort = '50103'
+      flow[4].tcpPort = '50103'
       helper.load(testFlexGetterNodes, flow, function () {
         const modbusGetter = helper.getNode('bc5a61b6.a3972')
         const h1 = helper.getNode('h1')
         let counter = 0
-        h1.on('input', function (msg) {
+        h1.on('input', function () {
           counter++
           if (modbusGetter.bufferMessageList.size === 0 && counter === 1) {
             done()
@@ -140,7 +139,7 @@ describe('Flex Getter node Testing', function () {
 
     it('simple flow with wrong write inject should not crash', function (done) {
       const flow = Array.from(testFlows.testFlexGetterFlow)
-      flow[1].serverPort = "50104"
+      flow[1].serverPort = '50104'
       helper.load(testFlexGetterNodes, flow, function () {
         const modbusGetter = helper.getNode('bc5a61b6.a3972')
         setTimeout(function () {
@@ -154,7 +153,7 @@ describe('Flex Getter node Testing', function () {
 
     it('simple flow with wrong address inject should not crash', function (done) {
       const flow = Array.from(testFlows.testFlexGetterFlow)
-      flow[1].serverPort = "50105"
+      flow[1].serverPort = '50105'
       helper.load(testFlexGetterNodes, flow, function () {
         const modbusGetter = helper.getNode('bc5a61b6.a3972')
         setTimeout(function () {
@@ -168,7 +167,7 @@ describe('Flex Getter node Testing', function () {
 
     it('simple flow with wrong quantity inject should not crash', function (done) {
       const flow = Array.from(testFlows.testFlexGetterFlow)
-      flow[1].serverPort = "50106"
+      flow[1].serverPort = '50106'
       helper.load(testFlexGetterNodes, flow, function () {
         const modbusGetter = helper.getNode('bc5a61b6.a3972')
         setTimeout(function () {
@@ -182,67 +181,67 @@ describe('Flex Getter node Testing', function () {
 
     it('should be inactive if message not allowed', function (done) {
       const flow = Array.from(testFlows.testFlexGetterFlow)
-      flow[1].serverPort = "50107"
+      flow[1].serverPort = '50107'
       helper.load(testFlexGetterNodes, flow, function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         _.isUndefined(modbusClientNode).should.be.false
 
         setTimeout(() => {
-          modbusClientNode.receive({payload: "test"})
-          let isInactive = modbusClientNode.isInactive()
+          modbusClientNode.receive({ payload: 'test' })
+          const isInactive = modbusClientNode.isInactive()
           isInactive.should.be.true
           done()
-        } , 1500)
+        }, 1500)
       })
     })
 
     it('should be inactive if message empty', function (done) {
       const flow = Array.from(testFlows.testFlexGetterFlow)
-      flow[1].serverPort = "50108"
+      flow[1].serverPort = '50108'
       helper.load(testFlexGetterNodes, flow, function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         setTimeout(() => {
           modbusClientNode.messageAllowedStates = ['']
-          let isInactive = modbusClientNode.isInactive()
+          const isInactive = modbusClientNode.isInactive()
           isInactive.should.be.true
           done()
-        } , 1500)
+        }, 1500)
       })
     })
 
     it('should be state queueing - ready to send', function (done) {
       const flow = Array.from(testFlows.testFlexGetterFlow)
-      flow[1].serverPort = "50109"
+      flow[1].serverPort = '50109'
       helper.load(testFlexGetterNodes, flow, function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         setTimeout(() => {
           mBasics.setNodeStatusTo('queueing', modbusClientNode)
-          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.true
           done()
-        } , 1500)
+        }, 1500)
       })
     })
 
     it('should be not state queueing - not ready to send', function (done) {
       const flow = Array.from(testFlows.testFlexGetterFlow)
-      flow[1].serverPort = "50110"
+      flow[1].serverPort = '50110'
       helper.load(testFlexGetterNodes, flow, function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         setTimeout(() => {
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
-          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.false
           done()
-        } , 1500)
+        }, 1500)
       })
     })
 
     it('should inject 5 messages but only use one to test initial delay', function (done) {
       this.timeout(7000)
       const flow = Array.from(testFlows.testFlexGetterWithInjectAndDelayFlow)
-      flow[9].serverPort = "50111"
-      flow[10].tcpPort = "50111"
+      flow[9].serverPort = '50111'
+      flow[10].tcpPort = '50111'
       helper.load(testFlexGetterNodes, flow, function () {
         const getterNode = helper.getNode('823b8c53.ee14b8')
         const helperNode = helper.getNode('23156c303a59c400')
@@ -251,20 +250,20 @@ describe('Flex Getter node Testing', function () {
         let startingTimestamp = null
         let endTimestamp = null
 
-        getterNode.on('input', (msg) => {
+        getterNode.on('input', () => {
           getterCounter++
 
-          if(getterCounter === 1){
+          if (getterCounter === 1) {
             startingTimestamp = Date.now()
           } else if (getterCounter === 5) {
             endTimestamp = Date.now()
           }
         })
 
-        helperNode.on('input', (msg) => {
+        helperNode.on('input', () => {
           helperCounter++
 
-          let difBetweenTimestamps = endTimestamp - startingTimestamp
+          const difBetweenTimestamps = endTimestamp - startingTimestamp
           getterCounter.should.be.eql(5) // we want to see 5 msgs on the getter before
           helperCounter.should.be.greaterThanOrEqual(1)
           difBetweenTimestamps.should.be.greaterThanOrEqual(3000)
@@ -276,7 +275,7 @@ describe('Flex Getter node Testing', function () {
 
     it('should handle null or undefined input message', function (done) {
       const flow = Array.from(testFlows.testFlexGetterFlow)
-      flow[1].serverPort = "50113"
+      flow[1].serverPort = '50113'
       helper.load(testFlexGetterNodes, flow, function () {
         const modbusGetterNode = helper.getNode('bc5a61b6.a3972')
         setTimeout(() => {
@@ -285,7 +284,7 @@ describe('Flex Getter node Testing', function () {
           isReady = modbusGetterNode.isReadyForInput(undefined)
           isReady.should.be.false
           done()
-        } , 1500)
+        }, 1500)
       })
     })
     // it('should return true for valid Modbus message', function (done) {
@@ -310,25 +309,26 @@ describe('Flex Getter node Testing', function () {
 
     // })
     // })
-/**
-    it('should not be ready for input - no client', function (done) {
-      const flow = Array.from(testFlows.testFlexGetterShowWarningsWithoutClientFlow)
-      helper.load(testFlexGetterNodes, flow, function () {
-        const modbusGetterNode = helper.getNode('bc5a61b6.a3972')
-        setTimeout(() => {
-          let isReady = modbusGetterNode.isReadyForInput({ payload: '{"value": 0, "fc": 1, "unitid": 1, "address": 0, "quantity": 1}' })  //TODO: modbusGetterNode.isReadyForInput is not a function
-          isReady.should.be.false
-          done()
-        } , 1500)
-      })
-    })
- */
+    /**
+
+     it('should not be ready for input - no client', function (done) {
+     const flow = Array.from(testFlows.testFlexGetterShowWarningsWithoutClientFlow)
+     helper.load(testFlexGetterNodes, flow, function () {
+     const modbusGetterNode = helper.getNode('bc5a61b6.a3972')
+     setTimeout(() => {
+     let isReady = modbusGetterNode.isReadyForInput({ payload: '{"value": 0, "fc": 1, "unitid": 1, "address": 0, "quantity": 1}' })  //TODO: modbusGetterNode.isReadyForInput is not a function
+     isReady.should.be.false
+     done()
+     } , 1500)
+     })
+     })
+     */
   })
-  
+
   describe('post', function () {
     it('should fail for invalid node', function (done) {
       const flow = Array.from(testFlows.testFlexGetterFlow)
-      flow[1].serverPort = "50112"
+      flow[1].serverPort = '50112'
       helper.load(testFlexGetterNodes, flow, function () {
         helper.request().post('/modbus-flex-getter/invalid').expect(404).end(done)
       })

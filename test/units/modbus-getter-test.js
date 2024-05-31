@@ -79,7 +79,7 @@ describe('Getter node Testing', function () {
       helper.load(testGetterNodes, testFlows.testInjectGetterWithClientFlow, function () {
         const h1 = helper.getNode('h1')
         let counter = 0
-        h1.on('input', function (msg) {
+        h1.on('input', function () {
           counter++
           if (counter === 1) {
             done()
@@ -98,7 +98,7 @@ describe('Getter node Testing', function () {
         const modbusGetter = helper.getNode('a9b0b8a7cec1de86')
         const h1 = helper.getNode('dee228d8d9eaea8a')
         let counter = 0
-        h1.on('input', function (msg) {
+        h1.on('input', function () {
           counter++
           if (modbusGetter.bufferMessageList.size === 0 && counter === 1) {
             done()
@@ -116,7 +116,7 @@ describe('Getter node Testing', function () {
       helper.load(testGetterNodes, flow, function () {
         const modbusGetter = helper.getNode('a9b0b8a7cec1de86')
         let counter = 0
-        modbusGetter.on('modbusGetterNodeDone', function (msg) {
+        modbusGetter.on('modbusGetterNodeDone', function () {
           counter++
           if (modbusGetter.bufferMessageList.size === 0 && counter === 1) {
             done()
@@ -180,7 +180,7 @@ describe('Getter node Testing', function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         setTimeout(() => {
           mBasics.setNodeStatusTo('queueing', modbusClientNode)
-          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.true
           done()
         }, 1500)
@@ -195,7 +195,7 @@ describe('Getter node Testing', function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         setTimeout(() => {
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
-          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.false
           done()
         }, 1500)
@@ -205,27 +205,27 @@ describe('Getter node Testing', function () {
     it('should handle modbus command error correctly', async () => {
       helper.load(testGetterNodes, testFlows.testGetterFlowWithInjectIo, async () => {
         const modbusClientNode = helper.getNode('a9b0b8a7cec1de86')
-        const errorMessage = new Error('Test error');
-        const msg = { payload: 'test' };
+        const errorMessage = new Error('Test error')
+        const msg = { payload: 'test' }
 
-        getterNode.onModbusCommandError(errorMessage, msg);
+        getterNode.onModbusCommandError(errorMessage, msg)
         sinon.assert.calledWith(node.internalDebugLog, errorMessage)
 
-        modbusClientNode.internalDebugLog = sinon.spy();
-        modbusClientNode.errorProtocolMsg = sinon.spy();
-        modbusClientNode.emit = sinon.spy();
-        modbusClientNode.bufferMessageList = [];
+        modbusClientNode.internalDebugLog = sinon.spy()
+        modbusClientNode.errorProtocolMsg = sinon.spy()
+        modbusClientNode.emit = sinon.spy()
+        modbusClientNode.bufferMessageList = []
 
-        modbusClientNode.modbusClient = {};
+        modbusClientNode.modbusClient = {}
 
-        sinon.stub(modbusClientNode, 'internalDebugLog');
-        sinon.stub(modbusClientNode, 'errorProtocolMsg');
-        sinon.stub(mbBasics, 'sendEmptyMsgOnFail');
-        sinon.stub(mbBasics, 'setModbusError');
-      });
-    });
+        sinon.stub(modbusClientNode, 'internalDebugLog')
+        sinon.stub(modbusClientNode, 'errorProtocolMsg')
+        sinon.stub(mbBasics, 'sendEmptyMsgOnFail')
+        sinon.stub(mbBasics, 'setModbusError')
+      })
+    })
+  })
 
-  });
   describe('post', function () {
     it('should fail for invalid node', function (done) {
       helper.load(testGetterNodes, testFlows.testGetterFlowWithInjectIo, function () {

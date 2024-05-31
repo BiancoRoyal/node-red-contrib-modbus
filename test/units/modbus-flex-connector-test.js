@@ -15,7 +15,7 @@ const serverNode = require('../../src/modbus-server.js')
 const nodeClient = require('../../src/modbus-client.js')
 const injectNode = require('@node-red/nodes/core/common/20-inject.js')
 
-const testFlexConnectorNodes = [nodeUnderTest, serverNode, nodeClient,injectNode]
+const testFlexConnectorNodes = [nodeUnderTest, serverNode, nodeClient, injectNode]
 
 const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
@@ -23,6 +23,7 @@ helper.init(require.resolve('node-red'))
 const testFlows = require('./flows/modbus-flex-connector-flows')
 const mBasics = require('../../src/modbus-basics')
 const _ = require('underscore')
+const { expect } = require('chai')
 
 describe('Flex Connector node Testing', function () {
   before(function (done) {
@@ -45,7 +46,7 @@ describe('Flex Connector node Testing', function () {
     })
   })
 
-  describe('Node', function () { 
+  describe('Node', function () {
     it('should be loaded', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusNode = helper.getNode('40ddaabb.fd44d4')
@@ -81,7 +82,13 @@ describe('Flex Connector node Testing', function () {
         modbusNode.should.have.property('name', 'FlexConnector')
         modbusNode.should.have.property('emptyQueue', true)
         setTimeout(function () {
-          modbusNode.receive({ payload: { connectorType: 'SERIAL', serialPort: '/dev/ttyUSB0', serialBaudrate: '9600' } })
+          modbusNode.receive({
+            payload: {
+              connectorType: 'SERIAL',
+              serialPort: '/dev/ttyUSB0',
+              serialBaudrate: '9600'
+            }
+          })
         }, 1000)
         clientNode.on('mbinit', () => {
           if (clientNode && clientNode.serialBaudrate === 9600 && clientNode.serialPort === '/dev/ttyUSB0') {
@@ -96,8 +103,8 @@ describe('Flex Connector node Testing', function () {
         const modbusClientNode = helper.getNode('2a253153.fae3ce')
         _.isUndefined(modbusClientNode).should.be.false
 
-        modbusClientNode.receive({payload: "test"})
-        let isInactive = modbusClientNode.isInactive()
+        modbusClientNode.receive({ payload: 'test' })
+        const isInactive = modbusClientNode.isInactive()
         isInactive.should.be.true
         done()
       })
@@ -108,10 +115,10 @@ describe('Flex Connector node Testing', function () {
         const modbusClientNode = helper.getNode('2a253153.fae3ce')
         setTimeout(() => {
           modbusClientNode.messageAllowedStates = ['']
-          let isInactive = modbusClientNode.isInactive()
+          const isInactive = modbusClientNode.isInactive()
           isInactive.should.be.true
           done()
-        } , 1500)
+        }, 1500)
       })
     })
 
@@ -120,10 +127,10 @@ describe('Flex Connector node Testing', function () {
         const modbusClientNode = helper.getNode('2a253153.fae3ce')
         setTimeout(() => {
           mBasics.setNodeStatusTo('queueing', modbusClientNode)
-          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.true
           done()
-        } , 1500)
+        }, 1500)
       })
     })
 
@@ -132,19 +139,19 @@ describe('Flex Connector node Testing', function () {
         const modbusClientNode = helper.getNode('2a253153.fae3ce')
         setTimeout(() => {
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
-          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.false
           done()
-        } , 1500)
+        }, 1500)
       })
     })
 
-    it('should process the flow as expected', function () {
-      helper.load(testFlexConnectorNodes, testFlows.testFlowAsExpected,function(){
-        const flexNode=helper.getNode('1b4644a214cfdec6')
+    it('should process the flow as expected', function (done) {
+      helper.load(testFlexConnectorNodes, testFlows.testFlowAsExpected, function () {
+        const flexNode = helper.getNode('1b4644a214cfdec6')
+        expect(flexNode).to.be.any
       })
-      // done()
-
+      done()
     })
   })
 
