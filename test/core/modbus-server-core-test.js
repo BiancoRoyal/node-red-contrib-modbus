@@ -14,6 +14,7 @@ const assert = require('assert')
 const coreServerUnderTest = require('../../src/core/modbus-server-core')
 const sinon = require('sinon')
 const defaultBufferSize = 1024
+const expect = require('chai').expect
 
 const modbusServerNode = {
   modbusServer: {
@@ -167,6 +168,90 @@ describe('Core Server Testing', function () {
         assert.strict.equal(coreServerUnderTest.isValidMemoryMessage(msg), false)
         done()
       })
+    })
+
+    it('should copy bufferData to registers for holding register', () => {
+      const node = {
+        registers: Buffer.alloc(10),
+        coils: Buffer.alloc(10)
+      }
+      const msg = {
+        payload: { register: 'holding' },
+        bufferData: Buffer.from([1, 2, 3, 4]),
+        bufferAddress: 2,
+        bufferSplitAddress: 4
+      }
+      const result = coreServerUnderTest.copyToModbusFlexBuffer(node, msg)
+
+      expect(result).to.equal(true)
+      expect(node.registers.slice(4, 8)).to.deep.equal(msg.bufferData)
+    })
+
+    it('should copy bufferData to coils for coils register', () => {
+      const node = {
+        registers: Buffer.alloc(10),
+        coils: Buffer.alloc(10)
+      }
+      const msg = {
+        payload: { register: 'coils' },
+        bufferData: Buffer.from([1, 2, 3, 4]),
+        bufferAddress: 2,
+        bufferSplitAddress: 4
+      }
+      const result = coreServerUnderTest.copyToModbusFlexBuffer(node, msg)
+
+      expect(result).to.equal(true)
+      expect(node.coils.slice(2, 6)).to.deep.equal(msg.bufferData)
+    })
+
+    it('should copy bufferData to registers for input register', () => {
+      const node = {
+        registers: Buffer.alloc(10),
+        coils: Buffer.alloc(10)
+      }
+      const msg = {
+        payload: { register: 'input' },
+        bufferData: Buffer.from([1, 2, 3, 4]),
+        bufferAddress: 2,
+        bufferSplitAddress: 4
+      }
+      const result = coreServerUnderTest.copyToModbusFlexBuffer(node, msg)
+
+      expect(result).to.equal(true)
+      expect(node.registers.slice(2, 6)).to.deep.equal(msg.bufferData)
+    })
+
+    it('should copy bufferData to coils for discrete register', () => {
+      const node = {
+        registers: Buffer.alloc(10),
+        coils: Buffer.alloc(10)
+      }
+      const msg = {
+        payload: { register: 'discrete' },
+        bufferData: Buffer.from([1, 2, 3, 4]),
+        bufferAddress: 2,
+        bufferSplitAddress: 4
+      }
+      const result = coreServerUnderTest.copyToModbusFlexBuffer(node, msg)
+
+      expect(result).to.equal(true)
+      expect(node.coils.slice(4, 8)).to.deep.equal(msg.bufferData)
+    })
+
+    it('should return false for unknown register', () => {
+      const node = {
+        registers: Buffer.alloc(10),
+        coils: Buffer.alloc(10)
+      }
+      const msg = {
+        payload: { register: 'unknown' },
+        bufferData: Buffer.from([1, 2, 3, 4]),
+        bufferAddress: 2,
+        bufferSplitAddress: 4
+      }
+      const result = coreServerUnderTest.copyToModbusFlexBuffer(node, msg)
+
+      expect(result).to.equal(false)
     })
 
     describe('Core Modbus  Server', function () {
