@@ -1,4 +1,4 @@
-# [5.40.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.2...v5.40.0) (2024-05-17)
+# [5.40.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.2...v5.40.0) (2024-05-31)
 
 
 ### Bug Fixes
@@ -6,6 +6,8 @@
 * **buffer:** nodejs Buffer alloc update ([9a6350c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/9a6350cd67361f10310629a145f8a595e9f3d85c))
 * **codeql:** version codeql ([163101f](https://github.com/biancoroyal/node-red-contrib-modbus/commit/163101f91c784a5202acd86b0a10302a22414495))
 * **config:** [#442](https://github.com/biancoroyal/node-red-contrib-modbus/issues/442) fixing optional to save correct ([de88e25](https://github.com/biancoroyal/node-red-contrib-modbus/commit/de88e25b10e7e92ea8836d22ee91cb25796f3909))
+* **modbus-io-core:** fixed error  RangeError [ERR_OUT_OF_RANGE]: ([ab932f3](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ab932f3de4a3c362f73ba701da9fd1b0964fb21e))
+* **tests:** some test fixes ([45c3c86](https://github.com/biancoroyal/node-red-contrib-modbus/commit/45c3c86d137a7f2dc929d0e3b189efa026df88b5))
 
 
 ### Features
