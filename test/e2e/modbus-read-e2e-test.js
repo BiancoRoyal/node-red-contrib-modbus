@@ -1,5 +1,3 @@
-// const sinon = require('sinon')
-const { expect } = require('chai')
 const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 const testFlow = require('../e2e/flows/modbus-read-e2e-flows')
@@ -51,6 +49,17 @@ describe('ModbusRead node', () => {
       expect(readNode.useIOForPayload).to.equal(false)
       expect(readNode.logIOActivities).to.equal(false)
       expect(readNode.emptyMsgOnFail).to.equal(false)
+      done()
+    })
+  })
+  it('should update status correctly during different stages', (done) => {
+    helper.load(testReadNodes, testFlow.testFlowFore2eTesting, async () => {
+      const readNode = helper.getNode('7ae5c3a814b3c02b')
+      const modbusClient = helper.getNode('699247754b70bb94')
+      modbusClient.serialSendingAllowed = true
+
+      modbusClient.emit('mbregister')
+      readNode.status.should.equal({ fill: 'green', shape: 'dot', status: 'active' })
       done()
     })
   })
