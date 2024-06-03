@@ -4,8 +4,11 @@ const testFlow = require('../e2e/flows/modbus-read-e2e-flows')
 const nodeUnderTest = require('../../src/modbus-read')
 const clientNode = require('../../src/modbus-client.js')
 const serverNode = require('../../src/modbus-server.js')
+// const mbIOCore = require('../../src/core/modbus-io-core.js')
+// const EventEmitter = require('events').EventEmitter
 
 const testReadNodes = [clientNode, serverNode, nodeUnderTest]
+// const expect = require('chai').expect
 
 describe('ModbusRead node', () => {
   before(function (done) {
@@ -58,9 +61,81 @@ describe('ModbusRead node', () => {
       const modbusClient = helper.getNode('699247754b70bb94')
       modbusClient.serialSendingAllowed = true
 
-      modbusClient.emit('mbregister')
-      readNode.status.should.equal({ fill: 'green', shape: 'dot', status: 'active' })
+      let setStatus = {}
+
+      readNode.status = function (status) {
+        setStatus = status
+      }
+      modbusClient.emit('mbregister', readNode.onModbusRegister)
+
+      expect(setStatus).to.deep.equal({ fill: 'green', shape: 'ring', text: 'connected' })
       done()
+    })
+  })
+
+  it('should send message with value names as payload when useIOForPayload is true', function (done) {
+    helper.load(testReadNodes, testFlow.testFlowForSendingDataTesting, async () => {
+      const readNode = helper.getNode('7ae5c3a814b3c02b')
+      readNode.useIOForPayload = true
+      const testPayload = {
+        unitid: 1,
+        fc: 0x01,
+        address: 0x0001,
+        quantity: 1,
+        messageId: 'test-id',
+        valueNames: ['value1']
+      }
+
+      readNode.on('input', function (msg) {
+        expect(msg.payload).to.deep.equal(testPayload)
+        done()
+      })
+
+      readNode.emit('input', { payload: testPayload })
+    })
+  })
+  it('should send message with only values as payload when useIOForPayload is false', function (done) {
+    helper.load(testReadNodes, testFlow.testFlowForSendingDataTesting, async () => {
+      const readNode = helper.getNode('7ae5c3a814b3c02b')
+      readNode.useIOForPayload = false
+      const testPayload = {
+        unitid: 1,
+        fc: 0x01,
+        address: 0x0001,
+        quantity: 1,
+        messageId: 'test-id',
+        values: [1]
+      }
+
+      readNode.on('input', function (msg) {
+        expect(msg.payload).to.deep.equal([1])
+        done()
+      })
+
+      readNode.emit('input', { payload: testPayload })
+    })
+  })
+  it('should send message with payload and valueNames from ioFile when useIOForPayload is true and useIOFile is true', function (done) {
+    helper.load(testReadNodes, testFlow.testFlowForSendingDataTesting, async () => {
+      const readNode = helper.getNode('7ae5c3a814b3c02b')
+      readNode.useIOFile = true
+      readNode.ioFile = { lastUpdatedAt: Date.now() }
+      readNode.logIOActivities = true
+      const testPayload = {
+        unitid: 1,
+        fc: 0x01,
+        address: 0x0001,
+        quantity: 1,
+        messageId: 'test-id',
+        values: [1]
+      }
+      readNode.on('send', function (msg) {
+        expect(msg.payload).to.deep.equal(['value1'])
+        expect(msg.values).to.deep.equal([1])
+        done()
+      })
+
+      readNode.onModbusReadDone({ data: testPayload.values }, { topic: 'testTopic', input: 'inputMsg' })
     })
   })
 })
