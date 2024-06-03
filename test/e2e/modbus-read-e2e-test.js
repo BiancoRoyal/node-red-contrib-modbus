@@ -32,7 +32,7 @@ describe('ModbusRead node', () => {
 
   it('simple Node should be loaded without client config', function (done) {
     helper.load(testReadNodes, testFlow.testFlowFore2eTesting, function () {
-      helper.getNode('7ae5c3a814b3c02b')
+      const readNode = helper.getNode('7ae5c3a814b3c02b')
       expect(readNode.name).to.equal('Modbus Read With IO')
       expect(readNode.unitid).to.equal('1')
       expect(readNode.dataType).to.equal('HoldingRegister')
