@@ -123,78 +123,71 @@ describe('Modbus Flow E2E Test', function () {
       if (event === 'error') callback(new Error('test error'))
     })
 
-    setTimeout(() => {
-      expect(modbusConfigNode.configData).to.deep.equal([])
-      expect(modbusConfigNode).to.have.property('lastUpdatedAt').that.is.not.null()
+    expect(modbusConfigNode.configData).to.deep.equal([])
+    expect(modbusConfigNode).to.have.property('lastUpdatedAt').that.is.not.null()
 
-      setTimeout(() => {
-        expect(modbusConfigNode.configData).to.deep.equal([{ key: 'value' }])
-        expect(modbusConfigNode).to.have.property('lastUpdatedAt').that.is.not.null()
+    expect(modbusConfigNode.configData).to.deep.equal([{ key: 'value' }])
+    expect(modbusConfigNode).to.have.property('lastUpdatedAt').that.is.not.null()
 
-        // Simulate file change and re-read
-        const newLineByLineReaderOnStub = sinon.stub()
-        // newLineByLineReaderOnStub.withArgs('line').callsFake((event, callback) => {
-        //   if (event === 'line') callback('{"key": "newValue"}')
-        // })
-        // newLineByLineReaderOnStub.withArgs('end').callsFake((event, callback) => {
-        //   if (event === 'end') callback()
-        // })
-        newLineByLineReaderOnStub.withArgs('error').callsFake((event, callback) => {
-          if (event === 'error') callback(new Error('new test error'))
-        })
-
-        coreIO.LineByLineReader.restore()
-        sinon.stub(coreIO, 'LineByLineReader').returns({
-          on: newLineByLineReaderOnStub
-        })
-
-        // fsWatchFileStub.yield({ mtime: new Date() }, { mtime: new Date(Date.now() - 2000) })
-
-        setTimeout(() => {
-          expect(modbusConfigNode.configData).to.deep.equal([{ key: 'newValue' }])
-          expect(modbusConfigNode).to.have.property('lastUpdatedAt').that.is.not.null()
-
-          sinon.stub(fs, 'unwatchFile')
-          sinon.spy(modbusConfigNode.watcher, 'stop')
-          modbusConfigNode.emit('close', function () {
-            expect(fs.unwatchFile.calledWith(modbusConfigNode.path)).to.be.true()
-            expect(modbusConfigNode.watcher.stop.called).to.be.true()
-
-            coreIO.LineByLineReader.restore()
-            fs.watchFile.restore()
-            fs.unwatchFile.restore()
-            coreIO.internalDebug.restore()
-
-            done()
-          })
-        }, 1500)
-      }, 1500)
+    // Simulate file change and re-read
+    const newLineByLineReaderOnStub = sinon.stub()
+    // newLineByLineReaderOnStub.withArgs('line').callsFake((event, callback) => {
+    //   if (event === 'line') callback('{"key": "newValue"}')
+    // })
+    // newLineByLineReaderOnStub.withArgs('end').callsFake((event, callback) => {
+    //   if (event === 'end') callback()
+    // })
+    newLineByLineReaderOnStub.withArgs('error').callsFake((event, callback) => {
+      if (event === 'error') callback(new Error('new test error'))
     })
 
-    it('should handle file read error', function (done) {
-      const modbusConfigNodeId = 'c1d2e3f4g5h6i7'
-      const modbusConfigNode = helper.getNode(modbusConfigNodeId)
-
-      expect(modbusConfigNode).to.have.property('name', 'ModbusIOConfig')
-
-      const lineByLineReaderOnStub = sinon.stub()
-      lineByLineReaderOnStub.withArgs('error').callsFake((event, callback) => {
-        if (event === 'error') callback(new Error('test error'))
-      })
-
-      // sinon.stub(coreIO, 'LineByLineReader').returns({
-      //     on: lineByLineReaderOnStub
-      // });
-      // const internalDebugSpy = sinon.spy(coreIO, 'internalDebug');
-
-      setTimeout(() => {
-      // expect(internalDebugSpy.calledWith('test error')).to.be.true;
-
-        // coreIO.LineByLineReader.restore();
-        // internalDebugSpy.restore();
-
-        done()
-      }, 500)
+    coreIO.LineByLineReader.restore()
+    sinon.stub(coreIO, 'LineByLineReader').returns({
+      on: newLineByLineReaderOnStub
     })
+
+    // fsWatchFileStub.yield({ mtime: new Date() }, { mtime: new Date(Date.now() - 2000) })
+
+    expect(modbusConfigNode.configData).to.deep.equal([{ key: 'newValue' }])
+    expect(modbusConfigNode).to.have.property('lastUpdatedAt').that.is.not.null()
+
+    sinon.stub(fs, 'unwatchFile')
+    sinon.spy(modbusConfigNode.watcher, 'stop')
+    modbusConfigNode.emit('close', function () {
+      expect(fs.unwatchFile.calledWith(modbusConfigNode.path)).to.be.true()
+      expect(modbusConfigNode.watcher.stop.called).to.be.true()
+
+      coreIO.LineByLineReader.restore()
+      fs.watchFile.restore()
+      fs.unwatchFile.restore()
+      coreIO.internalDebug.restore()
+
+      done()
+    })
+
+  })
+
+  it('should handle file read error', function (done) {
+    const modbusConfigNodeId = 'c1d2e3f4g5h6i7'
+    const modbusConfigNode = helper.getNode(modbusConfigNodeId)
+
+    expect(modbusConfigNode).to.have.property('name', 'ModbusIOConfig')
+
+    const lineByLineReaderOnStub = sinon.stub()
+    lineByLineReaderOnStub.withArgs('error').callsFake((event, callback) => {
+      if (event === 'error') callback(new Error('test error'))
+    })
+
+    // sinon.stub(coreIO, 'LineByLineReader').returns({
+    //     on: lineByLineReaderOnStub
+    // });
+    // const internalDebugSpy = sinon.spy(coreIO, 'internalDebug');
+
+    // expect(internalDebugSpy.calledWith('test error')).to.be.true;
+
+    // coreIO.LineByLineReader.restore();
+    // internalDebugSpy.restore();
+
+    done()
   })
 })
