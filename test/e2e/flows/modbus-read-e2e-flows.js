@@ -143,7 +143,7 @@ module.exports = {
       id: '7ae5c3a814b3c02b',
       type: 'modbus-read',
       z: 'd2df7906b42a4628',
-      name: '',
+      name: 'Modbus Read With IO',
       topic: '',
       showStatusActivities: false,
       logIOActivities: false,

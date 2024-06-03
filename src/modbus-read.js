@@ -24,6 +24,8 @@ module.exports = function (RED) {
   const internalDebugLog = require('debug')('contribModbus:read')
 
   function ModbusRead (config) {
+    console.log(config)
+
     RED.nodes.createNode(this, config)
 
     this.name = config.name
