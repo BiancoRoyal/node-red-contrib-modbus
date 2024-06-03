@@ -1,4 +1,4 @@
-# [5.40.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.2...v5.40.0) (2024-05-31)
+# [5.40.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.2...v5.40.0) (2024-06-02)
 
 
 ### Bug Fixes
@@ -7,6 +7,7 @@
 * **codeql:** version codeql ([163101f](https://github.com/biancoroyal/node-red-contrib-modbus/commit/163101f91c784a5202acd86b0a10302a22414495))
 * **config:** [#442](https://github.com/biancoroyal/node-red-contrib-modbus/issues/442) fixing optional to save correct ([de88e25](https://github.com/biancoroyal/node-red-contrib-modbus/commit/de88e25b10e7e92ea8836d22ee91cb25796f3909))
 * **modbus-io-core:** fixed error  RangeError [ERR_OUT_OF_RANGE]: ([ab932f3](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ab932f3de4a3c362f73ba701da9fd1b0964fb21e))
+* **test_cases:** improved test cases ([bdafa18](https://github.com/biancoroyal/node-red-contrib-modbus/commit/bdafa18508069876ca522ace6e4a73be4c272c49))
 * **tests:** some test fixes ([45c3c86](https://github.com/biancoroyal/node-red-contrib-modbus/commit/45c3c86d137a7f2dc929d0e3b189efa026df88b5))
 
 
@@ -272,7 +273,7 @@
 
 
 
-# [5.2.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v4.1.3...v5.2.0) (2019-12-08)
+# [5.2.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/5.1.0-0...v5.2.0) (2019-12-08)
 
 
 ### Bug Fixes
@@ -286,6 +287,14 @@
 ### Features
 
 * [#161](https://github.com/biancoroyal/node-red-contrib-modbus/issues/161) multiple RTU devices via UnitID ([b0b5011](https://github.com/biancoroyal/node-red-contrib-modbus/commit/b0b5011be4ab5e7c06ab44fd9df7b0ff5ddd0fd8))
+
+
+
+# [5.1.0-0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v4.1.3...5.1.0-0) (2019-11-24)
+
+
+### Features
+
 * new state machine from xstate ([57aef99](https://github.com/biancoroyal/node-red-contrib-modbus/commit/57aef9956187ee9d70e862b226f3a3ef5e091528))
 
 
