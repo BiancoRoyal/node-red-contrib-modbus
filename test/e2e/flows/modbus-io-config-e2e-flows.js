@@ -4,23 +4,16 @@ module.exports = {
   testShouldBeReadyToSendFlow: helperExtensions.cleanFlowPositionData(
     [
       {
-        id: '1a2b3c4d5e6f7g8h',
-        type: 'tab',
-        label: 'My Modbus Flow',
-        disabled: false,
-        info: '',
-        env: []
-      },
-      {
-        id: 'a1b2c3d4e5f6g7h8',
+        id: '14c812a571dff93e',
         type: 'modbus-read',
-        z: '1a2b3c4d5e6f7g8h',
-        name: '',
+        z: '09dc2c4ec477bba9',
+        name: 'Read Coil',
         topic: '',
         showStatusActivities: false,
         logIOActivities: false,
         showErrors: false,
-        unitid: '',
+        showWarnings: true,
+        unitid: '1',
         dataType: 'Coil',
         adr: '0',
         quantity: '1',
@@ -28,7 +21,7 @@ module.exports = {
         rateUnit: 's',
         delayOnStart: false,
         startDelayTime: '',
-        server: 'b1c2d3e4f5g6h7i8',
+        server: 'a477577e.9e0bc',
         useIOFile: true,
         ioFile: 'c1d2e3f4g5h6i7',
         useIOForPayload: false,
@@ -37,20 +30,64 @@ module.exports = {
         y: 240,
         wires: [
           [],
-          []
+          [
+            'c306b395174319da'
+          ]
         ]
       },
       {
-        id: 'b1c2d3e4f5g6h7i8',
-        type: 'modbus-client',
+        id: 'b3f5ec7ac79c0dc6',
+        type: 'modbus-server',
+        z: '09dc2c4ec477bba9',
         name: '',
+        logEnabled: false,
+        hostname: '0.0.0.0',
+        serverPort: '10512',
+        responseDelay: 100,
+        delayUnit: 'ms',
+        coilsBufferSize: 10000,
+        holdingBufferSize: 10000,
+        inputBufferSize: 10000,
+        discreteBufferSize: 10000,
+        showErrors: false,
+        x: 485,
+        y: 160,
+        wires: [
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        l: false
+      },
+      {
+        id: 'c306b395174319da',
+        type: 'debug',
+        z: '09dc2c4ec477bba9',
+        name: 'debug 23',
+        active: true,
+        tosidebar: true,
+        console: false,
+        tostatus: false,
+        complete: 'false',
+        statusVal: '',
+        statusType: 'auto',
+        x: 720,
+        y: 300,
+        wires: []
+      },
+      {
+        id: 'a477577e.9e0bc',
+        type: 'modbus-client',
+        name: 'Modbus Switch TCP',
         clienttype: 'tcp',
         bufferCommands: true,
         stateLogEnabled: false,
         queueLogEnabled: false,
-        failureLogEnabled: true,
+        failureLogEnabled: false,
         tcpHost: '127.0.0.1',
-        tcpPort: '50502',
+        tcpPort: '10512',
         tcpType: 'DEFAULT',
         serialPort: '/dev/ttyUSB',
         serialType: 'RTU-BUFFERD',
@@ -59,13 +96,16 @@ module.exports = {
         serialStopbits: '1',
         serialParity: 'none',
         serialConnectionDelay: '100',
-        serialAsciiResponseStartDelimiter: '0x3A',
+        serialAsciiResponseStartDelimiter: '',
         unit_id: '1',
         commandDelay: '1',
         clientTimeout: '1000',
         reconnectOnTimeout: true,
         reconnectTimeout: '2000',
-        parallelUnitIdsAllowed: true
+        parallelUnitIdsAllowed: true,
+        showErrors: false,
+        showWarnings: true,
+        showLogs: true
       },
       {
         id: 'c1d2e3f4g5h6i7',
@@ -76,5 +116,53 @@ module.exports = {
         addressOffset: ''
       }
     ]
-  )
+  ),
+
+  testShouldBeLoadedFlow: helperExtensions.cleanFlowPositionData([
+    {
+      id: 'ec42ecc63a604e72',
+      type: 'tab',
+      label: 'Should Be Loaded',
+      disabled: false,
+      info: '',
+      env: []
+    },
+    {
+      id: 'b0fefd31.802189',
+      type: 'modbus-read',
+      z: 'ec42ecc63a604e72',
+      name: '',
+      topic: '',
+      showStatusActivities: false,
+      logIOActivities: false,
+      showErrors: false,
+      unitid: '',
+      dataType: '',
+      adr: '',
+      quantity: '',
+      rate: '',
+      rateUnit: '',
+      delayOnStart: false,
+      startDelayTime: '',
+      server: '',
+      useIOFile: true,
+      ioFile: '2f5a90d.bcaa1f',
+      useIOForPayload: false,
+      emptyMsgOnFail: false,
+      x: 350,
+      y: 240,
+      wires: [
+        [],
+        []
+      ]
+    },
+    {
+      id: '2f5a90d.bcaa1f',
+      type: 'modbus-io-config',
+      name: 'ModbusIOConfig',
+      path: 'testpath',
+      format: 'utf8',
+      addressOffset: ''
+    }
+  ])
 }
