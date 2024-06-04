@@ -57,7 +57,33 @@ module.exports = {
       ]
     }
   ]),
-
+  testSimpleNodeToLogError: helperExtensions.cleanFlowPositionData([
+    {
+      id: '178284ea.5055ab',
+      type: 'modbus-server',
+      z: '284e074e58afd989',
+      name: 'modbusServer',
+      logEnabled: false,
+      hostname: '',
+      serverPort: '5502',
+      responseDelay: '50',
+      delayUnit: 'ms',
+      coilsBufferSize: 1024,
+      holdingBufferSize: 1024,
+      inputBufferSize: 1024,
+      discreteBufferSize: 1024,
+      showErrors: true,
+      x: 560,
+      y: 300,
+      wires: [
+        [],
+        [],
+        [],
+        [],
+        []
+      ]
+    }
+  ]),
   testSimpleNodeWithWrongIPShouldBeLoadedFlow: helperExtensions.cleanFlowPositionData([
     {
       id: '844e5e46fef5b7e2',

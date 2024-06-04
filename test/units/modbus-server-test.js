@@ -12,7 +12,6 @@
 
 const injectNode = require('@node-red/nodes/core/common/20-inject.js')
 const serverNode = require('../../src/modbus-server.js')
-// const sinon = require('sinon')
 const testServerNodes = [injectNode, serverNode]
 const chai = require('chai')
 const expect = chai.expect
@@ -43,6 +42,39 @@ describe('Server node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should handle errors during server initialization', function (done) {
+      helper.load(testServerNodes, testFlows.testSimpleNodeToLogError, function () {
+        const modbusServer = helper.getNode('178284ea.5055ab')
+        let errorMessage = ''
+        modbusServer.error = function (msg) {
+          errorMessage = msg
+        }
+        modbusServer.netServer.emit('error', (err) => {
+          console.error(`Server error: ${err.message}`, errorMessage)
+        })
+        done()
+      })
+    })
+
+    it('should log an error message when showErrors is true and the message is invalid', function (done) {
+      helper.load(testServerNodes, testFlows.testSimpleNodeToLogError, function () {
+        const modbusServer = helper.getNode('178284ea.5055ab')
+        const msg = {
+          payload: 'invalid message'
+        }
+        modbusServer.showErrors = true
+
+        let errorMessage = ''
+        modbusServer.error = function (msg) {
+          errorMessage = msg
+        }
+
+        modbusServer.emit('input', msg)
+        expect(errorMessage).to.equal('Is Not A Valid Memory Write Message To Server')
+        done()
+      })
+    })
+
     it('should handle errors during server initialization', function (done) {
       helper.load(testServerNodes, testFlows.testSimpleNodeShouldBeLoadedFlow, function () {
         const modbusServer = helper.getNode('178284ea.5055ab')
