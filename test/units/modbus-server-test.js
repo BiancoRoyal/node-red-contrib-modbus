@@ -12,9 +12,10 @@
 
 const injectNode = require('@node-red/nodes/core/common/20-inject.js')
 const serverNode = require('../../src/modbus-server.js')
-
+// const sinon = require('sinon')
 const testServerNodes = [injectNode, serverNode]
-
+const chai = require('chai')
+const expect = chai.expect
 const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
@@ -75,26 +76,13 @@ describe('Server node Testing', function () {
       })
     })
 
-    // it('should handle errors during server initialization', function (done) {
-    //   helper.load(testServerNodes, testFlows.testSimpleNodeShouldBeLoadedFlow, function () {
-    //     const modbusServer = helper.getNode('178284ea.5055ab')
-    //     modbusServer.warn = sinon.spy();
-    //     modbusServer.netServer = null
-    //     modbusServer.modbusServer = null
-    //     modbusServer.showErrors = true
-    //     modbusServer.netServer = null;
-    //     const internalDebugLog = sinon.spy();
-
-    //     console.log(modbusServer.internalDebugLog)
-    //     setTimeout(function () {
-    //       internalDebugLog(new Error('Something went wrong'));
-    //       sinon.assert.calledWith(internalDebugLog, errorMessage);
-    //       sinon.assert.calledWith(modbusServer.warn, sinon.match.instanceOf(Error));
-    //       done()
-    //     }, 0)
-
-    //   })
-    // })
+    it('should handle errors during server initialization', function (done) {
+      helper.load(testServerNodes, testFlows.testSimpleNodeShouldThrowErrorFlow, function () {
+        const modbusServer = helper.getNode('178284ea.5055ab')
+        expect(modbusServer.statusText).to.equal('error')
+        done()
+      })
+    })
   })
 
   describe('post', function () {
