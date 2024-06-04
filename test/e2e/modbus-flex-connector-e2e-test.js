@@ -15,6 +15,7 @@ const serverNode = require('../../src/modbus-server.js')
 const clientNode = require('../../src/modbus-client.js')
 const injectNode = require('@node-red/nodes/core/common/20-inject.js')
 const sinon = require('sinon')
+const assert = require('assert')
 const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 const expect = require('chai').expect
@@ -82,6 +83,21 @@ describe('Flex Connector node Testing', function () {
     //         sinon.assert.calledOnce(onInputCallback);
     //     });
     // });
+
+    it('should handle invalid payload', function (done) {
+      helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
+        const modbusFlexNode = helper.getNode('a39e174edce1a54b')
+        const msg = { payload: {} }
+        modbusFlexNode.on('input', function (nMsg) {
+          setTimeout(function () {
+            assert.equal(nMsg.error.message, 'Payload Not Valid - Connector Type')
+            done()
+          }, 1500)
+        })
+
+        modbusFlexNode.receive({ id: 'n1', payload: msg, error: { message: 'Payload Not Valid - Connector Type' } })
+      })
+    })
 
     it('should set payload to empty string and send message when emptyMsgOnFail is true', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
