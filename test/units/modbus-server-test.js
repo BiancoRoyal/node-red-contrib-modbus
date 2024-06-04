@@ -43,6 +43,35 @@ describe('Server node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should handle errors during server initialization', function (done) {
+      helper.load(testServerNodes, testFlows.testSimpleNodeShouldBeLoadedFlow, function () {
+        const modbusServer = helper.getNode('178284ea.5055ab')
+        const msg = {
+          payload: {
+            register: 'coils',
+            address: 0
+          },
+          bufferData: Buffer.from([1, 2]),
+          bufferAddress: 0
+        }
+
+        let msgOutput = ''
+        modbusServer.send = function (msg) {
+          msgOutput = msg
+        }
+
+        modbusServer.emit('input', msg)
+
+        expect(msgOutput).to.deep.equal([
+          { type: 'holding', message: msg, payload: modbusServer.modbusServer.holding },
+          { type: 'coils', message: msg, payload: modbusServer.modbusServer.coils },
+          { type: 'input', message: msg, payload: modbusServer.modbusServer.input },
+          { type: 'discrete', message: msg, payload: modbusServer.modbusServer.discrete },
+          { payload: 'request', type: 'message', message: msg }
+        ])
+        done()
+      })
+    })
     it('simple Node should be loaded', function (done) {
       helper.load(testServerNodes, testFlows.testSimpleNodeShouldBeLoadedFlow, function () {
         const modbusServer = helper.getNode('178284ea.5055ab')
