@@ -8,7 +8,7 @@ const serverNode = require('../../src/modbus-server.js')
 // const EventEmitter = require('events').EventEmitter
 
 const testReadNodes = [clientNode, serverNode, nodeUnderTest]
-// const expect = require('chai').expect
+const expect = require('chai').expect
 
 describe('ModbusRead node', () => {
   before(function (done) {
@@ -67,9 +67,10 @@ describe('ModbusRead node', () => {
         setStatus = status
       }
       modbusClient.emit('mbregister', readNode.onModbusRegister)
-
-      expect(setStatus).to.deep.equal({ fill: 'green', shape: 'ring', text: 'connected' })
-      done()
+      setTimeout(function () {
+        expect(setStatus).to.deep.equal({ fill: 'green', shape: 'ring', text: 'connected' })
+        done()
+      }, 1500)
     })
   })
 
