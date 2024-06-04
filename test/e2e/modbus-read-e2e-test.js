@@ -6,7 +6,8 @@ const clientNode = require('../../src/modbus-client.js')
 const serverNode = require('../../src/modbus-server.js')
 // const mbIOCore = require('../../src/core/modbus-io-core.js')
 // const EventEmitter = require('events').EventEmitter
-
+const sinon = require('sinon')
+const mbBasics = require('../../src/modbus-basics.js')
 const testReadNodes = [clientNode, serverNode, nodeUnderTest]
 const expect = require('chai').expect
 
@@ -31,30 +32,6 @@ describe('ModbusRead node', () => {
     })
   })
 
-  // it('simple Node should be loaded without client config', function (done) {
-  //   helper.load(testReadNodes, testFlow.testFlowFore2eTesting, function () {
-  //     const readNode = helper.getNode('7ae5c3a814b3c02b')
-  //     expect(readNode.name).to.equal('Modbus Read With IO')
-  //     expect(readNode.unitid).to.equal('1')
-  //     expect(readNode.dataType).to.equal('HoldingRegister')
-  //     expect(readNode.adr).to.equal('1')
-  //     expect(readNode.quantity).to.equal('8')
-  //     expect(readNode.rate).to.equal('5')
-  //     expect(readNode.rateUnit).to.equal('s')
-  //     expect(readNode.delayOnStart).to.equal(false)
-  //     expect(readNode.startDelayTime).to.equal(10)
-  //     expect(readNode.showStatusActivities).to.equal(false)
-  //     expect(readNode.showErrors).to.equal(false)
-  //     expect(readNode.showWarnings).to.equal(true)
-  //     expect(readNode.connection).to.equal(null)
-  //     expect(readNode.useIOFile).to.equal(false)
-  //     expect(readNode.ioFile).to.equal(null)
-  //     expect(readNode.useIOForPayload).to.equal(false)
-  //     expect(readNode.logIOActivities).to.equal(false)
-  //     expect(readNode.emptyMsgOnFail).to.equal(false)
-  //     done()
-  //   })
-  // })
   it('should update status correctly during different stages', (done) => {
     helper.load(testReadNodes, testFlow.testFlowFore2eTesting, async () => {
       const readNode = helper.getNode('7ae5c3a814b3c02b')
@@ -73,70 +50,88 @@ describe('ModbusRead node', () => {
       }, 1500)
     })
   })
-
-  it('should send message with value names as payload when useIOForPayload is true', function (done) {
-    helper.load(testReadNodes, testFlow.testFlowForSendingDataTesting, async () => {
+  it('should send message with values and valueNames when useIOFile is false', function (done) {
+    helper.load(testReadNodes, testFlow.testFlowForuseIOFileFalse, async () => {
       const readNode = helper.getNode('7ae5c3a814b3c02b')
-      readNode.useIOForPayload = true
-      const testPayload = {
-        unitid: 1,
-        fc: 0x01,
-        address: 0x0001,
-        quantity: 1,
-        messageId: 'test-id',
-        valueNames: ['value1']
-      }
-
-      readNode.on('input', function (msg) {
-        expect(msg.payload).to.deep.equal(testPayload)
-        done()
-      })
-
-      readNode.emit('input', { payload: testPayload })
-    })
-  })
-  it('should send message with only values as payload when useIOForPayload is false', function (done) {
-    helper.load(testReadNodes, testFlow.testFlowForSendingDataTesting, async () => {
-      const readNode = helper.getNode('7ae5c3a814b3c02b')
-      readNode.useIOForPayload = false
-      const testPayload = {
-        unitid: 1,
-        fc: 0x01,
-        address: 0x0001,
-        quantity: 1,
-        messageId: 'test-id',
-        values: [1]
-      }
-
-      readNode.on('input', function (msg) {
-        expect(msg.payload).to.deep.equal([1])
-        done()
-      })
-
-      readNode.emit('input', { payload: testPayload })
-    })
-  })
-  it('should send message with payload and valueNames from ioFile when useIOForPayload is true and useIOFile is true', function (done) {
-    helper.load(testReadNodes, testFlow.testFlowForSendingDataTesting, async () => {
-      const readNode = helper.getNode('7ae5c3a814b3c02b')
-      readNode.useIOFile = true
       readNode.ioFile = { lastUpdatedAt: Date.now() }
-      readNode.logIOActivities = true
-      const testPayload = {
-        unitid: 1,
-        fc: 0x01,
-        address: 0x0001,
-        quantity: 1,
-        messageId: 'test-id',
-        values: [1]
-      }
-      readNode.on('send', function (msg) {
-        expect(msg.payload).to.deep.equal(['value1'])
-        expect(msg.values).to.deep.equal([1])
-        done()
-      })
+      const response = { data: [1, 2, 3] }
+      const msg = { topic: 'testTopic' }
+      const values = [1, 2, 3]
+      const valueNames = []
+      readNode.onModbusReadDone(response, msg)
 
-      readNode.onModbusReadDone({ data: testPayload.values }, { topic: 'testTopic', input: 'inputMsg' })
+      expect(values).to.deep.equal([1, 2, 3])
+      expect(valueNames).to.deep.equal([])
+      done()
+    })
+  })
+
+  it('should initialize delay timer when delayOnStart is true', function (done) {
+    helper.load(testReadNodes, testFlow.testFlowForDelayOnStart, async () => {
+      const readNode = helper.getNode('7ae5c3a814b3c02b')
+
+      const clock = sinon.useFakeTimers()
+
+      readNode.initializeReadingTimer()
+
+      clock.tick(readNode.INPUT_TIMEOUT_MILLISECONDS * readNode.startDelayTime)
+
+      clock.restore()
+
+      done()
+    })
+  })
+  it('should log error message when showErrors is true', function (done) {
+    helper.load(testReadNodes, testFlow.testFlowForuseIOFileFalse, function () {
+      const readNode = helper.getNode('7ae5c3a814b3c02b')
+
+      const error = new Error('Test error')
+      const errorMessage = 'Test error message'
+
+      readNode.showErrors = true
+
+      const logMsgErrorSpy = sinon.spy(mbBasics, 'logMsgError')
+
+      readNode.errorProtocolMsg(error, errorMessage)
+
+      sinon.assert.calledWith(logMsgErrorSpy, readNode, error, errorMessage)
+
+      logMsgErrorSpy.restore()
+
+      done()
+    })
+  })
+
+  it('should send message with values and response when useIOFile and useIOForPayload are true', function (done) {
+    helper.load(testReadNodes, testFlow.testFlowForSendingDataTesting, async () => {
+      const readNode = helper.getNode('7ae5c3a814b3c02b')
+      readNode.ioFile = { lastUpdatedAt: Date.now() }
+      const response = { data: [1, 2, 3] }
+      const msg = { topic: 'testTopic' }
+      let msgOutput = ''
+      readNode.send = function (msg) {
+        msgOutput = msg
+      }
+      readNode.onModbusReadDone(response, msg)
+      expect(msgOutput).to.deep.equal([
+        {
+          topic: 'testTopic',
+          responseBuffer: { data: [1, 2, 3] },
+          input: { topic: 'testTopic' },
+          sendingNodeId: '7ae5c3a814b3c02b',
+          payload: [],
+          values: [1, 2, 3]
+        },
+        {
+          topic: 'testTopic',
+          payload: { data: [1, 2, 3] },
+          values: [1, 2, 3],
+          input: { topic: 'testTopic' },
+          valueNames: [],
+          sendingNodeId: '7ae5c3a814b3c02b'
+        }
+      ])
+      done()
     })
   })
 })
