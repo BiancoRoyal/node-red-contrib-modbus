@@ -50,6 +50,21 @@ describe('Queue Info node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should handle updateOnAllUnitQueues true condition', function (done) {
+      helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
+        const modbusQueueInfoNode = helper.getNode('ef5dad20.e97af')
+        modbusQueueInfoNode.updateOnAllUnitQueues = true
+        const msg = {
+          payload: { resetQueue: true },
+          unitId: 1
+        }
+
+        modbusQueueInfoNode.emit('input', msg)
+        expect(msg.payload).to.have.property('allQueueData', true)
+        expect(msg.payload).to.have.property('queues')
+        done()
+      })
+    })
     it('should handle errors in readFromAllUnitQueues when bufferCommands is false', function (done) {
       helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusQueueInfoNode = helper.getNode('ef5dad20.e97af')
