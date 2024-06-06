@@ -259,7 +259,6 @@ module.exports = function (RED) {
 
     node.on('input', function (msg) {
       let msgUnitId = node.unitid
-      msg.payload = {}
       msg.payload.queueEnabled = modbusClient.bufferCommands
 
       if (node.updateOnAllUnitQueues) {
