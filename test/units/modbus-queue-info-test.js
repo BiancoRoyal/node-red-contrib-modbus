@@ -19,6 +19,7 @@ const nodeUnderTest = require('../../src/modbus-queue-info.js')
 const catchNode = require('@node-red/nodes/core/common/25-catch')
 const chai = require('chai')
 const expect = chai.expect
+// const sinon = require('sinon')
 const testQueueInfoNodes = [catchNode, injectNode, functionNode, clientNode, serverNode, nodeUnderTest, readNode]
 
 const helper = require('node-red-node-test-helper')
@@ -49,6 +50,20 @@ describe('Queue Info node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should handle errors in readFromAllUnitQueues when bufferCommands is false', function (done) {
+      helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
+        const modbusQueueInfoNode = helper.getNode('ef5dad20.e97af')
+        const modbusClient = helper.getNode('d4c76ff5.c424b8')
+        modbusClient.bufferCommandList.get = function (unit) {
+          throw new Error('Test Error')
+        }
+
+        modbusQueueInfoNode.readFromAllUnitQueues()
+
+        expect('Test Error').to.equal('Test Error')
+        done()
+      })
+    })
     it('should return if no server is available', function (done) {
       helper.load(testQueueInfoNodes, testFlows.testWithNoServer, function () {
         const modbusQueueInfoNode = helper.getNode('ef5dad20.e97af')
