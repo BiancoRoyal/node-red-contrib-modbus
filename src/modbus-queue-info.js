@@ -65,12 +65,11 @@ module.exports = function (RED) {
       unitWithQueue.highHighLevelReached = false
     }
 
-    function handleErrors (err, msg) {
+    node.errorProtocolMsg = function (err, msg) {
       if (node.showErrors) {
         mbBasics.logMsgError(node, err, msg)
       }
     }
-    node.errorProtocolMsg = handleErrors
     node.initUnitQueueStates()
 
     node.checkLowLevelReached = function (node, bufferCommandListLength, unit) {

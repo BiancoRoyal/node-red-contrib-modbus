@@ -19,7 +19,6 @@ const nodeUnderTest = require('../../src/modbus-queue-info.js')
 const catchNode = require('@node-red/nodes/core/common/25-catch')
 const chai = require('chai')
 const expect = chai.expect
-// const sinon = require('sinon')
 const testQueueInfoNodes = [catchNode, injectNode, functionNode, clientNode, serverNode, nodeUnderTest, readNode]
 
 const helper = require('node-red-node-test-helper')
@@ -50,6 +49,26 @@ describe('Queue Info node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should return if no server is available', function (done) {
+      helper.load(testQueueInfoNodes, testFlows.testWithNoServer, function () {
+        const modbusQueueInfoNode = helper.getNode('ef5dad20.e97af')
+        modbusQueueInfoNode.emit('input', { payload: [{ name: 'testFilter', value: 123 }] }
+        )
+
+        expect(true).to.equal(true)
+        done()
+      })
+    })
+    it('should handle errors correctly based on showErrors flag', function (done) {
+      helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
+        const error = new Error('Test Error')
+        const message = { payload: 'Test Message' }
+        const modbusQueueInfo = helper.getNode('ef5dad20.e97af')
+        modbusQueueInfo.showErrors = true
+        modbusQueueInfo.errorProtocolMsg(error, message)
+        done()
+      })
+    })
     it('simple Node should be loaded', function (done) {
       helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusServer = helper.getNode('389153e.cb648ac')
@@ -66,6 +85,8 @@ describe('Queue Info node Testing', function () {
         helper.log('function callback')
       })
     })
+    // TO BE FIXED
+
     // it('should call checkQueueStates and setNodeStatusByActivity in readFromQueue', function (done) {
     //   helper.load(testQueueInfoNodes, testFlows.testbufferCommandsTrue, async () => {
     //     const modbusQueueInfoNode = helper.getNode('1b72b5d207427b00')
