@@ -1099,5 +1099,529 @@ module.exports = {
         showLogs: false
       }
     ]
+  ),
+  testToReadWhenHighLevelReached: helperExtensions.cleanFlowPositionData(
+    [
+      {
+        id: '7382325b77497659',
+        type: 'modbus-server',
+        z: '85f5930d81f18785',
+        name: '',
+        logEnabled: false,
+        hostname: '0.0.0.0',
+        serverPort: '10512',
+        responseDelay: 100,
+        delayUnit: 'ms',
+        coilsBufferSize: 10000,
+        holdingBufferSize: 10000,
+        inputBufferSize: 10000,
+        discreteBufferSize: 10000,
+        showErrors: false,
+        x: 575,
+        y: 140,
+        wires: [
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        l: false
+      },
+      {
+        id: '0b455a89d132407e',
+        type: 'inject',
+        z: '85f5930d81f18785',
+        name: '',
+        props: [
+          {
+            p: 'payload'
+          },
+          {
+            p: 'topic',
+            vt: 'str'
+          }
+        ],
+        repeat: '',
+        crontab: '',
+        once: false,
+        onceDelay: 0.1,
+        topic: '',
+        payload: '{"resetQueue":true,"unitId":1}',
+        payloadType: 'json',
+        x: 410,
+        y: 280,
+        wires: [
+          [
+            '1b72b5d207427b00'
+          ]
+        ],
+        l: false
+      },
+      {
+        id: '1b72b5d207427b00',
+        type: 'modbus-queue-info',
+        z: '85f5930d81f18785',
+        name: 'testNode',
+        topic: 'testTopic',
+        unitid: '0',
+        queueReadIntervalTime: 1000,
+        lowLowLevel: '3',
+        lowLevel: '5',
+        highLevel: '10',
+        highHighLevel: '30',
+        server: 'a477577e.9e0bc',
+        errorOnHighLevel: true,
+        showStatusActivities: true,
+        updateOnAllQueueChanges: true,
+        updateOnAllUnitQueues: true,
+        x: 635,
+        y: 280,
+        wires: [
+          [
+            '1aac12eebc4bd7cb'
+          ]
+        ]
+      },
+      {
+        id: '1aac12eebc4bd7cb',
+        type: 'helper',
+        z: '85f5930d81f18785',
+        name: 'helper 2',
+        active: true,
+        tosidebar: true,
+        console: false,
+        tostatus: false,
+        complete: 'false',
+        statusVal: '',
+        statusType: 'auto',
+        x: 920,
+        y: 280,
+        wires: []
+      },
+      {
+        id: 'a477577e.9e0bc',
+        type: 'modbus-client',
+        name: 'Modbus Switch TCP',
+        clienttype: 'tcp',
+        bufferCommands: true,
+        stateLogEnabled: false,
+        queueLogEnabled: false,
+        failureLogEnabled: false,
+        tcpHost: '127.0.0.1',
+        tcpPort: '10512',
+        tcpType: 'DEFAULT',
+        serialPort: '/dev/ttyUSB',
+        serialType: 'RTU-BUFFERD',
+        serialBaudrate: '9600',
+        serialDatabits: '8',
+        serialStopbits: '1',
+        serialParity: 'none',
+        serialConnectionDelay: '100',
+        serialAsciiResponseStartDelimiter: '',
+        unit_id: '1',
+        commandDelay: '1',
+        clientTimeout: '1000',
+        reconnectOnTimeout: true,
+        reconnectTimeout: '2000',
+        parallelUnitIdsAllowed: true,
+        showErrors: false,
+        showWarnings: true,
+        showLogs: true
+      }
+    ]
+  ),
+  testToReadHighHighLevelReached: helperExtensions.cleanFlowPositionData(
+    [
+      {
+        id: '7382325b77497659',
+        type: 'modbus-server',
+        z: '85f5930d81f18785',
+        name: '',
+        logEnabled: false,
+        hostname: '0.0.0.0',
+        serverPort: '10512',
+        responseDelay: 100,
+        delayUnit: 'ms',
+        coilsBufferSize: 10000,
+        holdingBufferSize: 10000,
+        inputBufferSize: 10000,
+        discreteBufferSize: 10000,
+        showErrors: false,
+        x: 575,
+        y: 140,
+        wires: [
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        l: false
+      },
+      {
+        id: '0b455a89d132407e',
+        type: 'inject',
+        z: '85f5930d81f18785',
+        name: '',
+        props: [
+          {
+            p: 'payload'
+          },
+          {
+            p: 'topic',
+            vt: 'str'
+          }
+        ],
+        repeat: '',
+        crontab: '',
+        once: false,
+        onceDelay: 0.1,
+        topic: '',
+        payload: '{"resetQueue":true,"unitId":1}',
+        payloadType: 'json',
+        x: 410,
+        y: 280,
+        wires: [
+          [
+            '1b72b5d207427b00'
+          ]
+        ],
+        l: false
+      },
+      {
+        id: '1b72b5d207427b00',
+        type: 'modbus-queue-info',
+        z: '85f5930d81f18785',
+        name: 'testNode',
+        topic: 'testTopic',
+        unitid: '0',
+        queueReadIntervalTime: 1000,
+        lowLowLevel: '3',
+        lowLevel: '5',
+        highLevel: '10',
+        highHighLevel: '30',
+        server: 'a477577e.9e0bc',
+        errorOnHighLevel: true,
+        showStatusActivities: true,
+        updateOnAllQueueChanges: true,
+        updateOnAllUnitQueues: true,
+        x: 635,
+        y: 280,
+        wires: [
+          [
+            '1aac12eebc4bd7cb'
+          ]
+        ]
+      },
+      {
+        id: '1aac12eebc4bd7cb',
+        type: 'helper',
+        z: '85f5930d81f18785',
+        name: 'helper 2',
+        active: true,
+        tosidebar: true,
+        console: false,
+        tostatus: false,
+        complete: 'false',
+        statusVal: '',
+        statusType: 'auto',
+        x: 920,
+        y: 280,
+        wires: []
+      },
+      {
+        id: 'a477577e.9e0bc',
+        type: 'modbus-client',
+        name: 'Modbus Switch TCP',
+        clienttype: 'tcp',
+        bufferCommands: true,
+        stateLogEnabled: false,
+        queueLogEnabled: false,
+        failureLogEnabled: false,
+        tcpHost: '127.0.0.1',
+        tcpPort: '10512',
+        tcpType: 'DEFAULT',
+        serialPort: '/dev/ttyUSB',
+        serialType: 'RTU-BUFFERD',
+        serialBaudrate: '9600',
+        serialDatabits: '8',
+        serialStopbits: '1',
+        serialParity: 'none',
+        serialConnectionDelay: '100',
+        serialAsciiResponseStartDelimiter: '',
+        unit_id: '1',
+        commandDelay: '1',
+        clientTimeout: '1000',
+        reconnectOnTimeout: true,
+        reconnectTimeout: '2000',
+        parallelUnitIdsAllowed: true,
+        showErrors: false,
+        showWarnings: true,
+        showLogs: true
+      }
+    ]
+  ),
+  testToReadLowLevelReached: helperExtensions.cleanFlowPositionData(
+    [
+      {
+        id: '7382325b77497659',
+        type: 'modbus-server',
+        z: '85f5930d81f18785',
+        name: '',
+        logEnabled: false,
+        hostname: '0.0.0.0',
+        serverPort: '10512',
+        responseDelay: 100,
+        delayUnit: 'ms',
+        coilsBufferSize: 10000,
+        holdingBufferSize: 10000,
+        inputBufferSize: 10000,
+        discreteBufferSize: 10000,
+        showErrors: false,
+        x: 575,
+        y: 140,
+        wires: [
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        l: false
+      },
+      {
+        id: '0b455a89d132407e',
+        type: 'inject',
+        z: '85f5930d81f18785',
+        name: '',
+        props: [
+          {
+            p: 'payload'
+          },
+          {
+            p: 'topic',
+            vt: 'str'
+          }
+        ],
+        repeat: '',
+        crontab: '',
+        once: false,
+        onceDelay: 0.1,
+        topic: '',
+        payload: '{"resetQueue":true,"unitId":1}',
+        payloadType: 'json',
+        x: 410,
+        y: 280,
+        wires: [
+          [
+            '1b72b5d207427b00'
+          ]
+        ],
+        l: false
+      },
+      {
+        id: '1b72b5d207427b00',
+        type: 'modbus-queue-info',
+        z: '85f5930d81f18785',
+        name: 'testNode',
+        topic: 'testTopic',
+        unitid: '0',
+        queueReadIntervalTime: 1000,
+        lowLowLevel: '3',
+        lowLevel: '5',
+        highLevel: '10',
+        highHighLevel: '30',
+        server: 'a477577e.9e0bc',
+        errorOnHighLevel: true,
+        showStatusActivities: true,
+        updateOnAllQueueChanges: true,
+        updateOnAllUnitQueues: true,
+        x: 635,
+        y: 280,
+        wires: [
+          [
+            '1aac12eebc4bd7cb'
+          ]
+        ]
+      },
+      {
+        id: '1aac12eebc4bd7cb',
+        type: 'helper',
+        z: '85f5930d81f18785',
+        name: 'helper 2',
+        active: true,
+        tosidebar: true,
+        console: false,
+        tostatus: false,
+        complete: 'false',
+        statusVal: '',
+        statusType: 'auto',
+        x: 920,
+        y: 280,
+        wires: []
+      },
+      {
+        id: 'a477577e.9e0bc',
+        type: 'modbus-client',
+        name: 'Modbus Switch TCP',
+        clienttype: 'tcp',
+        bufferCommands: true,
+        stateLogEnabled: false,
+        queueLogEnabled: false,
+        failureLogEnabled: false,
+        tcpHost: '127.0.0.1',
+        tcpPort: '10512',
+        tcpType: 'DEFAULT',
+        serialPort: '/dev/ttyUSB',
+        serialType: 'RTU-BUFFERD',
+        serialBaudrate: '9600',
+        serialDatabits: '8',
+        serialStopbits: '1',
+        serialParity: 'none',
+        serialConnectionDelay: '100',
+        serialAsciiResponseStartDelimiter: '',
+        unit_id: '1',
+        commandDelay: '1',
+        clientTimeout: '1000',
+        reconnectOnTimeout: true,
+        reconnectTimeout: '2000',
+        parallelUnitIdsAllowed: true,
+        showErrors: false,
+        showWarnings: true,
+        showLogs: true
+      }
+    ]
+  ),
+  testToThrowError: helperExtensions.cleanFlowPositionData(
+    [
+      {
+        id: '7382325b77497659',
+        type: 'modbus-server',
+        z: '85f5930d81f18785',
+        name: '',
+        logEnabled: false,
+        hostname: '0.0.0.0',
+        serverPort: '10512',
+        responseDelay: 100,
+        delayUnit: 'ms',
+        coilsBufferSize: 10000,
+        holdingBufferSize: 10000,
+        inputBufferSize: 10000,
+        discreteBufferSize: 10000,
+        showErrors: false,
+        x: 575,
+        y: 140,
+        wires: [
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        l: false
+      },
+      {
+        id: '0b455a89d132407e',
+        type: 'inject',
+        z: '85f5930d81f18785',
+        name: '',
+        props: [
+          {
+            p: 'payload'
+          },
+          {
+            p: 'topic',
+            vt: 'str'
+          }
+        ],
+        repeat: '',
+        crontab: '',
+        once: false,
+        onceDelay: 0.1,
+        topic: '',
+        payload: '{"resetQueue":true,"unitId":1}',
+        payloadType: 'json',
+        x: 410,
+        y: 280,
+        wires: [
+          [
+            '1b72b5d207427b00'
+          ]
+        ],
+        l: false
+      },
+      {
+        id: '1b72b5d207427b00',
+        type: 'modbus-queue-info',
+        z: '85f5930d81f18785',
+        name: 'testNode',
+        topic: 'testTopic',
+        unitid: '0',
+        queueReadIntervalTime: 1000,
+        lowLowLevel: '3',
+        lowLevel: '5',
+        highLevel: '10',
+        highHighLevel: '30',
+        server: 'a477577e.9e0bc',
+        errorOnHighLevel: true,
+        showStatusActivities: true,
+        updateOnAllQueueChanges: true,
+        updateOnAllUnitQueues: true,
+        x: 635,
+        y: 280,
+        wires: [
+          [
+            '1aac12eebc4bd7cb'
+          ]
+        ]
+      },
+      {
+        id: '1aac12eebc4bd7cb',
+        type: 'helper',
+        z: '85f5930d81f18785',
+        name: 'helper 2',
+        active: true,
+        tosidebar: true,
+        console: false,
+        tostatus: false,
+        complete: 'false',
+        statusVal: '',
+        statusType: 'auto',
+        x: 920,
+        y: 280,
+        wires: []
+      },
+      {
+        id: 'a477577e.9e0bc',
+        type: 'modbus-client',
+        name: 'Modbus Switch TCP',
+        clienttype: 'tcp',
+        bufferCommands: false,
+        stateLogEnabled: false,
+        queueLogEnabled: false,
+        failureLogEnabled: false,
+        tcpHost: '127.0.0.1',
+        tcpPort: '10512',
+        tcpType: 'DEFAULT',
+        serialPort: '/dev/ttyUSB',
+        serialType: 'RTU-BUFFERD',
+        serialBaudrate: '9600',
+        serialDatabits: '8',
+        serialStopbits: '1',
+        serialParity: 'none',
+        serialConnectionDelay: '100',
+        serialAsciiResponseStartDelimiter: '',
+        unit_id: '1',
+        commandDelay: '1',
+        clientTimeout: '1000',
+        reconnectOnTimeout: true,
+        reconnectTimeout: '2000',
+        parallelUnitIdsAllowed: true,
+        showErrors: false,
+        showWarnings: true,
+        showLogs: true
+      }
+    ]
   )
 }
