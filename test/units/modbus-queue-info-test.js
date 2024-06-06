@@ -19,6 +19,7 @@ const nodeUnderTest = require('../../src/modbus-queue-info.js')
 const catchNode = require('@node-red/nodes/core/common/25-catch')
 const chai = require('chai')
 const expect = chai.expect
+const assert = require('assert')
 const sinon = require('sinon')
 const testQueueInfoNodes = [catchNode, injectNode, functionNode, clientNode, serverNode, nodeUnderTest, readNode]
 
@@ -50,6 +51,35 @@ describe('Queue Info node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should warn when high level queue threshold is reached and errorOnHighLevel is false', function (done) {
+      helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
+        const modbusQueueInfoNode = helper.getNode('ef5dad20.e97af')
+
+        modbusQueueInfoNode.unitsWithQueue = new Map([[1, { highLevelReached: false }]])
+        modbusQueueInfoNode.lowLevel = 5
+        modbusQueueInfoNode.highLevel = 10
+        modbusQueueInfoNode.errorOnHighLevel = false
+
+        let mockMessage = ''
+
+        modbusQueueInfoNode.warn = function (message) {
+          mockMessage = message
+        }
+
+        modbusQueueInfoNode.checkHighLevelReached(modbusQueueInfoNode, 11, 1)
+        delete mockMessage.payload
+
+        expect(mockMessage).to.deep.equal({
+          topic: '',
+          state: 'high level reached',
+          unitid: 1,
+          modbusClientName: 'modbusClient',
+          highLevel: 10,
+          bufferCommandListLength: 11
+        })
+        done()
+      })
+    })
     it('should handle showStatusActivities false condition', function (done) {
       helper.load(testQueueInfoNodes, testFlows.testForshowStatusActivitiesIsFalse, function () {
         const setNodeDefaultStatusStub = sinon.stub(mbBasics, 'setNodeDefaultStatus')
@@ -342,9 +372,30 @@ describe('Queue Info node Testing', function () {
   })
 
   describe('post', function () {
-    it('should fail for invalid node', function (done) {
+    it('should return if updateStatusRunning is true', function (done) {
       helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
-        helper.request().post('/modbus-read/invalid').expect(404).end(done)
+        const modbusQueueInfoNode = helper.getNode('ef5dad20.e97af')
+        modbusQueueInfoNode.updateStatusRunning = true
+        modbusQueueInfoNode.unitsWithQueue = new Map([
+          [1, { lowLevelReached: true, highLevelReached: false, highHighLevelReached: false }],
+          [2, { lowLevelReached: false, highLevelReached: true, highHighLevelReached: false }],
+          [3, { lowLevelReached: false, highLevelReached: false, highHighLevelReached: true }],
+          [4, { lowLevelReached: false, highLevelReached: true, highHighLevelReached: false }]
+        ])
+        let fillColor = modbusQueueInfoNode.getStatusSituationFillColor(1)
+        assert.deepEqual(fillColor, 'green')
+
+        fillColor = modbusQueueInfoNode.getStatusSituationFillColor(2)
+        assert.deepEqual(fillColor, 'yellow')
+
+        fillColor = modbusQueueInfoNode.getStatusSituationFillColor(3)
+        assert.deepEqual(fillColor, 'red')
+
+        modbusQueueInfoNode.errorOnHighLevel = true
+        fillColor = modbusQueueInfoNode.getStatusSituationFillColor(4)
+        assert.deepEqual(fillColor, 'red')
+
+        done()
       })
     })
   })
