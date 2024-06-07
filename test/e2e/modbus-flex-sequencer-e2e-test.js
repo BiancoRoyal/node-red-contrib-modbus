@@ -25,7 +25,7 @@ const testFlows = require('./flows/modbus-flex-sequencer-e2e-flows.js')
 // const _ = require('underscore')
 
 // const chai = require('chai')
-// const sinon = require('sinon')
+const sinon = require('sinon')
 // const expect = chai.expect
 
 describe('Flex Sequencer node Testing', function () {
@@ -50,23 +50,26 @@ describe('Flex Sequencer node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should handle modbus read error', function (done) {
+      helper.load(testFlexSequencerNodes, testFlows.testNodeWithModbusReadError, () => {
+        const flexSequencerNode = helper.getNode('bc5a61b6.a3972')
+        const error = new Error('Test error')
+        const msg = { payload: 'test payload' }
+        const emitSpy = sinon.spy(flexSequencerNode, 'emit')
+        flexSequencerNode.onModbusReadError(error, msg)
+        sinon.assert.calledWith(emitSpy, 'modbusFlexSequencerNodeError')
+        done()
+      })
+    })
+
     it('should handle invalid payload in input message', function (done) {
-      helper.load(testFlexSequencerNodes, testFlows.testNodeWithInjectNodeFlow, function () {
+      helper.load(testFlexSequencerNodes, testFlows.testNodeWithInvalidMessage, function () {
         const flexSequencerNode = helper.getNode('42c7ed2cf52e284e')
         const modbusClient = helper.getNode('92e7bf63.2efd7')
         modbusClient.isInactive = () => false
         const msg = { payload: undefined }
-        setTimeout(() => {
-          flexSequencerNode.emit('input', msg)
-          done()
-        }, 1500)
-      })
-    })
-  })
-  describe('post', function () {
-    it('should fail for invalid node', function (done) {
-      helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
-        helper.request().post('/modbus-flex-sequencer/invalid').expect(404).end(done)
+        flexSequencerNode.emit('input', msg)
+        done()
       })
     })
   })

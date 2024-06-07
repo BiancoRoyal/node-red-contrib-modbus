@@ -33,7 +33,7 @@ module.exports = {
     }
   ]),
 
-  testNodeWithServerFlow: helperExtensions.cleanFlowPositionData([
+  testNodeWithModbusReadError: helperExtensions.cleanFlowPositionData([
     {
       id: 'c4711c82ba22fa66',
       type: 'tab',
@@ -125,7 +125,7 @@ module.exports = {
       parallelUnitIdsAllowed: true
     }
   ]),
-  testNodeWithInjectNodeFlow: helperExtensions.cleanFlowPositionData(
+  testNodeWithInvalidMessage: helperExtensions.cleanFlowPositionData(
     [
       {
         id: 'd505fb13ba3733eb',
