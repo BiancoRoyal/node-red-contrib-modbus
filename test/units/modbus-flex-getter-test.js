@@ -301,7 +301,7 @@ describe('Flex Getter node Testing', function () {
     //     const n1 = helper.getNode('bc5a61b6.a3972');
     //     setTimeout(() => {
     //     n1.on('input', function (msg) {
-    //       console.log(msg)
+    //     
     //     const isValid = n1.isValidModbusMsg(msg)
     //     isValid.should.be.true
     //     done() } , 1500)

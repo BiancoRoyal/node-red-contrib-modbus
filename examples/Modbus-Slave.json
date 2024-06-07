@@ -22,7 +22,7 @@
         "y": 20,
         "wires": [
             [
-                "7c7e0ef2.453118"
+                "c5296e5fba394a4b"
             ]
         ]
     },
@@ -58,7 +58,7 @@
         "y": 100,
         "wires": [
             [
-                "7c7e0ef2.453118"
+                "c5296e5fba394a4b"
             ]
         ]
     },
@@ -139,46 +139,6 @@
         "wires": []
     },
     {
-        "id": "7c7e0ef2.453118",
-        "type": "modbus-flex-server",
-        "z": "773d005b.cd22d8",
-        "name": "",
-        "logEnabled": false,
-        "serverAddress": "127.0.0.1",
-        "serverPort": 11502,
-        "responseDelay": 100,
-        "unitId": 1,
-        "delayUnit": "ms",
-        "coilsBufferSize": 20000,
-        "registersBufferSize": 20000,
-        "minAddress": 0,
-        "splitAddress": 10000,
-        "funcGetCoil": "function getFlexCoil(addr, unitID) {\n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\treturn node.coils.readUInt8(addr * node.bufferFactor) \n\t}  \n}",
-        "funcGetDiscreteInput": "function getFlexDiscreteInput(addr, unitID) {\n\taddr += node.splitAddress\n\tif (unitID === node.unitId && \n\t\taddr >= node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.coils.readUInt8(addr * node.bufferFactor) \n\t}  \n}",
-        "funcGetInputRegister": "function getFlexInputRegister(addr, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}",
-        "funcGetHoldingRegister": "function getFlexHoldingRegsiter(addr, unitID) { \n\taddr += node.splitAddress\n\tif (unitID === node.unitId && \n\t\taddr >= node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\treturn node.registers.readUInt16BE(addr * node.bufferFactor)  \n\t} \n}",
-        "funcSetCoil": "function setFlexCoil(addr, value, unitID) { \n\tif (unitID === node.unitId && \n\t\taddr >= node.minAddress && \n\t\taddr <= node.splitAddress) { \n\n\t\tnode.coils.writeUInt8(value, addr * node.bufferFactor)  \n\t} \n}",
-        "funcSetRegister": "function setFlexRegister(addr, value, unitID) { \n\taddr += node.splitAddress\n\tif (unitID === node.unitId && \n\t\taddr >= node.splitAddress && \n\t\taddr <= node.splitAddress * 2) { \n\n\t\tnode.registers.writeUInt16BE(value, addr * node.bufferFactor)  \n\t} \n}",
-        "showErrors": false,
-        "x": 680,
-        "y": 120,
-        "wires": [
-            [
-                "c2a77416.0c366"
-            ],
-            [
-                "ef53de42.56dfd8"
-            ],
-            [
-                "37d9456a.be0852"
-            ],
-            [
-                "2ba65ddb.5f27ca"
-            ],
-            []
-        ]
-    },
-    {
         "id": "7f6bf77b.91b04",
         "type": "inject",
         "z": "773d005b.cd22d8",
@@ -210,7 +170,7 @@
         "y": 200,
         "wires": [
             [
-                "7c7e0ef2.453118"
+                "c5296e5fba394a4b"
             ]
         ]
     },
@@ -266,7 +226,7 @@
         "y": 300,
         "wires": [
             [
-                "7c7e0ef2.453118"
+                "c5296e5fba394a4b"
             ]
         ]
     },
@@ -322,7 +282,7 @@
         "y": 400,
         "wires": [
             [
-                "7c7e0ef2.453118"
+                "c5296e5fba394a4b"
             ]
         ]
     },
@@ -588,6 +548,39 @@
         "x": 140,
         "y": 520,
         "wires": []
+    },
+    {
+        "id": "c5296e5fba394a4b",
+        "type": "modbus-server",
+        "z": "773d005b.cd22d8",
+        "name": "",
+        "logEnabled": false,
+        "hostname": "0.0.0.0",
+        "serverPort": 10502,
+        "responseDelay": 100,
+        "delayUnit": "ms",
+        "coilsBufferSize": 10000,
+        "holdingBufferSize": 10000,
+        "inputBufferSize": 10000,
+        "discreteBufferSize": 10000,
+        "showErrors": false,
+        "x": 680,
+        "y": 120,
+        "wires": [
+            [
+                "c2a77416.0c366"
+            ],
+            [
+                "ef53de42.56dfd8"
+            ],
+            [],
+            [
+                "37d9456a.be0852"
+            ],
+            [
+                "2ba65ddb.5f27ca"
+            ]
+        ]
     },
     {
         "id": "4483385.85f9ac8",
