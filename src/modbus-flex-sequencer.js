@@ -198,7 +198,6 @@ module.exports = function (RED) {
     node.initializeInputDelayTimer()
 
     node.on('input', (msg) => {
-      console.log(msg, 'line909')
       /* istanbul ignore next */
       if (mbBasics.invalidPayloadIn(msg)) {
         verboseWarn('Invalid message on input.')

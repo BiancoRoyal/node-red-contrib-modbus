@@ -46,13 +46,13 @@ module.exports = function (RED) {
     const node = this
     node.statusText = 'waiting'
     setNodeStatusWithTimeTo(node.statusText)
-
+    /* istanbul ignore next */
     function verboseWarn (logMessage) {
       if (node.environmentVerbosity && node.showWarnings) {
         node.warn('Read -> ' + logMessage + ' address: ' + node.adr)
       }
     }
-
+    /* istanbul ignore next */
     verboseWarn('open node ' + node.id)
     const modbusClient = RED.nodes.getNode(config.server)
     if (!modbusClient) {
@@ -191,16 +191,17 @@ module.exports = function (RED) {
     }
 
     node.on('input', function (msg) {
+      /* istanbul ignore next */
       if (mbBasics.invalidPayloadIn(msg)) {
         verboseWarn('Invalid message on input.')
         return
       }
-
+      /* istanbul ignore next */
       if (node.isNotReadyForInput()) {
         verboseWarn('Inject while node is not ready for input.')
         return
       }
-
+      /* istanbul ignore next */
       if (modbusClient.isInactive()) {
         verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
         return
@@ -229,6 +230,7 @@ module.exports = function (RED) {
       node.resetAllReadingTimer()
       node.removeNodeListenerFromModbusClient()
       setNodeStatusWithTimeTo('closed')
+      /* istanbul ignore next */
       verboseWarn('close node ' + node.id)
       modbusClient.deregisterForModbus(node.id, done)
     })

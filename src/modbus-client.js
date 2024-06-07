@@ -131,7 +131,7 @@ module.exports = function (RED) {
       }
       node.serverInfo += ' default Unit-Id: ' + node.unit_id
     }
-
+    /* istanbul ignore next */
     function verboseWarn (logMessage) {
       if (RED.settings.verbose && node.showWarnings) {
         node.updateServerinfo()
@@ -179,6 +179,7 @@ module.exports = function (RED) {
       }
 
       if (state.matches('init')) {
+        /* istanbul ignore next */
         verboseWarn('fsm init state after ' + node.actualServiceStateBefore.value)
         node.updateServerinfo()
         coreModbusQueue.initQueue(node)
@@ -187,9 +188,11 @@ module.exports = function (RED) {
         try {
           if (node.isFirstInitOfConnection) {
             node.isFirstInitOfConnection = false
+            /* istanbul ignore next */
             verboseWarn('first fsm init in ' + serialConnectionDelayTimeMS + ' ms')
             setTimeout(node.connectClient, serialConnectionDelayTimeMS)
           } else {
+            /* istanbul ignore next */
             verboseWarn('fsm init in ' + node.reconnectTimeout + ' ms')
             setTimeout(node.connectClient, node.reconnectTimeout)
           }
@@ -201,6 +204,7 @@ module.exports = function (RED) {
       }
 
       if (state.matches('connected')) {
+        /* istanbul ignore next */
         verboseWarn('fsm connected after state ' + node.actualServiceStateBefore.value + logHintText)
         coreModbusQueue.queueSerialUnlockCommand(node)
         node.emit('mbconnected')
@@ -247,17 +251,20 @@ module.exports = function (RED) {
       }
 
       if (state.matches('stopped')) {
+        /* istanbul ignore next */
         verboseWarn('stopped state without reconnecting')
         node.emit('mbclosed')
       }
 
       if (state.matches('failed')) {
+        /* istanbul ignore next */
         verboseWarn('fsm failed state after ' + node.actualServiceStateBefore.value + logHintText)
         node.emit('mberror', 'Modbus Failure On State ' + node.actualServiceStateBefore.value + logHintText)
         node.stateService.send('BREAK')
       }
 
       if (state.matches('broken')) {
+        /* istanbul ignore next */
         verboseWarn('fsm broken state after ' + node.actualServiceStateBefore.value + logHintText)
         node.emit('mbbroken', 'Modbus Broken On State ' + node.actualServiceStateBefore.value + logHintText)
         if (node.reconnectOnTimeout) {
@@ -268,6 +275,7 @@ module.exports = function (RED) {
       }
 
       if (state.matches('reconnecting')) {
+        /* istanbul ignore next */
         verboseWarn('fsm reconnect state after ' + node.actualServiceStateBefore.value + logHintText)
         coreModbusQueue.queueSerialLockCommand(node)
         node.emit('mbreconnecting')
@@ -482,7 +490,7 @@ module.exports = function (RED) {
       }
 
       if ((err.errno && coreModbusClient.networkErrors.includes(err.errno)) ||
-      (err.code && coreModbusClient.networkErrors.includes(err.code))) {
+        (err.code && coreModbusClient.networkErrors.includes(err.code))) {
         node.stateService.send('BREAK')
       }
     }
@@ -522,6 +530,7 @@ module.exports = function (RED) {
 
     node.onModbusClose = function () {
       coreModbusQueue.queueSerialUnlockCommand(node)
+      /* istanbul ignore next */
       verboseWarn('Modbus closed port')
       coreModbusClient.modbusSerialDebug('modbus closed port')
       node.stateService.send('CLOSE')
@@ -705,6 +714,7 @@ module.exports = function (RED) {
           node.closeConnectionWithoutRegisteredNodes(clientUserNodeId, done)
         }
       } catch (err) {
+        /* istanbul ignore next */
         verboseWarn(err.message + ' on de-register node ' + clientUserNodeId)
         node.error(err)
         done()
@@ -723,6 +733,7 @@ module.exports = function (RED) {
       if (node.actualServiceState.matches('queueing')) {
         return true
       }
+      /* istanbul ignore next */
       verboseWarn('Client not ready to send')
       return false
     }

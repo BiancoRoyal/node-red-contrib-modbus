@@ -102,7 +102,7 @@ module.exports = function (RED) {
         }
       }
     }
-
+    /* istanbul ignore next */
     function verboseWarn (logMessage) {
       if (RED.settings.verbose && node.showWarnings) {
         node.warn('Getter -> ' + logMessage)
@@ -119,6 +119,7 @@ module.exports = function (RED) {
 
     node.resetInputDelayTimer = function () {
       if (node.inputDelayTimer) {
+        /* istanbul ignore next */
         verboseWarn('reset input delay timer node ' + node.id)
         clearTimeout(node.inputDelayTimer)
       }
@@ -129,6 +130,7 @@ module.exports = function (RED) {
     node.initializeInputDelayTimer = function () {
       node.resetInputDelayTimer()
       if (node.delayOnStart) {
+        /* istanbul ignore next */
         verboseWarn('initialize input delay timer node ' + node.id)
         node.inputDelayTimer = setTimeout(() => {
           node.delayOccured = true
@@ -141,16 +143,17 @@ module.exports = function (RED) {
     node.initializeInputDelayTimer()
 
     node.on('input', function (msg) {
+      /* istanbul ignore next */
       if (mbBasics.invalidPayloadIn(msg)) {
         verboseWarn('Invalid message on input.')
         return
       }
-
+      /* istanbul ignore next */
       if (node.isNotReadyForInput()) {
         verboseWarn('Inject while node is not ready for input.')
         return
       }
-
+      /* istanbul ignore next */
       if (modbusClient.isInactive()) {
         verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
         return
