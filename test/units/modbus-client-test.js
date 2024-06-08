@@ -141,13 +141,39 @@ describe('Client node Testing', function () {
 
     it('should be state queueing - ready to send', function (done) {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
+        const modbusReadNode = helper.getNode('384fb9f1.e96296')
         const modbusClientNode = helper.getNode('466860d5.3f6358')
-        setTimeout(() => {
+        const h1 = helper.getNode('h1')
+
+        // be ready to receive the msg from the reader
+        h1.on('input', function (msg) {
+          msg.should.have.property('payload', [false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false])
           mBasics.setNodeStatusTo('queueing', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.true()
           done()
-        }, 1500)
+        })
+
+        // if the client gets the state to be active
+        modbusClientNode.on('mbactive', function (msg) {
+          // send a msg to the reader
+          modbusReadNode.emit('input', msg)
+        })
       })
     })
 
@@ -162,11 +188,12 @@ describe('Client node Testing', function () {
 
     it('should be active when it receives a message', function (done) {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
-        const modbusReadNode = helper.getNode('466860d5.3f6358')
-        modbusReadNode.receive({ payload: 'test message' })
-        const isActive = modbusReadNode.isActive()
-        isActive.should.be.true()
-        done()
+        const modbusClientNode = helper.getNode('466860d5.3f6358')
+        modbusClientNode.on('mbactive', function (msg) {
+          const isActive = modbusClientNode.isActive()
+          isActive.should.be.true()
+          done()
+        })
       })
     })
 

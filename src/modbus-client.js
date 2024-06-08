@@ -730,7 +730,7 @@ module.exports = function (RED) {
     }
 
     node.isReadyToSend = function (node) {
-      if (node.actualServiceState.matches('queueing')) {
+      if (node.actualServiceState.matches('queueing') || node.actualServiceState.matches('activated')) {
         return true
       }
       /* istanbul ignore next */
