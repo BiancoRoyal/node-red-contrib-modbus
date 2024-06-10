@@ -46,43 +46,23 @@ describe('Flex Connector node Testing', function () {
   })
 
   describe('Node', function () {
-    // it('should trigger dynamic reconnection when valid connector type is provided', (done) => {
-    //     helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, async () => {
-    //         const modbusFlexNode = helper.getNode('a477577e.9e0bc');
-    //         modbusFlexNode.onConfigDone = sinon.stub();
-    //         modbusFlexNode.emptyMsgOnFail = true;
-    //         const msg = { payload: {} };
-    //         modbusFlexNode.onConfigDone(msg);
-
-    //         setTimeout(() => {
-    //             sinon.assert.match(msg.payload, {});
-    //             done();
-    //         }, 0);
-    //     });
-    // })
-    // it('should trigger dynamic reconnection when valid connector type is provided', () => {
-    //     helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, async () => {
-    //         const modbusFlexNode = helper.getNode('a39e174edce1a54b');
-
-    //         const msg = { payload: { connectorType: 'validType' } };
-    //         const onInputCallback = sinon.spy();
-    //         modbusFlexNode.on('input', onInputCallback);
-    //         modbusFlexNode.emit = sinon.stub();
-    //         modbusFlexNode.onConfigDone = sinon.stub();
-    //         modbusFlexNode.onConfigError = sinon.stub();
-    //         modbusFlexNode.showStatusActivities = true;
-    //         modbusFlexNode.showErrors = true;
-    //         modbusFlexNode.emptyQueue = true;
-    //         modbusFlexNode.send = sinon.stub();
-
-    //         modbusFlexNode.emit('input', msg);
-    //         modbusFlexNode.should.have.property('name', 'FlexConnector');
-    //         modbusFlexNode.should.have.property('emptyQueue', false);
-    //         sinon.assert.calledWith(setNodeStatusToStub, modbusClient.actualServiceState, modbusFlexNode);
-    //         sinon.assert.calledWithExactly(node.emit, 'dynamicReconnect', msg, modbusFlexNode.onConfigDone, modbusFlexNode.onConfigError);
-    //         sinon.assert.calledOnce(onInputCallback);
-    //     });
-    // });
+    it('should set payload to an empty string and send message when emptyMsgOnFail is true', function (done) {
+      helper.load(testFlexConnectorNodes, testFlows.testOnConfigDone, function () {
+        const modbusFlexNode = helper.getNode('0dfcf9fabf5f0bd7')
+        const originalSend = modbusFlexNode.send
+        modbusFlexNode.send = function (msg) {
+          originalSend.call(modbusFlexNode, msg)
+          try {
+            msg.should.have.property('payload', 'test')
+            done()
+          } catch (err) {
+            done(err)
+          }
+        }
+        const msg = { payload: 'test', error: {} }
+        modbusFlexNode.onConfigDone(msg)
+      })
+    })
 
     it('should handle invalid payload', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
