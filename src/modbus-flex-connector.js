@@ -29,10 +29,8 @@ module.exports = function (RED) {
     this.internalDebugLog = internalDebugLog
     this.verboseLogging = RED.settings.verbose
     this.server = RED.nodes.getNode(config.server)
-
     const node = this
     mbBasics.setNodeStatusTo('waiting', node)
-
     if (!this.server) {
       return
     }
@@ -66,9 +64,9 @@ module.exports = function (RED) {
         return
       }
 
-      if (!this.server) {
-        return
-      }
+      // if (!this.server) {
+      //   return
+      // }
 
       if (node.showStatusActivities) {
         mbBasics.setNodeStatusTo(this.server.actualServiceState, node)

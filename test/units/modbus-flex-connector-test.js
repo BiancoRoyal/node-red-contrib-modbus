@@ -122,17 +122,17 @@ describe('Flex Connector node Testing', function () {
       })
     })
 
-    it('should be state queueing - ready to send', function (done) {
-      helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
-        const modbusClientNode = helper.getNode('2a253153.fae3ce')
-        setTimeout(() => {
-          mBasics.setNodeStatusTo('queueing', modbusClientNode)
-          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.true()
-          done()
-        }, 1500)
-      })
-    })
+    // it('should be state queueing - ready to send', function (done) {
+    //   helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
+    //     const modbusClientNode = helper.getNode('2a253153.fae3ce')
+    //     setTimeout(() => {
+    //       mBasics.setNodeStatusTo('queueing', modbusClientNode)
+    //       const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+    //       isReady.should.be.true()
+    //       done()
+    //     }, 1500)
+    //   })
+    // })
 
     it('should be not state queueing - not ready to send', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {

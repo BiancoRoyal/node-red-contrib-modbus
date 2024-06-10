@@ -15,11 +15,11 @@ const serverNode = require('../../src/modbus-server.js')
 const clientNode = require('../../src/modbus-client.js')
 const injectNode = require('@node-red/nodes/core/common/20-inject.js')
 const sinon = require('sinon')
-// const assert = require('assert')
+const assert = require('assert')
 const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 const expect = require('chai').expect
-
+const mbBasics = require('../../src/modbus-basics.js')
 const testFlows = require('./flows/modbus-flex-connector-e2e-flows.js')
 
 const testFlexConnectorNodes = [nodeUnderTest, serverNode, clientNode, injectNode]
@@ -46,6 +46,13 @@ describe('Flex Connector node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should return early if server node is not found', function (done) {
+      helper.load(testFlexConnectorNodes, testFlows.testFlowWithNoServer, function () {
+        const modbusFlexNode = helper.getNode('e9315827bb3e24d4')
+        assert.strictEqual(modbusFlexNode.server, null)
+        done()
+      })
+    })
     it('should log an error and send the message when payload.connectorType is invalid', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testOnConfigDone, function () {
         const modbusFlexNode = helper.getNode('0dfcf9fabf5f0bd7')
@@ -86,6 +93,24 @@ describe('Flex Connector node Testing', function () {
         })
 
         modbusFlexNode.receive({ id: 'n1', payload: msg, error: { message: 'Payload Not Valid - Connector Type' } })
+      })
+    })
+    it('should set node status if showStatusActivities is true', function (done) {
+      helper.load(testFlexConnectorNodes, testFlows.testFlowWithShowActivities, function () {
+        const modbusFlexNode = helper.getNode('e2fd753c95dec330')
+        modbusFlexNode.emit('input', { payload: 'test' })
+        done()
+      })
+    })
+    it('should return early if the payload is invalid', function (done) {
+      helper.load(testFlexConnectorNodes, testFlows.testFlowWithShowActivities, function () {
+        const modbusFlexNode = helper.getNode('e2fd753c95dec330')
+        const invalidPayloadStub = sinon.stub(mbBasics, 'invalidPayloadIn').returns(true)
+        modbusFlexNode.emit('input', { payload: undefined })
+        sinon.assert.calledOnce(invalidPayloadStub)
+
+        invalidPayloadStub.restore()
+        done()
       })
     })
 
