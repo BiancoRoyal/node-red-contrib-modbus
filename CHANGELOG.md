@@ -1,4 +1,4 @@
-# [5.40.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.2...v5.40.0) (2024-06-07)
+# [5.40.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.2...v5.40.0) (2024-06-10)
 
 
 ### Bug Fixes

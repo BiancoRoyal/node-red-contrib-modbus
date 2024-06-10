@@ -19,7 +19,6 @@ module.exports = function (RED) {
 
   function ModbusFlexConnector (config) {
     RED.nodes.createNode(this, config)
-
     this.name = config.name
     this.maxReconnectsPerMinute = config.maxReconnectsPerMinute || 4
     this.emptyQueue = config.emptyQueue
@@ -29,16 +28,16 @@ module.exports = function (RED) {
 
     this.internalDebugLog = internalDebugLog
     this.verboseLogging = RED.settings.verbose
+    this.server = RED.nodes.getNode(config.server)
 
     const node = this
     mbBasics.setNodeStatusTo('waiting', node)
 
-    const modbusClient = RED.nodes.getNode(config.server)
-    if (!modbusClient) {
+    if (!this.server) {
       return
     }
-    modbusClient.registerForModbus(node)
-    mbBasics.initModbusClientEvents(node, modbusClient)
+    this.server.registerForModbus(node)
+    mbBasics.initModbusClientEvents(node, this.server)
 
     node.onConfigDone = function (msg) {
       const shouldShowStatus = node.showStatusActivities
@@ -46,7 +45,7 @@ module.exports = function (RED) {
         mbBasics.setNodeStatusTo('config done', node)
       }
       if (shouldShowStatus) {
-        mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
+        mbBasics.setNodeStatusTo(this.server.actualServiceState, node)
       }
 
       if (!shouldShowStatus) {
@@ -67,18 +66,18 @@ module.exports = function (RED) {
         return
       }
 
-      if (!modbusClient.client) {
+      if (!this.server) {
         return
       }
 
       if (node.showStatusActivities) {
-        mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
+        mbBasics.setNodeStatusTo(this.server.actualServiceState, node)
       }
 
       if (msg.payload.connectorType) {
         internalDebugLog(`dynamicReconnect: ${JSON.stringify(msg.payload)}`)
         msg.payload.emptyQueue = node.emptyQueue
-        modbusClient.emit('dynamicReconnect', msg, node.onConfigDone, node.onConfigError)
+        this.server.emit('dynamicReconnect', msg, node.onConfigDone, node.onConfigError)
       } else {
         const error = new Error('Payload Not Valid - Connector Type')
         node.error(error, msg)
