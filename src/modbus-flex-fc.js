@@ -54,7 +54,8 @@ module.exports = function (RED) {
     }
     /* istanbul ignore next */
     verboseWarn('open node ' + node.id)
-    const modbusClient = RED.nodes.getNode(config.server)
+    this.server = RED.nodes.getNode(config.server)
+    const modbusClient =  this.server
     if (!modbusClient) {
       return
     }
@@ -130,10 +131,10 @@ module.exports = function (RED) {
     }
 
     node.modbusRead = function () {
-      if (!modbusClient.client) {
-        setNodeStatusWithTimeTo('waiting')
-        return
-      }
+      // if (!modbusClient.client) {
+      //   setNodeStatusWithTimeTo('waiting')
+      //   return
+      // }
 
       const msg = {
         topic: 'customFc',

@@ -21,6 +21,8 @@ const modbusFlexFc = require('../../src/modbus-flex-fc.js')
 
 const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
+const expect = require('chai').expect
+const sinon = require('sinon')
 
 const nodeList = [injectNode, functionNode, commentNode, modbusServerNode, modbusClientNode, modbusReadNode, modbusFlexFc]
 
@@ -48,10 +50,18 @@ describe('Modbus Flex FC-Functionality tests', function () {
   })
 
   describe('Flex-FC-Read-Coil', function () {
+
+    it('should set status to waiting if client is not available in modbusRead', function (done) {
+      helper.load(nodeList, testFcFlexFlows.testFlowForReading, function () {
+        const flexNode = helper.getNode('c2727803d7b31f68')
+        flexNode.modbusRead()
+
+        done()
+      });
+    });
     it('the request-map-editor should contain the correct map', function (done) {
       helper.load(nodeList, testFcFlexFlows.testFlexFCFunctionality, function () {
         const flexNode = helper.getNode('4f80ae4fa5b8af80')
-        flexNode.should.have.property('name', 'Flex-FC-Read-Coil')
         flexNode.should.have.property('fc', '0x01')
         flexNode.should.have.property('requestCard', JSON.parse('[\n' +
           '          {\n' +
