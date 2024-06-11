@@ -49,14 +49,58 @@ describe('Modbus Flex FC-Functionality tests', function () {
     })
   })
 
+  describe('Modbus Node Test Cases', function () {
+    let invalidPayloadInStub, isNotReadyForInputStub, isInactiveStub, setNodeStatusToSpy, buildNewMessageObjectStub;
 
-  describe('Flex-FC-Read-Coil', function () {
+    afterEach(function () {
+      if (invalidPayloadInStub) invalidPayloadInStub.restore();
+      if (isNotReadyForInputStub) isNotReadyForInputStub.restore();
+      if (isInactiveStub) isInactiveStub.restore();
+      if (setNodeStatusToSpy) setNodeStatusToSpy.restore();
+      if (buildNewMessageObjectStub) buildNewMessageObjectStub.restore();
+    });
 
+    it('should handle error and send empty message on fail', function (done) {
+      helper.load(nodeList, testFcFlexFlows.testFlowWithError, function () {
+        const flexNode = helper.getNode('5bd25e14c9c67f95');
+        const modbusClient = helper.getNode('a24bea7c.848da');
+        flexNode.showStatusActivities = false;
+
+        invalidPayloadInStub = sinon.stub(mbBasics, 'invalidPayloadIn').returns(false);
+        isNotReadyForInputStub = sinon.stub(flexNode, 'isNotReadyForInput').returns(false);
+        isInactiveStub = sinon.stub(modbusClient, 'isInactive').returns(false);
+        buildNewMessageObjectStub = sinon.stub(flexNode, 'buildNewMessageObject');
+        buildNewMessageObjectStub.throws(new Error('Error in buildNewMessageObject'));
+
+        const errorProtocolMsgStub = sinon.stub(flexNode, 'errorProtocolMsg');
+        const sendEmptyMsgOnFailStub = sinon.stub(mbBasics, 'sendEmptyMsgOnFail');
+
+        const msg = {
+          topic: 'customFc',
+          from: flexNode.name,
+          payload: null
+        };
+
+        flexNode.emit('input', msg);
+
+          expect(errorProtocolMsgStub.calledOnce).to.be.true;
+          expect(sendEmptyMsgOnFailStub.calledOnce).to.be.true;
+          errorProtocolMsgStub.restore();
+          sendEmptyMsgOnFailStub.restore();
+          done();
+      });
+    });
 
     it('should set node status if showStatusActivities is true', function (done) {
       helper.load(nodeList, testFcFlexFlows.testFlowForReading, function () {
-        const flexNode = helper.getNode('c2727803d7b31f68')
-        flexNode.showStatusActivities = true
+        const flexNode = helper.getNode('c2727803d7b31f68');
+        const clientNode = helper.getNode('4');
+
+        flexNode.showStatusActivities = true;
+        invalidPayloadInStub = sinon.stub(mbBasics, 'invalidPayloadIn').returns(false);
+        isNotReadyForInputStub = sinon.stub(flexNode, 'isNotReadyForInput').returns(false);
+        isInactiveStub = sinon.stub(clientNode, 'isInactive').returns(false);
+        setNodeStatusToSpy = sinon.spy(mbBasics, 'setNodeStatusTo');
 
         const msg = {
           topic: 'customFc',
@@ -68,10 +112,21 @@ describe('Modbus Flex FC-Functionality tests', function () {
             responseCard: [{ name: 'byteCount', data: 0, offset: 0, type: 'uint8be' }]
           }
         };
+
         flexNode.emit('input', msg);
-        done()
+
+          const callArgs = setNodeStatusToSpy.firstCall.args;
+          expect(callArgs[0]).to.equal(clientNode.actualServiceState);
+          expect(callArgs[1]).to.equal(flexNode);
+          done();
       });
-    }); it('should call internalDebugLog, errorProtocolMsg, sendEmptyMsgOnFail, and setModbusError', function (done) {
+    });
+  });
+
+
+  describe('Flex-FC-Read-Coil', function () {
+
+    it('should call internalDebugLog, errorProtocolMsg, sendEmptyMsgOnFail, and setModbusError', function (done) {
       helper.load(nodeList, testFcFlexFlows.testFlowForReading, function () {
         const flexNode = helper.getNode('c2727803d7b31f68')
         const internalDebugLogStub = sinon.stub(flexNode, 'internalDebugLog');
@@ -96,7 +151,6 @@ describe('Modbus Flex FC-Functionality tests', function () {
         done()
       });
     });
-
 
     it('should call mbBasics.logMsgError when showErrors is true', function (done) {
       helper.load(nodeList, testFcFlexFlows.testFlowForReading, function () {
