@@ -228,7 +228,7 @@ module.exports = function (RED) {
     })
 
     this.on('close', function (done) {
-      node.resetAllReadingTimer()
+      // node.resetAllReadingTimer()
       node.removeNodeListenerFromModbusClient()
       setNodeStatusWithTimeTo('closed')
       /* istanbul ignore next */

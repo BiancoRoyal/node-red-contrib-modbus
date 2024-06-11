@@ -23,7 +23,7 @@ const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 const expect = require('chai').expect
 const sinon = require('sinon')
-const mbBasics=require('../../src/modbus-basics.js')
+const mbBasics = require('../../src/modbus-basics.js')
 const nodeList = [injectNode, functionNode, commentNode, modbusServerNode, modbusClientNode, modbusReadNode, modbusFlexFc]
 
 const testFcFlexFlows = require('./flows/modbus-fc-flex-e2e-flows')
@@ -50,6 +50,33 @@ describe('Modbus Flex FC-Functionality tests', function () {
   })
 
   describe('Flex-FC-Read-Coil', function () {
+    it('should call internalDebugLog, errorProtocolMsg, sendEmptyMsgOnFail, and setModbusError', function (done) {
+      helper.load(nodeList, testFcFlexFlows.testFlowForReading, function () {
+        const flexNode = helper.getNode('c2727803d7b31f68')
+        const internalDebugLogStub = sinon.stub(flexNode, 'internalDebugLog');
+        const errorProtocolMsgStub = sinon.stub(flexNode, 'errorProtocolMsg');
+        const sendEmptyMsgOnFailStub = sinon.stub(mbBasics, 'sendEmptyMsgOnFail');
+        const fakeError = new Error('Fake error');
+        const fakeMsg = { payload: 'fakePayload' };
+        flexNode.onModbusReadError(fakeError, fakeMsg);
+        sinon.assert.calledOnceWithExactly(internalDebugLogStub, fakeError.message);
+        sinon.assert.calledOnceWithExactly(errorProtocolMsgStub, fakeError, fakeMsg);
+        internalDebugLogStub.restore();
+        errorProtocolMsgStub.restore();
+        sendEmptyMsgOnFailStub.restore();
+        done()
+      });
+    });
+    it('should call resetAllReadingTimer, removeNodeListenerFromModbusClient, setNodeStatusWithTimeTo, and deregisterForModbus', function (done) {
+      helper.load(nodeList, testFcFlexFlows.testFlowForReading, function () {
+        const flexNode = helper.getNode('c2727803d7b31f68')
+        const doneMock = sinon.stub();
+        flexNode.emit('close', doneMock);
+        done()
+      });
+    });
+
+
     it('should call mbBasics.logMsgError when showErrors is true', function (done) {
       helper.load(nodeList, testFcFlexFlows.testFlowForReading, function () {
         const flexNode = helper.getNode('c2727803d7b31f68')
@@ -161,7 +188,7 @@ describe('Modbus Flex FC-Functionality tests', function () {
       helper.load(nodeList, testFcFlexFlows.testFlexFCFunctionality, function () {
         helper.request()
           .post('/modbus/fc/4f80ae4fa5b8af80')
-          .send({ mapPath: './extras/argumentMaps/defaults/codes.txt' }) 
+          .send({ mapPath: './extras/argumentMaps/defaults/codes.txt' })
           .expect(400)
           .end(function (err, res) {
             if (err) {
