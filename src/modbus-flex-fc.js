@@ -54,8 +54,7 @@ module.exports = function (RED) {
     }
     /* istanbul ignore next */
     verboseWarn('open node ' + node.id)
-    this.server = RED.nodes.getNode(config.server)
-    const modbusClient =  this.server
+    const modbusClient =  RED.nodes.getNode(config.server)
     if (!modbusClient) {
       return
     }

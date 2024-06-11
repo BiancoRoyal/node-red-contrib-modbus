@@ -49,8 +49,29 @@ describe('Modbus Flex FC-Functionality tests', function () {
     })
   })
 
+
   describe('Flex-FC-Read-Coil', function () {
-    it('should call internalDebugLog, errorProtocolMsg, sendEmptyMsgOnFail, and setModbusError', function (done) {
+
+
+    it('should set node status if showStatusActivities is true', function (done) {
+      helper.load(nodeList, testFcFlexFlows.testFlowForReading, function () {
+        const flexNode = helper.getNode('c2727803d7b31f68')
+        flexNode.showStatusActivities = true
+
+        const msg = {
+          topic: 'customFc',
+          from: flexNode.name,
+          payload: {
+            unitid: 1,
+            fc: '0x04',
+            requestCard: [{ name: 'startingAddress', data: 0, offset: 0, type: 'uint16be' }],
+            responseCard: [{ name: 'byteCount', data: 0, offset: 0, type: 'uint8be' }]
+          }
+        };
+        flexNode.emit('input', msg);
+        done()
+      });
+    }); it('should call internalDebugLog, errorProtocolMsg, sendEmptyMsgOnFail, and setModbusError', function (done) {
       helper.load(nodeList, testFcFlexFlows.testFlowForReading, function () {
         const flexNode = helper.getNode('c2727803d7b31f68')
         const internalDebugLogStub = sinon.stub(flexNode, 'internalDebugLog');
