@@ -23,7 +23,7 @@ const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 const expect = require('chai').expect
 const sinon = require('sinon')
-
+const mbBasics=require('../../src/modbus-basics.js')
 const nodeList = [injectNode, functionNode, commentNode, modbusServerNode, modbusClientNode, modbusReadNode, modbusFlexFc]
 
 const testFcFlexFlows = require('./flows/modbus-fc-flex-e2e-flows')
@@ -50,6 +50,21 @@ describe('Modbus Flex FC-Functionality tests', function () {
   })
 
   describe('Flex-FC-Read-Coil', function () {
+    it('should call mbBasics.logMsgError when showErrors is true', function (done) {
+      helper.load(nodeList, testFcFlexFlows.testFlowForReading, function () {
+        const flexNode = helper.getNode('c2727803d7b31f68')
+        const logMsgErrorStub = sinon.stub(mbBasics, 'logMsgError');
+        const fakeError = new Error('Fake error');
+        const fakeMsg = { payload: 'fakePayload' };
+
+        flexNode.errorProtocolMsg(fakeError, fakeMsg);
+
+        sinon.assert.calledOnceWithExactly(logMsgErrorStub, flexNode, fakeError, fakeMsg);
+
+        logMsgErrorStub.restore();
+        done()
+      });
+    });
 
     it('should set status to waiting if modbusClient is not available', function (done) {
       helper.load(nodeList, testFcFlexFlows.testFlowWithNoServer, function () {
