@@ -141,5 +141,23 @@ describe('Modbus Flex FC-Functionality tests', function () {
         helper.request().post('/modbus/fc/4f80ae4fa5b8af80').expect(200).end(done)
       })
     })
+
+    it('should return 400 for invalid file extension', function (done) {
+      helper.load(nodeList, testFcFlexFlows.testFlexFCFunctionality, function () {
+        helper.request()
+          .post('/modbus/fc/4f80ae4fa5b8af80')
+          .send({ mapPath: './extras/argumentMaps/defaults/codes.txt' }) 
+          .expect(400)
+          .end(function (err, res) {
+            if (err) {
+              done(err);
+            } else {
+              done();
+            }
+          });
+      });
+    });
+
+
   })
 })
