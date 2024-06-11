@@ -51,6 +51,25 @@ describe('Modbus Flex FC-Functionality tests', function () {
 
   describe('Flex-FC-Read-Coil', function () {
 
+    it('should set status to waiting if modbusClient is not available', function (done) {
+      helper.load(nodeList, testFcFlexFlows.testFlowWithNoServer, function () {
+        const flexNode = helper.getNode('e096a175bb6a77ae')
+
+        let setStatus = {}
+
+        flexNode.status = function (status) {
+          setStatus = status
+        }
+        flexNode.modbusRead();
+        setTimeout(function () {
+          expect(setStatus).to.deep.equal({ fill: 'yellow', shape: 'ring', text: 'broken' })
+          done()
+        }, 1500)
+
+      });
+    });
+
+
     it('should set status to waiting if client is not available in modbusRead', function (done) {
       helper.load(nodeList, testFcFlexFlows.testFlowForReading, function () {
         const flexNode = helper.getNode('c2727803d7b31f68')

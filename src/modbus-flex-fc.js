@@ -131,10 +131,10 @@ module.exports = function (RED) {
     }
 
     node.modbusRead = function () {
-      // if (!modbusClient.client) {
-      //   setNodeStatusWithTimeTo('waiting')
-      //   return
-      // }
+      if (!modbusClient) {
+        setNodeStatusWithTimeTo('waiting')
+        return
+      }
 
       const msg = {
         topic: 'customFc',

@@ -169,7 +169,6 @@ describe('Response Filter node Testing', function () {
   it('should call internalDebug with appropriate debug messages', () => {
     helper.load(testResponseFilterNodes, testFlows.testFlowResponse, function () {
       const modbusClientNode = helper.getNode('4f8c0e22.48b8b4')
-      console.log(modbusClientNode, 'njjj')
       const mbBasics = {
         invalidPayloadIn: sinon.stub().returns(false)
       }
