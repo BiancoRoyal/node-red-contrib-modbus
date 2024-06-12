@@ -1,7 +1,172 @@
 const helperExtensions = require('../../helper/test-helper-extensions')
 
 module.exports = {
-
+  testToFilterFlowWithNoWarnings: helperExtensions.cleanFlowPositionData(
+    [
+      {
+          "id": "e8fe3d94b494c92e",
+          "type": "tab",
+          "label": "Handle Wrong Input Without Crash",
+          "disabled": false,
+          "info": "",
+          "env": []
+      },
+      {
+          "id": "83c942a0a199a4d1",
+          "type": "inject",
+          "z": "e8fe3d94b494c92e",
+          "name": "",
+          "props": [
+              {
+                  "p": "payload"
+              },
+              {
+                  "p": "topic",
+                  "vt": "str"
+              }
+          ],
+          "repeat": "",
+          "crontab": "",
+          "once": false,
+          "onceDelay": 0.1,
+          "topic": "",
+          "payload": "[{\"name\":\"name1\",\"value\":123},{\"name\":\"name2\",\"value\":456}]",
+          "payloadType": "json",
+          "x": 370,
+          "y": 300,
+          "wires": [
+              [
+                  "8b8a4538d916fd59"
+              ]
+          ]
+      },
+      {
+          "id": "8b8a4538d916fd59",
+          "type": "modbus-response-filter",
+          "z": "e8fe3d94b494c92e",
+          "name": "",
+          "filter": "name1",
+          "registers": "2",
+          "ioFile": "5050ada748392afc",
+          "filterResponseBuffer": true,
+          "filterValues": true,
+          "filterInput": true,
+          "showStatusActivities": false,
+          "showErrors": false,
+          "showWarnings": false,
+          "x": 550,
+          "y": 300,
+          "wires": [
+              [
+                  "cf18edddbac1f902"
+              ]
+          ]
+      },
+      {
+          "id": "cf18edddbac1f902",
+          "type": "helper",
+          "z": "e8fe3d94b494c92e",
+          "name": "helper 6",
+          "active": true,
+          "tosidebar": true,
+          "console": false,
+          "tostatus": false,
+          "complete": "false",
+          "statusVal": "",
+          "statusType": "auto",
+          "x": 840,
+          "y": 280,
+          "wires": []
+      },
+      {
+          "id": "5050ada748392afc",
+          "type": "modbus-io-config",
+          "name": "",
+          "path": "",
+          "format": "utf8",
+          "addressOffset": ""
+      }
+  ]
+  ),
+  testToFilterFlow: helperExtensions.cleanFlowPositionData(
+    [
+      {
+          "id": "d693a937e7721a4f",
+          "type": "inject",
+          "z": "de709d6f7838999b",
+          "name": "",
+          "props": [
+              {
+                  "p": "payload"
+              },
+              {
+                  "p": "topic",
+                  "vt": "str"
+              }
+          ],
+          "repeat": "",
+          "crontab": "",
+          "once": false,
+          "onceDelay": 0.1,
+          "topic": "",
+          "payload": "[{\"name\":\"name1\",\"value\":123},{\"name\":\"name2\",\"value\":456}]",
+          "payloadType": "json",
+          "x": 270,
+          "y": 520,
+          "wires": [
+              [
+                  "e8041f6236cbaee4"
+              ]
+          ]
+      },
+      {
+          "id": "e8041f6236cbaee4",
+          "type": "modbus-response-filter",
+          "z": "de709d6f7838999b",
+          "name": "",
+          "filter": "name1",
+          "registers": "2",
+          "ioFile": "d7a5a199e761a48f",
+          "filterResponseBuffer": true,
+          "filterValues": true,
+          "filterInput": true,
+          "showStatusActivities": false,
+          "showErrors": false,
+          "showWarnings": true,
+          "x": 490,
+          "y": 520,
+          "wires": [
+              [
+                  "654c2d296a60f529"
+              ]
+          ]
+      },
+      {
+          "id": "654c2d296a60f529",
+          "type": "helper",
+          "z": "de709d6f7838999b",
+          "name": "helper 5",
+          "active": true,
+          "tosidebar": true,
+          "console": false,
+          "tostatus": false,
+          "complete": "false",
+          "statusVal": "",
+          "statusType": "auto",
+          "x": 820,
+          "y": 500,
+          "wires": []
+      },
+      {
+          "id": "d7a5a199e761a48f",
+          "type": "modbus-io-config",
+          "name": "",
+          "path": "",
+          "format": "utf8",
+          "addressOffset": ""
+      }
+  ]
+  ),
   testShouldBeLoadedFlow: helperExtensions.cleanFlowPositionData([
     {
       id: 'c09ac89be87c55c1',
