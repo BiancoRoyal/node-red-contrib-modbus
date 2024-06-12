@@ -83,11 +83,11 @@ describe('Modbus Flex FC-Functionality tests', function () {
 
         flexNode.emit('input', msg);
 
-          expect(errorProtocolMsgStub.calledOnce).to.be.true;
-          expect(sendEmptyMsgOnFailStub.calledOnce).to.be.true;
-          errorProtocolMsgStub.restore();
-          sendEmptyMsgOnFailStub.restore();
-          done();
+        expect(errorProtocolMsgStub.calledOnce).to.be.true;
+        expect(sendEmptyMsgOnFailStub.calledOnce).to.be.true;
+        errorProtocolMsgStub.restore();
+        sendEmptyMsgOnFailStub.restore();
+        done();
       });
     });
 
@@ -115,17 +115,50 @@ describe('Modbus Flex FC-Functionality tests', function () {
 
         flexNode.emit('input', msg);
 
-          const callArgs = setNodeStatusToSpy.firstCall.args;
-          expect(callArgs[0]).to.equal(clientNode.actualServiceState);
-          expect(callArgs[1]).to.equal(flexNode);
-          done();
+        const callArgs = setNodeStatusToSpy.firstCall.args;
+        expect(callArgs[0]).to.equal(clientNode.actualServiceState);
+        expect(callArgs[1]).to.equal(flexNode);
+        done();
       });
     });
   });
 
 
   describe('Flex-FC-Read-Coil', function () {
+    it('should set node status to waiting if modbusClient.client is not defined', function (done) {
+      helper.load(nodeList, testFcFlexFlows.testFlowWithError, function () {
+        const flexNode = helper.getNode('5bd25e14c9c67f95');
 
+        let setStatus = {};
+        flexNode.status = function (status) {
+          setStatus = status;
+        };
+
+        const setNodeStatusPropertiesStub = sinon.stub(mbBasics, 'setNodeStatusProperties').returns({
+          status: 'waiting',
+          fill: 'yellow',
+          shape: 'ring'
+        });
+
+        flexNode.modbusRead();
+
+        expect(setNodeStatusPropertiesStub.calledWith('waiting')).to.be.true;
+        expect(setStatus).to.deep.equal({ fill: 'yellow', shape: 'ring', text: 'waiting' });
+
+        setNodeStatusPropertiesStub.restore();
+        done();
+      });
+    });
+
+
+    it('should set node status and call modbusRead on modbus connect', function (done) {
+      helper.load(nodeList, testFcFlexFlows.testFlowForReading, function () {
+        const flexNode = helper.getNode('c2727803d7b31f68');
+        flexNode.onModbusConnect();
+        done();
+
+      });
+    });
     it('should call internalDebugLog, errorProtocolMsg, sendEmptyMsgOnFail, and setModbusError', function (done) {
       helper.load(nodeList, testFcFlexFlows.testFlowForReading, function () {
         const flexNode = helper.getNode('c2727803d7b31f68')
@@ -274,7 +307,6 @@ describe('Modbus Flex FC-Functionality tests', function () {
           });
       });
     });
-
 
   })
 })
