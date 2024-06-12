@@ -15,18 +15,34 @@ const coreQueueUnderTest = require('../../src/core/modbus-queue-core')
 const sinon = require('sinon')
 const expect = require('chai').expect
 describe('Core IO Testing', function () {
-    it('should reject with an error for invalid unitId', function () {
-        const node = {
-            bufferCommandList: new Map(),
-            unitSendingAllowed: [],
-            queueLog: sinon.spy(), 
-        };
-     
-        coreQueueUnderTest.sequentialDequeueCommand(node)
-        .catch(error => {
-          expect(error.message).to.equal('UnitId null is not valid from dequeue of sending list');
-          done();
-        });
-    });
+  it('should log a warning when sequential dequeue command is not possible for a unit', function () {
+    const node = {
+      bufferCommandList: new Map(),
+      unitSendingAllowed: [1],
+      sendingAllowed: new Map([[1, false]]),
+      serialSendingAllowed: false,
+      warn: sinon.spy(),
+      queueLog: sinon.spy(),
+      name: 'testNode'
+    };
+
+    coreQueueUnderTest.sequentialDequeueCommand(node);
+
+    sinon.assert.calledWith(node.warn, 'testNode no serial sending allowed for Unit 1');
+  });
+
+  it('should reject with an error for invalid unitId', function () {
+    const node = {
+      bufferCommandList: new Map(),
+      unitSendingAllowed: [],
+      queueLog: sinon.spy(),
+    };
+
+    coreQueueUnderTest.sequentialDequeueCommand(node)
+      .catch(error => {
+        expect(error.message).to.equal('UnitId null is not valid from dequeue of sending list');
+        done();
+      });
+  });
 
 })
