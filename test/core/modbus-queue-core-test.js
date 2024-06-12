@@ -18,7 +18,21 @@ describe('Core IO Testing', function () {
   const sinon = require('sinon');
   const { expect } = require('chai');
 
-  describe('Modbus Queue Core', function () {
+  describe('Modbus Queue Core', function () {it('should throw an error for an invalid unitId', function (done) {
+    const node = {
+      bufferCommandList: new Map()
+    };
+    const invalidUnitId = 256; 
+  
+    try {
+      coreQueueUnderTest.getQueueLengthByUnitId(node, invalidUnitId)
+      done(new Error('Expected an error to be thrown'));
+    } catch (err) {
+      expect(err.message).to.deep.equal('(0-255) Got A Wrong Unit-Id: 256');
+      done();
+    }
+  });
+  
     it('should reject with an error for invalid unitId', function (done) {
       const node = {
         bufferCommandList: new Map(),

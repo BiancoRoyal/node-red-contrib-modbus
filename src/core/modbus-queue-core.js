@@ -191,6 +191,7 @@ de.biancoroyal.modbus.queue.core.pushToQueueByUnitId = function (node, callModbu
         }))
         resolve()
       } catch (err) {
+        /* istanbul ignore next */
         reject(err)
       }
     })
