@@ -21,17 +21,11 @@ describe('Core IO Testing', function () {
             unitSendingAllowed: [],
             queueLog: sinon.spy(), 
         };
-        const callModbus = () => { };
-        const msg = { payload: { unitid: 'invalid_unit_id' } };
-        const cb = () => { };
-        const cberr = () => { };
-
-        sinon.stub(coreQueueUnderTest, 'isValidUnitId').returns(false);
-
-        return coreQueueUnderTest.pushToQueueByUnitId(node, callModbus, msg, cb, cberr).then(() => {
-            throw new Error('Expected promise to be rejected');
-        }).catch(error => {
-            expect(error.message).to.equal('UnitId 0 is not valid from msg or node');
+     
+        coreQueueUnderTest.sequentialDequeueCommand(node)
+        .catch(error => {
+          expect(error.message).to.equal('UnitId null is not valid from dequeue of sending list');
+          done();
         });
     });
 
