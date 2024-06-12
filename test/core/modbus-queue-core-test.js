@@ -19,6 +19,21 @@ describe('Core IO Testing', function () {
   const { expect } = require('chai');
 
   describe('Modbus Queue Core', function () {
+    it('should throw an error when command on send is not valid', function () {
+      const node = {
+        bufferCommandList: new Map(),
+        sendingAllowed: new Map(),
+        serialSendingAllowed: true,
+        queueLog: sinon.stub()
+      };
+    
+        const unitId = 1;
+        node.bufferCommandList.set(unitId, [null]);
+        node.sendingAllowed.set(unitId, true);
+  
+      expect(() => coreQueueUnderTest.sendQueueDataToModbus(node, unitId)).to.throw('Command On Send Not Valid');
+
+    });
     it('should log an error when sequential dequeue command fails', function (done) {
       const node = {
         actualServiceState: {
