@@ -18,7 +18,26 @@ describe('Core IO Testing', function () {
   const sinon = require('sinon');
   const { expect } = require('chai');
 
-  describe('Modbus Queue Core', function () {it('should throw an error for an invalid unitId', function (done) {
+  describe('Modbus Queue Core', function () {
+    it('should log an error when sequential dequeue command fails', function (done) {
+      const node = {
+        actualServiceState: {
+          value: 1
+        },
+        messageAllowedStates: [1]
+      };
+      
+      const dequeueLogEntrySpy = sinon.spy(coreQueueUnderTest, 'dequeueLogEntry');
+    
+      coreQueueUnderTest.dequeueCommand(node);
+    
+      setTimeout(function () {
+        expect(dequeueLogEntrySpy.calledWith(node, node.actualServiceState, 'dequeue command error Sequential dequeue command failed'))
+        done();
+      }, 0);
+    });
+
+    it('should throw an error for an invalid unitId', function (done) {
     const node = {
       bufferCommandList: new Map()
     };
