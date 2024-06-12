@@ -15,6 +15,41 @@ const coreQueueUnderTest = require('../../src/core/modbus-queue-core')
 const sinon = require('sinon')
 const expect = require('chai').expect
 describe('Core IO Testing', function () {
+  const sinon = require('sinon');
+  const { expect } = require('chai');
+
+  describe('Modbus Queue Core', function () {
+    it('should reject with an error for invalid unitId', function (done) {
+      const node = {
+        bufferCommandList: new Map(),
+        unitSendingAllowed: [],
+        queueLog: sinon.spy(),
+        name: 'testNode',
+        parallelUnitIdsAllowed: true,
+        clienttype: 'tcp'
+      };
+
+      const msg = {};
+      const callModbus = sinon.spy();
+      const cb = sinon.spy();
+      const cberr = sinon.spy();
+
+      sinon.stub(coreQueueUnderTest, 'getUnitIdToQueue').returns(null);
+      sinon.stub(coreQueueUnderTest, 'isValidUnitId').returns(false);
+
+      coreQueueUnderTest.pushToQueueByUnitId(node, callModbus, msg, cb, cberr)
+        .catch(error => {
+          try {
+            expect(error).to.be.an('error');
+            expect(error.message).to.equal('UnitId null is not valid from msg or node');
+            done();
+          } catch (err) {
+            done(err);
+          }
+        });
+    });
+  });
+
   it('should log a warning when sequential dequeue command is not possible for a unit', function () {
     const node = {
       bufferCommandList: new Map(),
