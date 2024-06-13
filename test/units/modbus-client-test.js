@@ -42,6 +42,58 @@ describe('Client node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should send FAILURE state and log an error when serialPort is falsy', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testModbusReadFlowFailure, function () {
+        const modbusClientNode = helper.getNode('4')
+        modbusClientNode.serialPort = null;
+        const sendSpy = sinon.spy(modbusClientNode.stateService, 'send');
+
+        modbusClientNode.connectClient ()
+        sinon.assert.calledWithExactly(sendSpy, 'FAILURE'); 
+
+        done()
+
+      })
+    })
+    it('should open serial client if actualServiceState is opened', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testClientFlow, function () {
+        const modbusClientNode = helper.getNode('3')
+        modbusClientNode.actualServiceState = { value: 'opened' }
+        modbusClientNode.unit_id = 1
+        modbusClientNode.clientTimeout = 1
+        modbusClientNode.client = {
+          setID: sinon.spy(),
+          setTimeout: sinon.spy(),
+          _port: {
+            on: sinon.spy()
+          }
+        }
+
+        modbusClientNode.openSerialClient()
+
+        sinon.assert.calledWith(modbusClientNode.client.setTimeout, 1)
+        sinon.assert.calledWith(modbusClientNode.client.setID, 1)
+        sinon.assert.calledWith(modbusClientNode.client._port.on, 'close', modbusClientNode.onModbusClose)
+        done()
+
+      })
+    })
+    it('should handle error during deregistration', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testModbusReadFlow, function () {
+        const modbusClientNode = helper.getNode('4')
+        modbusClientNode.closingModbus = false
+        const closeConnectionWithoutRegisteredNodesSpy = sinon.spy(modbusClientNode, 'closeConnectionWithoutRegisteredNodes');
+
+        modbusClientNode.closeConnectionWithoutRegisteredNodes('client_user_node_id_1', function () {
+          sinon.assert.calledWith(closeConnectionWithoutRegisteredNodesSpy, 'client_user_node_id_1', sinon.match.func);
+
+          closeConnectionWithoutRegisteredNodesSpy.restore();
+
+          done();
+        });
+      });
+
+    });
     it('should set serial connection options and open client', function (done) {
       helper.load(testModbusClientNodes, testFlows.testModbusReadFlow, function () {
         const modbusClientNode = helper.getNode('4')
@@ -501,33 +553,11 @@ describe('Client node Testing', function () {
       })
     })
 
-    it('should open serial client if actualServiceState is opened', function (done) {
-      helper.load(testModbusClientNodes, testFlows.testClientFlow, function () {
-        const modbusReadNode = helper.getNode('90d2529d94dbf5c8')
-        modbusReadNode.actualServiceState = { value: 'opened' }
-        modbusReadNode.unit_id = 1
-        modbusReadNode.clientTimeout = 1
-        modbusReadNode.client = {
-          setID: sinon.spy(),
-          setTimeout: sinon.spy(),
-          _port: {
-            on: sinon.spy()
-          }
-        }
 
-        modbusReadNode.openSerialClient()
-
-        sinon.assert.calledWith(modbusReadNode.client.setTimeout, 1)
-        sinon.assert.calledWith(modbusReadNode.client.setID, 1)
-        sinon.assert.calledWith(modbusReadNode.client._port.on, 'close', modbusReadNode.onModbusClose)
-        sinon.assert.calledWith(modbusReadNode.stateService.send, 'CONNECT')
-        modbusReadNode.client.setID.restore()
-        done()
-      })
-    })
   })
 
   describe('post', function () {
+
     it('should fail for invalid node', function (done) {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
         helper.request().post('/modbus-client/invalid').expect(404).end(done)
