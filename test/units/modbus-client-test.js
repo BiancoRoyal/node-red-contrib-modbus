@@ -42,6 +42,18 @@ describe('Client node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should handle modbus errors', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testModbusReadFlow, function () {
+        const modbusClientNode = helper.getNode('4')
+        const stateServiceSendStub = sinon.stub(modbusClientNode.stateService, 'send');
+        const errorWithMessageAndErrno = { message: 'Connection refused', errno: 'ECONNREFUSED' };
+
+        modbusClientNode.modbusErrorHandling(errorWithMessageAndErrno);
+        sinon.assert.calledWith(stateServiceSendStub, 'FAILURE');
+        done();
+
+      });
+    });
     it('should be loaded with TCP DEFAULT', function (done) {
       helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
         const modbusReadNode = helper.getNode('466860d5.3f6358')
@@ -350,7 +362,7 @@ describe('Client node Testing', function () {
       })
     })
 
-    it('should close client connection when no registered nodes', function () {
+    it('should close client connection when no registered nodes', function (done) {
       helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
         const modbusClientNode = helper.getNode('466860d5.3f6358')
         modbusClientNode.registeredNodeList = {}
@@ -377,6 +389,7 @@ describe('Client node Testing', function () {
         modbusClientNode.actualServiceState.value = 'stopped'
         modbusClientNode.closeConnectionWithoutRegisteredNodes(clientUserNodeId, _done)
         sinon.assert.calledWith(modbusClientNode.setStoppedState, clientUserNodeId, _done)
+        done()
       })
     })
 
@@ -464,7 +477,7 @@ describe('Client node Testing', function () {
       })
     })
 
-    it('should open serial client if actualServiceState is opened', function () {
+    it('should open serial client if actualServiceState is opened', function (done) {
       helper.load(testModbusClientNodes, testFlows.testClientFlow, function () {
         const modbusReadNode = helper.getNode('90d2529d94dbf5c8')
         modbusReadNode.actualServiceState = { value: 'opened' }
@@ -485,6 +498,7 @@ describe('Client node Testing', function () {
         sinon.assert.calledWith(modbusReadNode.client._port.on, 'close', modbusReadNode.onModbusClose)
         sinon.assert.calledWith(modbusReadNode.stateService.send, 'CONNECT')
         modbusReadNode.client.setID.restore()
+        done()
       })
     })
   })
