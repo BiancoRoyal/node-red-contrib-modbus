@@ -42,14 +42,82 @@ describe('Client node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should call cberr with error when setNewNodeSettings returns false', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testClientFlow, function () {
+        const modbusClientNode = helper.getNode('3')
+        modbusClientNode.actualServiceState = { value: 'opened' }
+        modbusClientNode.unit_id = 1
+        modbusClientNode.clientTimeout = 1
+        modbusClientNode.client = {
+          setID: sinon.spy(),
+          setTimeout: sinon.spy(),
+          _port: {
+            on: sinon.spy()
+          }
+        }
+        const msg = {
+          payload: {
+          }
+        };
+        const internalDebugSpy = sinon.spy(coreModbusClient, 'internalDebug');
+        const setNewNodeSettingsStub = sinon.stub(coreModbusClient, 'setNewNodeSettings').returns(false);
+        const stateServiceSendStub = sinon.stub(modbusClientNode.stateService, 'send');
+        const cb = sinon.spy();
+        const cberr = sinon.spy();
+        modbusClientNode.emit('dynamicReconnect', msg, cb, cberr);
+        sinon.assert.calledWith(internalDebugSpy, 'Dynamic Reconnect Parameters ' + JSON.stringify(msg.payload));
+        sinon.assert.calledOnce(setNewNodeSettingsStub);
+        sinon.assert.calledWith(setNewNodeSettingsStub, modbusClientNode, msg);
+        sinon.assert.notCalled(cb);
+        sinon.assert.calledOnce(cberr);
+        sinon.assert.calledWith(cberr, sinon.match.instanceOf(Error), msg);
+
+        internalDebugSpy.restore();
+        setNewNodeSettingsStub.restore();
+        stateServiceSendStub.restore();
+
+        done();
+      });
+    });
+    it('should handle dynamicReconnect event correctly', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testClientFlow, function () {
+        const modbusClientNode = helper.getNode('3')
+        modbusClientNode.actualServiceState = { value: 'opened' }
+        modbusClientNode.unit_id = 1
+        modbusClientNode.clientTimeout = 1
+        modbusClientNode.client = {
+          setID: sinon.spy(),
+          setTimeout: sinon.spy(),
+          _port: {
+            on: sinon.spy()
+          }
+        }
+        const msg = {
+          payload: {
+          }
+        };
+        const internalDebugSpy = sinon.spy(coreModbusClient, 'internalDebug');
+        const setNewNodeSettingsStub = sinon.stub(coreModbusClient, 'setNewNodeSettings').returns(true);
+        const stateServiceSendStub = sinon.stub(modbusClientNode.stateService, 'send');
+        const cb = sinon.spy();
+        const cberr = sinon.spy();
+
+        modbusClientNode.emit('dynamicReconnect', msg, cb, cberr);
+
+        sinon.assert.calledWith(internalDebugSpy, 'Dynamic Reconnect Parameters ' + JSON.stringify(msg.payload));
+        sinon.assert.calledWith(setNewNodeSettingsStub, modbusClientNode, msg);
+        sinon.assert.calledWith(stateServiceSendStub, 'SWITCH');
+        done();
+      });
+    });
     it('should send FAILURE state and log an error when serialPort is falsy', function (done) {
       helper.load(testModbusClientNodes, testFlows.testModbusReadFlowFailure, function () {
         const modbusClientNode = helper.getNode('4')
         modbusClientNode.serialPort = null;
         const sendSpy = sinon.spy(modbusClientNode.stateService, 'send');
 
-        modbusClientNode.connectClient ()
-        sinon.assert.calledWithExactly(sendSpy, 'FAILURE'); 
+        modbusClientNode.connectClient()
+        sinon.assert.calledWithExactly(sendSpy, 'FAILURE');
 
         done()
 
