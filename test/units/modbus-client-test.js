@@ -42,6 +42,30 @@ describe('Client node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should set serial connection options and open client', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testModbusReadFlow, function () {
+        const modbusClientNode = helper.getNode('4')
+        const stateServiceSendSpy = sinon.spy(modbusClientNode.stateService, 'send');
+        modbusClientNode.setSerialConnectionOptions();
+        sinon.assert.calledWith(stateServiceSendSpy, 'OPENSERIAL');
+        stateServiceSendSpy.restore();
+
+        done();
+      });
+    });
+
+    it('should handle Modbus close event and call appropriate functions', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testModbusReadFlow, function () {
+        const modbusClientNode = helper.getNode('4')
+        const stateServiceSendStub = sinon.stub(modbusClientNode.stateService, 'send');
+
+        modbusClientNode.onModbusClose();
+        sinon.assert.calledWith(stateServiceSendStub, 'CLOSE');
+        stateServiceSendStub.restore();
+
+        done();
+      });
+    });
     it('should handle modbus errors', function (done) {
       helper.load(testModbusClientNodes, testFlows.testModbusReadFlow, function () {
         const modbusClientNode = helper.getNode('4')
