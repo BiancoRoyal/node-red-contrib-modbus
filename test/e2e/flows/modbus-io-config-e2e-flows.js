@@ -4,9 +4,17 @@ module.exports = {
   testShouldBeReadyToSendFlow: helperExtensions.cleanFlowPositionData(
     [
       {
-        id: '14c812a571dff93e',
+        id: '53ddcf553d9c6c83',
+        type: 'tab',
+        label: 'Flow 6',
+        disabled: false,
+        info: '',
+        env: []
+      },
+      {
+        id: 'c57c16d40bc75b21',
         type: 'modbus-read',
-        z: '09dc2c4ec477bba9',
+        z: '53ddcf553d9c6c83',
         name: 'Read Coil',
         topic: '',
         showStatusActivities: false,
@@ -23,22 +31,22 @@ module.exports = {
         startDelayTime: '',
         server: 'a477577e.9e0bc',
         useIOFile: true,
-        ioFile: 'c1d2e3f4g5h6i7',
+        ioFile: '4512ae8d341e011f',
         useIOForPayload: false,
         emptyMsgOnFail: false,
-        x: 350,
-        y: 240,
+        x: 280,
+        y: 520,
         wires: [
           [],
           [
-            'c306b395174319da'
+            'eee45d7498646e96'
           ]
         ]
       },
       {
-        id: 'b3f5ec7ac79c0dc6',
+        id: 'aead958f40171c84',
         type: 'modbus-server',
-        z: '09dc2c4ec477bba9',
+        z: '53ddcf553d9c6c83',
         name: '',
         logEnabled: false,
         hostname: '0.0.0.0',
@@ -50,8 +58,8 @@ module.exports = {
         inputBufferSize: 10000,
         discreteBufferSize: 10000,
         showErrors: false,
-        x: 485,
-        y: 160,
+        x: 415,
+        y: 440,
         wires: [
           [],
           [],
@@ -62,10 +70,10 @@ module.exports = {
         l: false
       },
       {
-        id: 'c306b395174319da',
-        type: 'debug',
-        z: '09dc2c4ec477bba9',
-        name: 'debug 23',
+        id: 'eee45d7498646e96',
+        type: 'helper',
+        z: '53ddcf553d9c6c83',
+        name: 'helper 5',
         active: true,
         tosidebar: true,
         console: false,
@@ -73,8 +81,8 @@ module.exports = {
         complete: 'false',
         statusVal: '',
         statusType: 'auto',
-        x: 720,
-        y: 300,
+        x: 620,
+        y: 580,
         wires: []
       },
       {
@@ -87,7 +95,7 @@ module.exports = {
         queueLogEnabled: false,
         failureLogEnabled: false,
         tcpHost: '127.0.0.1',
-        tcpPort: '10512',
+        tcpPort: '7890',
         tcpType: 'DEFAULT',
         serialPort: '/dev/ttyUSB',
         serialType: 'RTU-BUFFERD',
@@ -108,10 +116,10 @@ module.exports = {
         showLogs: true
       },
       {
-        id: 'c1d2e3f4g5h6i7',
+        id: '4512ae8d341e011f',
         type: 'modbus-io-config',
         name: 'ModbusIOConfig',
-        path: 'testpath',
+        path: './device.json',
         format: 'utf8',
         addressOffset: ''
       }
@@ -134,8 +142,7 @@ module.exports = {
   //     name: '',
   //     topic: '',
   //     showStatusActivities: false,
-  //     logIOActivities: false,
-  //     showErrors: false,
+  //     logIOActivities: false,io
   //     unitid: '',
   //     dataType: '',
   //     adr: '',

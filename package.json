@@ -70,7 +70,7 @@
     "test": "npm run lint && mocha ./test --parallel --recursive --reporter dot --timeout 7000",
     "test:slow": "npm run lint && mocha ./test --recursive --reporter dot --timeout 7000",
     "test:verbose": "npm run lint && mocha ./test --recursive --bail --timeout 8000",
-    "test:e2e": "npm run lint && mocha ./test/units/modbus-client-test.js --parallel --recursive --reporter dot --timeout 10000",
+    "test:e2e": "npm run lint && mocha ./test/e2e/modbus-io-config-e2e-test.js --parallel --recursive --reporter dot --timeout 100000",
     "lint": "standard --fix --ignore test/e2e/flows/**",
     "test:units": "npm run lint && mocha './test/units/*-test.js' --parallel --recursive --timeout 7000",
     "test:core": "npm run lint && mocha './test/core/*-test.js' --parallel --recursive --timeout 7000",
