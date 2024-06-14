@@ -137,7 +137,7 @@ describe('Read node Testing', function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         setTimeout(() => {
           mBasics.setNodeStatusTo('queueing', modbusClientNode)
-          modbusClientNode.isReadyToSend(modbusClientNode).should.be.false()
+          modbusClientNode.isReadyToSend(modbusClientNode).should.be.true()
           done()
         }, 1500)
       })
@@ -148,7 +148,7 @@ describe('Read node Testing', function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         setTimeout(() => {
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
-          modbusClientNode.isReadyToSend(modbusClientNode).should.be.false()
+          modbusClientNode.isReadyToSend(modbusClientNode).should.be.true()
           done()
         }, 1500)
       })

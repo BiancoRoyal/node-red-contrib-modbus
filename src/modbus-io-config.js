@@ -35,7 +35,8 @@ module.exports = function (RED) {
 
     lineReader.on('line', function (line) {
       if (line) {
-        node.configData.push(JSON.parse(line))
+        node.configData.push(line)
+        // node.configData.push(JSON.parse(line))
       }
     })
 
