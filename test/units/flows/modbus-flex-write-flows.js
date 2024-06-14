@@ -2,152 +2,153 @@ const helperExtensions = require('../../helper/test-helper-extensions')
 
 module.exports = {
 
-  testWriteParametersFlow: helperExtensions.cleanFlowPositionData([
-    {
-      id: '109c8cab3679c714',
-      type: 'tab',
-      label: 'Write Parameters',
-      disabled: false,
-      info: '',
-      env: []
-    },
-    {
-      id: 'c2f3c1d0.3d0b1',
-      type: 'catch',
-      z: '109c8cab3679c714',
-      name: '',
-      scope: null,
-      uncaught: false,
-      x: 240,
-      y: 220,
-      wires: [
-        [
-          'h2'
-        ]
-      ]
-    },
-    {
-      id: 'h2',
-      type: 'helper',
-      z: '109c8cab3679c714',
-      name: '',
-      tosidebar: true,
-      console: false,
-      tostatus: false,
-      complete: 'payload',
-      targetType: 'msg',
-      statusVal: '',
-      statusType: 'auto',
-      x: 450,
-      y: 220,
-      wires: []
-    },
-    {
-      id: '178284ea.5055ab',
-      type: 'modbus-server',
-      z: '109c8cab3679c714',
-      name: '',
-      logEnabled: false,
-      hostname: '',
-      serverPort: '7504',
-      responseDelay: '50',
-      delayUnit: 'ms',
-      coilsBufferSize: 1024,
-      holdingBufferSize: 1024,
-      inputBufferSize: 1024,
-      discreteBufferSize: 1024,
-      showErrors: false,
-      x: 440,
-      y: 100,
-      wires: [
-        [],
-        [],
-        [],
-        [],
-        []
-      ]
-    },
-    {
-      id: '82fe7fe4.7b7bc8',
-      type: 'modbus-flex-write',
-      z: '109c8cab3679c714',
-      name: '',
-      showStatusActivities: false,
-      showErrors: true,
-      server: '80aeec4c.0cb9e8',
-      emptyMsgOnFail: false,
-      keepMsgProperties: false,
-      x: 430,
-      y: 400,
-      wires: [
-        [
-          'h1'
-        ],
-        []
-      ]
-    },
-    {
-      id: 'h1',
-      type: 'helper',
-      z: '109c8cab3679c714',
-      name: '',
-      tosidebar: true,
-      console: false,
-      tostatus: false,
-      complete: 'payload',
-      targetType: 'msg',
-      statusVal: '',
-      statusType: 'auto',
-      x: 710,
-      y: 380,
-      wires: []
-    },
-    {
-      id: '9d3d244.cb410d8',
-      type: 'function',
-      z: '109c8cab3679c714',
-      name: 'Write 0-9 on Unit 1 FC15',
-      func: 'msg.payload = { value: msg.payload, \'fc\': 15, \'unitid\': 1, \'address\': 0 , \'quantity\': 10 };\nreturn msg;',
-      outputs: 1,
-      noerr: 0,
-      initialize: '',
-      finalize: '',
-      libs: [],
-      x: 150,
-      y: 400,
-      wires: [
-        [
-          '82fe7fe4.7b7bc8'
-        ]
-      ]
-    },
-    {
-      id: '80aeec4c.0cb9e8',
-      type: 'modbus-client',
-      name: 'Modbus Server',
-      clienttype: 'tcp',
-      bufferCommands: true,
-      stateLogEnabled: false,
-      queueLogEnabled: false,
-      failureLogEnabled: false,
-      tcpHost: '127.0.0.1',
-      tcpPort: '7504',
-      tcpType: 'DEFAULT',
-      serialPort: '/dev/ttyUSB',
-      serialType: 'RTU-BUFFERD',
-      serialBaudrate: '9600',
-      serialDatabits: '8',
-      serialStopbits: '1',
-      serialParity: 'none',
-      serialConnectionDelay: '100',
-      serialAsciiResponseStartDelimiter: '',
-      unit_id: '1',
-      commandDelay: '1',
-      clientTimeout: '100',
-      reconnectOnTimeout: false,
-      reconnectTimeout: '200',
-      parallelUnitIdsAllowed: true
-    }
+  testWriteParametersFlow: helperExtensions.cleanFlowPositionData(
+    [
+      {
+          "id": "109c8cab3679c714",
+          "type": "tab",
+          "label": "Write Parameters",
+          "disabled": false,
+          "info": "",
+          "env": []
+      },
+      {
+          "id": "c2f3c1d0.3d0b1",
+          "type": "catch",
+          "z": "109c8cab3679c714",
+          "name": "",
+          "scope": null,
+          "uncaught": false,
+          "x": 240,
+          "y": 220,
+          "wires": [
+              [
+                  "h2"
+              ]
+          ]
+      },
+      {
+          "id": "h2",
+          "type": "helper",
+          "z": "109c8cab3679c714",
+          "name": "",
+          "tosidebar": true,
+          "console": false,
+          "tostatus": false,
+          "complete": "payload",
+          "targetType": "msg",
+          "statusVal": "",
+          "statusType": "auto",
+          "x": 450,
+          "y": 220,
+          "wires": []
+      },
+      {
+          "id": "178284ea.5055ab",
+          "type": "modbus-server",
+          "z": "109c8cab3679c714",
+          "name": "",
+          "logEnabled": false,
+          "hostname": "",
+          "serverPort": "7504",
+          "responseDelay": "50",
+          "delayUnit": "ms",
+          "coilsBufferSize": 1024,
+          "holdingBufferSize": 1024,
+          "inputBufferSize": 1024,
+          "discreteBufferSize": 1024,
+          "showErrors": false,
+          "x": 440,
+          "y": 100,
+          "wires": [
+              [],
+              [],
+              [],
+              [],
+              []
+          ]
+      },
+      {
+          "id": "82fe7fe4.7b7bc8",
+          "type": "modbus-flex-write",
+          "z": "109c8cab3679c714",
+          "name": "",
+          "showStatusActivities": false,
+          "showErrors": true,
+          "server": "80aeec4c.0cb9e8",
+          "emptyMsgOnFail": false,
+          "keepMsgProperties": false,
+          "x": 430,
+          "y": 400,
+          "wires": [
+              [
+                  "h1"
+              ],
+              []
+          ]
+      },
+      {
+          "id": "h1",
+          "type": "helper",
+          "z": "109c8cab3679c714",
+          "name": "",
+          "tosidebar": true,
+          "console": false,
+          "tostatus": false,
+          "complete": "payload",
+          "targetType": "msg",
+          "statusVal": "",
+          "statusType": "auto",
+          "x": 710,
+          "y": 380,
+          "wires": []
+      },
+      {
+          "id": "9d3d244.cb410d8",
+          "type": "function",
+          "z": "109c8cab3679c714",
+          "name": "Write 0-9 on Unit 1 FC15",
+          "func": "msg.payload = { value: msg.payload, 'fc': 15, 'unitid': 1, 'address': 0, 'quantity': 10 };\nreturn msg;",
+          "outputs": 1,
+          "noerr": 0,
+          "initialize": "",
+          "finalize": "",
+          "libs": [],
+          "x": 150,
+          "y": 400,
+          "wires": [
+              [
+                  "82fe7fe4.7b7bc8"
+              ]
+          ]
+      },
+      {
+          "id": "80aeec4c.0cb9e8",
+          "type": "modbus-client",
+          "name": "Modbus Server",
+          "clienttype": "tcp",
+          "bufferCommands": true,
+          "stateLogEnabled": false,
+          "queueLogEnabled": false,
+          "failureLogEnabled": false,
+          "tcpHost": "127.0.0.1",
+          "tcpPort": "7504",
+          "tcpType": "DEFAULT",
+          "serialPort": "/dev/ttyUSB",
+          "serialType": "RTU-BUFFERD",
+          "serialBaudrate": "9600",
+          "serialDatabits": "8",
+          "serialStopbits": "1",
+          "serialParity": "none",
+          "serialConnectionDelay": "100",
+          "serialAsciiResponseStartDelimiter": "",
+          "unit_id": "1",
+          "commandDelay": "1",
+          "clientTimeout": "100",
+          "reconnectOnTimeout": false,
+          "reconnectTimeout": "200",
+          "parallelUnitIdsAllowed": true
+      }
   ]),
 
   testShouldBeLoadedWithoutClientFlow: helperExtensions.cleanFlowPositionData([

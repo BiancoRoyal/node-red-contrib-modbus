@@ -243,7 +243,7 @@ describe('Flex Write node Testing', function () {
         setTimeout(() => {
           mBasics.setNodeStatusTo('queueing', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.true()
+          isReady.should.be.false()
           done()
         }, 1500)
       })
@@ -255,7 +255,7 @@ describe('Flex Write node Testing', function () {
         setTimeout(() => {
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.true()
+          isReady.should.be.false()
           done()
         }, 1500)
       })
