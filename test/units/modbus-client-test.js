@@ -42,6 +42,33 @@ describe('Client node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should handle error with a message in modbusSerialErrorHandling', function(done) {
+      helper.load(testModbusClientNodes, testFlows.testClientFlow, function() {
+        const modbusClientNode = helper.getNode('3');
+        const errorMessage = 'Test error message';
+        const coreModbusQueue = {
+          queueSerialUnlockCommand: sinon.stub()
+        };
+  
+        const coreModbusClient = {
+          modbusSerialDebug: sinon.stub()
+        };
+  
+        modbusClientNode.coreModbusQueue = coreModbusQueue;
+        modbusClientNode.coreModbusClient = coreModbusClient;
+        modbusClientNode.showErrors = true;
+        modbusClientNode.failureLogEnabled = true;
+  
+        const error = new Error(errorMessage);
+  
+        modbusClientNode.error = sinon.stub();
+        modbusClientNode.stateService = { send: sinon.stub() };
+  
+        modbusClientNode.modbusSerialErrorHandling(error);
+        sinon.assert.calledWith(modbusClientNode.stateService.send, 'BREAK');
+        done();
+      });
+    });
     it('should initialize default values when parallelUnitIdsAllowed is undefined', function (done) {
 
       helper.load(testModbusClientNodes, testFlows.testClientFlow, function () {
