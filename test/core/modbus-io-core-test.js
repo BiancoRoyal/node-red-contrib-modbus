@@ -18,41 +18,71 @@ const expect = require('chai').expect
 describe('Core IO Testing', function () {
   describe('Core IO', function () {
     describe('Core IO Simple', function () {
+
+      it('should handle double data type correctly', () => {
+        const registerName = 'testRegister';
+        const mapping = {
+          name: 'dTest',
+          valueAddress: '%QD100'
+        };
+        const offset = 0;
+        const readingOffset = 0;
+        const logging = true;
+
+        const ioCoreMock = {
+          internalDebug: sinon.stub(),
+          getDataTypeFromFirstCharType: sinon.stub().returns('double')
+        };
+
+        sinon.stub(coreIOUnderTest, 'core').value(ioCoreMock);
+
+        const result = coreIOUnderTest.buildOutputAddressMapping.call(coreIOUnderTest, registerName, mapping, offset, readingOffset, logging);
+
+        assert.strictEqual(result.addressStart, 100);
+        assert.strictEqual(result.addressOffset, 4);
+        assert.strictEqual(result.bits, 64);
+        assert.strictEqual(result.dataType, 'Double');
+        assert.strictEqual(result.type, 'output');
+
+        assert.strictEqual(ioCoreMock.internalDebug.callCount, 0);
+
+      });
+
       it('should modify original and raw messages when useIOFile is true and ioFile.lastUpdatedAt is defined', () => {
         const node = {
           useIOFile: true,
           ioFile: {
-            lastUpdatedAt: new Date() 
+            lastUpdatedAt: new Date()
           },
           useIOForPayload: false,
-          logIOActivities: true 
+          logIOActivities: true
         };
         const msg = {
           payload: {
-            address: '0', 
+            address: '0',
             fc: '3',
             quantity: '1'
           },
           topic: 'testTopic',
-          responseBuffer: Buffer.from([0x01, 0x02]) 
+          responseBuffer: Buffer.from([0x01, 0x02])
         };
-    
+
         const coreMock = {
           getOriginalMessage: sinon.stub().returns({}),
-          nameValuesFromIOFile: sinon.stub().returns([]), 
-          filterValueNames: sinon.stub().returns([]) 
+          nameValuesFromIOFile: sinon.stub().returns([]),
+          filterValueNames: sinon.stub().returns([])
         };
-    
+
         sinon.stub(coreIOUnderTest, 'core').value(coreMock);
-    
+
         const result = coreIOUnderTest.buildMessageWithIO.call(coreIOUnderTest, node, [], msg.responseBuffer, msg);
-    
-        assert.strictEqual(result.length, 2); 
-        assert.deepStrictEqual(result[0].topic, 'testTopic'); 
-        assert.deepStrictEqual(result[0].responseBuffer, msg.responseBuffer); 
-     
+
+        assert.strictEqual(result.length, 2);
+        assert.deepStrictEqual(result[0].topic, 'testTopic');
+        assert.deepStrictEqual(result[0].responseBuffer, msg.responseBuffer);
+
       });
-    
+
       it('should correctly handle word and unsigned integer type mappings', () => {
         const registerNameWord = 'TestRegisterWord'
         const mappingWord = {
