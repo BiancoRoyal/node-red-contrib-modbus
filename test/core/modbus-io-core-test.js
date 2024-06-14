@@ -16,8 +16,62 @@ const sinon = require('sinon')
 const expect = require('chai').expect
 
 describe('Core IO Testing', function () {
+
   describe('Core IO', function () {
     describe('Core IO Simple', function () {
+      it('should correctly handle double type mapping', () => {
+        const registerName = 'TestRegister'
+        const mapping = {
+          name: 'd54321',
+          valueAddress: 'D54321'
+        }
+        const offset = 0
+        const readingOffset = 0
+        const logging = true
+
+        const result = coreIOUnderTest.buildInputAddressMapping(registerName, mapping, offset, readingOffset, logging)
+
+        expect(result.bits).to.equal(64)
+        expect(result.addressStart).to.equal(321)
+        expect(result.addressOffset).to.equal(4)
+        expect(result.dataType).to.equal('Double')
+        expect(result.type).to.equal('input')
+      })
+
+      it('should correctly handle float type mapping', () => {
+        const registerName = 'TestRegister'
+        const mapping = {
+          name: 'f12345',
+          valueAddress: 'F12345'
+        }
+        const offset = 0
+        const readingOffset = 0
+        const logging = true
+
+        const result = coreIOUnderTest.buildInputAddressMapping(registerName, mapping, offset, readingOffset, logging)
+
+        expect(result.bits).to.equal(32)
+        expect(result.addressStart).to.equal(345)
+        expect(result.addressOffset).to.equal(2)
+        expect(result.type).to.equal('input')
+      })
+      it('should log unknown input type when type is not recognized', () => {
+        const registerName = 'TestRegister'
+        const mapping = {
+          name: 'x12345', // Start with 'x', which is not recognized
+          valueAddress: 'X12345'
+        }
+        const offset = 0
+        const readingOffset = 0
+        const logging = true
+        const internalDebugSpy = sinon.spy(coreIOUnderTest, 'internalDebug')
+
+        const result = coreIOUnderTest.buildInputAddressMapping(registerName, mapping, offset, readingOffset, logging)
+
+        expect(internalDebugSpy.calledOnceWithExactly('unknown input type x')).to.equal(true)
+
+        internalDebugSpy.restore()
+      })
       it('should correctly convert values when responseBuffer is valid', () => {
         const valueNames = [
           { dataType: 'Integer', bits: '32', registerAddress: 0 },
@@ -26,9 +80,9 @@ describe('Core IO Testing', function () {
         const register = [0x12, 0x34, 0x56, 0x78, 0x41, 0x23, 0x45, 0x67]
         const responseBuffer = { buffer: Buffer.from(register) }
         const logging = false
-      
+
         const result = coreIOUnderTest.convertValuesByType(valueNames, register, responseBuffer, logging)
-      
+
         expect(result[0].value).to.equal(0x12345678)
         expect(result[1].value).to.equal(68239660941312)
       })
