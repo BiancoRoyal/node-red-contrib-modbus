@@ -42,12 +42,20 @@ describe('Client node Testing', function () {
   })
 
   describe('Node', function () {
-    it('should call node.error and done when an error occurs', function (done) {
-      const flow = [
-        { id: '3', type: 'modbus-client', name: 'Modbus Client' }
-        // Add any other nodes needed for your flow
-      ];
+    it('should initialize default values when parallelUnitIdsAllowed is undefined', function (done) {
 
+      helper.load(testModbusClientNodes, testFlows.testClientFlow, function () {
+        const modbusClientNode = helper.getNode('3');
+        assert.strictEqual(modbusClientNode.clienttype, 'tcp');
+        assert.strictEqual(modbusClientNode.bufferCommands, true);
+        assert.strictEqual(modbusClientNode.queueLogEnabled, false);
+        assert.strictEqual(modbusClientNode.stateLogEnabled, false);
+        assert.strictEqual(modbusClientNode.failureLogEnabled, true);
+        assert.strictEqual(modbusClientNode.closingModbus, false)
+        done();
+      });
+    });
+    it('should call node.error and done when an error occurs', function (done) {
       helper.load(testModbusClientNodes, testFlows.testClientFlow, function () {
         const modbusClientNode = helper.getNode('3');
         const clientUserNodeId = 'testNodeId';
@@ -65,7 +73,7 @@ describe('Client node Testing', function () {
         };
 
         modbusClientNode.deregisterForModbus(clientUserNodeId, function (err) {
-          assert.equal(err, undefined); 
+          assert.equal(err, undefined);
           done();
         });
       });
@@ -672,13 +680,16 @@ describe('Client node Testing', function () {
 
 
   })
+})
 
-  describe('post', function () {
 
-    it('should fail for invalid node', function (done) {
-      helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
-        helper.request().post('/modbus-client/invalid').expect(404).end(done)
-      })
+describe('post', function () {
+
+
+  it('should fail for invalid node', function (done) {
+    helper.load(testModbusClientNodes, testFlows.testSimpleReadWithClientFlow, function () {
+      helper.request().post('/modbus-client/invalid').expect(404).end(done)
     })
   })
 })
+
