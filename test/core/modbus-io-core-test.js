@@ -18,7 +18,41 @@ const expect = require('chai').expect
 describe('Core IO Testing', function () {
   describe('Core IO', function () {
     describe('Core IO Simple', function () {
-
+      it('should modify original and raw messages when useIOFile is true and ioFile.lastUpdatedAt is defined', () => {
+        const node = {
+          useIOFile: true,
+          ioFile: {
+            lastUpdatedAt: new Date() 
+          },
+          useIOForPayload: false,
+          logIOActivities: true 
+        };
+        const msg = {
+          payload: {
+            address: '0', 
+            fc: '3',
+            quantity: '1'
+          },
+          topic: 'testTopic',
+          responseBuffer: Buffer.from([0x01, 0x02]) 
+        };
+    
+        const coreMock = {
+          getOriginalMessage: sinon.stub().returns({}),
+          nameValuesFromIOFile: sinon.stub().returns([]), 
+          filterValueNames: sinon.stub().returns([]) 
+        };
+    
+        sinon.stub(coreIOUnderTest, 'core').value(coreMock);
+    
+        const result = coreIOUnderTest.buildMessageWithIO.call(coreIOUnderTest, node, [], msg.responseBuffer, msg);
+    
+        assert.strictEqual(result.length, 2); 
+        assert.deepStrictEqual(result[0].topic, 'testTopic'); 
+        assert.deepStrictEqual(result[0].responseBuffer, msg.responseBuffer); 
+     
+      });
+    
       it('should correctly handle word and unsigned integer type mappings', () => {
         const registerNameWord = 'TestRegisterWord'
         const mappingWord = {
