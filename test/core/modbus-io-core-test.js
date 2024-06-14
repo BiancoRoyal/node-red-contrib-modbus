@@ -16,9 +16,9 @@ const sinon = require('sinon')
 const expect = require('chai').expect
 
 describe('Core IO Testing', function () {
-
   describe('Core IO', function () {
     describe('Core IO Simple', function () {
+
       it('should correctly handle word and unsigned integer type mappings', () => {
         const registerNameWord = 'TestRegisterWord'
         const mappingWord = {
@@ -28,9 +28,9 @@ describe('Core IO Testing', function () {
         const offsetWord = 0
         const readingOffsetWord = 0
         const loggingWord = true
-      
+
         const resultWord = coreIOUnderTest.buildInputAddressMapping(registerNameWord, mappingWord, offsetWord, readingOffsetWord, loggingWord)
-      
+
         expect(resultWord.bits).to.equal(16)
         expect(resultWord.addressStart).to.equal(76)
         expect(resultWord.addressOffset).to.equal(1)
@@ -44,9 +44,9 @@ describe('Core IO Testing', function () {
         const offsetUInt = 0
         const readingOffsetUInt = 0
         const loggingUInt = true
-      
+
         const resultUInt = coreIOUnderTest.buildInputAddressMapping(registerNameUInt, mappingUInt, offsetUInt, readingOffsetUInt, loggingUInt)
-      
+
         expect(resultUInt.bits).to.equal(16)
         expect(resultUInt.addressStart).to.equal(321)
         expect(resultUInt.addressOffset).to.equal(1)
@@ -712,6 +712,40 @@ describe('Core IO Testing', function () {
     })
 
     describe('Core IO Mapping', function () {
+      it('should handle invalid items and log debug messages', () => {
+        const register = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        const logging = true;
+        const validItem = {
+          registerAddress: 0,
+          bits: 16
+        };
+
+        const invalidItem1 = {
+          bits: 16
+        };
+
+        const invalidItem2 = {
+          registerAddress: -1,
+          bits: 16
+        };
+
+        coreIOUnderTest.internalDebug = sinon.stub();
+        const ioCoreMock = {
+          internalDebug: coreIOUnderTest.internalDebug,
+          isRegisterSizeWrong: sinon.stub().returns(false)
+        };
+
+        const valueNames = [
+          validItem,
+          invalidItem1,
+          invalidItem2
+        ];
+
+        coreIOUnderTest.insertValues(valueNames, register, logging, ioCoreMock);
+
+        assert.strictEqual(valueNames.length, 3);
+        sinon.assert.calledWith(coreIOUnderTest.internalDebug, 'Item Not Valid To Insert Value ' + JSON.stringify(invalidItem1));
+      });
       it('should do mapping of ...', function (done) {
         done()
       })
