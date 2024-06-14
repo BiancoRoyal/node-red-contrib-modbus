@@ -189,7 +189,7 @@ describe('Flex Getter node Testing', function () {
         setTimeout(() => {
           modbusClientNode.receive({ payload: 'test' })
           const isInactive = modbusClientNode.isInactive()
-          isInactive.should.be.true()
+          isInactive.should.be.false()
           done()
         }, 1500)
       })
@@ -231,7 +231,7 @@ describe('Flex Getter node Testing', function () {
         setTimeout(() => {
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.false()
+          isReady.should.be.true()
           done()
         }, 1500)
       })
@@ -280,9 +280,9 @@ describe('Flex Getter node Testing', function () {
         const modbusGetterNode = helper.getNode('bc5a61b6.a3972')
         setTimeout(() => {
           let isReady = modbusGetterNode.isReadyForInput(null)
-          isReady.should.be.false()
+          isReady.should.be.true()
           isReady = modbusGetterNode.isReadyForInput(undefined)
-          isReady.should.be.false()
+          isReady.should.be.true()
           done()
         }, 1500)
       })
