@@ -15,7 +15,9 @@ const serverNode = require('../../src/modbus-server.js')
 const testServerNodes = [injectNode, serverNode]
 const chai = require('chai')
 const expect = chai.expect
+const sinon = require('sinon')
 const helper = require('node-red-node-test-helper')
+const mbBasics = require('../../src/modbus-basics.js')
 helper.init(require.resolve('node-red'))
 
 const testFlows = require('./flows/modbus-server-flows.js')
@@ -42,6 +44,15 @@ describe('Server node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should set node status to active on client connection', function (done) {
+      helper.load(testServerNodes, testFlows.testServerConfig, function () {
+        const modbusServer = helper.getNode('249922d5ac72b8cd');
+        modbusServer.modbusServer.emit('connection', { socket: { address: () => '127.0.0.1', remoteAddress: '192.168.1.100', remotePort: 1234 } });
+
+        sinon.assert.calledWith(modbusServer.status, { fill: 'yellow', shape: 'dot', text: 'initialized' })
+        done();
+      });
+    });
     it('should set responseDelay, delayUnit, showStatusActivities, and coilsBufferSize correctly', function (done) {
       helper.load(testServerNodes, testFlows.testServerConfig, function () {
         const modbusServer = helper.getNode('249922d5ac72b8cd');
@@ -162,6 +173,7 @@ describe('Server node Testing', function () {
   })
 
   describe('post', function () {
+
     it('should fail for invalid node', function (done) {
       helper.load(testServerNodes, testFlows.testShouldSendDataOnInputFlow, function () {
         helper.request().post('/modbus-server/invalid').expect(404).end(done)

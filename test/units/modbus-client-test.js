@@ -17,7 +17,7 @@ const flexGetterNode = require('../../src/modbus-flex-getter.js')
 const mBasics = require('../../src/modbus-basics.js')
 const sinon = require('sinon')
 const testModbusClientNodes = [serverNode, nodeUnderTest, readNode, flexGetterNode]
-
+const assert = require('assert')
 const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
@@ -42,6 +42,55 @@ describe('Client node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should call node.error and done when an error occurs', function (done) {
+      const flow = [
+        { id: '3', type: 'modbus-client', name: 'Modbus Client' }
+        // Add any other nodes needed for your flow
+      ];
+
+      helper.load(testModbusClientNodes, testFlows.testClientFlow, function () {
+        const modbusClientNode = helper.getNode('3');
+        const clientUserNodeId = 'testNodeId';
+        const expectedError = new Error('Simulated error during deregistration');
+        const node = {
+          registeredNodeList: {
+            [clientUserNodeId]: {}
+          },
+          closingModbus: false,
+          closeConnectionWithoutRegisteredNodes: sinon.stub().callsFake((nodeId, callback) => {
+            callback(expectedError);
+          }),
+          emit: sinon.stub(),
+          error: sinon.stub(),
+        };
+
+        modbusClientNode.deregisterForModbus(clientUserNodeId, function (err) {
+          assert.equal(err, undefined); 
+          done();
+        });
+      });
+    });
+
+    it('should call closeConnectionWithoutRegisteredNodes when closingModbus is false', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testClientFlow, function () {
+        const modbusClientNode = helper.getNode('3')
+
+        modbusClientNode.registeredNodeList = {
+          'clientUserNodeId': {}
+        };
+        modbusClientNode.closingModbus = false;
+        sinon.stub(modbusClientNode, 'closeConnectionWithoutRegisteredNodes').callsFake(function (clientUserNodeId, done) {
+          done();
+        });
+
+        modbusClientNode.deregisterForModbus('clientUserNodeId', function () {
+          sinon.assert.calledWith(modbusClientNode.closeConnectionWithoutRegisteredNodes, 'clientUserNodeId', sinon.match.func);
+
+          done();
+        });
+      });
+    });
+
     it('should call cberr with error when setNewNodeSettings returns false', function (done) {
       helper.load(testModbusClientNodes, testFlows.testClientFlow, function () {
         const modbusClientNode = helper.getNode('3')
