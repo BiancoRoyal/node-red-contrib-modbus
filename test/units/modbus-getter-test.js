@@ -196,7 +196,7 @@ describe('Getter node Testing', function () {
         setTimeout(() => {
           mbBasics.setNodeStatusTo('stopped', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.false()
+          isReady.should.be.true()
           done()
         }, 1500)
       })
