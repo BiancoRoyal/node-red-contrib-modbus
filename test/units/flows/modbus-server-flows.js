@@ -1,7 +1,37 @@
 const helperExtensions = require('../../helper/test-helper-extensions')
 
 module.exports = {
+  testServerConfig: helperExtensions.cleanFlowPositionData(
+    [
+      {
+        "id": "249922d5ac72b8cd",
+        "type": "modbus-server",
+        "z": "3eb3dc87d008ec26",
+        "showStatusActivities": true,
+        "name": "",
+        "logEnabled": true,
+        "hostname": "0.0.0.0",
+        "serverPort": "5509",
+        "responseDelay": 100,
+        "delayUnit": "ms",
+        "coilsBufferSize": 10000,
+        "holdingBufferSize": 10000,
+        "inputBufferSize": 10000,
+        "discreteBufferSize": 10000,
+        "showErrors": true,
+        "x": 300,
+        "y": 200,
+        "wires": [
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
 
+  ),
   testSimpleNodeShouldThrowErrorFlow: helperExtensions.cleanFlowPositionData([
     {
       id: '178284ea.5055ab',

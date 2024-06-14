@@ -42,6 +42,21 @@ describe('Server node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should set responseDelay, delayUnit, showStatusActivities, and coilsBufferSize correctly', function (done) {
+      helper.load(testServerNodes, testFlows.testServerConfig, function () {
+        const modbusServer = helper.getNode('249922d5ac72b8cd');
+        expect(modbusServer.responseDelay).to.equal(100);
+        expect(modbusServer.delayUnit).to.equal('ms');
+        modbusServer.showStatusActivities.should.be.true();
+        modbusServer.showErrors.should.be.true();
+        expect(modbusServer.coilsBufferSize).to.equal(80000);
+        expect(modbusServer.holdingBufferSize).to.equal(80000);
+        expect(modbusServer.discreteBufferSize).to.equal(80000);
+        done();
+      });
+    });
+
+
     it('should handle errors during server initialization', function (done) {
       helper.load(testServerNodes, testFlows.testSimpleNodeToLogError, function () {
         const modbusServer = helper.getNode('178284ea.5055ab')
