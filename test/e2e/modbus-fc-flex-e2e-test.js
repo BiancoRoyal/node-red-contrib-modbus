@@ -212,7 +212,11 @@ describe('Modbus Flex FC-Functionality tests', function () {
         }
         flexNode.modbusRead();
         setTimeout(function () {
-          expect(setStatus).to.deep.equal({})
+          expect(setStatus).to.deep.equal({
+            text: 'broken',
+            fill: 'yellow',
+            shape: 'ring'
+          })
           done()
         }, 1500)
 

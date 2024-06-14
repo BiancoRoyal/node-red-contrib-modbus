@@ -130,7 +130,7 @@ module.exports = function (RED) {
     }
 
     node.modbusRead = function () {
-      if (!modbusClient) {
+      if (!modbusClient.client) {
         setNodeStatusWithTimeTo('waiting')
         return
       }
