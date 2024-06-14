@@ -408,6 +408,7 @@ de.biancoroyal.modbus.io.core.convertValuesByType = function (valueNames, regist
       try {
         item = ioCore.getValueFromBufferByDataType(item, bufferOffset, responseBuffer.buffer, logging)
       } catch (err) {
+        /* istanbul ignore next */
         ioCore.internalDebug(err.message)
       }
     } else {

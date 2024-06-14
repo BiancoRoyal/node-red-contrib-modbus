@@ -18,6 +18,20 @@ const expect = require('chai').expect
 describe('Core IO Testing', function () {
   describe('Core IO', function () {
     describe('Core IO Simple', function () {
+      it('should correctly convert values when responseBuffer is valid', () => {
+        const valueNames = [
+          { dataType: 'Integer', bits: '32', registerAddress: 0 },
+          { dataType: 'Float', bits: '32', registerAddress: 1 }
+        ]
+        const register = [0x12, 0x34, 0x56, 0x78, 0x41, 0x23, 0x45, 0x67]
+        const responseBuffer = { buffer: Buffer.from(register) }
+        const logging = false
+      
+        const result = coreIOUnderTest.convertValuesByType(valueNames, register, responseBuffer, logging)
+      
+        expect(result[0].value).to.equal(0x12345678)
+        expect(result[1].value).to.equal(68239660941312)
+      })
       it('should know type from first char of Word', function (done) {
         assert.strict.equal(coreIOUnderTest.getDataTypeFromFirstCharType('w'), 'Word')
         done()
