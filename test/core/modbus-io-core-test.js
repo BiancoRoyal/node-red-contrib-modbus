@@ -19,6 +19,40 @@ describe('Core IO Testing', function () {
 
   describe('Core IO', function () {
     describe('Core IO Simple', function () {
+      it('should correctly handle word and unsigned integer type mappings', () => {
+        const registerNameWord = 'TestRegisterWord'
+        const mappingWord = {
+          name: 'w9876',
+          valueAddress: 'W9876'
+        }
+        const offsetWord = 0
+        const readingOffsetWord = 0
+        const loggingWord = true
+      
+        const resultWord = coreIOUnderTest.buildInputAddressMapping(registerNameWord, mappingWord, offsetWord, readingOffsetWord, loggingWord)
+      
+        expect(resultWord.bits).to.equal(16)
+        expect(resultWord.addressStart).to.equal(76)
+        expect(resultWord.addressOffset).to.equal(1)
+        expect(resultWord.dataType).to.equal('Word')
+        expect(resultWord.type).to.equal('input')
+        const registerNameUInt = 'TestRegisterUInt'
+        const mappingUInt = {
+          name: 'u54321',
+          valueAddress: 'U54321'
+        }
+        const offsetUInt = 0
+        const readingOffsetUInt = 0
+        const loggingUInt = true
+      
+        const resultUInt = coreIOUnderTest.buildInputAddressMapping(registerNameUInt, mappingUInt, offsetUInt, readingOffsetUInt, loggingUInt)
+      
+        expect(resultUInt.bits).to.equal(16)
+        expect(resultUInt.addressStart).to.equal(321)
+        expect(resultUInt.addressOffset).to.equal(1)
+        expect(resultUInt.dataType).to.equal('Unsigned Integer')
+        expect(resultUInt.type).to.equal('input')
+      })
       it('should correctly handle double type mapping', () => {
         const registerName = 'TestRegister'
         const mapping = {
