@@ -18,7 +18,30 @@ const expect = require('chai').expect
 describe('Core IO Testing', function () {
   describe('Core IO', function () {
     describe('Core IO Simple', function () {
-
+      it('should correctly insert value for 32-bit items', () => {
+        const valueNames = [
+          {
+            registerAddress: 1,
+            bits: 32,
+            value: null,
+          },
+        ];
+        const register = [0, 1, 2]; 
+        const logging = true;
+    
+        const ioCoreMock = {
+          internalDebug: sinon.stub(),
+        };
+    
+        sinon.stub(coreIOUnderTest, 'core').value(ioCoreMock);
+    
+        const result = coreIOUnderTest.insertValues.call(coreIOUnderTest, valueNames, register, logging);
+    
+        assert.strictEqual(result[0].value, (register[2] << 16) | register[1]); 
+    
+        assert.strictEqual(ioCoreMock.internalDebug.callCount, 0);
+    
+      });
       it('should handle double data type correctly', () => {
         const registerName = 'testRegister';
         const mapping = {
