@@ -28,7 +28,7 @@ const nodeList = [injectNode, functionNode, commentNode, modbusServerNode, modbu
 
 const testFcFlexFlows = require('./flows/modbus-fc-flex-e2e-flows')
 
-describe('Modbus Flex FC-Functionality tests', function () {
+describe('Modbus E2E Flex FC-Functionality tests', function () {
   before(function (done) {
     helper.startServer(function () {
       done()

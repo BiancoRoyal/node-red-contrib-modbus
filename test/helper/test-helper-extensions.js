@@ -10,6 +10,10 @@
 
 'use strict'
 
+const { PortHelper } = require('./test-helper-port')
+const core = require('../../src/core/modbus-core')
+const portHelper = new PortHelper()
+
 module.exports = {
   cleanFlowPositionData: (jsonFlow) => {
     const cleanFlow = []
@@ -27,5 +31,8 @@ module.exports = {
     })
 
     return cleanFlow
+  },
+  getPort: async () => {
+    return await portHelper.getPort()
   }
 }
