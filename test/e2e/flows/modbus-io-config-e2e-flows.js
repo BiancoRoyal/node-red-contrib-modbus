@@ -49,7 +49,7 @@ module.exports = {
         z: '53ddcf553d9c6c83',
         name: '',
         logEnabled: false,
-        hostname: '0.0.0.0',
+        hostname: '127.0.0.1',
         serverPort: '10512',
         responseDelay: 100,
         delayUnit: 'ms',

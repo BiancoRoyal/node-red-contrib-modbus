@@ -51,17 +51,18 @@ describe('IO Config node Testing', function () {
     // it('should reload the file when it changes', () => {
     //   helper.load(testIoConfigNodes, testFlows.testReadWithClientIoFlow, function () {
     //     const modbusIOConfigNode = helper.getNode('6822f8ed8da9824e')
-    //     node.watcher.emit(modbusIOConfigNode.path, { mtime: 123 }, { mtime: 456 }); 
+    //     node.watcher.emit(modbusIOConfigNode.path, { mtime: 123 }, { mtime: 456 });
     //     done()
     //   })
     // })
+
     it('should be loaded', function (done) {
       helper.load(testIoConfigNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusIOConfigNode = helper.getNode('2f5a90d.bcaa1f')
         modbusIOConfigNode.should.have.property('name', 'ModbusIOConfig')
         done()
       })
-    }) 
+    })
 
     it('should be state queueing - ready to send', function (done) {
       helper.load(testIoConfigNodes, testFlows.testShouldBeReadyToSendFlow, function () {

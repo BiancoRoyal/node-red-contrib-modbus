@@ -23,9 +23,8 @@ helper.init(require.resolve('node-red'))
 const testFlows = require('./flows/modbus-flex-connector-flows')
 const mBasics = require('../../src/modbus-basics')
 const _ = require('underscore')
-const { expect } = require('chai')
 
-describe('Flex Connector node Testing', function () {
+describe('Flex Connector node Unit Testing', function () {
   before(function (done) {
     helper.startServer(function () {
       done()
@@ -57,7 +56,6 @@ describe('Flex Connector node Testing', function () {
     })
 
     it('should change the TCP-Port of the client from 7522 to 8522', function (done) {
-      this.timeout(5000)
       helper.load(testFlexConnectorNodes, testFlows.testShouldChangeTcpPortFlow, function () {
         const modbusNode = helper.getNode('40ddaabb.fd44d4')
         const clientNode = helper.getNode('2a253153.fae3ce')
@@ -75,7 +73,6 @@ describe('Flex Connector node Testing', function () {
     })
 
     it('should change the Serial-Port of the client from /dev/ttyUSB to /dev/ttyUSB0', function (done) {
-      this.timeout(5000)
       helper.load(testFlexConnectorNodes, testFlows.testShouldChangeSerialPortFlow, function () {
         const modbusNode = helper.getNode('40ddaabb.fd44d4')
         const clientNode = helper.getNode('2a253153.fae3ef')
@@ -157,7 +154,7 @@ describe('Flex Connector node Testing', function () {
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
+      helper.load(testFlexConnectorNodes, [], function () {
         helper.request().post('/modbus-flex-connector/invalid').expect(404).end(done)
       })
     })

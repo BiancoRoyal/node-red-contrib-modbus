@@ -2,7 +2,6 @@ const helperExtensions = require('../../helper/test-helper-extensions')
 
 module.exports = {
     testModbusReadFlowFailure: helperExtensions.cleanFlowPositionData(
-
         [
             {
                 "id": "53ddcf553d9c6c83",
@@ -207,7 +206,7 @@ module.exports = {
             }
         ]
     ),
-    testClientFlow: helperExtensions.cleanFlowPositionData(
+    testClientWithoutServerFlow: helperExtensions.cleanFlowPositionData(
         [
             {
                 id: '90d2529d94dbf5c8',
@@ -298,7 +297,7 @@ module.exports = {
             z: '467a879051898098',
             name: '',
             logEnabled: true,
-            hostname: '0.0.0.0',
+            hostname: '127.0.0.1',
             serverPort: '9503',
             responseDelay: 100,
             delayUnit: 'ms',

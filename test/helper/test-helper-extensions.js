@@ -11,7 +11,6 @@
 'use strict'
 
 const { PortHelper } = require('./test-helper-port')
-const core = require('../../src/core/modbus-core')
 const portHelper = new PortHelper()
 
 module.exports = {

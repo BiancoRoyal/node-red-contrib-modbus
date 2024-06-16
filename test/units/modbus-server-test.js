@@ -17,7 +17,6 @@ const chai = require('chai')
 const expect = chai.expect
 const sinon = require('sinon')
 const helper = require('node-red-node-test-helper')
-const mbBasics = require('../../src/modbus-basics.js')
 helper.init(require.resolve('node-red'))
 
 const testFlows = require('./flows/modbus-server-flows.js')
@@ -46,27 +45,26 @@ describe('Server node Testing', function () {
   describe('Node', function () {
     it('should set node status to active on client connection', function (done) {
       helper.load(testServerNodes, testFlows.testServerConfig, function () {
-        const modbusServer = helper.getNode('249922d5ac72b8cd');
-        modbusServer.modbusServer.emit('connection', { socket: { address: () => '127.0.0.1', remoteAddress: '192.168.1.100', remotePort: 1234 } });
+        const modbusServer = helper.getNode('249922d5ac72b8cd')
+        modbusServer.modbusServer.emit('connection', { socket: { address: () => '127.0.0.1', remoteAddress: '192.168.1.100', remotePort: 1234 } })
 
         sinon.assert.calledWith(modbusServer.status, { fill: 'yellow', shape: 'dot', text: 'initialized' })
-        done();
-      });
-    });
+        done()
+      })
+    })
     it('should set responseDelay, delayUnit, showStatusActivities, and coilsBufferSize correctly', function (done) {
       helper.load(testServerNodes, testFlows.testServerConfig, function () {
-        const modbusServer = helper.getNode('249922d5ac72b8cd');
-        expect(modbusServer.responseDelay).to.equal(100);
-        expect(modbusServer.delayUnit).to.equal('ms');
-        modbusServer.showStatusActivities.should.be.true();
-        modbusServer.showErrors.should.be.true();
-        expect(modbusServer.coilsBufferSize).to.equal(80000);
-        expect(modbusServer.holdingBufferSize).to.equal(80000);
-        expect(modbusServer.discreteBufferSize).to.equal(80000);
-        done();
-      });
-    });
-
+        const modbusServer = helper.getNode('249922d5ac72b8cd')
+        expect(modbusServer.responseDelay).to.equal(100)
+        expect(modbusServer.delayUnit).to.equal('ms')
+        modbusServer.showStatusActivities.should.be.true()
+        modbusServer.showErrors.should.be.true()
+        expect(modbusServer.coilsBufferSize).to.equal(80000)
+        expect(modbusServer.holdingBufferSize).to.equal(80000)
+        expect(modbusServer.discreteBufferSize).to.equal(80000)
+        done()
+      })
+    })
 
     it('should handle errors during server initialization', function (done) {
       helper.load(testServerNodes, testFlows.testSimpleNodeToLogError, function () {
@@ -173,7 +171,6 @@ describe('Server node Testing', function () {
   })
 
   describe('post', function () {
-
     it('should fail for invalid node', function (done) {
       helper.load(testServerNodes, testFlows.testShouldSendDataOnInputFlow, function () {
         helper.request().post('/modbus-server/invalid').expect(404).end(done)

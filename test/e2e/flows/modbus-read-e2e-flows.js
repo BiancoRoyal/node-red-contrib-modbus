@@ -67,7 +67,7 @@ module.exports = {
       z: 'e5faba87.571118',
       name: '',
       logEnabled: false,
-      hostname: '0.0.0.0',
+      hostname: '127.0.0.1',
       serverPort: '9507',
       responseDelay: 100,
       delayUnit: 'ms',

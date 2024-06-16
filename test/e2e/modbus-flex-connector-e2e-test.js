@@ -62,7 +62,7 @@ describe('Flex Connector E2E node Testing', function () {
         flow[2].serverPort = port
         flow[4].tcpPort = port
 
-        helper.load(testFlexConnectorNodes, testFlows.testOnConfigDone, function () {
+        helper.load(testFlexConnectorNodes, flow, function () {
           const modbusFlexNode = helper.getNode('0dfcf9fabf5f0bd7')
           const msg = { payload: 'invalid', error: {}, _msgid: 'd8e2af2a7b0a9f37' }
           modbusFlexNode.emit('input', msg)
@@ -80,7 +80,7 @@ describe('Flex Connector E2E node Testing', function () {
         flow[2].serverPort = port
         flow[4].tcpPort = port
 
-        helper.load(testFlexConnectorNodes, testFlows.testOnConfigDone, function () {
+        helper.load(testFlexConnectorNodes, flow, function () {
           const modbusFlexNode = helper.getNode('0dfcf9fabf5f0bd7')
           const originalSend = modbusFlexNode.send
           modbusFlexNode.send = function (msg) {
@@ -105,7 +105,7 @@ describe('Flex Connector E2E node Testing', function () {
         flow[2].serverPort = port
         flow[4].tcpPort = port
 
-        helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
+        helper.load(testFlexConnectorNodes, flow, function () {
           const modbusFlexNode = helper.getNode('a39e174edce1a54b')
           const msg = { payload: {} }
           modbusFlexNode.on('input', function (nMsg) {

@@ -23,6 +23,7 @@ helper.init(require.resolve('node-red'))
 const testFlows = require('./flows/modbus-flex-write-flows')
 const mBasics = require('../../src/modbus-basics')
 const _ = require('underscore')
+const { getPort } = require('../helper/test-helper-extensions')
 
 const testWriteParametersNodes = [catchNode, injectNode, functionNode, clientNode, serverNode, nodeUnderTest]
 
@@ -80,191 +81,268 @@ describe('Flex Write node Testing', function () {
     })
 
     it('simple flow with wrong inject should not crash', function (done) {
-      helper.load(testWriteParametersNodes, testFlows.testWriteParametersFlow, function () {
-        const h1 = helper.getNode('h1')
-        h1.on('input', function () {
-          throw Error('Should Not Get A Message On Wrong Input To Flex Writer')
+      const flow = Array.from(testFlows.testWriteParametersFlow)
+
+      getPort().then((port) => {
+        flow[3].serverPort = port
+        flow[7].tcpPort = port
+
+        helper.load(testWriteParametersNodes, flow, function () {
+          const h1 = helper.getNode('h1')
+          h1.on('input', function () {
+            throw Error('Should Not Get A Message On Wrong Input To Flex Writer')
+          })
+          const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+          setTimeout(function () {
+            flexWriter.receive({})
+          }, 800)
+          setTimeout(done, 1200)
+        }, function () {
+          helper.log('function callback')
         })
-        const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
-        setTimeout(function () {
-          flexWriter.receive({})
-        }, 800)
-        setTimeout(done, 1200)
-      }, function () {
-        helper.log('function callback')
       })
     })
 
     it('simple flow with wrong FC inject should not crash', function (done) {
-      helper.load(testWriteParametersNodes, testFlows.testWriteParametersFlow, function () {
-        const h1 = helper.getNode('h1')
-        h1.on('input', function () {
-          throw Error('Should Not Get A Message On Wrong Input To Flex Writer')
+      const flow = Array.from(testFlows.testWriteParametersFlow)
+
+      getPort().then((port) => {
+        flow[3].serverPort = port
+        flow[7].tcpPort = port
+
+        helper.load(testWriteParametersNodes, flow, function () {
+          const h1 = helper.getNode('h1')
+          h1.on('input', function () {
+            throw Error('Should Not Get A Message On Wrong Input To Flex Writer')
+          })
+          const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+          setTimeout(function () {
+            flexWriter.receive({ payload: '{ "value": true, "fc": 1, "unitid": 1,"address": 0, "quantity": 1 }' })
+          }, 800)
+          setTimeout(done, 1200)
+        }, function () {
+          helper.log('function callback')
         })
-        const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
-        setTimeout(function () {
-          flexWriter.receive({ payload: '{ "value": true, "fc": 1, "unitid": 1,"address": 0, "quantity": 1 }' })
-        }, 800)
-        setTimeout(done, 1200)
-      }, function () {
-        helper.log('function callback')
       })
     })
 
     it('simple flow with wrong address inject should not crash', function (done) {
-      helper.load(testWriteParametersNodes, testFlows.testWriteParametersFlow, function () {
-        const h1 = helper.getNode('h1')
-        h1.on('input', function () {
-          throw Error('Should Not Get A Message On Wrong Input To Flex Writer')
+      const flow = Array.from(testFlows.testWriteParametersFlow)
+
+      getPort().then((port) => {
+        flow[3].serverPort = port
+        flow[7].tcpPort = port
+
+        helper.load(testWriteParametersNodes, flow, function () {
+          const h1 = helper.getNode('h1')
+          h1.on('input', function () {
+            throw Error('Should Not Get A Message On Wrong Input To Flex Writer')
+          })
+          const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+          setTimeout(function () {
+            flexWriter.receive({ payload: '{ "value": true, "fc": 5, "unitid": 1,"address": -1, "quantity": 1 }' })
+          }, 800)
+          setTimeout(done, 1200)
+        }, function () {
+          helper.log('function callback')
         })
-        const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
-        setTimeout(function () {
-          flexWriter.receive({ payload: '{ "value": true, "fc": 5, "unitid": 1,"address": -1, "quantity": 1 }' })
-        }, 800)
-        setTimeout(done, 1200)
-      }, function () {
-        helper.log('function callback')
       })
     })
 
     it('simple flow with wrong quantity inject should not crash', function (done) {
-      helper.load(testWriteParametersNodes, testFlows.testWriteParametersFlow, function () {
-        const h1 = helper.getNode('h1')
-        h1.on('input', function () {
-          throw Error('Should Not Get A Message On Wrong Input To Flex Writer')
+      const flow = Array.from(testFlows.testWriteParametersFlow)
+
+      getPort().then((port) => {
+        flow[3].serverPort = port
+        flow[7].tcpPort = port
+
+        helper.load(testWriteParametersNodes, flow, function () {
+          const h1 = helper.getNode('h1')
+          h1.on('input', function () {
+            throw Error('Should Not Get A Message On Wrong Input To Flex Writer')
+          })
+          const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+          setTimeout(function () {
+            flexWriter.receive({ payload: '{ "value": true, "fc": 5, "unitid": 1,"address": 1, "quantity": -1 }' })
+          }, 800)
+          setTimeout(done, 1200)
+        }, function () {
+          helper.log('function callback')
         })
-        const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
-        setTimeout(function () {
-          flexWriter.receive({ payload: '{ "value": true, "fc": 5, "unitid": 1,"address": 1, "quantity": -1 }' })
-        }, 800)
-        setTimeout(done, 1200)
-      }, function () {
-        helper.log('function callback')
       })
     })
 
     it('simple flow with string input from http should be parsed and written', function (done) {
-      helper.load(testWriteParametersNodes, testFlows.testWriteParametersFlow, function () {
-        const h1 = helper.getNode('h1')
-        h1.on('input', function () {
-          if (flexWriter.bufferMessageList.size === 0) {
-            done()
-          }
+      const flow = Array.from(testFlows.testWriteParametersFlow)
+
+      getPort().then((port) => {
+        flow[3].serverPort = port
+        flow[7].tcpPort = port
+
+        helper.load(testWriteParametersNodes, flow, function () {
+          const h1 = helper.getNode('h1')
+          h1.on('input', function () {
+            if (flexWriter.bufferMessageList.size === 0) {
+              done()
+            }
+          })
+          const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+          setTimeout(function () {
+            flexWriter.receive({ payload: '{ "value": true, "fc": 5, "unitid": 1,"address": 0, "quantity": 1 }' })
+          }, 800)
+        }, function () {
+          helper.log('function callback')
         })
-        const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
-        setTimeout(function () {
-          flexWriter.receive({ payload: '{ "value": true, "fc": 5, "unitid": 1,"address": 0, "quantity": 1 }' })
-        }, 800)
-      }, function () {
-        helper.log('function callback')
       })
     })
 
     it('simple flow with string with array of values input from http should be parsed and written', function (done) {
-      helper.load(testWriteParametersNodes, testFlows.testWriteParametersFlow, function () {
-        const h1 = helper.getNode('h1')
-        h1.on('input', function () {
-          if (flexWriter.bufferMessageList.size === 0) {
-            done()
-          }
+      const flow = Array.from(testFlows.testWriteParametersFlow)
+
+      getPort().then((port) => {
+        flow[3].serverPort = port
+        flow[7].tcpPort = port
+
+        helper.load(testWriteParametersNodes, flow, function () {
+          const h1 = helper.getNode('h1')
+          h1.on('input', function () {
+            if (flexWriter.bufferMessageList.size === 0) {
+              done()
+            }
+          })
+          const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+          setTimeout(function () {
+            flexWriter.receive({ payload: '{ "value": [0,1,0,1], "fc": 5, "unitid": 1,"address": 0, "quantity": 4 }' })
+          }, 800)
+        }, function () {
+          helper.log('function callback')
         })
-        const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
-        setTimeout(function () {
-          flexWriter.receive({ payload: '{ "value": [0,1,0,1], "fc": 5, "unitid": 1,"address": 0, "quantity": 4 }' })
-        }, 800)
-      }, function () {
-        helper.log('function callback')
       })
     })
 
     it('simple flow with string value true input from http should be parsed and written', function (done) {
-      helper.load(testWriteParametersNodes, testFlows.testWriteParametersFlow, function () {
-        const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
-        const h1 = helper.getNode('h1')
-        h1.on('input', function () {
-          if (flexWriter.bufferMessageList.size === 0) {
-            done()
-          }
+      const flow = Array.from(testFlows.testWriteParametersFlow)
+
+      getPort().then((port) => {
+        flow[3].serverPort = port
+        flow[7].tcpPort = port
+
+        helper.load(testWriteParametersNodes, flow, function () {
+          const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+          const h1 = helper.getNode('h1')
+          h1.on('input', function () {
+            if (flexWriter.bufferMessageList.size === 0) {
+              done()
+            }
+          })
+          setTimeout(function () {
+            flexWriter.receive({ payload: { value: 'true', fc: 5, unitid: 1, address: 0, quantity: 1 } })
+          }, 800)
+        }, function () {
+          helper.log('function callback')
         })
-        setTimeout(function () {
-          flexWriter.receive({ payload: { value: 'true', fc: 5, unitid: 1, address: 0, quantity: 1 } })
-        }, 800)
-      }, function () {
-        helper.log('function callback')
       })
     })
 
     it('simple flow with string value false input from http should be parsed and written', function (done) {
-      helper.load(testWriteParametersNodes, testFlows.testWriteParametersFlow, function () {
-        const h1 = helper.getNode('h1')
-        h1.on('input', function () {
-          if (flexWriter.bufferMessageList.size === 0) {
-            done()
-          }
+      const flow = Array.from(testFlows.testWriteParametersFlow)
+
+      getPort().then((port) => {
+        flow[3].serverPort = port
+        flow[7].tcpPort = port
+
+        helper.load(testWriteParametersNodes, flow, function () {
+          const h1 = helper.getNode('h1')
+          h1.on('input', function () {
+            if (flexWriter.bufferMessageList.size === 0) {
+              done()
+            }
+          })
+          const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+          setTimeout(function () {
+            flexWriter.receive({ payload: { value: 'false', fc: 5, unitid: 1, address: 0, quantity: 1 } })
+          }, 800)
+        }, function () {
+          helper.log('function callback')
         })
-        const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
-        setTimeout(function () {
-          flexWriter.receive({ payload: { value: 'false', fc: 5, unitid: 1, address: 0, quantity: 1 } })
-        }, 800)
-      }, function () {
-        helper.log('function callback')
       })
     })
 
     it('should be inactive if message not allowed', function (done) {
-      helper.load(testWriteParametersNodes, testFlows.testWriteParametersFlow, function () {
-        const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
-        _.isUndefined(modbusClientNode).should.be.false()
-
-        modbusClientNode.receive({ payload: 'test' })
-        const isInactive = modbusClientNode.isInactive()
-        isInactive.should.be.true()
-        done()
-      })
-    })
-
-    it('should be inactive if message empty', function (done) {
       const flow = Array.from(testFlows.testWriteParametersFlow)
-      flow[3].serverPort = '50201'
-      helper.load(testWriteParametersNodes, flow, function () {
-        const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
-        setTimeout(() => {
-          modbusClientNode.messageAllowedStates = ['']
+
+      getPort().then((port) => {
+        flow[3].serverPort = port
+        flow[7].tcpPort = port
+
+        helper.load(testWriteParametersNodes, flow, function () {
+          const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
+          _.isUndefined(modbusClientNode).should.be.false()
+
+          modbusClientNode.receive({ payload: 'test' })
           const isInactive = modbusClientNode.isInactive()
           isInactive.should.be.true()
           done()
-        }, 1500)
+        })
+      })
+
+      it('should be inactive if message empty', function (done) {
+        const flow = Array.from(testFlows.testWriteParametersFlow)
+        flow[3].serverPort = '50201'
+        helper.load(testWriteParametersNodes, flow, function () {
+          const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
+          setTimeout(() => {
+            modbusClientNode.messageAllowedStates = ['']
+            const isInactive = modbusClientNode.isInactive()
+            isInactive.should.be.true()
+            done()
+          }, 1500)
+        })
       })
     })
 
     it('should be state queueing - ready to send', function (done) {
-      helper.load(testWriteParametersNodes, testFlows.testWriteParametersFlow, function () {
-        const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
-        setTimeout(() => {
-          mBasics.setNodeStatusTo('queueing', modbusClientNode)
-          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.false()
-          done()
-        }, 1500)
+      const flow = Array.from(testFlows.testWriteParametersFlow)
+
+      getPort().then((port) => {
+        flow[3].serverPort = port
+        flow[7].tcpPort = port
+
+        helper.load(testWriteParametersNodes, flow, function () {
+          const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
+          setTimeout(() => {
+            mBasics.setNodeStatusTo('queueing', modbusClientNode)
+            const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+            isReady.should.be.false()
+            done()
+          }, 1500)
+        })
       })
     })
 
     it('should be not state queueing - not ready to send', function (done) {
-      helper.load(testWriteParametersNodes, testFlows.testWriteParametersFlow, function () {
-        const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
-        setTimeout(() => {
-          mBasics.setNodeStatusTo('stopped', modbusClientNode)
-          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.false()
-          done()
-        }, 1500)
+      const flow = Array.from(testFlows.testWriteParametersFlow)
+
+      getPort().then((port) => {
+        flow[3].serverPort = port
+        flow[7].tcpPort = port
+
+        helper.load(testWriteParametersNodes, flow, function () {
+          const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
+          setTimeout(() => {
+            mBasics.setNodeStatusTo('stopped', modbusClientNode)
+            const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
+            isReady.should.be.false()
+            done()
+          }, 1500)
+        })
       })
     })
   })
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      helper.load(testWriteParametersNodes, testFlows.testWriteParametersFlow, function () {
+      helper.load(testWriteParametersNodes, [], function () {
         helper.request().post('/modbus-flex-write/invalid').expect(404).end(done)
       })
     })

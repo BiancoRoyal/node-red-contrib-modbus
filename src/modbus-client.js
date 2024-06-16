@@ -23,7 +23,7 @@ module.exports = function (RED) {
   const internalDebugLog = require('debug')('contribModbus:config:client')
   const _ = require('underscore')
 
-  function ModbusClientNode(config) {
+  function ModbusClientNode (config) {
     RED.nodes.createNode(this, config)
 
     // create an empty modbus client
@@ -132,7 +132,7 @@ module.exports = function (RED) {
       node.serverInfo += ' default Unit-Id: ' + node.unit_id
     }
     /* istanbul ignore next */
-    function verboseWarn(logMessage) {
+    function verboseWarn (logMessage) {
       if (RED.settings.verbose && node.showWarnings) {
         node.updateServerinfo()
         node.warn('Client -> ' + logMessage + ' ' + node.serverInfo)
@@ -145,13 +145,13 @@ module.exports = function (RED) {
       }
     }
 
-    function verboseLog(logMessage) {
+    function verboseLog (logMessage) {
       if (RED.settings.verbose && node.showLogs) {
         coreModbusClient.internalDebug('Client -> ' + logMessage + ' ' + node.serverInfo)
       }
     }
 
-    function stateLog(logMessage) {
+    function stateLog (logMessage) {
       if (node.stateLogEnabled) {
         verboseLog(logMessage)
       }

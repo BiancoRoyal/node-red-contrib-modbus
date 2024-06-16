@@ -10,7 +10,7 @@ module.exports = {
         "showStatusActivities": true,
         "name": "",
         "logEnabled": true,
-        "hostname": "0.0.0.0",
+        "hostname": "127.0.0.1",
         "serverPort": "5509",
         "responseDelay": 100,
         "delayUnit": "ms",

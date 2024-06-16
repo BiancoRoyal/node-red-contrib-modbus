@@ -54,7 +54,7 @@ module.exports = function (RED) {
     }
     /* istanbul ignore next */
     verboseWarn('open node ' + node.id)
-    const modbusClient =  RED.nodes.getNode(config.server)
+    const modbusClient = RED.nodes.getNode(config.server)
     if (!modbusClient) {
       return
     }
@@ -227,7 +227,7 @@ module.exports = function (RED) {
     })
 
     this.on('close', function (done) {
-      //TODO
+      // TODO
       // node.resetAllReadingTimer()
       node.removeNodeListenerFromModbusClient()
       setNodeStatusWithTimeTo('closed')

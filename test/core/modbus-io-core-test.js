@@ -13,9 +13,37 @@
 const assert = require('assert')
 const coreIOUnderTest = require('../../src/core/modbus-io-core')
 const sinon = require('sinon')
+const helper = require('node-red-node-test-helper')
 const expect = require('chai').expect
 
 describe('Core IO Testing', function () {
+  let sinonStub, sinonDebugStub
+
+  before(function (done) {
+    helper.startServer(function () {
+      done()
+    })
+  })
+
+  afterEach(function (done) {
+    helper.unload().then(function () {
+      done()
+    }).catch(function () {
+      done()
+    }).finally(function () {
+      if (sinonStub) {
+        sinonStub.restore()
+        sinonDebugStub.restore()
+      }
+    })
+  })
+
+  after(function (done) {
+    helper.stopServer(function () {
+      done()
+    })
+  })
+
   describe('Core IO', function () {
     describe('Core IO Simple', function () {
       it('should correctly insert value for 64-bit items', () => {
@@ -23,75 +51,78 @@ describe('Core IO Testing', function () {
           {
             registerAddress: 0,
             bits: 64,
-            value: null,
-          },
-        ];
-        const register = [1, 2, 3, 4];
-        const logging = true;
-    
+            value: null
+          }
+        ]
+        const register = [1, 2, 3, 4]
+        const logging = true
+
         const ioCoreMock = {
-          internalDebug: sinon.stub(),
-        };
-    
-        sinon.stub(coreIOUnderTest, 'core').value(ioCoreMock);
-    
-        const result = coreIOUnderTest.insertValues.call(coreIOUnderTest, valueNames, register, logging);
-    
-        const expectedValue = (register[3] << 48) | (register[2] << 32) | (register[1] << 16) | register[0];
-        assert.strictEqual(result[0].value, expectedValue);
-      });
+          internalDebug: sinon.stub()
+        }
+
+        sinonStub = sinon.stub(coreIOUnderTest, 'core').value(ioCoreMock)
+
+        /* eslint-disable no-useless-call */
+        const result = coreIOUnderTest.insertValues.call(coreIOUnderTest, valueNames, register, logging)
+
+        const expectedValue = (register[3] << 48) | (register[2] << 32) | (register[1] << 16) | register[0]
+        assert.strictEqual(result[0].value, expectedValue)
+      })
+
       it('should correctly insert value for 32-bit items', () => {
         const valueNames = [
           {
             registerAddress: 1,
             bits: 32,
-            value: null,
-          },
-        ];
-        const register = [0, 1, 2]; 
-        const logging = true;
-    
+            value: null
+          }
+        ]
+        const register = [0, 1, 2]
+        const logging = true
+
         const ioCoreMock = {
-          internalDebug: sinon.stub(),
-        };
-    
-        sinon.stub(coreIOUnderTest, 'core').value(ioCoreMock);
-    
-        const result = coreIOUnderTest.insertValues.call(coreIOUnderTest, valueNames, register, logging);
-    
-        assert.strictEqual(result[0].value, (register[2] << 16) | register[1]); 
-    
-        assert.strictEqual(ioCoreMock.internalDebug.callCount, 0);
-    
-      });
+          internalDebug: sinon.stub()
+        }
+
+        sinonStub = sinon.stub(coreIOUnderTest, 'core').value(ioCoreMock)
+
+        /* eslint-disable no-useless-call */
+        const result = coreIOUnderTest.insertValues.call(coreIOUnderTest, valueNames, register, logging)
+
+        assert.strictEqual(result[0].value, (register[2] << 16) | register[1])
+
+        assert.strictEqual(ioCoreMock.internalDebug.callCount, 0)
+      })
+
       it('should handle double data type correctly', () => {
-        const registerName = 'testRegister';
+        const registerName = 'testRegister'
         const mapping = {
           name: 'dTest',
           valueAddress: '%QD100'
-        };
-        const offset = 0;
-        const readingOffset = 0;
-        const logging = true;
+        }
+        const offset = 0
+        const readingOffset = 0
+        const logging = true
 
         const ioCoreMock = {
           internalDebug: sinon.stub(),
           getDataTypeFromFirstCharType: sinon.stub().returns('double')
-        };
+        }
 
-        sinon.stub(coreIOUnderTest, 'core').value(ioCoreMock);
+        sinonStub = sinon.stub(coreIOUnderTest, 'core').value(ioCoreMock)
 
-        const result = coreIOUnderTest.buildOutputAddressMapping.call(coreIOUnderTest, registerName, mapping, offset, readingOffset, logging);
+        /* eslint-disable no-useless-call */
+        const result = coreIOUnderTest.buildOutputAddressMapping.call(coreIOUnderTest, registerName, mapping, offset, readingOffset, logging)
 
-        assert.strictEqual(result.addressStart, 100);
-        assert.strictEqual(result.addressOffset, 4);
-        assert.strictEqual(result.bits, 64);
-        assert.strictEqual(result.dataType, 'Double');
-        assert.strictEqual(result.type, 'output');
+        assert.strictEqual(result.addressStart, 100)
+        assert.strictEqual(result.addressOffset, 4)
+        assert.strictEqual(result.bits, 64)
+        assert.strictEqual(result.dataType, 'Double')
+        assert.strictEqual(result.type, 'output')
 
-        assert.strictEqual(ioCoreMock.internalDebug.callCount, 0);
-
-      });
+        assert.strictEqual(ioCoreMock.internalDebug.callCount, 0)
+      })
 
       it('should modify original and raw messages when useIOFile is true and ioFile.lastUpdatedAt is defined', () => {
         const node = {
@@ -101,7 +132,7 @@ describe('Core IO Testing', function () {
           },
           useIOForPayload: false,
           logIOActivities: true
-        };
+        }
         const msg = {
           payload: {
             address: '0',
@@ -110,23 +141,23 @@ describe('Core IO Testing', function () {
           },
           topic: 'testTopic',
           responseBuffer: Buffer.from([0x01, 0x02])
-        };
+        }
 
         const coreMock = {
           getOriginalMessage: sinon.stub().returns({}),
           nameValuesFromIOFile: sinon.stub().returns([]),
           filterValueNames: sinon.stub().returns([])
-        };
+        }
 
-        sinon.stub(coreIOUnderTest, 'core').value(coreMock);
+        sinonStub = sinon.stub(coreIOUnderTest, 'core').value(coreMock)
 
-        const result = coreIOUnderTest.buildMessageWithIO.call(coreIOUnderTest, node, [], msg.responseBuffer, msg);
+        /* eslint-disable no-useless-call */
+        const result = coreIOUnderTest.buildMessageWithIO.call(coreIOUnderTest, node, [], msg.responseBuffer, msg)
 
-        assert.strictEqual(result.length, 2);
-        assert.deepStrictEqual(result[0].topic, 'testTopic');
-        assert.deepStrictEqual(result[0].responseBuffer, msg.responseBuffer);
-
-      });
+        assert.strictEqual(result.length, 2)
+        assert.deepStrictEqual(result[0].topic, 'testTopic')
+        assert.deepStrictEqual(result[0].responseBuffer, msg.responseBuffer)
+      })
 
       it('should correctly handle word and unsigned integer type mappings', () => {
         const registerNameWord = 'TestRegisterWord'
@@ -162,6 +193,7 @@ describe('Core IO Testing', function () {
         expect(resultUInt.dataType).to.equal('Unsigned Integer')
         expect(resultUInt.type).to.equal('input')
       })
+
       it('should correctly handle double type mapping', () => {
         const registerName = 'TestRegister'
         const mapping = {
@@ -198,6 +230,7 @@ describe('Core IO Testing', function () {
         expect(result.addressOffset).to.equal(2)
         expect(result.type).to.equal('input')
       })
+
       it('should log unknown input type when type is not recognized', () => {
         const registerName = 'TestRegister'
         const mapping = {
@@ -214,7 +247,10 @@ describe('Core IO Testing', function () {
         expect(internalDebugSpy.calledOnceWithExactly('unknown input type x')).to.equal(true)
 
         internalDebugSpy.restore()
+
+        assert.strictEqual(result.error, 'variable name does not match input mapping')
       })
+
       it('should correctly convert values when responseBuffer is valid', () => {
         const valueNames = [
           { dataType: 'Integer', bits: '32', registerAddress: 0 },
@@ -229,6 +265,7 @@ describe('Core IO Testing', function () {
         expect(result[0].value).to.equal(0x12345678)
         expect(result[1].value).to.equal(68239660941312)
       })
+
       it('should know type from first char of Word', function (done) {
         assert.strict.equal(coreIOUnderTest.getDataTypeFromFirstCharType('w'), 'Word')
         done()
@@ -691,11 +728,11 @@ describe('Core IO Testing', function () {
       const valueNames = [{ registerAddress: 0, bits: 1, bitAddress: [0, 1] }]
       const register = [2]
       const logging = false
-      const internalDebugStub = sinon.stub()
+      sinonStub = sinon.stub()
 
       coreIOUnderTest.insertValues(valueNames, register, logging)
 
-      expect(internalDebugStub.called).to.equal(false)
+      expect(sinonStub.called).to.equal(false)
     })
 
     it('should correctly handle 16-bit values', () => {
@@ -707,6 +744,7 @@ describe('Core IO Testing', function () {
 
       expect(valueNames[0].value).to.equal(255)
     })
+
     describe('filterValueNames', () => {
       it('should filter valueNames correctly based on address range and function type', () => {
         const node = { logIOActivities: false }
@@ -822,39 +860,42 @@ describe('Core IO Testing', function () {
 
     describe('Core IO Mapping', function () {
       it('should handle invalid items and log debug messages', () => {
-        const register = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-        const logging = true;
+        const register = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        const logging = true
         const validItem = {
           registerAddress: 0,
           bits: 16
-        };
+        }
 
         const invalidItem1 = {
           bits: 16
-        };
+        }
 
         const invalidItem2 = {
           registerAddress: -1,
           bits: 16
-        };
+        }
 
-        coreIOUnderTest.internalDebug = sinon.stub();
+        // TODO - @MJ Fix this test to manage stub to get restored
+        sinonDebugStub = sinon.stub()
+        coreIOUnderTest.internalDebug = sinonDebugStub
         const ioCoreMock = {
           internalDebug: coreIOUnderTest.internalDebug,
           isRegisterSizeWrong: sinon.stub().returns(false)
-        };
+        }
 
         const valueNames = [
           validItem,
           invalidItem1,
           invalidItem2
-        ];
+        ]
 
-        coreIOUnderTest.insertValues(valueNames, register, logging, ioCoreMock);
+        coreIOUnderTest.insertValues(valueNames, register, logging, ioCoreMock)
 
-        assert.strictEqual(valueNames.length, 3);
-        sinon.assert.calledWith(coreIOUnderTest.internalDebug, 'Item Not Valid To Insert Value ' + JSON.stringify(invalidItem1));
-      });
+        assert.strictEqual(valueNames.length, 3)
+        sinon.assert.calledWith(coreIOUnderTest.internalDebug, 'Item Not Valid To Insert Value ' + JSON.stringify(invalidItem1))
+      })
+
       it('should do mapping of ...', function (done) {
         done()
       })

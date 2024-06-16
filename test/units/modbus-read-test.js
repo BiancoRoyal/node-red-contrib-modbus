@@ -133,24 +133,24 @@ describe('Read node Testing', function () {
     })
 
     it('should be state queueing - ready to send', function (done) {
-      helper.load(testReadNodes, testFlows.testReadMsgFlow, function () {
-        const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+      helper.load(testReadNodes, testFlows.testReadWithoutClientFlow, function () {
+        const modbusReadNode = helper.getNode('8ecaae3e.4b8928')
         setTimeout(() => {
-          mBasics.setNodeStatusTo('queueing', modbusClientNode)
-          modbusClientNode.isReadyToSend(modbusClientNode).should.be.true()
+          mBasics.setNodeStatusTo('queueing', modbusReadNode)
+          modbusReadNode.statusText.should.equal('waiting')
           done()
-        }, 1500)
+        }, 1000)
       })
     })
 
     it('should be not state queueing - not ready to send', function (done) {
-      helper.load(testReadNodes, testFlows.testReadMsgFlow, function () {
-        const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+      helper.load(testReadNodes, testFlows.testReadWithoutClientFlow, function () {
+        const modbusReadNode = helper.getNode('8ecaae3e.4b8928')
         setTimeout(() => {
-          mBasics.setNodeStatusTo('stopped', modbusClientNode)
-          modbusClientNode.isReadyToSend(modbusClientNode).should.be.true()
+          mBasics.setNodeStatusTo('stopped', modbusReadNode)
+          modbusReadNode.statusText.should.equal('waiting')
           done()
-        }, 1500)
+        }, 1000)
       })
     })
 
@@ -188,7 +188,7 @@ describe('Read node Testing', function () {
         let mockMessageOutput = ''
         readNode.errorProtocolMsg = function (err, msg) {
           if (err) {
-            console.error(err)
+            mBasics.internalDebug(err)
           }
           if (readNode.showErrors) {
             mockMessageOutput = msg

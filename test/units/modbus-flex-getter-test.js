@@ -261,18 +261,17 @@ describe('Flex Getter node Testing', function () {
         flow[4].tcpPort = port
 
         helper.load(testFlexGetterNodes, flow, function () {
-          const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+          const modbusFlexGetterNode = helper.getNode('bc5a61b6.a3972')
           setTimeout(() => {
-            mBasics.setNodeStatusTo('queueing', modbusClientNode)
-            const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-            isReady.should.be.true()
+            mBasics.setNodeStatusTo('queueing', modbusFlexGetterNode)
+            modbusFlexGetterNode.statusText.should.be.equal('queueing')
             done()
           }, 1500)
         })
       })
     })
 
-    it('should be not state queueing - not ready to send', function (done) {
+    it('should be not state stopped - not ready to send', function (done) {
       const flow = Array.from(testFlows.testFlexGetterFlow)
 
       getPort().then((port) => {
@@ -280,11 +279,10 @@ describe('Flex Getter node Testing', function () {
         flow[4].tcpPort = port
 
         helper.load(testFlexGetterNodes, flow, function () {
-          const modbusClientNode = helper.getNode('92e7bf63.2efd7')
+          const modbusFlexGetterNode = helper.getNode('bc5a61b6.a3972')
           setTimeout(() => {
-            mBasics.setNodeStatusTo('stopped', modbusClientNode)
-            const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-            isReady.should.be.true()
+            mBasics.setNodeStatusTo('stopped', modbusFlexGetterNode)
+            modbusFlexGetterNode.statusText.should.be.equal('stopped')
             done()
           }, 1500)
         })
@@ -369,7 +367,6 @@ describe('Flex Getter node Testing', function () {
     //     isValid.should.be.true
     //     done() } , 1500)
     //   })
-
     // })
     // })
 
@@ -390,15 +387,8 @@ describe('Flex Getter node Testing', function () {
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      const flow = Array.from(testFlows.testFlexGetterFlow)
-
-      getPort().then((port) => {
-        flow[1].serverPort = port
-        flow[4].tcpPort = port
-
-        helper.load(testFlexGetterNodes, flow, function () {
-          helper.request().post('/modbus-flex-getter/invalid').expect(404).end(done)
-        })
+      helper.load(testFlexGetterNodes, [], function () {
+        helper.request().post('/modbus-flex-getter/invalid').expect(404).end(done)
       })
     })
   })

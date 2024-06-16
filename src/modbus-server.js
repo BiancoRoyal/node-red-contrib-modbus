@@ -21,7 +21,7 @@ module.exports = function (RED) {
   const mbBasics = require('./modbus-basics')
   const internalDebugLog = require('debug')('contribModbus:server')
 
-  function ModbusServer(config) {
+  function ModbusServer (config) {
     RED.nodes.createNode(this, config)
 
     const bufferFactor = 8
@@ -116,7 +116,7 @@ module.exports = function (RED) {
       }
     })
 
-    function buildMessage(msg) {
+    function buildMessage (msg) {
       return [
         { type: 'holding', message: msg, payload: node.modbusServer.holding },
         { type: 'coils', message: msg, payload: node.modbusServer.coils },
