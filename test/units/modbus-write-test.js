@@ -60,8 +60,6 @@ describe('Write node Testing', function () {
         modbusWrite.should.have.property('name', 'modbusWrite')
 
         done()
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -74,8 +72,6 @@ describe('Write node Testing', function () {
             done()
           }
         })
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -91,8 +87,6 @@ describe('Write node Testing', function () {
             done()
           }
         })
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -110,8 +104,6 @@ describe('Write node Testing', function () {
             done()
           }
         })
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -129,8 +121,6 @@ describe('Write node Testing', function () {
             done()
           }
         })
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -148,8 +138,6 @@ describe('Write node Testing', function () {
         setTimeout(function () {
           modbusWrite.receive({ payload: '{ "value": [0,1,0,1], "fc": 5, "unitid": 1,"address": 0, "quantity": 4 }' })
         }, 800)
-      }, function () {
-        helper.log('function callback')
       })
     })
 

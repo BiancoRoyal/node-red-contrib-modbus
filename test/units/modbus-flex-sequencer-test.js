@@ -73,8 +73,6 @@ describe('Flex Sequencer node Testing', function () {
         modbusFlexSequencer.should.have.property('name', 'modbusFlexSequencer')
 
         done()
-      }, function () {
-        helper.log('function callback')
       })
     })
 

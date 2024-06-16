@@ -134,8 +134,6 @@ describe('Server node Testing', function () {
         modbusServer.should.have.property('name', 'modbusServer')
 
         done()
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -145,8 +143,6 @@ describe('Server node Testing', function () {
         modbusServer.should.have.property('name', 'modbusServer')
 
         done()
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -156,8 +152,6 @@ describe('Server node Testing', function () {
         h1.on('input', function () {
           done()
         })
-      }, function () {
-        helper.log('function callback')
       })
     })
 

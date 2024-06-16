@@ -54,8 +54,6 @@ describe('Flex Write node Testing', function () {
         const modbusFlexWrite = helper.getNode('c02b6d1.d419c1')
         modbusFlexWrite.should.have.property('name', 'modbusFlexWrite')
         done()
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -64,8 +62,6 @@ describe('Flex Write node Testing', function () {
         const modbusFlexWrite = helper.getNode('c02b6d1.d419c1')
         modbusFlexWrite.should.have.property('name', 'modbusFlexWrite')
         done()
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -75,8 +71,6 @@ describe('Flex Write node Testing', function () {
         h1.on('input', function () {
           done()
         })
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -97,8 +91,6 @@ describe('Flex Write node Testing', function () {
             flexWriter.receive({})
           }, 800)
           setTimeout(done, 1200)
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
@@ -120,8 +112,6 @@ describe('Flex Write node Testing', function () {
             flexWriter.receive({ payload: '{ "value": true, "fc": 1, "unitid": 1,"address": 0, "quantity": 1 }' })
           }, 800)
           setTimeout(done, 1200)
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
@@ -143,8 +133,6 @@ describe('Flex Write node Testing', function () {
             flexWriter.receive({ payload: '{ "value": true, "fc": 5, "unitid": 1,"address": -1, "quantity": 1 }' })
           }, 800)
           setTimeout(done, 1200)
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
@@ -166,8 +154,6 @@ describe('Flex Write node Testing', function () {
             flexWriter.receive({ payload: '{ "value": true, "fc": 5, "unitid": 1,"address": 1, "quantity": -1 }' })
           }, 800)
           setTimeout(done, 1200)
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
@@ -190,8 +176,6 @@ describe('Flex Write node Testing', function () {
           setTimeout(function () {
             flexWriter.receive({ payload: '{ "value": true, "fc": 5, "unitid": 1,"address": 0, "quantity": 1 }' })
           }, 800)
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
@@ -214,8 +198,6 @@ describe('Flex Write node Testing', function () {
           setTimeout(function () {
             flexWriter.receive({ payload: '{ "value": [0,1,0,1], "fc": 5, "unitid": 1,"address": 0, "quantity": 4 }' })
           }, 800)
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
@@ -238,8 +220,6 @@ describe('Flex Write node Testing', function () {
           setTimeout(function () {
             flexWriter.receive({ payload: { value: 'true', fc: 5, unitid: 1, address: 0, quantity: 1 } })
           }, 800)
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
@@ -262,8 +242,6 @@ describe('Flex Write node Testing', function () {
           setTimeout(function () {
             flexWriter.receive({ payload: { value: 'false', fc: 5, unitid: 1, address: 0, quantity: 1 } })
           }, 800)
-        }, function () {
-          helper.log('function callback')
         })
       })
     })

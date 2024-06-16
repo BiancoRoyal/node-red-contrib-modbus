@@ -50,8 +50,6 @@ describe('Read node Testing', function () {
         const modbusRead = helper.getNode('8ecaae3e.4b8928')
         modbusRead.should.have.property('name', 'modbusRead')
         done()
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -67,8 +65,6 @@ describe('Read node Testing', function () {
         modbusRead.should.have.property('name', 'modbusRead')
 
         done()
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -82,8 +78,6 @@ describe('Read node Testing', function () {
             done()
           }
         })
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -97,8 +91,6 @@ describe('Read node Testing', function () {
             done()
           }
         })
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -112,8 +104,6 @@ describe('Read node Testing', function () {
             done()
           }
         })
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -127,8 +117,6 @@ describe('Read node Testing', function () {
             done()
           }
         })
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -235,8 +223,6 @@ describe('Read node Testing', function () {
     it('should inject on valid node', function (done) {
       helper.load([clientNode, serverNode, readNode], testFlows.testReadWithClientFlow, function () {
         helper.request().post('/modbus/read/inject/09846c74de630616').expect(200).end(done)
-      }, function () {
-        helper.log('function callback')
       })
     })
   })

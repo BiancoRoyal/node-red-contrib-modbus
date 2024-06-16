@@ -190,8 +190,6 @@ describe('Queue Info node Testing', function () {
         modbusQueueInfo.should.have.property('name', 'modbusQueueInfo')
 
         done()
-      }, function () {
-        helper.log('function callback')
       })
     })
     // TO BE FIXED
@@ -327,8 +325,6 @@ describe('Queue Info node Testing', function () {
         })
         const queueNode = helper.getNode('5fffb0bc.0b8a5')
         queueNode.receive({ payload: { resetQueue: true } })
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -344,8 +340,6 @@ describe('Queue Info node Testing', function () {
         })
         const queueNode = helper.getNode('5fffb0bc.0b8a5')
         queueNode.receive({ payload: '', resetQueue: true })
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -357,8 +351,6 @@ describe('Queue Info node Testing', function () {
         })
         const queueNode = helper.getNode('5fffb0bc.0b8a5')
         queueNode.receive({ payload: { resetQueue: true } })
-      }, function () {
-        helper.log('function callback')
       })
     })
 

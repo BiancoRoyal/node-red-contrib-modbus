@@ -39,20 +39,21 @@ class PortHelper {
 
   getPort = async () => {
     if (this.startPort === 0) {
-      this.startPort = this.getRandomArbitrary(15000, 40000)
+      this.startPort = this.getRandomArbitrary(30000, 50000)
     }
 
-    let port = this.startPort++
+    this.startPort = this.startPort + 3
 
-    if (this.startPort >= 65535) {
-      this.startPort = 20000
+    if (this.startPort >= 50000) {
+      this.startPort = this.getRandomArbitrary(10000, 30000)
     }
 
-    if (global.portList.includes(port)) {
-      port = await this.getPort()
+    if (global.portList.includes(this.startPort)) {
+      this.startPort = await this.getPort()
     }
 
-    return port
+    global.portList.push(this.startPort)
+    return this.startPort
   }
 
   tryListen (port, maxPort, hostname, callback) {

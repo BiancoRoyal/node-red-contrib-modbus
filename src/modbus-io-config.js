@@ -6,6 +6,7 @@
 
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  */
+
 module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
@@ -25,29 +26,45 @@ module.exports = function (RED) {
     const node = this
     node.setMaxListeners(UNLIMITED_LISTENERS)
     node.lastUpdatedAt = null
-    const lineReader = new coreIO.LineByLineReader(node.path)
+
+    if (!fs.existsSync(node.path)) {
+      coreIO.internalDebug('IO File Not Found ' + node.path)
+      node.warn('Modbus IO File Not Found ' + node.path)
+      return
+    }
+
+    node.lineReader = new coreIO.LineByLineReader(node.path)
     coreIO.internalDebug('Read IO File ' + node.path)
     node.configData = []
 
-    lineReader.on('error', function (err) {
-      coreIO.internalDebug(err.message)
-    })
+    function setLineReaderEvents () {
+      node.lineReader.removeAllListeners()
 
-    lineReader.on('line', function (line) {
-      if (line) {
-        node.configData.push(line)
-        // node.configData.push(JSON.parse(line))
-      }
-    })
+      node.lineReader.on('error', function (err) {
+        coreIO.internalDebug(err.message)
+      })
 
-    lineReader.on('end', function () {
-      node.lastUpdatedAt = Date.now()
-      coreIO.internalDebug('Read IO Done From File ' + node.path)
-      node.warn({ payload: coreIO.allValueNamesFromIOFile(node), name: 'Modbus Value Names From IO File', path: node.path })
-      node.emit('updatedConfig', node.configData)
-    })
+      node.lineReader.on('line', function (line) {
+        if (line) {
+          node.configData.push(line)
+        }
+      })
 
-    coreIO.internalDebug('Loading IO File Started For ' + node.path)
+      node.lineReader.on('end', function () {
+        node.lastUpdatedAt = Date.now()
+        coreIO.internalDebug('Read IO Done From File ' + node.path)
+        node.warn({
+          payload: coreIO.allValueNamesFromIOFile(node),
+          name: 'Modbus Value Names From IO File',
+          path: node.path
+        })
+        node.emit('updatedConfig', node.configData)
+      })
+
+      coreIO.internalDebug('Loading IO File Started For ' + node.path)
+    }
+
+    setLineReaderEvents()
 
     node.watcher = fs.watchFile(node.path, (curr, prev) => {
       coreIO.internalDebug(`the current mtime is: ${curr.mtime}`)
@@ -57,25 +74,9 @@ module.exports = function (RED) {
         coreIO.internalDebug('Reload IO File ' + node.path)
         node.configData = []
         delete node.lastUpdatedAt
-
-        const lineReader = new coreIO.LineByLineReader(node.path)
-        lineReader.on('error', function (err) {
-          coreIO.internalDebug(err.message)
-        })
-
-        lineReader.on('line', function (line) {
-          if (line) {
-            node.configData.push(JSON.parse(line))
-          }
-        })
-
-        lineReader.on('end', function () {
-          node.lastUpdatedAt = Date.now()
-          coreIO.internalDebug('Reload IO Done From File ' + node.path)
-          node.warn({ payload: coreIO.allValueNamesFromIOFile(node), name: 'Modbus Value Names From IO File', path: node.path })
-          node.emit('updatedConfig', node.configData)
-        })
-
+        node.lineReader.removeAllListeners()
+        node.lineReader = new coreIO.LineByLineReader(node.path)
+        setLineReaderEvents()
         coreIO.internalDebug('Reloading IO File Started For ' + node.path)
       }
     })
@@ -83,6 +84,8 @@ module.exports = function (RED) {
     node.on('close', function (done) {
       fs.unwatchFile(node.path)
       node.watcher.stop()
+      node.lineReader.removeAllListeners()
+      node.removeAllListeners()
       done()
     })
   }

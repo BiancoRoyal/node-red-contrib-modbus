@@ -55,8 +55,6 @@ describe('Getter node Unit Testing', function () {
         modbusGetter.should.have.property('name', 'modbusGetter')
 
         done()
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -78,8 +76,6 @@ describe('Getter node Unit Testing', function () {
           modbusGetter.should.have.property('name', 'modbusGetter')
 
           done()
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
@@ -100,8 +96,6 @@ describe('Getter node Unit Testing', function () {
               done()
             }
           })
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
@@ -123,8 +117,6 @@ describe('Getter node Unit Testing', function () {
               done()
             }
           })
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
@@ -145,8 +137,6 @@ describe('Getter node Unit Testing', function () {
               done()
             }
           })
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
@@ -164,8 +154,6 @@ describe('Getter node Unit Testing', function () {
             modbusGetter.receive({ payload: '{ "value": "true", "fc": 5, "unitid": 1,"address": 0, "quantity": 4 }' })
             done()
           }, 800)
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
@@ -183,8 +171,6 @@ describe('Getter node Unit Testing', function () {
             modbusGetter.receive({ payload: '{ "fc": 1, "unitid": 1,"address": -1, "quantity": 4 }' })
             done()
           }, 800)
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
@@ -202,8 +188,6 @@ describe('Getter node Unit Testing', function () {
             modbusGetter.receive({ payload: '{ "fc": 1, "unitid": 1,"address": 0, "quantity": -1 }' })
             done()
           }, 800)
-        }, function () {
-          helper.log('function callback')
         })
       })
     })

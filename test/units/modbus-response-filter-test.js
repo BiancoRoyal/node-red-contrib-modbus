@@ -148,8 +148,12 @@ describe('Response Filter node Testing', function () {
         modbusNode.should.have.property('filter', 'bOperationActive')
 
         const h1 = helper.getNode('h1')
+        let counter = 0
         h1.on('input', function () {
-          done()
+          counter++
+          if (counter === 1) {
+            done()
+          }
         })
       })
     })
@@ -169,7 +173,7 @@ describe('Response Filter node Testing', function () {
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      helper.load(testResponseFilterNodes, testFlows.testWorkWithFlexGetterFlow, function () {
+      helper.load(testResponseFilterNodes, [], function () {
         helper.request().post('/modbus-response-filter/invalid').expect(404).end(done)
       })
     })

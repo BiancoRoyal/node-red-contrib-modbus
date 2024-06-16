@@ -492,7 +492,7 @@ module.exports = {
       id: '7417947e.da6c3c',
       type: 'modbus-io-config',
       name: 'C3FactorySet',
-      path: './test/units/resources/device.json',
+      path: './test/resources/device.json',
       format: 'utf8',
       addressOffset: ''
     }

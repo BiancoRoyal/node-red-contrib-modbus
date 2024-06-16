@@ -2,7 +2,8 @@ const helperExtensions = require('../../helper/test-helper-extensions')
 
 module.exports = {
 
-  testGetterWithoutClientConfigFlow: helperExtensions.cleanFlowPositionData([
+  testGetterWithoutClientConfigFlow: helperExtensions.cleanFlowPositionData(
+    [
     {
       id: '1243c51545a330d6',
       type: 'tab',
@@ -36,9 +37,11 @@ module.exports = {
         []
       ]
     }
-  ]),
+  ]
+  ),
 
-  testGetterFlowWithInjectIo: helperExtensions.cleanFlowPositionData([
+  testGetterFlowWithInjectIo: helperExtensions.cleanFlowPositionData(
+    [
     {
       id: 'd6e437043c8cf4a4',
       type: 'tab',
@@ -84,7 +87,7 @@ module.exports = {
       dataType: 'Coil',
       adr: '0',
       quantity: '10',
-      server: '92e7bf63.2efd7',
+      server: '92e7bf63.2efe9',
       useIOFile: true,
       ioFile: 'd43501866bf390b6',
       useIOForPayload: false,
@@ -129,7 +132,7 @@ module.exports = {
       ]
     },
     {
-      id: '92e7bf63.2efd7',
+      id: '92e7bf63.2efe9',
       type: 'modbus-client',
       z: 'd6e437043c8cf4a4',
       name: 'ModbusServer',
@@ -161,13 +164,15 @@ module.exports = {
       type: 'modbus-io-config',
       z: 'd6e437043c8cf4a4',
       name: 'TestIOFile',
-      path: './test/units/resources/device.json',
+      path: './test/resources/device.json',
       format: 'utf8',
       addressOffset: ''
     }
-  ]),
+  ]
+  ),
 
-  testGetterFlow: helperExtensions.cleanFlowPositionData([
+  testGetterFlow: helperExtensions.cleanFlowPositionData(
+    [
     {
       id: '9e0ce71e20ca8f6d',
       type: 'tab',
@@ -275,9 +280,11 @@ module.exports = {
       format: 'utf8',
       addressOffset: ''
     }
-  ]),
+  ]
+  ),
 
-  testGetterWithClientFlow: helperExtensions.cleanFlowPositionData([
+  testGetterWithClientFlow: helperExtensions.cleanFlowPositionData(
+    [
     {
       id: '0dfcc7e634544d53',
       type: 'tab',
@@ -363,142 +370,148 @@ module.exports = {
       reconnectTimeout: '2000',
       parallelUnitIdsAllowed: true
     }
-  ]),
+  ]
+  ),
 
-  testInjectGetterWithClientFlow: helperExtensions.cleanFlowPositionData([
-    {
-      id: 'ae4a7c8ae3cc71e0',
-      type: 'tab',
-      label: 'Test Inject Getter With Client Flow',
-      disabled: false,
-      info: '',
-      env: []
-    },
-    {
-      id: '445454e4.968564',
-      type: 'modbus-server',
-      z: 'ae4a7c8ae3cc71e0',
-      name: '',
-      logEnabled: true,
-      hostname: '127.0.0.1',
-      serverPort: '7272',
-      responseDelay: 100,
-      delayUnit: 'ms',
-      coilsBufferSize: 10000,
-      holdingBufferSize: 10000,
-      inputBufferSize: 10000,
-      discreteBufferSize: 10000,
-      showErrors: false,
-      x: 220,
-      y: 80,
-      wires: [
-        [],
-        [],
-        [],
-        [],
-        []
-      ]
-    },
-    {
-      id: 'cea01c8.36f8f6',
-      type: 'modbus-getter',
-      z: 'ae4a7c8ae3cc71e0',
-      name: '',
-      showStatusActivities: true,
-      showErrors: true,
-      logIOActivities: false,
-      unitid: '',
-      dataType: 'Coil',
-      adr: '0',
-      quantity: '10',
-      server: '92e7bf63.2efd7',
-      useIOFile: false,
-      ioFile: '',
-      useIOForPayload: false,
-      emptyMsgOnFail: false,
-      keepMsgProperties: false,
-      x: 400,
-      y: 180,
-      wires: [
-        [
-          'h1'
-        ],
-        []
-      ]
-    },
-    {
-      id: 'h1',
-      type: 'helper',
-      z: 'ae4a7c8ae3cc71e0',
-      name: '',
-      active: true,
-      tosidebar: true,
-      console: false,
-      tostatus: false,
-      complete: 'payload',
-      targetType: 'msg',
-      statusVal: '',
-      statusType: 'auto',
-      x: 610,
-      y: 180,
-      wires: []
-    },
-    {
-      id: 'a75e0ccf.e16628',
-      type: 'inject',
-      z: 'ae4a7c8ae3cc71e0',
-      name: '',
-      props: [
-        {
-          p: 'payload'
-        },
-        {
-          p: 'topic',
-          vt: 'str'
-        }
-      ],
-      repeat: '1',
-      crontab: '',
-      once: true,
-      onceDelay: 0.1,
-      topic: '',
-      payload: '',
-      payloadType: 'date',
-      x: 210,
-      y: 180,
-      wires: [
-        [
-          'cea01c8.36f8f6'
+  testInjectGetterWithClientFlow: helperExtensions.cleanFlowPositionData(
+    [
+      {
+        "id": "ae4a7c8ae3cc71e0",
+        "type": "tab",
+        "label": "Test Inject Getter With Client Flow",
+        "disabled": false,
+        "info": "",
+        "env": []
+      },
+      {
+        "id": "445454e4.968564",
+        "type": "modbus-server",
+        "z": "ae4a7c8ae3cc71e0",
+        "name": "",
+        "logEnabled": true,
+        "hostname": "127.0.0.1",
+        "serverPort": "7272",
+        "responseDelay": 100,
+        "delayUnit": "ms",
+        "coilsBufferSize": 10000,
+        "holdingBufferSize": 10000,
+        "inputBufferSize": 10000,
+        "discreteBufferSize": 10000,
+        "showErrors": false,
+        "x": 220,
+        "y": 80,
+        "wires": [
+          [],
+          [],
+          [],
+          [],
+          []
         ]
-      ]
-    },
-    {
-      id: '92e7bf63.2efd7',
-      type: 'modbus-client',
-      name: 'ModbusServer',
-      clienttype: 'tcp',
-      bufferCommands: true,
-      stateLogEnabled: true,
-      queueLogEnabled: false,
-      failureLogEnabled: false,
-      tcpHost: '127.0.0.1',
-      tcpPort: '7272',
-      tcpType: 'DEFAULT',
-      serialPort: '/dev/ttyUSB',
-      serialType: 'RTU-BUFFERD',
-      serialBaudrate: '9600',
-      serialDatabits: '8',
-      serialStopbits: '1',
-      serialParity: 'none',
-      serialConnectionDelay: '100',
-      serialAsciiResponseStartDelimiter: '',
-      unit_id: '1',
-      commandDelay: '1',
-      clientTimeout: '100',
-      reconnectOnTimeout: false,
-      reconnectTimeout: '200',
-      parallelUnitIdsAllowed: true
-    }
-  ])
+      },
+      {
+        "id": "cea01c8.36f8f6",
+        "type": "modbus-getter",
+        "z": "ae4a7c8ae3cc71e0",
+        "name": "",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "unitid": "",
+        "dataType": "Coil",
+        "adr": "0",
+        "quantity": "10",
+        "server": "92e7bf63.2efc8",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 400,
+        "y": 180,
+        "wires": [
+          [
+            "h1"
+          ],
+          []
+        ]
+      },
+      {
+        "id": "h1",
+        "type": "helper",
+        "z": "ae4a7c8ae3cc71e0",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 180,
+        "wires": []
+      },
+      {
+        "id": "a75e0ccf.e16628",
+        "type": "inject",
+        "z": "ae4a7c8ae3cc71e0",
+        "name": "",
+        "props": [
+          {
+            "p": "payload"
+          },
+          {
+            "p": "topic",
+            "vt": "str"
+          }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 210,
+        "y": 180,
+        "wires": [
+          [
+            "cea01c8.36f8f6"
+          ]
+        ]
+      },
+      {
+        "id": "92e7bf63.2efc8",
+        "type": "modbus-client",
+        "name": "ModbusServer",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": true,
+        "queueLogEnabled": false,
+        "failureLogEnabled": false,
+        "tcpHost": "127.0.0.1",
+        "tcpPort": "7272",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "",
+        "unit_id": "1",
+        "commandDelay": "1",
+        "clientTimeout": "100",
+        "reconnectOnTimeout": false,
+        "reconnectTimeout": "200",
+        "parallelUnitIdsAllowed": true
+      }
+    ]
+  )
 
 }

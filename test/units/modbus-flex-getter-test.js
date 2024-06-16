@@ -56,8 +56,6 @@ describe('Flex Getter node Testing', function () {
         modbusFlexGetter.should.have.property('name', 'modbusFlexGetter')
 
         done()
-      }, function () {
-        helper.log('function callback')
       })
     })
 
@@ -79,8 +77,6 @@ describe('Flex Getter node Testing', function () {
           modbusFlexGetter.should.have.property('name', 'modbusFlexGetter')
 
           done()
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
@@ -102,8 +98,6 @@ describe('Flex Getter node Testing', function () {
               done()
             }
           })
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
@@ -124,8 +118,6 @@ describe('Flex Getter node Testing', function () {
               done()
             }
           })
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
@@ -150,8 +142,6 @@ describe('Flex Getter node Testing', function () {
           setTimeout(function () {
             modbusGetter.receive({ payload: '{ "fc": 1, "unitid": 1,"address": 0, "quantity": 4 }' })
           }, 800)
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
@@ -169,8 +159,6 @@ describe('Flex Getter node Testing', function () {
             modbusGetter.receive({ payload: '{ "value": "true", "fc": 5, "unitid": 1,"address": 0, "quantity": 1 }' })
             done()
           }, 800)
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
@@ -188,8 +176,6 @@ describe('Flex Getter node Testing', function () {
             modbusGetter.receive({ payload: '{ "fc": 1, "unitid": 1,"address": -1, "quantity": 1 }' })
             done()
           }, 800)
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
@@ -207,8 +193,6 @@ describe('Flex Getter node Testing', function () {
             modbusGetter.receive({ payload: '{ "fc": 1, "unitid": 1,"address": 1, "quantity": -1 }' })
             done()
           }, 800)
-        }, function () {
-          helper.log('function callback')
         })
       })
     })
