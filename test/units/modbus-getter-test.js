@@ -49,6 +49,43 @@ describe('Getter node Unit Testing', function () {
   })
 
   describe('Node', function () {
+    it('should reset input delay timer correctly', function (done) {
+      helper.load(testGetterNodes, testFlows.testInjectGetterWithClientFlow, function () {
+        const modbusGetter = helper.getNode('cea01c8.36f8f6')
+        modbusGetter.inputDelayTimer = true
+        const clearTimeoutStub = sinon.stub(global, 'clearTimeout')
+
+        modbusGetter.resetInputDelayTimer()
+        sinon.assert.calledOnce(clearTimeoutStub)
+
+        done()
+      })
+    })
+
+    it('should initialize input delay timer when delayOnStart is true', function (done) {
+      helper.load(testGetterNodes, testFlows.testInjectGetterWithClientFlow, function () {
+        const modbusGetter = helper.getNode('cea01c8.36f8f6')
+        modbusGetter.delayOnStart = true
+
+        const verboseWarnSpy = sinon.spy()
+        const resetInputDelayTimerSpy = sinon.spy(modbusGetter, 'resetInputDelayTimer')
+
+        const setTimeoutStub = sinon.stub(global, 'setTimeout').callsFake((callback, delay) => {
+          callback()
+        })
+
+        modbusGetter.verboseWarn = verboseWarnSpy
+        modbusGetter.initializeInputDelayTimer()
+        sinon.assert.calledOnce(resetInputDelayTimerSpy)
+        sinon.assert.calledOnce(setTimeoutStub)
+        sinon.assert.calledWith(setTimeoutStub, sinon.match.func, modbusGetter.INPUT_TIMEOUT_MILLISECONDS * modbusGetter.startDelayTime)
+
+        setTimeoutStub.restore()
+        resetInputDelayTimerSpy.restore()
+
+        done()
+      })
+    })
     it('simple Node should be loaded without client config', function (done) {
       helper.load(testGetterNodes, testFlows.testGetterWithoutClientConfigFlow, function () {
         const modbusGetter = helper.getNode('3ffe153acc21d72b')
