@@ -43,6 +43,44 @@ describe('Server node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should send message when valid message and output not disabled', function (done) {
+      helper.load(testServerNodes, testFlows.testServerConfig, function () {
+        const modbusServer = helper.getNode('249922d5ac72b8cd')
+        const sendMessageSpy = sinon.spy(modbusServer, 'send')
+
+        const msg = {
+          payload: {}
+        }
+
+        modbusServer.emit('input', msg)
+
+        sinon.assert.calledOnce(sendMessageSpy)
+        done()
+      })
+    })
+
+    it('should initialize node with correct configurations', function (done) {
+      helper.load(testServerNodes, testFlows.testServerConfig, function () {
+        const modbusServer = helper.getNode('249922d5ac72b8cd')
+        expect(modbusServer.name).to.equal('Test Modbus Server')
+        expect(modbusServer.logEnabled).to.equal(true)
+        expect(modbusServer.hostname).to.equal('127.0.0.1')
+        expect(modbusServer.serverPort).to.equal(5509)
+        expect(modbusServer.responseDelay).to.equal(100)
+        expect(modbusServer.delayUnit).to.equal('ms')
+        expect(modbusServer.showStatusActivities).to.equal(true)
+        expect(modbusServer.coilsBufferSize).to.equal(80000)
+        expect(modbusServer.holdingBufferSize).to.equal(80000)
+        expect(modbusServer.inputBufferSize).to.equal(80000)
+        expect(modbusServer.discreteBufferSize).to.equal(80000)
+        expect(modbusServer.showErrors).to.equal(true)
+        expect(modbusServer.internalDebugLog).to.be.a('function')
+        expect(modbusServer.netServer).to.be.an('object')
+        expect(modbusServer.modbusServer).to.be.an('object')
+
+        done()
+      })
+    })
     it('should set node status to active on client connection', function () {
       helper.load(testServerNodes, testFlows.testServerConfig, function () {
         const modbusServer = helper.getNode('249922d5ac72b8cd')

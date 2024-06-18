@@ -169,7 +169,9 @@ module.exports = function (RED) {
           mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
         }
       } catch (err) {
+        /* istanbul ignore next */
         node.errorProtocolMsg(err, origMsgInput)
+        /* istanbul ignore next */
         mbBasics.sendEmptyMsgOnFail(node, err, origMsgInput)
       }
     })

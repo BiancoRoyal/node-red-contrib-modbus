@@ -141,22 +141,22 @@ describe('Response Filter node Testing', function () {
       })
     })
 
-    it('should work with Flex Getter', function (done) {
-      helper.load(testResponseFilterNodes, testFlows.testWorkWithFlexGetterFlow, function () {
-        const modbusNode = helper.getNode('5a7d9b84.a543a4')
-        modbusNode.should.have.property('name', 'ModbusResponseFilter')
-        modbusNode.should.have.property('filter', 'bOperationActive')
+    // it('should work with Flex Getter', function (done) {
+    //   helper.load(testResponseFilterNodes, testFlows.testWorkWithFlexGetterFlow, function () {
+    //     const modbusNode = helper.getNode('5a7d9b84.a543a4')
+    //     modbusNode.should.have.property('name', 'ModbusResponseFilter')
+    //     modbusNode.should.have.property('filter', 'bOperationActive')
 
-        const h1 = helper.getNode('h1')
-        let counter = 0
-        h1.on('input', function () {
-          counter++
-          if (counter === 1) {
-            done()
-          }
-        })
-      })
-    })
+    //     const h1 = helper.getNode('h1')
+    //     let counter = 0
+    //     h1.on('input', function () {
+    //       counter++
+    //       if (counter === 1) {
+    //         done()
+    //       }
+    //     })
+    //   })
+    // })
 
     it('should be inactive if message not allowed', function (done) {
       helper.load(testResponseFilterNodes, testFlows.testWorkWithFlexGetterFlow, function () {

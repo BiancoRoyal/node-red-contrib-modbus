@@ -72,7 +72,7 @@
     "test:verbose": "npm run lint && mocha ./test --recursive",
     "test:withStop": "npm run lint && mocha ./test --recursive --bail",
     "lint": "standard --fix",
-    "test:e2e": "npm run lint && mocha './test/units/modbus-getter-test.js' --parallel --recursive --reporter dot --timeout 100000",
+    "test:e2e": "npm run lint && mocha './test/units/modbus-server-test.js' --parallel --recursive --reporter dot --timeout 10000",
     "test:units": "npm run lint && mocha './test/units/modbus-getter-test.js' --parallel --recursive",
     "test:core": "npm run lint && mocha './test/core/*-test.js' --parallel --recursive",
     "test-nyc": "nyc --reporter=html --reporter=text mocha --recursive",

@@ -8,7 +8,7 @@ module.exports = {
         "type": "modbus-server",
         "z": "3eb3dc87d008ec26",
         "showStatusActivities": true,
-        "name": "",
+        "name": "Test Modbus Server",
         "logEnabled": true,
         "hostname": "127.0.0.1",
         "serverPort": "5509",
