@@ -48,6 +48,25 @@ describe('Response Filter node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should return modbusIOFileValuNames when accessing /modbus/iofile/valuenames', function (done) {
+      helper.load(testResponseFilterNodes, testFlows.testToFilterFlow, function () {
+        const modbusResponseFilter = helper.getNode('e8041f6236cbaee4')
+        const newConfigData = ''
+        modbusResponseFilter.ioFile.configData = newConfigData
+
+        helper.request()
+          .get('/modbus/iofile/valuenames')
+          .expect(200)
+          .end(function (err, res) {
+            if (err) {
+              done(err)
+              return
+            }
+            res.body.should.eql(newConfigData)
+            done()
+          })
+      })
+    })
     it('should log an error if payload length does not match register length and showErrors is true', function (done) {
       helper.load(testResponseFilterNodes, testFlows.testToFilterFlow, function () {
         const responseFilterNode = helper.getNode('e8041f6236cbaee4')
