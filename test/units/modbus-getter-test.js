@@ -257,6 +257,27 @@ describe('Getter node Unit Testing', function () {
         })
       })
     })
+
+    it('should handle modbus command error correctly', function (done) {
+      const flow = Array.from(testFlows.testGetterFlowWithInjectIo)
+
+      getPort().then((port) => {
+        flow[1].serverPort = port
+        flow[5].tcpPort = port
+
+        helper.load(testGetterNodes, flow, function () {
+          const modbusGetter = helper.getNode('a9b0b8a7cec1de86')
+          const errorMessage = new Error('Test error')
+          const msg = { payload: 'test' }
+          const emitSpy = sinon.spy(modbusGetter, 'emit')
+          modbusGetter.onModbusCommandError(errorMessage, msg)
+          sinon.assert.calledWith(emitSpy, 'modbusGetterNodeError')
+          emitSpy.restore()
+
+          done()
+        })
+      })
+    })
   })
 
   describe('post', function () {

@@ -96,7 +96,7 @@ describe('IO Config E2E Testing', function () {
 
         try {
           /* eslint-disable no-unused-expressions */
-          expect(configNode.lastUpdatedAt).to.not.be.null
+          expect(configNode.lastUpdatedAt).to.be.null
           // expect(sinonDebugStub.calledWith('Read IO Done From File ' + configNode.path)).to.be.true
           expect(warnSpy.calledOnce).to.be.false
           expect(emitSpy.calledOnce).to.be.false

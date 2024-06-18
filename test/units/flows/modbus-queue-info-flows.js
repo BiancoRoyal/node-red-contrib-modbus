@@ -585,168 +585,169 @@ module.exports = {
     }
   ]),
 
-  testInjectAndPollingShouldBeLoadedFlow: helperExtensions.cleanFlowPositionData([
-    {
-      id: '05cc80ac414ed61c',
-      type: 'tab',
-      label: 'Inject And Polling',
-      disabled: false,
-      info: '',
-      env: []
-    },
-    {
-      id: '445454e4.968564',
-      type: 'modbus-server',
-      z: '05cc80ac414ed61c',
-      name: '',
-      logEnabled: true,
-      hostname: '127.0.0.1',
-      serverPort: '8503',
-      responseDelay: 10,
-      delayUnit: 'ms',
-      coilsBufferSize: 10000,
-      holdingBufferSize: 10000,
-      inputBufferSize: 10000,
-      discreteBufferSize: 10000,
-      showErrors: false,
-      x: 320,
-      y: 280,
-      wires: [
-        [],
-        [],
-        [],
-        [],
-        []
-      ]
-    },
-    {
-      id: '90922127.397cb8',
-      type: 'modbus-read',
-      z: '05cc80ac414ed61c',
-      name: 'Modbus Read With IO',
-      topic: '',
-      showStatusActivities: false,
-      logIOActivities: false,
-      showErrors: false,
-      unitid: '',
-      dataType: 'Coil',
-      adr: '0',
-      quantity: '10',
-      rate: '50',
-      rateUnit: 'ms',
-      delayOnStart: false,
-      startDelayTime: '',
-      server: '1e3ac4ea.86fa7b',
-      useIOFile: false,
-      ioFile: '',
-      useIOForPayload: false,
-      emptyMsgOnFail: false,
-      x: 320,
-      y: 180,
-      wires: [
-        [
-          'h1'
-        ],
-        []
-      ]
-    },
-    {
-      id: '5fffb0bc.0b8a5',
-      type: 'modbus-queue-info',
-      z: '05cc80ac414ed61c',
-      name: 'QueueInfo',
-      topic: '',
-      unitid: '',
-      queueReadIntervalTime: 100,
-      lowLowLevel: 0,
-      lowLevel: 1,
-      highLevel: 2,
-      highHighLevel: 3,
-      server: '1e3ac4ea.86fa7b',
-      errorOnHighLevel: false,
-      showStatusActivities: true,
-      updateOnAllQueueChanges: false,
-      updateOnAllUnitQueues: false,
-      x: 330,
-      y: 120,
-      wires: [
-        [
-          'h1'
-        ]
-      ]
-    },
-    {
-      id: 'ae473c43.3e7938',
-      type: 'inject',
-      z: '05cc80ac414ed61c',
-      name: '',
-      props: [
-        {
-          p: 'payload'
-        },
-        {
-          p: 'topic',
-          vt: 'str'
-        }
-      ],
-      repeat: 0.3,
-      crontab: '',
-      once: true,
-      onceDelay: 0.2,
-      topic: '',
-      payload: '',
-      payloadType: 'date',
-      x: 130,
-      y: 120,
-      wires: [
-        [
-          '5fffb0bc.0b8a5'
-        ]
-      ]
-    },
-    {
-      id: 'h1',
-      type: 'helper',
-      z: '05cc80ac414ed61c',
-      name: '',
-      tosidebar: true,
-      console: false,
-      tostatus: false,
-      complete: 'payload',
-      targetType: 'msg',
-      statusVal: '',
-      statusType: 'auto',
-      x: 730,
-      y: 160,
-      wires: []
-    },
-    {
-      id: '1e3ac4ea.86fa7b',
-      type: 'modbus-client',
-      name: 'ModbsuFlexServer',
-      clienttype: 'tcp',
-      bufferCommands: true,
-      stateLogEnabled: false,
-      queueLogEnabled: false,
-      failureLogEnabled: false,
-      tcpHost: '127.0.0.1',
-      tcpPort: '8503',
-      tcpType: 'DEFAULT',
-      serialPort: '/dev/ttyUSB',
-      serialType: 'RTU-BUFFERD',
-      serialBaudrate: '9600',
-      serialDatabits: '8',
-      serialStopbits: '1',
-      serialParity: 'none',
-      serialConnectionDelay: '100',
-      serialAsciiResponseStartDelimiter: '',
-      unit_id: '1',
-      commandDelay: '1',
-      clientTimeout: '100',
-      reconnectOnTimeout: false,
-      reconnectTimeout: '200',
-      parallelUnitIdsAllowed: true
-    }
+  testInjectAndPollingShouldBeLoadedFlow: helperExtensions.cleanFlowPositionData(
+    [
+      {
+          "id": "e841f965ccc3e494",
+          "type": "tab",
+          "label": "Inject And Polling",
+          "disabled": false,
+          "info": "",
+          "env": []
+      },
+      {
+          "id": "4dc9eeda53cf85d3",
+          "type": "modbus-server",
+          "z": "e841f965ccc3e494",
+          "name": "",
+          "logEnabled": true,
+          "hostname": "127.0.0.1",
+          "serverPort": "8503",
+          "responseDelay": 10,
+          "delayUnit": "ms",
+          "coilsBufferSize": 10000,
+          "holdingBufferSize": 10000,
+          "inputBufferSize": 10000,
+          "discreteBufferSize": 10000,
+          "showErrors": false,
+          "x": 320,
+          "y": 280,
+          "wires": [
+              [],
+              [],
+              [],
+              [],
+              []
+          ]
+      },
+      {
+          "id": "9dede7b2d0dd8333",
+          "type": "modbus-read",
+          "z": "e841f965ccc3e494",
+          "name": "Modbus Read With IO",
+          "topic": "",
+          "showStatusActivities": false,
+          "logIOActivities": false,
+          "showErrors": false,
+          "unitid": "",
+          "dataType": "Coil",
+          "adr": "0",
+          "quantity": "10",
+          "rate": "50",
+          "rateUnit": "ms",
+          "delayOnStart": false,
+          "startDelayTime": "",
+          "server": "6caeb7770b3be619",
+          "useIOFile": false,
+          "ioFile": "",
+          "useIOForPayload": false,
+          "emptyMsgOnFail": false,
+          "x": 320,
+          "y": 180,
+          "wires": [
+              [
+                  "1962fe0588ceaf0b"
+              ],
+              []
+          ]
+      },
+      {
+          "id": "e18e0fe2e38450b1",
+          "type": "modbus-queue-info",
+          "z": "e841f965ccc3e494",
+          "name": "QueueInfo",
+          "topic": "",
+          "unitid": "",
+          "queueReadIntervalTime": 100,
+          "lowLowLevel": 0,
+          "lowLevel": 1,
+          "highLevel": 2,
+          "highHighLevel": 3,
+          "server": "6caeb7770b3be619",
+          "errorOnHighLevel": false,
+          "showStatusActivities": true,
+          "updateOnAllQueueChanges": false,
+          "updateOnAllUnitQueues": false,
+          "x": 330,
+          "y": 120,
+          "wires": [
+              [
+                  "1962fe0588ceaf0b"
+              ]
+          ]
+      },
+      {
+          "id": "d2d7490d1227615b",
+          "type": "inject",
+          "z": "e841f965ccc3e494",
+          "name": "",
+          "props": [
+              {
+                  "p": "payload"
+              },
+              {
+                  "p": "topic",
+                  "vt": "str"
+              }
+          ],
+          "repeat": 0.3,
+          "crontab": "",
+          "once": true,
+          "onceDelay": 0.2,
+          "topic": "",
+          "payload": "",
+          "payloadType": "date",
+          "x": 130,
+          "y": 120,
+          "wires": [
+              [
+                  "e18e0fe2e38450b1"
+              ]
+          ]
+      },
+      {
+          "id": "1962fe0588ceaf0b",
+          "type": "helper",
+          "z": "e841f965ccc3e494",
+          "name": "",
+          "tosidebar": true,
+          "console": false,
+          "tostatus": false,
+          "complete": "payload",
+          "targetType": "msg",
+          "statusVal": "",
+          "statusType": "auto",
+          "x": 730,
+          "y": 160,
+          "wires": []
+      },
+      {
+          "id": "6caeb7770b3be619",
+          "type": "modbus-client",
+          "name": "ModbsuFlexServer",
+          "clienttype": "tcp",
+          "bufferCommands": true,
+          "stateLogEnabled": false,
+          "queueLogEnabled": false,
+          "failureLogEnabled": false,
+          "tcpHost": "127.0.0.1",
+          "tcpPort": "8503",
+          "tcpType": "DEFAULT",
+          "serialPort": "/dev/ttyUSB",
+          "serialType": "RTU-BUFFERD",
+          "serialBaudrate": "9600",
+          "serialDatabits": "8",
+          "serialStopbits": "1",
+          "serialParity": "none",
+          "serialConnectionDelay": "100",
+          "serialAsciiResponseStartDelimiter": "",
+          "unit_id": "1",
+          "commandDelay": "1",
+          "clientTimeout": "100",
+          "reconnectOnTimeout": false,
+          "reconnectTimeout": "200",
+          "parallelUnitIdsAllowed": true
+      }
   ]),
 
   testResetFunctionQueueFlow: helperExtensions.cleanFlowPositionData([

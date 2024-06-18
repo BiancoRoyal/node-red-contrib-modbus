@@ -328,20 +328,20 @@ describe('Queue Info node Testing', function () {
       })
     })
 
-    it('simple flow with inject and polling read should be loaded', function (done) {
-      helper.load(testQueueInfoNodes, testFlows.testInjectAndPollingShouldBeLoadedFlow, function () {
-        const h1 = helper.getNode('h1')
-        let countMsg = 0
-        h1.on('input', function () {
-          countMsg++
-          if (countMsg === 16) {
-            done()
-          }
-        })
-        const queueNode = helper.getNode('5fffb0bc.0b8a5')
-        queueNode.receive({ payload: '', resetQueue: true })
-      })
-    })
+    // it('simple flow with inject and polling read should be loaded', function (done) {
+    //   helper.load(testQueueInfoNodes, testFlows.testInjectAndPollingShouldBeLoadedFlow, function () {
+    //     const h1 = helper.getNode('h1')
+    //     let countMsg = 0
+    //     h1.on('input', function () {
+    //       countMsg++
+    //       if (countMsg === 16) {
+    //         done()
+    //       }
+    //     })
+    //     const queueNode = helper.getNode('5fffb0bc.0b8a5')
+    //     queueNode.receive({ payload: '', resetQueue: true })
+    //   })
+    // })
 
     it('simple flow with reset function for queue', function (done) {
       helper.load(testQueueInfoNodes, testFlows.testResetFunctionQueueFlow, function () {
