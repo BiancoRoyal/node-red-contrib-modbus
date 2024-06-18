@@ -48,6 +48,39 @@ describe('Response Filter node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should log an error if payload length does not match register length and showErrors is true', function (done) {
+      helper.load(testResponseFilterNodes, testFlows.testToFilterFlow, function () {
+        const responseFilterNode = helper.getNode('e8041f6236cbaee4')
+        responseFilterNode.showErrors = true
+        responseFilterNode.registers = 5
+        responseFilterNode.error = sinon.stub()
+
+        const msg = {
+          payload: [{ name: 'test' }]
+        }
+        responseFilterNode.emit('input', msg)
+
+        sinon.assert.calledOnce(responseFilterNode.error)
+        sinon.assert.calledWithMatch(responseFilterNode.error, sinon.match.instanceOf(Error).and(sinon.match.has('message', '1 does not match 5')))
+        done()
+      })
+    })
+    it('should send the filtered message when registers is not set or less than or equal to 0', function (done) {
+      helper.load(testResponseFilterNodes, testFlows.testToFilterFlow, function () {
+        const responseFilterNode = helper.getNode('e8041f6236cbaee4')
+        responseFilterNode.registers = 0 // or set to a negative value to test that case as well
+        responseFilterNode.send = sinon.spy()
+        const filterFromPayloadSpy = sinon.stub(responseFilterNode, 'filterFromPayload').callsFake((msg) => msg)
+
+        const msg = {
+          payload: [{ name: 'test' }]
+        }
+        responseFilterNode.emit('input', msg)
+        sinon.assert.calledOnce(filterFromPayloadSpy)
+        sinon.assert.calledOnce(responseFilterNode.send)
+        done()
+      })
+    })
     it('should update modbusIOFileValuNames when updatedConfig event is emitted', function (done) {
       helper.load(testResponseFilterNodes, testFlows.testToFilterFlow, function () {
         const responseFilterNode = helper.getNode('e8041f6236cbaee4')
