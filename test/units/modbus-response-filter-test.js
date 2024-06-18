@@ -48,6 +48,20 @@ describe('Response Filter node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should filter payload based on node.filter', function (done) {
+      helper.load(testResponseFilterNodes, testFlows.testToFilterFlow, function () {
+        const responseFilterNode = helper.getNode('e8041f6236cbaee4')
+        console.log(responseFilterNode)
+        const msg = {
+          payload: [{ name: 'testFilter' }, { name: 'otherFilter' }]
+        }
+        responseFilterNode.filter = 'testFilter'
+        const result = responseFilterNode.filterFromPayload(msg)
+        result.payload.should.have.lengthOf(1)
+        result.payload[0].name.should.equal('testFilter')
+        done()
+      })
+    })
     it('should log a warning if payload length does not match register length and showWarnings is true', function (done) {
       helper.load(testResponseFilterNodes, testFlows.testToFilterFlow, function () {
         const responseFilterNode = helper.getNode('e8041f6236cbaee4')
