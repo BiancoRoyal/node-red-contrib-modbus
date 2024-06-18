@@ -48,10 +48,19 @@ describe('Response Filter node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should update modbusIOFileValuNames when updatedConfig event is emitted', function (done) {
+      helper.load(testResponseFilterNodes, testFlows.testToFilterFlow, function () {
+        const responseFilterNode = helper.getNode('e8041f6236cbaee4')
+        const modbusIOFileValuNames = [{ name: 'newConfig' }]
+        responseFilterNode.ioFile.emit('updatedConfig', modbusIOFileValuNames)
+        expect(modbusIOFileValuNames).to.deep.equal([{ name: 'newConfig' }])
+
+        done()
+      })
+    })
     it('should filter payload based on node.filter', function (done) {
       helper.load(testResponseFilterNodes, testFlows.testToFilterFlow, function () {
         const responseFilterNode = helper.getNode('e8041f6236cbaee4')
-        console.log(responseFilterNode)
         const msg = {
           payload: [{ name: 'testFilter' }, { name: 'otherFilter' }]
         }
