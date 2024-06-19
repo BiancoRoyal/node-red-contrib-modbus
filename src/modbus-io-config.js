@@ -27,6 +27,7 @@ module.exports = function (RED) {
     node.setMaxListeners(UNLIMITED_LISTENERS)
     node.lastUpdatedAt = null
 
+    /* istanbul ignore next */
     if (!fs.existsSync(node.path)) {
       coreIO.internalDebug('IO File Not Found ' + node.path)
       node.warn('Modbus IO File Not Found ' + node.path)
@@ -40,6 +41,7 @@ module.exports = function (RED) {
     function setLineReaderEvents () {
       node.lineReader.removeAllListeners()
 
+      /* istanbul ignore next */
       node.lineReader.on('error', function (err) {
         coreIO.internalDebug(err.message)
       })
