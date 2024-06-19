@@ -1,7 +1,148 @@
 const helperExtensions = require('../../helper/test-helper-extensions')
 
 module.exports = {
-
+  testGetterNodeFlowExample: helperExtensions.cleanFlowPositionData(
+    [
+      {
+          "id": "4cadf3686ac42701",
+          "type": "tab",
+          "label": "Test Simple Write Flow",
+          "disabled": false,
+          "info": "",
+          "env": []
+      },
+      {
+          "id": "af4e78a5a4f0d69a",
+          "type": "modbus-server",
+          "z": "4cadf3686ac42701",
+          "name": "",
+          "logEnabled": false,
+          "hostname": "127.0.0.1",
+          "serverPort": "7581",
+          "responseDelay": 100,
+          "delayUnit": "ms",
+          "coilsBufferSize": 10000,
+          "holdingBufferSize": 10000,
+          "inputBufferSize": 10000,
+          "discreteBufferSize": 10000,
+          "showErrors": false,
+          "x": 400,
+          "y": 200,
+          "wires": [
+              [],
+              [],
+              [],
+              [],
+              []
+          ]
+      },
+      {
+          "id": "799cdfdf2a7caf1d",
+          "type": "inject",
+          "z": "4cadf3686ac42701",
+          "name": "",
+          "props": [
+              {
+                  "p": "payload"
+              },
+              {
+                  "p": "topic",
+                  "vt": "str"
+              }
+          ],
+          "repeat": "",
+          "crontab": "",
+          "once": false,
+          "onceDelay": 0.1,
+          "topic": "",
+          "payload": "",
+          "payloadType": "date",
+          "x": 300,
+          "y": 340,
+          "wires": [
+              [
+                  "09f8f0e2049ace2d"
+              ]
+          ]
+      },
+      {
+          "id": "09f8f0e2049ace2d",
+          "type": "modbus-getter",
+          "z": "4cadf3686ac42701",
+          "name": "modbus getter node",
+          "showStatusActivities": false,
+          "showErrors": false,
+          "showWarnings": true,
+          "logIOActivities": false,
+          "unitid": "",
+          "dataType": "HoldingRegister",
+          "adr": "1",
+          "quantity": "10",
+          "server": "80aeec4c.0cb9e8",
+          "useIOFile": false,
+          "ioFile": "",
+          "useIOForPayload": false,
+          "emptyMsgOnFail": false,
+          "keepMsgProperties": false,
+          "delayOnStart": false,
+          "startDelayTime": "",
+          "x": 540,
+          "y": 340,
+          "wires": [
+              [
+                  "70f1739ea6728fc0"
+              ],
+              []
+          ]
+      },
+      {
+          "id": "70f1739ea6728fc0",
+          "type": "helper",
+          "z": "4cadf3686ac42701",
+          "name": "helper 3",
+          "active": true,
+          "tosidebar": true,
+          "console": false,
+          "tostatus": false,
+          "complete": "false",
+          "statusVal": "",
+          "statusType": "auto",
+          "x": 700,
+          "y": 380,
+          "wires": []
+      },
+      {
+          "id": "80aeec4c.0cb9e8",
+          "type": "modbus-client",
+          "name": "Modbus Server",
+          "clienttype": "tcp",
+          "bufferCommands": true,
+          "stateLogEnabled": false,
+          "queueLogEnabled": false,
+          "failureLogEnabled": false,
+          "tcpHost": "127.0.0.1",
+          "tcpPort": "7581",
+          "tcpType": "DEFAULT",
+          "serialPort": "/dev/ttyUSB",
+          "serialType": "RTU-BUFFERD",
+          "serialBaudrate": "9600",
+          "serialDatabits": "8",
+          "serialStopbits": "1",
+          "serialParity": "none",
+          "serialConnectionDelay": "100",
+          "serialAsciiResponseStartDelimiter": "",
+          "unit_id": 1,
+          "commandDelay": 1,
+          "clientTimeout": 100,
+          "reconnectOnTimeout": false,
+          "reconnectTimeout": 200,
+          "parallelUnitIdsAllowed": true,
+          "showErrors": false,
+          "showWarnings": true,
+          "showLogs": true
+      }
+  ]
+  ),
   testGetterWithoutClientConfigFlow: helperExtensions.cleanFlowPositionData(
     [
     {

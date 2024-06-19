@@ -25,7 +25,7 @@ const testGetterNodes = [injectNode, ioConfigNode, clientNode, serverNode, gette
 const testFlows = require('./flows/modbus-getter-flows')
 const mbBasics = require('../../src/modbus-basics')
 const { getPort } = require('../helper/test-helper-extensions')
-// const mBasics = require('../../src/modbus-basics')
+const mBasics = require('../../src/modbus-basics')
 
 describe('Getter node Unit Testing', function () {
   before(function (done) {
@@ -49,6 +49,58 @@ describe('Getter node Unit Testing', function () {
   })
 
   describe('Node', function () {
+    let invalidPayloadInStub, isNotReadyForInputStub, isInactiveStub, setNodeStatusToSpy, buildNewMessageObjectStub, buildNewMessageStub, emitSpy, verboseWarnSpy
+    afterEach(function () {
+      if (invalidPayloadInStub) invalidPayloadInStub.restore()
+      if (isNotReadyForInputStub) isNotReadyForInputStub.restore()
+      if (isInactiveStub) isInactiveStub.restore()
+      if (setNodeStatusToSpy) setNodeStatusToSpy.restore()
+      if (buildNewMessageObjectStub) buildNewMessageObjectStub.restore()
+      if (buildNewMessageStub) buildNewMessageStub.restore()
+      if (emitSpy) emitSpy.restore()
+      if (verboseWarnSpy) verboseWarnSpy.restore()
+    })
+
+    it('should handle input correctly and emit readModbus event', function (done) {
+      helper.load(testGetterNodes, testFlows.testGetterNodeFlowExample, function () {
+        const modbusWriteNode = helper.getNode('09f8f0e2049ace2d')
+        const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
+        modbusWriteNode.showStatusActivities = true
+
+        invalidPayloadInStub = sinon.stub(mBasics, 'invalidPayloadIn').returns(false)
+        isNotReadyForInputStub = sinon.stub(modbusWriteNode, 'isNotReadyForInput').returns(false)
+        isInactiveStub = sinon.stub(modbusClientNode, 'isInactive').returns(false)
+
+        buildNewMessageObjectStub = sinon.stub(modbusWriteNode, 'buildNewMessageObject').returns({ messageId: '12345', payload: {} })
+        buildNewMessageStub = sinon.stub(mBasics, 'buildNewMessage').returns({ payload: {} })
+        setNodeStatusToSpy = sinon.spy(mBasics, 'setNodeStatusTo')
+        emitSpy = sinon.spy(modbusClientNode, 'emit')
+
+        const inputMsg = { payload: { value: 'test value' } }
+
+        modbusWriteNode.emit('input', inputMsg)
+
+        sinon.assert.calledOnce(setNodeStatusToSpy)
+        sinon.assert.calledWith(setNodeStatusToSpy, modbusClientNode.actualServiceState, modbusWriteNode)
+
+        done()
+      })
+    })
+    it('should handle onModbusCommandDone correctly', function (done) {
+      helper.load(testGetterNodes, testFlows.testGetterNodeFlowExample, function () {
+        const modbusWriteNode = helper.getNode('09f8f0e2049ace2d')
+        const emitSpy = sinon.spy(modbusWriteNode, 'emit')
+
+        const resp = { data: [1, 2, 3, 4] }
+        const msg = { payload: 'test payload' }
+        modbusWriteNode.onModbusCommandDone(resp, msg)
+        sinon.assert.calledOnce(emitSpy)
+        sinon.assert.calledWith(emitSpy, 'modbusGetterNodeDone')
+        emitSpy.restore()
+
+        done()
+      })
+    })
     it('should reset input delay timer correctly', function (done) {
       helper.load(testGetterNodes, testFlows.testInjectGetterWithClientFlow, function () {
         const modbusGetter = helper.getNode('cea01c8.36f8f6')
