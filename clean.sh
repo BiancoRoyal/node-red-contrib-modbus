@@ -8,6 +8,8 @@ rm -rf modbus/
 
 rm -rf code/
 
+rm -rf .nyc_output/
+
 rm -rf coverage/
 
 rm -rf docs/gen

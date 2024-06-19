@@ -91,6 +91,29 @@ describe('IO Config node Testing', function () {
       })
     })
 
+    it('should log error on lineReader error event', (done) => {
+      const flow = Array.from(testFlows.testReadWithClientIoFlow)
+
+      getPort().then((port) => {
+        flow[1].serverPort = port
+        flow[4].tcpPort = port
+
+        helper.load(testIoConfigNodes, flow, function () {
+          const modbusIOConfigNode = helper.getNode('b0d101525a3ab7f5')
+          let counter = 0
+
+          modbusIOConfigNode.lineReader.on('error', (data) => {
+            counter++
+            if (data && counter === 1) {
+              done()
+            }
+          })
+
+          modbusIOConfigNode.lineReader.emit('error', new Error('Test Error'))
+        })
+      })
+    })
+
     it('should watch the file when it changes', (done) => {
       const flow = Array.from(testFlows.testReadWithClientIoFlow)
 
