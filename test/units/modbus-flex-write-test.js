@@ -19,7 +19,7 @@ const nodeUnderTest = require('../../src/modbus-flex-write.js')
 const sinon = require('sinon')
 const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
-
+const expect = require('chai').expect
 const testFlows = require('./flows/modbus-flex-write-flows')
 const mBasics = require('../../src/modbus-basics')
 const _ = require('underscore')
@@ -49,6 +49,36 @@ describe('Flex Write node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should initialize input delay timer when delayOnStart is true', function (done) {
+      helper.load(testWriteParametersNodes, testFlows.testModbusFlexWriteFlow, function () {
+        const modbusFlexWrite = helper.getNode('dcb6fa4b3549ae4f')
+        modbusFlexWrite.delayOnStart = true
+        const setTimeoutStub = sinon.stub(global, 'setTimeout')
+
+        modbusFlexWrite.initializeInputDelayTimer()
+
+        sinon.assert.calledOnce(setTimeoutStub)
+        setTimeoutStub.restore()
+        done()
+      })
+    })
+    it('should parse comma-separated string into array', function (done) {
+      const msg = {
+        payload: {
+          value: '{ "name": "John", "age": 30, "city": "New York" }'
+        }
+      }
+
+      helper.load(testWriteParametersNodes, testFlows.testModbusFlexWriteFlow, function () {
+        const modbusFlexWrite = helper.getNode('dcb6fa4b3549ae4f')
+
+        const processedMsg = modbusFlexWrite.setMsgPayloadFromHTTPRequests(msg)
+        setTimeout(function () {
+          expect(processedMsg).to.equal(msg)
+          done()
+        }, 0)
+      })
+    })
     it('should log error message when showErrors is true', function (done) {
       const msg = {
         payload: 'test payload'
