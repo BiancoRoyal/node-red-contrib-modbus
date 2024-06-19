@@ -19,6 +19,7 @@ const ioConfigNode = require('../../src/modbus-io-config')
 const sinon = require('sinon')
 const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
+const expect = require('chai').expect
 
 const testGetterNodes = [injectNode, ioConfigNode, clientNode, serverNode, getterNode]
 
@@ -26,7 +27,7 @@ const testFlows = require('./flows/modbus-getter-flows')
 const mbBasics = require('../../src/modbus-basics')
 const { getPort } = require('../helper/test-helper-extensions')
 const mBasics = require('../../src/modbus-basics')
-
+// const mbCore = require('../core/modbus-io-core-test.js')
 describe('Getter node Unit Testing', function () {
   before(function (done) {
     helper.startServer(function () {
@@ -86,11 +87,53 @@ describe('Getter node Unit Testing', function () {
         done()
       })
     })
+    it('should handle error protocol message correctly', function () {
+      helper.load(testGetterNodes, testFlows.testGetterNodeFlowExample, function () {
+        const modbusWriteNode = helper.getNode('09f8f0e2049ace2d')
+        modbusWriteNode.showErrors = true
+        const msg = {
+          payload: {
+            value: 'payloadValue'
+          }
+        }
+        const err = new Error('test error')
+
+        sinon.stub(mbBasics, 'logMsgError').returns()
+
+        modbusWriteNode.errorProtocolMsg(err, msg)
+
+        sinon.assert.calledOnce(mbBasics.logMsgError)
+        sinon.assert.calledWith(mbBasics.logMsgError, modbusWriteNode, err, msg)
+
+        sinon.restore()
+      })
+    })
+
+    it('should build new message object correctly', function (done) {
+      helper.load(testGetterNodes, testFlows.testGetterNodeFlowExample, function () {
+        const modbusWriteNode = helper.getNode('09f8f0e2049ace2d')
+        const msg = {
+          topic: 'topic',
+          payload: {
+            value: 'payloadValue'
+          }
+        }
+
+        const newMsg = modbusWriteNode.buildNewMessageObject(modbusWriteNode, msg)
+        expect(newMsg.topic).to.equal('topic')
+        expect(newMsg.payload.value).to.equal('payloadValue')
+        expect(newMsg.payload.fc).to.equal(3)
+        expect(newMsg.payload.address).to.equal('1')
+        expect(newMsg.payload.quantity).to.equal('10')
+        done()
+      })
+    })
+
     it('should handle onModbusCommandDone correctly', function (done) {
       helper.load(testGetterNodes, testFlows.testGetterNodeFlowExample, function () {
         const modbusWriteNode = helper.getNode('09f8f0e2049ace2d')
+        modbusWriteNode.showStatusActivities = true
         const emitSpy = sinon.spy(modbusWriteNode, 'emit')
-
         const resp = { data: [1, 2, 3, 4] }
         const msg = { payload: 'test payload' }
         modbusWriteNode.onModbusCommandDone(resp, msg)
