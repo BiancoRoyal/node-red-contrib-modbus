@@ -41,7 +41,6 @@ module.exports = function (RED) {
     function setLineReaderEvents () {
       node.lineReader.removeAllListeners()
 
-      /* istanbul ignore next */
       node.lineReader.on('error', function (err) {
         coreIO.internalDebug(err.message)
       })
