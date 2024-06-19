@@ -1,8 +1,117 @@
 const helperExtensions = require('../../helper/test-helper-extensions')
 
 module.exports = {
-
-  testSimpleWriteFlow: helperExtensions.cleanFlowPositionData([
+  testWriteExampleFlow: helperExtensions.cleanFlowPositionData(
+    [
+      {
+          "id": "4cadf3686ac42701",
+          "type": "tab",
+          "label": "Test Simple Write Flow",
+          "disabled": false,
+          "info": "",
+          "env": []
+      },
+      {
+          "id": "e71050e54fc87ddf",
+          "type": "modbus-write",
+          "z": "4cadf3686ac42701",
+          "name": "modbus write",
+          "showStatusActivities": false,
+          "showErrors": false,
+          "showWarnings": true,
+          "unitid": "1",
+          "dataType": "HoldingRegister",
+          "adr": "1",
+          "quantity": "1",
+          "server": "80aeec4c.0cb9e8",
+          "emptyMsgOnFail": false,
+          "keepMsgProperties": false,
+          "delayOnStart": false,
+          "startDelayTime": "",
+          "x": 300,
+          "y": 400,
+          "wires": [
+              [],
+              [
+                  "0a7f4fd9f16e6f09"
+              ]
+          ]
+      },
+      {
+          "id": "0a7f4fd9f16e6f09",
+          "type": "helper",
+          "z": "4cadf3686ac42701",
+          "name": "helper 3",
+          "active": true,
+          "tosidebar": true,
+          "console": false,
+          "tostatus": false,
+          "complete": "false",
+          "statusVal": "",
+          "statusType": "auto",
+          "x": 640,
+          "y": 460,
+          "wires": []
+      },
+      {
+          "id": "1f8a88af7698afee",
+          "type": "modbus-server",
+          "z": "4cadf3686ac42701",
+          "name": "modbus server",
+          "logEnabled": false,
+          "hostname": "127.0.0.1",
+          "serverPort": "7580",
+          "responseDelay": 100,
+          "delayUnit": "ms",
+          "coilsBufferSize": 10000,
+          "holdingBufferSize": 10000,
+          "inputBufferSize": 10000,
+          "discreteBufferSize": 10000,
+          "showErrors": false,
+          "x": 280,
+          "y": 300,
+          "wires": [
+              [],
+              [],
+              [],
+              [],
+              []
+          ]
+      },
+      {
+          "id": "80aeec4c.0cb9e8",
+          "type": "modbus-client",
+          "name": "Modbus Server",
+          "clienttype": "tcp",
+          "bufferCommands": true,
+          "stateLogEnabled": false,
+          "queueLogEnabled": false,
+          "failureLogEnabled": false,
+          "tcpHost": "127.0.0.1",
+          "tcpPort": "7580",
+          "tcpType": "DEFAULT",
+          "serialPort": "/dev/ttyUSB",
+          "serialType": "RTU-BUFFERD",
+          "serialBaudrate": "9600",
+          "serialDatabits": "8",
+          "serialStopbits": "1",
+          "serialParity": "none",
+          "serialConnectionDelay": "100",
+          "serialAsciiResponseStartDelimiter": "",
+          "unit_id": "1",
+          "commandDelay": "1",
+          "clientTimeout": "100",
+          "reconnectOnTimeout": false,
+          "reconnectTimeout": "200",
+          "parallelUnitIdsAllowed": true,
+          "showErrors": false,
+          "showWarnings": true,
+          "showLogs": true
+      }
+  ]
+  ),
+  testSimpleWriteFlow: helperExtensions.cleanFlowPositionData(
+    [
     {
       id: '4cadf3686ac42701',
       type: 'tab',

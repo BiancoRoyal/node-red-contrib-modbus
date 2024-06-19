@@ -73,7 +73,7 @@
     "test:withStop": "npm run lint && mocha ./test --recursive --bail",
     "lint": "standard --fix",
     "test:e2e": "npm run lint && mocha './test/units/modbus-write-e2e-test.js' --parallel --recursive --reporter dot --timeout 100000",
-    "test:units": "npm run lint && mocha './test/units/modbus-flex-write-test.js' --parallel --recursive",
+    "test:units": "npm run lint && mocha './test/units/modbus-write-test.js' --parallel --recursive",
     "test:core": "npm run lint && mocha './test/core/*-test.js' --parallel --recursive",
     "test-nyc": "nyc --reporter=html --reporter=text mocha --recursive",
     "test-npx": "npx nyc@latest --reporter=html --reporter=text mocha ./test --parallel --recursive --reporter dot --timeout 10000",

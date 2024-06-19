@@ -15,9 +15,10 @@ const injectNode = require('@node-red/nodes/core/common/20-inject.js')
 const clientNode = require('../../src/modbus-client.js')
 const serverNode = require('../../src/modbus-server.js')
 const nodeUnderTest = require('../../src/modbus-write.js')
-
+const sinon = require('sinon')
 const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
+const expect = require('chai').expect
 
 const testSimpleWriteParametersNodes = [injectNode, clientNode, serverNode, nodeUnderTest]
 
@@ -45,6 +46,51 @@ describe('Write node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should update status, send message, and emit event on successful write', function (done) {
+      helper.load(testSimpleWriteParametersNodes, testFlows.testWriteExampleFlow, function () {
+        const modbusWriteNode = helper.getNode('e71050e54fc87ddf')
+        const emitSpy = sinon.spy(modbusWriteNode, 'emit')
+
+        const resp = { value: 'response' }
+        const msg = { payload: 'request' }
+
+        modbusWriteNode.onModbusWriteDone(resp, msg)
+
+        sinon.assert.calledOnce(emitSpy)
+        sinon.assert.calledWithExactly(emitSpy, 'modbusWriteNodeDone')
+
+        done()
+      })
+    })
+    it('should handle comma-separated string values correctly', function (done) {
+      helper.load(testSimpleWriteParametersNodes, testFlows.testWriteExampleFlow, function () {
+        const modbusWriteNode = helper.getNode('e71050e54fc87ddf')
+
+        const msg = {
+          payload: {
+            value: '{ "name": "John", "age": 30, "city": "New York" }'
+          }
+        }
+        const processedMsg = modbusWriteNode.setMsgPayloadFromHTTPRequests(msg)
+        setTimeout(function () {
+          expect(processedMsg).to.equal(msg)
+          done()
+        }, 0)
+      })
+    })
+    it('should handle boolean string values correctly', function (done) {
+      helper.load(testSimpleWriteParametersNodes, testFlows.testWriteExampleFlow, function () {
+        const modbusWriteNode = helper.getNode('e71050e54fc87ddf')
+
+        const msg = { payload: { value: 'false' } }
+        const processedMsg = modbusWriteNode.setMsgPayloadFromHTTPRequests(msg)
+        setTimeout(function () {
+          expect(processedMsg.payload.value).to.equal(false)
+          done()
+        }, 0)
+      })
+    })
+
     it('simple Node should be loaded without client config', function (done) {
       helper.load(testSimpleWriteParametersNodes, testFlows.testWriteFlow, function () {
         const inject = helper.getNode('67dded7e.025904')
