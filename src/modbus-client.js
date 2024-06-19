@@ -376,9 +376,7 @@ module.exports = function (RED) {
                     return false
                   })
             }
-          }
-          /* istanbul ignore next */
-          catch (e) {
+          } /* istanbul ignore next */ catch (e) {
             node.modbusTcpErrorHandling(e)
             return false
           }
@@ -443,16 +441,12 @@ module.exports = function (RED) {
                   })
                 break
             }
-          }
-          /* istanbul ignore next */
-          catch (e) {
+          } /* istanbul ignore next */ catch (e) {
             node.modbusSerialErrorHandling(e)
             return false
           }
         }
-      }
-      /* istanbul ignore next */
-      catch (err) {
+      } /* istanbul ignore next */ catch (err) {
         node.modbusErrorHandling(err)
         return false
       }
@@ -730,9 +724,8 @@ module.exports = function (RED) {
         } else {
           node.closeConnectionWithoutRegisteredNodes(clientUserNodeId, done)
         }
-      }
-      /* istanbul ignore next */
-      catch (err) {
+      } catch (err) {
+        /* istanbul ignore next */
         verboseWarn(err.message + ' on de-register node ' + clientUserNodeId)
         node.error(err)
         done()

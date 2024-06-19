@@ -1,7 +1,140 @@
 const helperExtensions = require('../../helper/test-helper-extensions')
 
 module.exports = {
-
+  testModbusFlexWriteFlow: helperExtensions.cleanFlowPositionData(
+    [
+      {
+          "id": "19c155142e97db4c",
+          "type": "tab",
+          "label": "Flow 1",
+          "disabled": false,
+          "info": "",
+          "env": []
+      },
+      {
+          "id": "62f832b5f8ad8fbd",
+          "type": "modbus-server",
+          "z": "19c155142e97db4c",
+          "name": "modbus-server",
+          "logEnabled": false,
+          "hostname": "127.0.0.1",
+          "serverPort": "7579",
+          "responseDelay": 100,
+          "delayUnit": "ms",
+          "coilsBufferSize": 10000,
+          "holdingBufferSize": 10000,
+          "inputBufferSize": 10000,
+          "discreteBufferSize": 10000,
+          "showErrors": false,
+          "x": 560,
+          "y": 260,
+          "wires": [
+              [],
+              [],
+              [],
+              [],
+              []
+          ]
+      },
+      {
+          "id": "197f2c45eda0f469",
+          "type": "inject",
+          "z": "19c155142e97db4c",
+          "name": "",
+          "props": [
+              {
+                  "p": "payload"
+              },
+              {
+                  "p": "topic",
+                  "vt": "str"
+              }
+          ],
+          "repeat": "",
+          "crontab": "",
+          "once": false,
+          "onceDelay": 0.1,
+          "topic": "",
+          "payload": "{\"value\":\"msg.payload\",\"fc\":15,\"unitid\":1,\"address\":0,\"quantity\":10}",
+          "payloadType": "json",
+          "x": 250,
+          "y": 300,
+          "wires": [
+              [
+                  "dcb6fa4b3549ae4f"
+              ]
+          ]
+      },
+      {
+          "id": "dcb6fa4b3549ae4f",
+          "type": "modbus-flex-write",
+          "z": "19c155142e97db4c",
+          "name": "flex write",
+          "showStatusActivities": true,
+          "showErrors": false,
+          "showWarnings": true,
+          "server": "80aeec4c.0cb9e8",
+          "emptyMsgOnFail": false,
+          "keepMsgProperties": false,
+          "delayOnStart": false,
+          "startDelayTime": "",
+          "x": 400,
+          "y": 400,
+          "wires": [
+              [
+                  "acf8a55cbf80be59"
+              ],
+              []
+          ]
+      },
+      {
+          "id": "acf8a55cbf80be59",
+          "type": "helper",
+          "z": "19c155142e97db4c",
+          "name": "helper 2",
+          "active": true,
+          "tosidebar": true,
+          "console": false,
+          "tostatus": false,
+          "complete": "false",
+          "statusVal": "",
+          "statusType": "auto",
+          "x": 640,
+          "y": 400,
+          "wires": []
+      },
+      {
+          "id": "80aeec4c.0cb9e8",
+          "type": "modbus-client",
+          "name": "Modbus Server",
+          "clienttype": "tcp",
+          "bufferCommands": true,
+          "stateLogEnabled": false,
+          "queueLogEnabled": false,
+          "failureLogEnabled": false,
+          "tcpHost": "127.0.0.1",
+          "tcpPort": "7579",
+          "tcpType": "DEFAULT",
+          "serialPort": "/dev/ttyUSB",
+          "serialType": "RTU-BUFFERD",
+          "serialBaudrate": "9600",
+          "serialDatabits": "8",
+          "serialStopbits": "1",
+          "serialParity": "none",
+          "serialConnectionDelay": "100",
+          "serialAsciiResponseStartDelimiter": "",
+          "unit_id": 1,
+          "commandDelay": 1,
+          "clientTimeout": 100,
+          "reconnectOnTimeout": false,
+          "reconnectTimeout": 200,
+          "parallelUnitIdsAllowed": true,
+          "showErrors": false,
+          "showWarnings": true,
+          "showLogs": true
+      }
+  ]
+  ),
   testWriteParametersFlow: helperExtensions.cleanFlowPositionData(
     [
       {

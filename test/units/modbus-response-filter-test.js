@@ -18,6 +18,7 @@ const clientNode = require('../../src/modbus-client.js')
 const serverNode = require('../../src/modbus-server.js')
 const flexGetterNode = require('../../src/modbus-flex-getter.js')
 const sinon = require('sinon')
+const assert = require('assert')
 const testResponseFilterNodes = [functionNode, injectNode, nodeUnderTest, nodeIOConfig, clientNode, serverNode, flexGetterNode]
 const mbCore = require('../../src/core/modbus-core.js')
 const helper = require('node-red-node-test-helper')
@@ -105,7 +106,7 @@ describe('Response Filter node Testing', function () {
         const responseFilterNode = helper.getNode('e8041f6236cbaee4')
         const modbusIOFileValuNames = [{ name: 'newConfig' }]
         responseFilterNode.ioFile.emit('updatedConfig', modbusIOFileValuNames)
-        expect(modbusIOFileValuNames).to.deep.equal([{ name: 'newConfig' }])
+        assert.deepStrictEqual(modbusIOFileValuNames, [{ name: 'newConfig' }])
 
         done()
       })

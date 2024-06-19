@@ -16,7 +16,7 @@ const functionNode = require('@node-red/nodes/core/function/10-function.js')
 const clientNode = require('../../src/modbus-client.js')
 const serverNode = require('../../src/modbus-server.js')
 const nodeUnderTest = require('../../src/modbus-flex-write.js')
-
+const sinon = require('sinon')
 const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
@@ -49,6 +49,20 @@ describe('Flex Write node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should update status, send message, and emit event', function (done) {
+      helper.load(testWriteParametersNodes, testFlows.testModbusFlexWriteFlow, function () {
+        const modbusFlexWrite = helper.getNode('dcb6fa4b3549ae4f')
+        const resp = { value: 'response' }
+        const msg = { payload: 'request' }
+        const emitSpy = sinon.spy(modbusFlexWrite, 'emit')
+
+        modbusFlexWrite.onModbusWriteDone(resp, msg)
+        sinon.assert.calledOnce(emitSpy)
+        emitSpy.restore()
+
+        done()
+      })
+    })
     it('simple Node should be loaded without client config', function (done) {
       helper.load(testWriteParametersNodes, testFlows.testShouldBeLoadedWithoutClientFlow, function () {
         const modbusFlexWrite = helper.getNode('c02b6d1.d419c1')
