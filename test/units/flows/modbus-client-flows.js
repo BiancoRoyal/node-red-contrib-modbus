@@ -65,8 +65,8 @@ module.exports = {
                 "name": "Modbus Server",
                 "clienttype": "simpleser",
                 "bufferCommands": true,
-                "stateLogEnabled": false,
-                "queueLogEnabled": false,
+                "stateLogEnabled": true,
+                "queueLogEnabled": true,
                 "failureLogEnabled": true,
                 "tcpHost": "127.0.0.1",
                 "tcpPort": "10512",
@@ -85,7 +85,7 @@ module.exports = {
                 "reconnectOnTimeout": true,
                 "reconnectTimeout": "2000",
                 "parallelUnitIdsAllowed": true,
-                "showErrors": false,
+                "showErrors": true,
                 "showWarnings": true,
                 "showLogs": true
             }

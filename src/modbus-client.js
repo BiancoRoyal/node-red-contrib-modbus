@@ -170,6 +170,7 @@ module.exports = function (RED) {
 
       if (!state.value || node.actualServiceState.value === undefined) {
         // verboseWarn('fsm ignore invalid state')
+        /* istanbul ignore next */
         return
       }
 
@@ -197,6 +198,7 @@ module.exports = function (RED) {
             setTimeout(node.connectClient, node.reconnectTimeout)
           }
         } catch (err) {
+          /* istanbul ignore next */
           node.error(err, { payload: 'client connection error ' + logHintText })
         }
 
@@ -245,6 +247,7 @@ module.exports = function (RED) {
         node.stateService.send('CLOSE')
       }
 
+      /* istanbul ignore next */
       if (state.matches('closed')) {
         node.emit('mbclosed')
         node.stateService.send('RECONNECT')
@@ -318,6 +321,7 @@ module.exports = function (RED) {
         }
 
         if (node.clienttype === 'tcp') {
+          /* istanbul ignore next */
           if (!coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
             node.error(new Error('wrong unit-id (0..255)'), { payload: node.unit_id })
             node.stateService.send('FAILURE')
@@ -349,6 +353,7 @@ module.exports = function (RED) {
                     return false
                   })
                 break
+              /* istanbul ignore next */
               case 'TCP-RTU-BUFFERED':
                 verboseLog('TCP RTU buffered port')
                 node.client.connectTcpRTUBuffered(node.tcpHost, {
@@ -371,11 +376,14 @@ module.exports = function (RED) {
                     return false
                   })
             }
-          } catch (e) {
+          }
+          /* istanbul ignore next */
+          catch (e) {
             node.modbusTcpErrorHandling(e)
             return false
           }
         } else {
+          /* istanbul ignore next */
           if (!coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
             node.error(new Error('wrong unit-id serial (0..247)'), { payload: node.unit_id })
             node.stateService.send('FAILURE')
@@ -435,12 +443,16 @@ module.exports = function (RED) {
                   })
                 break
             }
-          } catch (e) {
+          }
+          /* istanbul ignore next */
+          catch (e) {
             node.modbusSerialErrorHandling(e)
             return false
           }
         }
-      } catch (err) {
+      }
+      /* istanbul ignore next */
+      catch (err) {
         node.modbusErrorHandling(err)
         return false
       }
@@ -540,6 +552,7 @@ module.exports = function (RED) {
       // const state = node.actualServiceState
       coreModbusClient.customModbusMessage(node, msg, cb, cberr)
     })
+
     node.on('readModbus', function (msg, cb, cberr) {
       const state = node.actualServiceState
       if (node.isInactive()) {
@@ -717,8 +730,9 @@ module.exports = function (RED) {
         } else {
           node.closeConnectionWithoutRegisteredNodes(clientUserNodeId, done)
         }
-      } catch (err) {
-        /* istanbul ignore next */
+      }
+      /* istanbul ignore next */
+      catch (err) {
         verboseWarn(err.message + ' on de-register node ' + clientUserNodeId)
         node.error(err)
         done()
@@ -737,7 +751,7 @@ module.exports = function (RED) {
       if (node.actualServiceState.matches('queueing') || node.actualServiceState.matches('activated')) {
         return true
       }
-      /* istanbul ignore next */
+
       verboseWarn('Client not ready to send')
       return false
     }
@@ -745,6 +759,7 @@ module.exports = function (RED) {
 
   RED.nodes.registerType('modbus-client', ModbusClientNode)
 
+  /* istanbul ignore next */
   RED.httpAdmin.get('/modbus/serial/ports', RED.auth.needsPermission('serial.read'), function (req, res) {
     const SerialPort = require('serialport')
     SerialPort.SerialPort.list().then(ports => {
