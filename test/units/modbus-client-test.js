@@ -46,6 +46,19 @@ describe('Client node Unit Testing', function () {
   })
 
   describe('Node', function () {
+    it('should handle error and log warning on deregister node for modbus', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
+        const modbusClientNode = helper.getNode('3')
+        const clientUserNodeId = 'clientUserNodeId'
+        modbusClientNode.registeredNodeList[clientUserNodeId] = true
+        const error = new Error('Error on deregister node')
+        sinon.stub(modbusClientNode, 'closeConnectionWithoutRegisteredNodes').throws(error)
+
+        modbusClientNode.deregisterForModbus(clientUserNodeId, function () {
+          done()
+        })
+      })
+    })
     it('should handle error without a message in modbusSerialErrorHandling and log JSON stringified error', function (done) {
       helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
         const modbusClientNode = helper.getNode('3')
@@ -118,29 +131,6 @@ describe('Client node Unit Testing', function () {
         done()
       })
     })
-
-    // it('should call node.error and done when an error occurs', function (done) {
-    //   helper.load(testModbusClientNodes, testFlows.testClientFlow, function () {
-    //     const modbusClientNode = helper.getNode('3');
-    //     const clientUserNodeId = 'testNodeId';
-    //     const expectedError = new Error('Simulated error during deregistration');
-    //     const node = {
-    //       registeredNodeList: {
-    //         [clientUserNodeId]: {}
-    //       },
-    //       closingModbus: false,
-    //       closeConnectionWithoutRegisteredNodes: sinon.stub().callsFake((nodeId, callback) => {
-    //         callback(expectedError);
-    //       }),
-    //       emit: sinon.stub(),
-    //       error: sinon.stub(),
-    //     };
-    //     modbusClientNode.deregisterForModbus(clientUserNodeId, function (err) {
-    //       assert.equal(err, undefined);
-    //       done();
-    //     });
-    //   });
-    // });
 
     it('should call closeConnectionWithoutRegisteredNodes when closingModbus is false', function (done) {
       helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
