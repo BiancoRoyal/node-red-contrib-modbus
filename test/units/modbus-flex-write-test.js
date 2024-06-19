@@ -49,6 +49,47 @@ describe('Flex Write node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should log error message when showErrors is true', function (done) {
+      const msg = {
+        payload: 'test payload'
+      }
+
+      const err = new Error('Test error')
+
+      const logMsgErrorSpy = sinon.spy(mBasics, 'logMsgError')
+
+      helper.load(testWriteParametersNodes, testFlows.testModbusFlexWriteFlow, function () {
+        const modbusFlexWrite = helper.getNode('dcb6fa4b3549ae4f')
+
+        modbusFlexWrite.showErrors = true
+
+        modbusFlexWrite.errorProtocolMsg(err, msg)
+        sinon.assert.calledOnce(logMsgErrorSpy)
+
+        sinon.assert.calledWith(logMsgErrorSpy, modbusFlexWrite, err, msg)
+
+        logMsgErrorSpy.restore()
+        done()
+      })
+    })
+    it('should handle Modbus write error', function (done) {
+      const err = new Error('Test Modbus write error')
+      const msg = {
+        payload: 'test payload'
+      }
+
+      helper.load(testWriteParametersNodes, testFlows.testModbusFlexWriteFlow, function () {
+        const modbusFlexWrite = helper.getNode('dcb6fa4b3549ae4f')
+        const emitSpy = sinon.spy(modbusFlexWrite, 'emit')
+
+        modbusFlexWrite.onModbusWriteError(err, msg)
+        sinon.assert.calledOnce(emitSpy)
+        sinon.assert.calledWith(emitSpy, 'modbusFlexWriteNodeError')
+
+        emitSpy.restore()
+        done()
+      })
+    })
     it('should update status, send message, and emit event', function (done) {
       helper.load(testWriteParametersNodes, testFlows.testModbusFlexWriteFlow, function () {
         const modbusFlexWrite = helper.getNode('dcb6fa4b3549ae4f')
