@@ -47,6 +47,44 @@ describe('Flex Getter node Testing', function () {
       done()
     })
   })
+  describe('unique Port', function () {
+    it('should inject 5 messages but only use one to test initial delay', function (done) {
+      const flow = Array.from(testFlows.testFlexGetterWithInjectAndDelayFlow)
+      getPort().then((port) => {
+        flow[8].serverPort = port
+        flow[12].tcpPort = port
+        helper.load(testFlexGetterNodes, flow, function () {
+          const getterNode = helper.getNode('823b8c53.ee14b8')
+          const helperNode = helper.getNode('23156c303a59c400')
+          let getterCounter = 0
+          let helperCounter = 0
+          let startingTimestamp = null
+          let endTimestamp = null
+
+          getterNode.on('input', () => {
+            getterCounter++
+
+            if (getterCounter === 1) {
+              startingTimestamp = Date.now()
+            } else if (getterCounter === 5) {
+              endTimestamp = Date.now()
+            }
+          })
+
+          helperNode.on('input', () => {
+            helperCounter++
+
+            const difBetweenTimestamps = endTimestamp - startingTimestamp
+            getterCounter.should.be.eql(5) // we want to see 5 msgs on the getter before
+            helperCounter.should.be.greaterThanOrEqual(1)
+            difBetweenTimestamps.should.be.greaterThanOrEqual(3000)
+
+            done()
+          })
+        })
+      })
+    })
+  })
 
   describe('Node', function () {
     it('simple Node should be loaded without client config', function (done) {
@@ -272,44 +310,6 @@ describe('Flex Getter node Testing', function () {
         })
       })
     })
-
-    it('should inject 5 messages but only use one to test initial delay', function (done) {
-      const flow = Array.from(testFlows.testFlexGetterWithInjectAndDelayFlow)
-      getPort().then((port) => {
-        flow[8].serverPort = port
-        flow[12].tcpPort = port
-        helper.load(testFlexGetterNodes, flow, function () {
-          const getterNode = helper.getNode('823b8c53.ee14b8')
-          const helperNode = helper.getNode('23156c303a59c400')
-          let getterCounter = 0
-          let helperCounter = 0
-          let startingTimestamp = null
-          let endTimestamp = null
-
-          getterNode.on('input', () => {
-            getterCounter++
-
-            if (getterCounter === 1) {
-              startingTimestamp = Date.now()
-            } else if (getterCounter === 5) {
-              endTimestamp = Date.now()
-            }
-          })
-
-          helperNode.on('input', () => {
-            helperCounter++
-
-            const difBetweenTimestamps = endTimestamp - startingTimestamp
-            getterCounter.should.be.eql(5) // we want to see 5 msgs on the getter before
-            helperCounter.should.be.greaterThanOrEqual(1)
-            difBetweenTimestamps.should.be.greaterThanOrEqual(3000)
-
-            done()
-          })
-        })
-      })
-    })
-
     it('should handle null or undefined input message', function (done) {
       const flow = Array.from(testFlows.testFlexGetterFlow)
 

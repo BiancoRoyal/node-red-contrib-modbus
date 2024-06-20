@@ -110,11 +110,9 @@ describe('Client node Unit Testing', function () {
 
       it('should work with simple read on local server', function (done) {
         const flow = Array.from(testFlows.testSimpleReadWithClientFlow)
-
         getPort().then((port) => {
           flow[1].serverPort = port
           flow[5].tcpPort = port
-
           helper.load(testModbusClientNodes, flow, function () {
             const h1 = helper.getNode('h1')
             let counter = 0
