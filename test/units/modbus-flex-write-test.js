@@ -62,6 +62,7 @@ describe('Flex Write node Testing', function () {
         done()
       })
     })
+
     it('should parse comma-separated string into array', function (done) {
       const msg = {
         payload: {
@@ -79,6 +80,7 @@ describe('Flex Write node Testing', function () {
         }, 0)
       })
     })
+
     it('should log error message when showErrors is true', function (done) {
       const msg = {
         payload: 'test payload'
@@ -102,6 +104,7 @@ describe('Flex Write node Testing', function () {
         done()
       })
     })
+
     it('should handle Modbus write error', function (done) {
       const err = new Error('Test Modbus write error')
       const msg = {
@@ -120,6 +123,7 @@ describe('Flex Write node Testing', function () {
         done()
       })
     })
+
     it('should update status, send message, and emit event', function (done) {
       helper.load(testWriteParametersNodes, testFlows.testModbusFlexWriteFlow, function () {
         const modbusFlexWrite = helper.getNode('dcb6fa4b3549ae4f')
@@ -134,6 +138,7 @@ describe('Flex Write node Testing', function () {
         done()
       })
     })
+
     it('simple Node should be loaded without client config', function (done) {
       helper.load(testWriteParametersNodes, testFlows.testShouldBeLoadedWithoutClientFlow, function () {
         const modbusFlexWrite = helper.getNode('c02b6d1.d419c1')

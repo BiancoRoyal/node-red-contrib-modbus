@@ -81,6 +81,7 @@ describe('Server node Testing', function () {
         done()
       })
     })
+
     it('should set node status to active on client connection', function () {
       helper.load(testServerNodes, testFlows.testServerConfig, function () {
         const modbusServer = helper.getNode('249922d5ac72b8cd')
@@ -89,6 +90,7 @@ describe('Server node Testing', function () {
         sinon.assert.calledWith(modbusServer.status, { fill: 'yellow', shape: 'dot', text: 'initialized' })
       })
     })
+
     it('should set responseDelay, delayUnit, showStatusActivities, and coilsBufferSize correctly', function (done) {
       helper.load(testServerNodes, testFlows.testServerConfig, function () {
         const modbusServer = helper.getNode('249922d5ac72b8cd')
@@ -165,6 +167,7 @@ describe('Server node Testing', function () {
         done()
       })
     })
+
     it('simple Node should be loaded', function (done) {
       helper.load(testServerNodes, testFlows.testSimpleNodeShouldBeLoadedFlow, function () {
         const modbusServer = helper.getNode('178284ea.5055ab')

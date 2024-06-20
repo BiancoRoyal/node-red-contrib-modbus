@@ -91,6 +91,7 @@ describe('Queue Info node Testing', function () {
         done()
       })
     })
+
     it('should warn when high level queue threshold is reached and errorOnHighLevel is false', function (done) {
       helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusQueueInfoNode = helper.getNode('ef5dad20.e97af')
@@ -120,6 +121,7 @@ describe('Queue Info node Testing', function () {
         done()
       })
     })
+
     it('should handle showStatusActivities false condition', function (done) {
       helper.load(testQueueInfoNodes, testFlows.testForshowStatusActivitiesIsFalse, function () {
         const setNodeDefaultStatusStub = sinon.stub(mbBasics, 'setNodeDefaultStatus')
@@ -144,6 +146,7 @@ describe('Queue Info node Testing', function () {
         done()
       })
     })
+
     it('should handle errors in readFromAllUnitQueues when bufferCommands is false', function (done) {
       helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusQueueInfoNode = helper.getNode('ef5dad20.e97af')
@@ -158,6 +161,7 @@ describe('Queue Info node Testing', function () {
         done()
       })
     })
+
     it('should return if no server is available', function (done) {
       helper.load(testQueueInfoNodes, testFlows.testWithNoServer, function () {
         const modbusQueueInfoNode = helper.getNode('ef5dad20.e97af')
@@ -168,6 +172,7 @@ describe('Queue Info node Testing', function () {
         done()
       })
     })
+
     it('should handle errors correctly based on showErrors flag', function (done) {
       helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
         const error = new Error('Test Error')
@@ -178,6 +183,7 @@ describe('Queue Info node Testing', function () {
         done()
       })
     })
+
     it('simple Node should be loaded', function (done) {
       helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusServer = helper.getNode('389153e.cb648ac')
@@ -192,8 +198,8 @@ describe('Queue Info node Testing', function () {
         done()
       })
     })
-    // TO BE FIXED
 
+    // TO BE FIXED
     // it('should call checkQueueStates and setNodeStatusByActivity in readFromQueue', function (done) {
     //   helper.load(testQueueInfoNodes, testFlows.testbufferCommandsTrue, async () => {
     //     const modbusQueueInfoNode = helper.getNode('1b72b5d207427b00')

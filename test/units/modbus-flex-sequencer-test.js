@@ -253,99 +253,99 @@ describe('Flex Sequencer node Testing', function () {
         done()
       })
     })
-  })
 
-  it('should build a new message object correctly', function (done) {
-    helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
-      const flexSequencer = helper.getNode('bc5a61b6.a3972')
+    it('should build a new message object correctly', function (done) {
+      helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
+        const flexSequencer = helper.getNode('bc5a61b6.a3972')
 
-      const msg = {
-        topic: 'test-topic',
-        name: 'test-name',
-        unitid: 1,
-        fc: 3,
-        address: 100,
-        quantity: 10
-      }
+        const msg = {
+          topic: 'test-topic',
+          name: 'test-name',
+          unitid: 1,
+          fc: 3,
+          address: 100,
+          quantity: 10
+        }
 
-      const newMessageObject = flexSequencer.buildNewMessageObject(flexSequencer, msg)
+        const newMessageObject = flexSequencer.buildNewMessageObject(flexSequencer, msg)
 
-      newMessageObject.should.have.property('topic', 'test-topic')
-      newMessageObject.should.have.property('messageId')
-      newMessageObject.payload.should.have.property('name', 'test-name')
-      newMessageObject.payload.should.have.property('unitid', 1)
-      newMessageObject.payload.should.have.property('fc', 3)
-      newMessageObject.payload.should.have.property('address', 100)
-      newMessageObject.payload.should.have.property('quantity', 10)
-      newMessageObject.payload.should.have.property('emptyMsgOnFail', false)
-      newMessageObject.payload.should.have.property('keepMsgProperties', false)
-      newMessageObject.payload.should.have.property('messageId', newMessageObject.messageId)
+        newMessageObject.should.have.property('topic', 'test-topic')
+        newMessageObject.should.have.property('messageId')
+        newMessageObject.payload.should.have.property('name', 'test-name')
+        newMessageObject.payload.should.have.property('unitid', 1)
+        newMessageObject.payload.should.have.property('fc', 3)
+        newMessageObject.payload.should.have.property('address', 100)
+        newMessageObject.payload.should.have.property('quantity', 10)
+        newMessageObject.payload.should.have.property('emptyMsgOnFail', false)
+        newMessageObject.payload.should.have.property('keepMsgProperties', false)
+        newMessageObject.payload.should.have.property('messageId', newMessageObject.messageId)
 
-      done()
+        done()
+      })
     })
-  })
 
-  // it('should handle invalid payload', function (done) {
-  //   helper.load(testFlexSequencerNodes, testFlows.testNodeWithInjectNodeFlow, function () {
-  //     const flexSequencerNode = helper.getNode('42c7ed2cf52e284e')
-  //     const invalidMsg = null
+    // it('should handle invalid payload', function (done) {
+    //   helper.load(testFlexSequencerNodes, testFlows.testNodeWithInjectNodeFlow, function () {
+    //     const flexSequencerNode = helper.getNode('42c7ed2cf52e284e')
+    //     const invalidMsg = null
 
-  //     flexSequencerNode.receive(invalidMsg)
+    //     flexSequencerNode.receive(invalidMsg)
 
-  //     setTimeout(() => {
-  //       helper.log().calledWith('Invalid message on input.').should.be.true()
-  //       done()
-  //     }, 100)
-  //   })
-  // })
+    //     setTimeout(() => {
+    //       helper.log().calledWith('Invalid message on input.').should.be.true()
+    //       done()
+    //     }, 100)
+    //   })
+    // })
 
-  // it('should handle not ready for input', function (done) {
-  //   helper.load(testFlexSequencerNodes, testFlows.testNodeWithInjectNodeFlow, function () {
-  //     const flexSequencerNode = helper.getNode('42c7ed2cf52e284e')
-  //     flexSequencerNode.delayOccured = false
-  //     const validMsg = { payload: { sequences: [] } }
+    // it('should handle not ready for input', function (done) {
+    //   helper.load(testFlexSequencerNodes, testFlows.testNodeWithInjectNodeFlow, function () {
+    //     const flexSequencerNode = helper.getNode('42c7ed2cf52e284e')
+    //     flexSequencerNode.delayOccured = false
+    //     const validMsg = { payload: { sequences: [] } }
 
-  //     flexSequencerNode.receive(validMsg)
+    //     flexSequencerNode.receive(validMsg)
 
-  //     setTimeout(() => {
-  //       helper.log().calledWith('Inject while node is not ready for input.').should.be.true()
-  //       done()
-  //     }, 100)
-  //   })
-  // })
+    //     setTimeout(() => {
+    //       helper.log().calledWith('Inject while node is not ready for input.').should.be.true()
+    //       done()
+    //     }, 100)
+    //   })
+    // })
 
-  it('should reset the input delay timer, log a warning, and set a timeout when delayOnStart is true', async function () {
-  //   await helper.load(testFlexSequencerNodes, testFlows.testNodeWithInjectNodeFlow)
-  //   const flexSequencerNode = helper.getNode('42c7ed2cf52e284e')
+    it('should reset the input delay timer, log a warning, and set a timeout when delayOnStart is true', async function () {
+      //   await helper.load(testFlexSequencerNodes, testFlows.testNodeWithInjectNodeFlow)
+      //   const flexSequencerNode = helper.getNode('42c7ed2cf52e284e')
 
-    //   flexSequencerNode.delayOnStart = true
-    //   flexSequencerNode.startDelayTime = 2
-    //   flexSequencerNode.id = 'test-flexSequencerNode-id'
+      //   flexSequencerNode.delayOnStart = true
+      //   flexSequencerNode.startDelayTime = 2
+      //   flexSequencerNode.id = 'test-flexSequencerNode-id'
 
-    //   const resetInputDelayTimerSpy = sinon.spy(flexSequencerNode, 'resetInputDelayTimer')
-    //   flexSequencerNode.verboseWarn = sinon.stub()
-    //   const verboseWarnSpy = flexSequencerNode.verboseWarn
+      //   const resetInputDelayTimerSpy = sinon.spy(flexSequencerNode, 'resetInputDelayTimer')
+      //   flexSequencerNode.verboseWarn = sinon.stub()
+      //   const verboseWarnSpy = flexSequencerNode.verboseWarn
 
-    //   await flexSequencerNode.initializeInputDelayTimer()
-    //   expect(resetInputDelayTimerSpy.calledOnce).to.be.true()
-    //   expect(verboseWarnSpy.calledOnceWithExactly('initialize input delay timer node test-flexSequencerNode-id')).to.be.false()
-    //   expect(flexSequencerNode.inputDelayTimer).to.be.an('object')
-    //   expect(flexSequencerNode.delayOccured).to.be.false()
+      //   await flexSequencerNode.initializeInputDelayTimer()
+      //   expect(resetInputDelayTimerSpy.calledOnce).to.be.true()
+      //   expect(verboseWarnSpy.calledOnceWithExactly('initialize input delay timer node test-flexSequencerNode-id')).to.be.false()
+      //   expect(flexSequencerNode.inputDelayTimer).to.be.an('object')
+      //   expect(flexSequencerNode.delayOccured).to.be.false()
 
-  //   resetInputDelayTimerSpy.restore()
-  })
+      //   resetInputDelayTimerSpy.restore()
+    })
 
-  it('should send a message with IO data and emit an event when Modbus read is done', function (done) {
-    helper.load(testFlexSequencerNodes, testFlows.testNodeWithInjectNodeFlow, function () {
-      const flexSequencerNode = helper.getNode('42c7ed2cf52e284e')
+    it('should send a message with IO data and emit an event when Modbus read is done', function (done) {
+      helper.load(testFlexSequencerNodes, testFlows.testNodeWithInjectNodeFlow, function () {
+        const flexSequencerNode = helper.getNode('42c7ed2cf52e284e')
 
-      const resp = { data: [1, 2, 3], someOtherData: 'test' }
-      const msg = { payload: 'test' }
-      const setNodeStatusToStub = sinon.stub(mBasics, 'setNodeStatusTo')
-      flexSequencerNode.onModbusReadDone(resp, msg)
-      sinon.assert.calledWith(setNodeStatusToStub, 'reading done', flexSequencerNode)
+        const resp = { data: [1, 2, 3], someOtherData: 'test' }
+        const msg = { payload: 'test' }
+        const setNodeStatusToStub = sinon.stub(mBasics, 'setNodeStatusTo')
+        flexSequencerNode.onModbusReadDone(resp, msg)
+        sinon.assert.calledWith(setNodeStatusToStub, 'reading done', flexSequencerNode)
 
-      done()
+        done()
+      })
     })
   })
 

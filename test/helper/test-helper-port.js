@@ -41,7 +41,7 @@ class PortHelper {
     if (this.startPort === 0 || this.startPort >= 45000 || this.startPort <= 20000) {
       this.init(20000, 45000)
     } else {
-      this.startPort = this.getRandomArbitrary(this.startPort + 1, 50000)
+      this.startPort = this.getRandomArbitrary(this.startPort + this.getRandomArbitrary(3, 12), 50000)
     }
 
     if (global.portList.includes(this.startPort)) {

@@ -46,6 +46,7 @@ describe('Client node Unit Testing', function () {
   })
 
   describe('Node', function () {
+
     describe('client node is Active', function () {
       it('should be active when it receives a message', function (done) {
         const flow = Array.from(testFlows.testSimpleReadWithClientFlow)
@@ -143,6 +144,7 @@ describe('Client node Unit Testing', function () {
         })
       })
     })
+
     it('should handle error and log warning on deregister node for modbus', function (done) {
       helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
         const modbusClientNode = helper.getNode('3')
@@ -156,6 +158,7 @@ describe('Client node Unit Testing', function () {
         })
       })
     })
+
     it('should handle error without a message in modbusSerialErrorHandling and log JSON stringified error', function (done) {
       helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
         const modbusClientNode = helper.getNode('3')
@@ -521,6 +524,7 @@ describe('Client node Unit Testing', function () {
         }, 1500)
       })
     })
+
     it('should be inactive when first loaded', function (done) {
       helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
         const modbusReadNode = helper.getNode('466860d5.3f6358')
@@ -896,12 +900,12 @@ describe('Client node Unit Testing', function () {
       })
     })
   })
-})
 
-describe('post', function () {
-  it('should fail for invalid node', function (done) {
-    helper.load(testModbusClientNodes, [], function () {
-      helper.request().post('/modbus-client/invalid').expect(404).end(done)
+  describe('post', function () {
+    it('should fail for invalid node', function (done) {
+      helper.load(testModbusClientNodes, [], function () {
+        helper.request().post('/modbus-client/invalid').expect(404).end(done)
+      })
     })
   })
 })

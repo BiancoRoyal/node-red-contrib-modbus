@@ -46,6 +46,7 @@ describe('Flex Connector node Unit Testing', function () {
   })
 
   describe('Node', function () {
+
     it('should be loaded', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusNode = helper.getNode('40ddaabb.fd44d4')

@@ -85,6 +85,7 @@ describe('Write node Testing', function () {
         done()
       })
     })
+
     it('should handle comma-separated string values correctly', function (done) {
       helper.load(testSimpleWriteParametersNodes, testFlows.testWriteExampleFlow, function () {
         const modbusWriteNode = helper.getNode('e71050e54fc87ddf')
@@ -101,6 +102,7 @@ describe('Write node Testing', function () {
         }, 0)
       })
     })
+
     it('should handle boolean string values correctly', function (done) {
       helper.load(testSimpleWriteParametersNodes, testFlows.testWriteExampleFlow, function () {
         const modbusWriteNode = helper.getNode('e71050e54fc87ddf')

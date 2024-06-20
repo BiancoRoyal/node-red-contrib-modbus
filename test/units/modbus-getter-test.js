@@ -27,7 +27,7 @@ const testFlows = require('./flows/modbus-getter-flows')
 const mbBasics = require('../../src/modbus-basics')
 const { getPort } = require('../helper/test-helper-extensions')
 const mBasics = require('../../src/modbus-basics')
-// const mbCore = require('../core/modbus-io-core-test.js')
+
 describe('Getter node Unit Testing', function () {
   before(function (done) {
     helper.startServer(function () {
@@ -50,7 +50,10 @@ describe('Getter node Unit Testing', function () {
   })
 
   describe('Node', function () {
-    let invalidPayloadInStub, isNotReadyForInputStub, isInactiveStub, setNodeStatusToSpy, buildNewMessageObjectStub, buildNewMessageStub, emitSpy, verboseWarnSpy
+    let invalidPayloadInStub, isNotReadyForInputStub,
+      isInactiveStub, setNodeStatusToSpy, buildNewMessageObjectStub,
+      buildNewMessageStub, emitSpy, verboseWarnSpy
+
     afterEach(function () {
       if (invalidPayloadInStub) invalidPayloadInStub.restore()
       if (isNotReadyForInputStub) isNotReadyForInputStub.restore()
@@ -87,6 +90,7 @@ describe('Getter node Unit Testing', function () {
         done()
       })
     })
+
     it('should handle error protocol message correctly', function () {
       helper.load(testGetterNodes, testFlows.testGetterNodeFlowExample, function () {
         const modbusWriteNode = helper.getNode('09f8f0e2049ace2d')
@@ -144,6 +148,7 @@ describe('Getter node Unit Testing', function () {
         done()
       })
     })
+
     it('should reset input delay timer correctly', function (done) {
       helper.load(testGetterNodes, testFlows.testInjectGetterWithClientFlow, function () {
         const modbusGetter = helper.getNode('cea01c8.36f8f6')
@@ -181,6 +186,7 @@ describe('Getter node Unit Testing', function () {
         done()
       })
     })
+
     it('simple Node should be loaded without client config', function (done) {
       helper.load(testGetterNodes, testFlows.testGetterWithoutClientConfigFlow, function () {
         const modbusGetter = helper.getNode('3ffe153acc21d72b')
