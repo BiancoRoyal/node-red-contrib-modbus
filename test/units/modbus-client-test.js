@@ -46,7 +46,6 @@ describe('Client node Unit Testing', function () {
   })
 
   describe('Node', function () {
-
     describe('client node is Active', function () {
       it('should be active when it receives a message', function (done) {
         const flow = Array.from(testFlows.testSimpleReadWithClientFlow)
