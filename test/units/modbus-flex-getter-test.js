@@ -275,11 +275,9 @@ describe('Flex Getter node Testing', function () {
 
     it('should inject 5 messages but only use one to test initial delay', function (done) {
       const flow = Array.from(testFlows.testFlexGetterWithInjectAndDelayFlow)
-
       getPort().then((port) => {
-        flow[9].serverPort = port
-        flow[10].tcpPort = port
-
+        flow[8].serverPort = port
+        flow[12].tcpPort = port
         helper.load(testFlexGetterNodes, flow, function () {
           const getterNode = helper.getNode('823b8c53.ee14b8')
           const helperNode = helper.getNode('23156c303a59c400')
