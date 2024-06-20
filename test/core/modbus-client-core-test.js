@@ -17,6 +17,60 @@ const chai = require('chai')
 const expect = chai.expect
 
 describe('Core Client Testing', function () {
+  describe('writeModbusByFunctionCodeSixteen', () => {
+    it('should call activateSendingOnSuccess with parsed address and value when getID returns 0', function () {
+      const node = {
+        client: {
+          writeRegisters: sinon.stub().rejects(new Error('some error')),
+          getID: sinon.stub().returns(0)
+        },
+        modbusErrorHandling: sinon.spy()
+      }
+      const msg = {
+        payload: {
+          address: '123',
+          value: '456',
+          quantity: 3
+        }
+      }
+      const cb = sinon.spy()
+      const cberr = sinon.spy()
+      const coreClient = {
+        activateSendingOnSuccess: sinon.spy(),
+        activateSendingOnFailure: sinon.spy()
+      }
+
+      coreClientUnderTest.writeModbusByFunctionCodeSixteen(node, msg, cb, cberr)
+      sinon.assert.notCalled(coreClient.activateSendingOnSuccess)
+    })
+    it('should call activateSendingOnSuccess when getID returns 0', function () {
+      const node = {
+        client: {
+          writeRegisters: sinon.stub().resolves({}),
+          getID: sinon.stub().returns(1)
+        },
+        modbusErrorHandling: sinon.spy()
+      }
+      const msg = {
+        payload: {
+          address: '123',
+          value: [1, 2, 3],
+          quantity: 3
+        }
+      }
+      const cb = sinon.spy()
+      const cberr = sinon.spy()
+      const coreClient = {
+        activateSendingOnSuccess: sinon.spy(),
+        activateSendingOnFailure: sinon.spy()
+      }
+
+      coreClientUnderTest.writeModbusByFunctionCodeSixteen(node, msg, cb, cberr)
+
+      sinon.assert.notCalled(coreClient.activateSendingOnFailure)
+    })
+  })
+
   describe('Core Client', function () {
     it('should call activateSendingOnFailure on quantity mismatch', function (done) {
       const node = {

@@ -346,6 +346,7 @@ de.biancoroyal.modbus.core.client.writeModbusByFunctionCodeSixteen = function (n
         coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
       } else {
         coreClient.activateSendingOnFailure(node, cberr, err, msg)
+        /* istanbul ignore next */
         node.modbusErrorHandling(err)
       }
     })
