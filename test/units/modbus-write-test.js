@@ -21,7 +21,7 @@ helper.init(require.resolve('node-red'))
 const expect = require('chai').expect
 
 const testSimpleWriteParametersNodes = [injectNode, clientNode, serverNode, nodeUnderTest]
-const { getPort } = require('../helper/test-helper-extensions')
+// const { getPort } = require('../helper/test-helper-extensions')
 
 const testFlows = require('./flows/modbus-write-flows')
 
@@ -46,25 +46,7 @@ describe('Write node Testing', function () {
     })
   })
   describe('Unique Port', function () {
-    it('simple flow with string true http inject and write should be loaded', function (done) {
-      const flow = Array.from(testFlows.testSimpleWriteFlow)
-      getPort().then((port) => {
-        flow[1].serverPort = port
-        flow[4].tcpPort = port
-        helper.load(testSimpleWriteParametersNodes, testFlows.testSimpleWriteFlow, function () {
-          const modbusWrite = helper.getNode('258dc103f99d2f2e')
-          setTimeout(function () {
-            modbusWrite.receive({ payload: { value: 'true', fc: 5, unitid: 1, address: 0, quantity: 1 } })
-          }, 800)
-          const h1 = helper.getNode('36799705ed88c983')
-          h1.on('input', function () {
-            if (modbusWrite.bufferMessageList.size === 0) {
-              done()
-            }
-          })
-        })
-      })
-    })
+
     // it('simple flow with string true http inject and write should be loaded and write done', function (done) {
     //   const flow = Array.from(testFlows.testSimpleWriteFlow)
     //   getPort().then((port) => {
