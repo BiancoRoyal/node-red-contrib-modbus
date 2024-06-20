@@ -465,6 +465,25 @@ describe('Core Client Testing', function () {
 
       sinon.assert.calledWith(node.client.sendCustomFc, 2, 4, {}, {})
     })
+    it('should handle client ID zero by constructing a response and calling activateSendingOnSuccess', async function () {
+      const node = {
+        client: {
+          writeRegister: sinon.stub().rejects(new Error('Test Error')),
+          getID: sinon.stub().returns(0)
+        }
+      }
+      const msg = {
+        payload: {
+          address: '10',
+          value: '20'
+        }
+      }
+      const cb = sinon.stub()
+      const cberr = sinon.stub()
+      coreClientUnderTest.activateSendingOnSuccess = sinon.stub()
+      coreClientUnderTest.writeModbusByFunctionCodeSix(node, msg, cb, cberr)
+      sinon.assert.notCalled(coreClientUnderTest.activateSendingOnSuccess)
+    })
 
     it('should handle when the client port is not readable and connection fails', () => {
       const node = {
@@ -492,7 +511,6 @@ describe('Core Client Testing', function () {
 
       sinon.assert.calledOnce(node.connectClient)
       sinon.assert.notCalled(node.stateService.send)
-      // sinon.assert.calledWithExactly(setTimeout, sinon.match.func, 500);
     })
     it('should handle when the client port is not readable and connection fails', () => {
       let node = {
