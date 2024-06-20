@@ -782,4 +782,34 @@ describe('Core Client Testing', function () {
       assert.strictEqual(node.commandDelay, 100)
     })
   })
+  describe('setNewSerialNodeSettings', function () {
+    it('should parse serialAsciiResponseStartDelimiter from hex string if provided', function () {
+      const node = {
+        serialAsciiResponseStartDelimiter: 0x00,
+        clienttype: 'someType'
+      }
+      const msg = {
+        payload: {
+          serialAsciiResponseStartDelimiter: '1A'
+        }
+      }
+      coreClientUnderTest.setNewSerialNodeSettings(node, msg)
+
+      expect(node.serialAsciiResponseStartDelimiter).to.equal(0x1A)
+    })
+    it('should set serialConnectionDelay if provided in msg.payload', function () {
+      const node = {
+        serialConnectionDelay: 1000,
+        clienttype: 'someType'
+      }
+      const msg = {
+        payload: {
+          serialConnectionDelay: 2000
+        }
+      }
+
+      coreClientUnderTest.setNewSerialNodeSettings(node, msg)
+      expect(node.serialConnectionDelay).to.equal(2000)
+    })
+  })
 })
