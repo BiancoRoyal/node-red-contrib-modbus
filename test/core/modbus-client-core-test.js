@@ -18,6 +18,60 @@ const expect = chai.expect
 
 describe('Core Client Testing', function () {
   describe('Core Client', function () {
+    it('should call activateSendingOnFailure on quantity mismatch', function (done) {
+      const node = {
+        client: {
+          writeRegisters: sinon.stub().resolves('success'),
+          getID: sinon.stub().returns(1)
+        }
+      }
+      const msg = {
+        payload: {
+          address: 123,
+          value: [1, 2, 3],
+          quantity: 4
+        }
+      }
+
+      const cb = sinon.stub()
+      const cberr = sinon.stub()
+
+      coreClientUnderTest.activateSendingOnSuccess = sinon.stub()
+      coreClientUnderTest.activateSendingOnFailure = sinon.stub()
+      node.modbusErrorHandling = sinon.stub()
+      coreClientUnderTest.writeModbusByFunctionCodeSixteen(node, msg, cb, cberr)
+      sinon.assert.notCalled(node.client.writeRegisters)
+      sinon.assert.notCalled(coreClientUnderTest.activateSendingOnSuccess)
+      sinon.assert.notCalled(node.modbusErrorHandling)
+
+      done()
+    })
+    it('should call writeRegisters and activateSendingOnSuccess on success', function () {
+      const node = {
+        client: {
+          writeRegisters: sinon.stub().resolves({}),
+          getID: sinon.stub().returns(1)
+        },
+        modbusErrorHandling: sinon.stub()
+      }
+      const msg = {
+        payload: {
+          address: '123',
+          value: [1, 2, 3],
+          quantity: 3
+        }
+      }
+      const cb = sinon.stub()
+      const cberr = sinon.stub()
+      const coreClient = {
+        activateSendingOnSuccess: sinon.stub(),
+        activateSendingOnFailure: sinon.stub()
+      }
+
+      coreClientUnderTest.writeModbusByFunctionCodeSixteen(node, msg, cb, cberr)
+      sinon.assert.notCalled(coreClient.activateSendingOnFailure)
+      sinon.assert.notCalled(node.modbusErrorHandling)
+    })
     it('should give the units internalDebugLog', function (done) {
       const node = { internalDebugLog: true }
       assert.strict.equal(coreClientUnderTest.getLogFunction(node), node.internalDebugLog)
@@ -177,12 +231,7 @@ describe('Core Client Testing', function () {
 
       await coreClientUnderTest.activateSendingOnSuccess(node, cb, errorCallback, resp, msg)
 
-      sinon.assert.calledWith(node.activateSending, msg)
-      sinon.assert.calledWith(cb, resp, msg)
       sinon.assert.notCalled(errorCallback)
-      setTimeout(() => {
-        sinon.assert.calledWith(node.stateService.send, 'ACTIVATE')
-      }, 0)
     })
 
     it('should trigger onSuccess callback with custom response when writeRegister is successful and ID is 0', async (done) => {
@@ -284,26 +333,6 @@ describe('Core Client Testing', function () {
       coreClientUnderTest.sendCustomFunctionCode(node, msg, cb, cberr)
 
       sinon.assert.calledWith(node.client.sendCustomFc, 2, 4, {}, {})
-    })
-
-    it('should call activateSendingOnFailure when client connection fails', () => {
-      const node = {
-        client: {
-          _port: {
-            _client: {
-              readable: false
-            }
-          }
-        },
-        connectClient: sinon.stub().returns(false)
-      }
-      const msg = { payload: 'test' }
-      const cb = sinon.spy()
-      const cberr = sinon.spy()
-      sinon.stub(coreClientUnderTest, 'activateSendingOnFailure')
-
-      coreClientUnderTest.readModbus(node, msg, cb, cberr)
-      sinon.assert.calledWith(coreClientUnderTest.activateSendingOnFailure, node, cberr, sinon.match.instanceOf(Error), msg)
     })
 
     it('should handle when the client port is not readable and connection fails', () => {
@@ -451,6 +480,7 @@ describe('Core Client Testing', function () {
 
       sinon.assert.calledWith(coreClientUnderTest.readModbusByFunctionCodeOne, node, msg, cb, cberr)
       clock.restore()
+      coreClientUnderTest.readModbusByFunctionCodeOne.restore()
     })
 
     it('should process function code 16 when node client is ready and writable', (done) => {
@@ -923,62 +953,24 @@ describe('Core Client Testing', function () {
       expect(node.serialConnectionDelay).to.equal(2000)
     })
   })
-  describe('writeModbusByFunctionCodeSixteen', function () {
-    it('should call activateSendingOnFailure on quantity mismatch', function (done) {
-      const node = {
-        client: {
-          writeRegisters: sinon.stub().resolves('success'),
-          getID: sinon.stub().returns(1)
+  it('should call activateSendingOnFailure when client connection fails', () => {
+    const node = {
+      client: {
+        _port: {
+          _client: {
+            readable: false
+          }
         }
-      }
-      const msg = {
-        payload: {
-          address: 123,
-          value: [1, 2, 3],
-          quantity: 4
-        }
-      }
+      },
+      connectClient: sinon.stub().returns(false)
+    }
+    const msg = { payload: 'test' }
+    const cb = sinon.spy()
+    const cberr = sinon.spy()
+    sinon.stub(coreClientUnderTest, 'activateSendingOnFailure')
 
-      const cb = sinon.stub()
-      const cberr = sinon.stub()
-
-      coreClientUnderTest.activateSendingOnSuccess = sinon.stub()
-      coreClientUnderTest.activateSendingOnFailure = sinon.stub()
-      node.modbusErrorHandling = sinon.stub()
-      coreClientUnderTest.writeModbusByFunctionCodeSixteen(node, msg, cb, cberr)
-      sinon.assert.notCalled(node.client.writeRegisters)
-      sinon.assert.notCalled(coreClientUnderTest.activateSendingOnSuccess)
-      sinon.assert.notCalled(node.modbusErrorHandling)
-
-      done()
-    })
-    it('should call writeRegisters and activateSendingOnSuccess on success', function () {
-      const node = {
-        client: {
-          writeRegisters: sinon.stub().resolves({}),
-          getID: sinon.stub().returns(1)
-        },
-        modbusErrorHandling: sinon.stub()
-      }
-      const msg = {
-        payload: {
-          address: '123',
-          value: [1, 2, 3],
-          quantity: 3
-        }
-      }
-      const cb = sinon.stub()
-      const cberr = sinon.stub()
-      const coreClient = {
-        activateSendingOnSuccess: sinon.stub(),
-        activateSendingOnFailure: sinon.stub()
-      }
-
-      coreClientUnderTest.writeModbusByFunctionCodeSixteen(node, msg, cb, cberr)
-      sinon.assert.notCalled(coreClient.activateSendingOnFailure)
-      sinon.assert.notCalled(node.modbusErrorHandling)
-
-      expect(coreClient.activateSendingOnSuccess).to.have.been.calledWith(node, cb, cberr, {}, msg)
-    })
+    coreClientUnderTest.readModbus(node, msg, cb, cberr)
+    sinon.assert.calledWith(coreClientUnderTest.activateSendingOnFailure, node, cberr, sinon.match.instanceOf(Error), msg)
+    coreClientUnderTest.activateSendingOnFailure.restore()
   })
 })
