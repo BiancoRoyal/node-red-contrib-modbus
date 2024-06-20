@@ -1,4 +1,4 @@
-# [5.40.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.2...v5.40.0) (2024-06-18)
+# [5.40.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.2...v5.40.0) (2024-06-20)
 
 
 ### Bug Fixes
@@ -11,6 +11,7 @@
 * **modbus-getter:** fixed test cases of modbus getter file ([693087b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/693087bf3c3a92fa52d82a802c7f561e5b980e65))
 * **modbus-io-core:** fixed error  RangeError [ERR_OUT_OF_RANGE]: ([ab932f3](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ab932f3de4a3c362f73ba701da9fd1b0964fb21e))
 * **modbus-read:** fixed test cases of modbus read file ([5c5879e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/5c5879ecb30ca05e61a66fbc8c1a20ee07bf8b8d))
+* **modbus:** added a new example flow and fixed test cases ([8181fd4](https://github.com/biancoroyal/node-red-contrib-modbus/commit/8181fd4f05abff6f57a7b4de636689e890cf0ea9))
 * **test_cases:** improved test cases ([bdafa18](https://github.com/biancoroyal/node-red-contrib-modbus/commit/bdafa18508069876ca522ace6e4a73be4c272c49))
 * **testcase:** fixed test case assertion ([803e7e0](https://github.com/biancoroyal/node-red-contrib-modbus/commit/803e7e08a53052f02ef6d0f4fa517353c228a88b))
 * **test:** fixed  test case for modbus read node ([8fb71e9](https://github.com/biancoroyal/node-red-contrib-modbus/commit/8fb71e9914ceb43249d16498054c5ed2a14cbd5a))

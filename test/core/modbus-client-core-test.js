@@ -163,16 +163,6 @@ describe('Core Client Testing', function () {
       assert.strict.equal(typeof stateMachine, 'object')
     })
 
-    it('should set clientTimeout if msg.payload.clientTimeout exists', function (done) {
-      const node = { clientTimeout: 1000 }
-      const msg = { payload: { clientTimeout: 2000 } }
-
-      coreClientUnderTest.setNewNodeOptionalSettings(node, msg)
-
-      assert.strict.equal(node.clientTimeout, 2000)
-      done()
-    })
-
     it('should call callback cb with resp and msg when activateSending resolves', async () => {
       const node = {
         activateSending: sinon.stub(),
@@ -607,16 +597,6 @@ describe('Core Client Testing', function () {
       done()
     })
 
-    it('should set commandDelay if msg.payload.commandDelay exists', function (done) {
-      const node = { commandDelay: 100 }
-      const msg = { payload: { commandDelay: 200 } }
-
-      coreClientUnderTest.setNewNodeOptionalSettings(node, msg)
-
-      assert.strict.equal(node.commandDelay, 200)
-      done()
-    })
-
     it('should return false and log an error when msg is null', () => {
       const node = {}
       const msg = null
@@ -644,19 +624,6 @@ describe('Core Client Testing', function () {
       done()
     })
 
-    it('should correctly parse and set unitId when provided with a valid integer', () => {
-      const node = { unit_id: 1, checkUnitId: sinon.spy() }
-      const msg = { payload: { unitId: '123' } }
-      const nodeLog = sinon.spy()
-
-      coreClientUnderTest.getLogFunction = sinon.stub().returns(nodeLog)
-
-      coreClientUnderTest.setNewNodeOptionalSettings(node, msg)
-
-      sinon.assert.calledWith(coreClientUnderTest.getLogFunction, node)
-      sinon.assert.calledWith(node.checkUnitId, 123, node.clienttype)
-    })
-
     // it('should call activateSendingOnSuccess when client ID is 0', async (done) => {
     //   const node = {
     //     client: {
@@ -673,66 +640,6 @@ describe('Core Client Testing', function () {
     //   expect(coreClientUnderTest.activateSendingOnFailure.calledOnceWith(node, cberr, sinon.match.instanceOf(Error).and(sinon.match.has('message', 'Write error')), msg)).to.be.false()
     //   done()
     // })
-
-    describe('setNewNodeOptionalSettings', function () {
-      it('should set unit_id to msg.payload.unitId if it is a valid unitId', function () {
-        const node = {
-          unit_id: 1,
-          clienttype: 'tcp',
-          checkUnitId: sinon.stub().returns(true)
-        }
-        const msg = {
-          payload: {
-            unitId: 2
-          }
-        }
-
-        coreClientUnderTest.setNewNodeOptionalSettings(node, msg)
-        assert.strictEqual(node.unit_id, 2)
-      })
-
-      it('should set unit_id to node.unit_id if msg.payload.unitId is not a valid unitId', function () {
-        const node = {
-          unit_id: 1,
-          clienttype: 'tcp',
-          checkUnitId: sinon.stub().returns(false)
-        }
-        const msg = {
-          payload: {
-            unitId: 'invalid'
-          }
-        }
-        coreClientUnderTest.setNewNodeOptionalSettings(node, msg)
-
-        assert.strictEqual(node.unit_id, 1)
-      })
-
-      it('should set commandDelay to msg.payload.commandDelay if it is defined', function () {
-        const node = {
-          commandDelay: 100
-        }
-
-        const msg = {
-          payload: {
-            commandDelay: 200
-          }
-        }
-
-        coreClientUnderTest.setNewNodeOptionalSettings(node, msg)
-        assert.strictEqual(node.commandDelay, 200)
-      })
-
-      it('should keep commandDelay unchanged if msg.payload.commandDelay is not defined', function () {
-        const node = {
-          commandDelay: 100
-        }
-        const msg = {
-          payload: {}
-        }
-        coreClientUnderTest.setNewNodeOptionalSettings(node, msg)
-        assert.strictEqual(node.commandDelay, 100)
-      })
-    })
 
     it('should successfully write a coil with a true value', () => {
       const node = {
@@ -764,6 +671,115 @@ describe('Core Client Testing', function () {
         coreClientUnderTest.readModbus({})
         done()
       })
+    })
+  })
+
+  describe('setNewNodeOptionalSettings', function () {
+    it('should set reconnectTimeout if provided in msg.payload', function () {
+      const node = {
+        reconnectTimeout: 1000,
+        clienttype: 'someType',
+        unit_id: 1,
+        checkUnitId: function (unitId, clienttype) {
+          return typeof unitId === 'number'
+        }
+      }
+      const msg = {
+        payload: {
+          reconnectTimeout: 2000
+        }
+      }
+      coreClientUnderTest.setNewNodeOptionalSettings(node, msg)
+
+      expect(node.reconnectTimeout).to.equal(2000)
+    })
+
+    it('should set clientTimeout if msg.payload.clientTimeout exists', function (done) {
+      const node = { clientTimeout: 1000 }
+      const msg = { payload: { clientTimeout: 2000 } }
+
+      coreClientUnderTest.setNewNodeOptionalSettings(node, msg)
+
+      assert.strict.equal(node.clientTimeout, 2000)
+      done()
+    })
+    it('should set commandDelay if msg.payload.commandDelay exists', function (done) {
+      const node = { commandDelay: 100 }
+      const msg = { payload: { commandDelay: 200 } }
+
+      coreClientUnderTest.setNewNodeOptionalSettings(node, msg)
+
+      assert.strict.equal(node.commandDelay, 200)
+      done()
+    })
+    it('should correctly parse and set unitId when provided with a valid integer', () => {
+      const node = { unit_id: 1, checkUnitId: sinon.spy() }
+      const msg = { payload: { unitId: '123' } }
+      const nodeLog = sinon.spy()
+
+      coreClientUnderTest.getLogFunction = sinon.stub().returns(nodeLog)
+
+      coreClientUnderTest.setNewNodeOptionalSettings(node, msg)
+
+      sinon.assert.calledWith(coreClientUnderTest.getLogFunction, node)
+      sinon.assert.calledWith(node.checkUnitId, 123, node.clienttype)
+    })
+
+    it('should set unit_id to msg.payload.unitId if it is a valid unitId', function () {
+      const node = {
+        unit_id: 1,
+        clienttype: 'tcp',
+        checkUnitId: sinon.stub().returns(true)
+      }
+      const msg = {
+        payload: {
+          unitId: 2
+        }
+      }
+
+      coreClientUnderTest.setNewNodeOptionalSettings(node, msg)
+      assert.strictEqual(node.unit_id, 2)
+    })
+    it('should set unit_id to node.unit_id if msg.payload.unitId is not a valid unitId', function () {
+      const node = {
+        unit_id: 1,
+        clienttype: 'tcp',
+        checkUnitId: sinon.stub().returns(false)
+      }
+      const msg = {
+        payload: {
+          unitId: 'invalid'
+        }
+      }
+      coreClientUnderTest.setNewNodeOptionalSettings(node, msg)
+
+      assert.strictEqual(node.unit_id, 1)
+    })
+
+    it('should set commandDelay to msg.payload.commandDelay if it is defined', function () {
+      const node = {
+        commandDelay: 100
+      }
+
+      const msg = {
+        payload: {
+          commandDelay: 200
+        }
+      }
+
+      coreClientUnderTest.setNewNodeOptionalSettings(node, msg)
+      assert.strictEqual(node.commandDelay, 200)
+    })
+
+    it('should keep commandDelay unchanged if msg.payload.commandDelay is not defined', function () {
+      const node = {
+        commandDelay: 100
+      }
+      const msg = {
+        payload: {}
+      }
+      coreClientUnderTest.setNewNodeOptionalSettings(node, msg)
+      assert.strictEqual(node.commandDelay, 100)
     })
   })
 })
