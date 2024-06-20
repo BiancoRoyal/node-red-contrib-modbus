@@ -782,6 +782,47 @@ describe('Core Client Testing', function () {
       assert.strictEqual(node.commandDelay, 100)
     })
   })
+
+  describe('modbusClient.writeModbus', function () {
+    it('should call activateSendingOnFailure and nodeLog on error', function (done) {
+      const node = {
+        client: {
+          _port: {
+            _client: {
+              writable: true
+            }
+          },
+          getTimeout: sinon.stub().returns(1000),
+          setTimeout: sinon.stub()
+        },
+        clienttype: 'tcp',
+        bufferCommands: false,
+        stateService: {
+          send: sinon.stub()
+        },
+        queueLog: sinon.stub(),
+        setUnitIdFromPayload: sinon.stub(),
+        actualServiceState: { value: 'someState' },
+        clientTimeout: 1000
+      }
+      const msg = {
+        payload: {
+          fc: 5
+        }
+      }
+      const cb = sinon.stub()
+      const cberr = sinon.stub()
+
+      coreClientUnderTest.writeModbusByFunctionCodeFive = sinon.stub().throws(new Error('Test Error'))
+      coreClientUnderTest.activateSendingOnFailure = sinon.stub()
+      const mockNodeLog = sinon.stub()
+      coreClientUnderTest.getLogFunction = sinon.stub().returns(mockNodeLog)
+
+      coreClientUnderTest.writeModbus(node, msg, cb, cberr)
+
+      done()
+    })
+  })
   describe('setNewSerialNodeSettings', function () {
     it('should parse serialAsciiResponseStartDelimiter from hex string if provided', function () {
       const node = {

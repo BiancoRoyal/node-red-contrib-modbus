@@ -404,7 +404,7 @@ describe('Client node Unit Testing', function () {
         setTimeout(done, 1000)
       })
     })
-
+    //error
     it('should work with simple read on local server', function (done) {
       const flow = Array.from(testFlows.testSimpleReadWithClientFlow)
 
@@ -444,10 +444,9 @@ describe('Client node Unit Testing', function () {
         }, 1500)
       })
     })
-
+    //error
     it('should be state queueing - ready to send', function (done) {
       const flow = Array.from(testFlows.testSimpleReadWithClientFlow)
-
       getPort().then((port) => {
         flow[1].serverPort = port
         flow[5].tcpPort = port
@@ -498,7 +497,7 @@ describe('Client node Unit Testing', function () {
         done()
       })
     })
-
+    //error
     it('should be active when it receives a message', function (done) {
       const flow = Array.from(testFlows.testSimpleReadWithClientFlow)
 
