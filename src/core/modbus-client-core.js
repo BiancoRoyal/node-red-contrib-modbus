@@ -366,6 +366,7 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
       coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg)
       return
     }
+    /* istanbul ignore next */
     delayTime = 500
   }
 

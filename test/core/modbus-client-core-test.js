@@ -784,6 +784,76 @@ describe('Core Client Testing', function () {
   })
 
   describe('modbusClient.writeModbus', function () {
+    it('should log an error if node.client is not ready', function (done) {
+      const node = {
+        client: null,
+        clienttype: 'tcp',
+        bufferCommands: false,
+        stateService: {
+          send: sinon.stub()
+        },
+        queueLog: sinon.stub(),
+        setUnitIdFromPayload: sinon.stub(),
+        actualServiceState: { value: 'someState' },
+        clientTimeout: 1000
+      }
+      const msg = {
+        payload: {
+          fc: 5
+        }
+      }
+      const cb = sinon.stub()
+      const cberr = sinon.stub()
+      coreClientUnderTest.activateSendingOnFailure = sinon.stub()
+      const mockNodeLog = sinon.stub()
+      coreClientUnderTest.getLogFunction = sinon.stub().returns(mockNodeLog)
+
+      coreClientUnderTest.writeModbus(node, msg, cb, cberr)
+      sinon.assert.calledOnce(mockNodeLog)
+      sinon.assert.calledWithExactly(mockNodeLog, 'Client Not Ready As Object On Writing Modbus')
+      sinon.assert.notCalled(coreClientUnderTest.activateSendingOnFailure)
+
+      done()
+    })
+
+    it('should call writeModbusByFunctionCodeFifteen on FC 15', function (done) {
+      const node = {
+        client: {
+          _port: {
+            _client: {
+              writable: true
+            }
+          },
+          getTimeout: sinon.stub().returns(1000),
+          setTimeout: sinon.stub()
+        },
+        clienttype: 'tcp',
+        bufferCommands: false,
+        stateService: {
+          send: sinon.stub()
+        },
+        queueLog: sinon.stub(),
+        setUnitIdFromPayload: sinon.stub(),
+        actualServiceState: { value: 'someState' },
+        clientTimeout: 1000
+      }
+      const msg = {
+        payload: {
+          fc: 15
+        }
+      }
+      const cb = sinon.stub()
+      const cberr = sinon.stub()
+      coreClientUnderTest.writeModbusByFunctionCodeFifteen = sinon.stub()
+      coreClientUnderTest.activateSendingOnFailure = sinon.stub()
+      const mockNodeLog = sinon.stub()
+      coreClientUnderTest.getLogFunction = sinon.stub().returns(mockNodeLog)
+      coreClientUnderTest.writeModbus(node, msg, cb, cberr)
+      sinon.assert.notCalled(coreClientUnderTest.activateSendingOnFailure)
+      sinon.assert.notCalled(mockNodeLog)
+
+      done()
+    })
     it('should call activateSendingOnFailure and nodeLog on error', function (done) {
       const node = {
         client: {
