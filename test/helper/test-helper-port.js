@@ -10,7 +10,7 @@ class PortHelper {
   startPort = 0
 
   getRandomArbitrary (min, max) {
-    return Math.ceil(Math.random() * (max - min) + min)
+    return Math.floor(Math.random() * (max - min) + min)
   }
 
   init (min, max) {
@@ -37,19 +37,15 @@ class PortHelper {
     return isDuplicate
   }
 
-  getPort = async () => {
-    if (this.startPort === 0) {
-      this.startPort = this.getRandomArbitrary(30000, 50000)
-    }
-
-    this.startPort = this.startPort + 3
-
-    if (this.startPort >= 50000) {
-      this.startPort = this.getRandomArbitrary(10000, 30000)
+  getPort = () => {
+    if (this.startPort === 0 || this.startPort >= 45000 || this.startPort <= 20000) {
+      this.init(20000, 45000)
+    } else {
+      this.startPort = this.getRandomArbitrary(this.startPort + 1, 50000)
     }
 
     if (global.portList.includes(this.startPort)) {
-      this.startPort = await this.getPort()
+      this.startPort = this.getPort()
     }
 
     global.portList.push(this.startPort)

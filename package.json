@@ -142,7 +142,8 @@
       "chai",
       "expect",
       "should",
-      "assert"
+      "assert",
+      "sinon"
     ],
     "ignore": [
       "code/",
