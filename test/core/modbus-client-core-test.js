@@ -923,4 +923,62 @@ describe('Core Client Testing', function () {
       expect(node.serialConnectionDelay).to.equal(2000)
     })
   })
+  describe('writeModbusByFunctionCodeSixteen', function () {
+    it('should call activateSendingOnFailure on quantity mismatch', function (done) {
+      const node = {
+        client: {
+          writeRegisters: sinon.stub().resolves('success'),
+          getID: sinon.stub().returns(1)
+        }
+      }
+      const msg = {
+        payload: {
+          address: 123,
+          value: [1, 2, 3],
+          quantity: 4
+        }
+      }
+
+      const cb = sinon.stub()
+      const cberr = sinon.stub()
+
+      coreClientUnderTest.activateSendingOnSuccess = sinon.stub()
+      coreClientUnderTest.activateSendingOnFailure = sinon.stub()
+      node.modbusErrorHandling = sinon.stub()
+      coreClientUnderTest.writeModbusByFunctionCodeSixteen(node, msg, cb, cberr)
+      sinon.assert.notCalled(node.client.writeRegisters)
+      sinon.assert.notCalled(coreClientUnderTest.activateSendingOnSuccess)
+      sinon.assert.notCalled(node.modbusErrorHandling)
+
+      done()
+    })
+    it('should call writeRegisters and activateSendingOnSuccess on success', function () {
+      const node = {
+        client: {
+          writeRegisters: sinon.stub().resolves({}),
+          getID: sinon.stub().returns(1)
+        },
+        modbusErrorHandling: sinon.stub()
+      }
+      const msg = {
+        payload: {
+          address: '123',
+          value: [1, 2, 3],
+          quantity: 3
+        }
+      }
+      const cb = sinon.stub()
+      const cberr = sinon.stub()
+      const coreClient = {
+        activateSendingOnSuccess: sinon.stub(),
+        activateSendingOnFailure: sinon.stub()
+      }
+
+      coreClientUnderTest.writeModbusByFunctionCodeSixteen(node, msg, cb, cberr)
+      sinon.assert.notCalled(coreClient.activateSendingOnFailure)
+      sinon.assert.notCalled(node.modbusErrorHandling)
+
+      expect(coreClient.activateSendingOnSuccess).to.have.been.calledWith(node, cb, cberr, {}, msg)
+    })
+  })
 })
