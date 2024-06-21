@@ -15,7 +15,7 @@ const clientNode = require('../../src/modbus-client.js')
 const serverNode = require('../../src/modbus-server.js')
 const nodeUnderTest = require('../../src/modbus-flex-getter.js')
 const functionNode = require('@node-red/nodes/core/function/10-function')
-
+const mbIOCore = require('../../src/core/modbus-io-core.js')
 const testFlexGetterNodes = [injectNode, clientNode, serverNode, nodeUnderTest, functionNode]
 const sinon = require('sinon')
 const helper = require('node-red-node-test-helper')
@@ -330,8 +330,6 @@ describe('Flex Getter node Testing', function () {
   })
 
   describe('Modbus Node Test Cases', function () {
-    // let invalidPayloadInStub, isNotReadyForInputStub, isInactiveStub, buildNewMessageObjectStub
-
     it('should process a valid Modbus message', function (done) {
       const msg = { payload: 'valid' }
       const flow = Array.from(testFlows.testNodeShouldBeLoadedFlow)
@@ -410,6 +408,51 @@ describe('Flex Getter node Testing', function () {
       })
     })
   })
+
+  describe('Modbus Node Input Handler', function () {
+    it('should handle onModbusReadDone correctly', function (done) {
+      const msg = { payload: 'valid' }
+      const resp = { data: 'response data' }
+      const flow = Array.from(testFlows.testNodeShouldBeLoadedFlow)
+
+      getPort().then((port) => {
+        flow[2].serverPort = port
+        flow[3].tcpPort = port
+
+        helper.load(testFlexGetterNodes, flow, function () {
+          const modbusFlexGetter = helper.getNode('bc5a61b6.a3972')
+
+          const setNodeStatusToStub = sinon.stub(mBasics, 'setNodeStatusTo')
+          const buildMessageWithIOStub = sinon.stub(mbIOCore, 'buildMessageWithIO').returns({ payload: 'built message' })
+          const sendStub = sinon.stub(modbusFlexGetter, 'send')
+          const emitStub = sinon.stub(modbusFlexGetter, 'emit')
+
+          modbusFlexGetter.showStatusActivities = true
+
+          modbusFlexGetter.onModbusReadDone(resp, msg)
+
+          sinon.assert.calledOnce(setNodeStatusToStub)
+          sinon.assert.calledWith(setNodeStatusToStub, 'reading done', modbusFlexGetter)
+
+          sinon.assert.calledOnce(buildMessageWithIOStub)
+          sinon.assert.calledWith(buildMessageWithIOStub, modbusFlexGetter, resp.data, resp, msg)
+
+          sinon.assert.calledOnce(sendStub)
+          sinon.assert.calledWith(sendStub, { payload: 'built message' })
+
+          sinon.assert.calledOnce(emitStub)
+          sinon.assert.calledWith(emitStub, 'modbusFlexGetterNodeDone')
+
+          setNodeStatusToStub.restore()
+          buildMessageWithIOStub.restore()
+          sendStub.restore()
+          emitStub.restore()
+          done()
+        })
+      })
+    })
+  })
+
   describe('post', function () {
     it('should fail for invalid node', function (done) {
       helper.load(testFlexGetterNodes, [], function () {
