@@ -452,6 +452,53 @@ describe('Flex Getter node Testing', function () {
       })
     })
   })
+  describe('Modbus Node Error Handling', function () {
+    it('should handle onModbusReadError correctly', function (done) {
+      const msg = { payload: 'valid' }
+      const err = new Error('Test error')
+      const flow = Array.from(testFlows.testNodeShouldBeLoadedFlow)
+
+      getPort().then((port) => {
+        flow[2].serverPort = port
+        flow[3].tcpPort = port
+
+        helper.load(testFlexGetterNodes, flow, function () {
+          const modbusFlexGetter = helper.getNode('bc5a61b6.a3972')
+          const modbusClient = helper.getNode('92e7bf63.2efd7')
+
+          const internalDebugLogStub = sinon.stub(modbusFlexGetter, 'internalDebugLog')
+          const errorProtocolMsgStub = sinon.stub(modbusFlexGetter, 'errorProtocolMsg')
+          const sendEmptyMsgOnFailStub = sinon.stub(mBasics, 'sendEmptyMsgOnFail')
+          const setModbusErrorStub = sinon.stub(mBasics, 'setModbusError')
+          const emitStub = sinon.stub(modbusFlexGetter, 'emit')
+
+          modbusFlexGetter.onModbusReadError(err, msg)
+
+          sinon.assert.calledOnce(internalDebugLogStub)
+          sinon.assert.calledWith(internalDebugLogStub, err.message)
+
+          sinon.assert.calledOnce(errorProtocolMsgStub)
+          sinon.assert.calledWith(errorProtocolMsgStub, err, sinon.match(msg))
+
+          sinon.assert.calledOnce(sendEmptyMsgOnFailStub)
+          sinon.assert.calledWith(sendEmptyMsgOnFailStub, modbusFlexGetter, err, sinon.match(msg))
+
+          sinon.assert.calledOnce(setModbusErrorStub)
+          sinon.assert.calledWith(setModbusErrorStub, modbusFlexGetter, modbusClient, err, sinon.match(msg))
+
+          sinon.assert.calledOnce(emitStub)
+          sinon.assert.calledWith(emitStub, 'modbusFlexGetterNodeError')
+
+          internalDebugLogStub.restore()
+          errorProtocolMsgStub.restore()
+          sendEmptyMsgOnFailStub.restore()
+          setModbusErrorStub.restore()
+          emitStub.restore()
+          done()
+        })
+      })
+    })
+  })
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
