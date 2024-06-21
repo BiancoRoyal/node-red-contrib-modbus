@@ -1,6 +1,121 @@
 const helperExtensions = require('../../helper/test-helper-extensions')
 
 module.exports = {
+    testModbusReadNodeIsActive: helperExtensions.cleanFlowPositionData(
+        [
+            {
+                "id": "17fcd969d42d07ac",
+                "type": "tab",
+                "label": "Simple Read With Client",
+                "disabled": false,
+                "info": "",
+                "env": []
+            },
+            {
+                "id": "86d9e27a5d8eed7c",
+                "type": "modbus-server",
+                "z": "17fcd969d42d07ac",
+                "name": "",
+                "logEnabled": false,
+                "hostname": "127.0.0.1",
+                "serverPort": "10518",
+                "responseDelay": 100,
+                "delayUnit": "ms",
+                "coilsBufferSize": 10000,
+                "holdingBufferSize": 10000,
+                "inputBufferSize": 10000,
+                "discreteBufferSize": 10000,
+                "showErrors": false,
+                "x": 300,
+                "y": 480,
+                "wires": [
+                    [],
+                    [],
+                    [],
+                    [],
+                    []
+                ]
+            },
+            {
+                "id": "0d3a652b67ca73ac",
+                "type": "modbus-read",
+                "z": "17fcd969d42d07ac",
+                "name": "",
+                "topic": "",
+                "showStatusActivities": false,
+                "logIOActivities": false,
+                "showErrors": false,
+                "showWarnings": true,
+                "unitid": "1",
+                "dataType": "Coil",
+                "adr": "10",
+                "quantity": "100",
+                "rate": "500",
+                "rateUnit": "",
+                "delayOnStart": false,
+                "startDelayTime": "",
+                "server": "80aeec4c.0cb9e8",
+                "useIOFile": false,
+                "ioFile": "",
+                "useIOForPayload": false,
+                "emptyMsgOnFail": false,
+                "x": 190,
+                "y": 640,
+                "wires": [
+                    [],
+                    [
+                        "959c417207ae06ba"
+                    ]
+                ]
+            },
+            {
+                "id": "959c417207ae06ba",
+                "type": "helper",
+                "z": "17fcd969d42d07ac",
+                "name": "helper 19",
+                "active": true,
+                "tosidebar": true,
+                "console": false,
+                "tostatus": false,
+                "complete": "false",
+                "statusVal": "",
+                "statusType": "auto",
+                "x": 500,
+                "y": 700,
+                "wires": []
+            },
+            {
+                "id": "80aeec4c.0cb9e8",
+                "type": "modbus-client",
+                "name": "Modbus Server",
+                "clienttype": "tcp",
+                "bufferCommands": true,
+                "stateLogEnabled": false,
+                "queueLogEnabled": false,
+                "failureLogEnabled": false,
+                "tcpHost": "127.0.0.1",
+                "tcpPort": "10518",
+                "tcpType": "DEFAULT",
+                "serialPort": "/dev/ttyUSB",
+                "serialType": "RTU-BUFFERD",
+                "serialBaudrate": "9600",
+                "serialDatabits": "8",
+                "serialStopbits": "1",
+                "serialParity": "none",
+                "serialConnectionDelay": "100",
+                "serialAsciiResponseStartDelimiter": "",
+                "unit_id": "1",
+                "commandDelay": "1",
+                "clientTimeout": "100",
+                "reconnectOnTimeout": false,
+                "reconnectTimeout": "200",
+                "parallelUnitIdsAllowed": true,
+                "showErrors": false,
+                "showWarnings": true,
+                "showLogs": true
+            }
+        ]
+    ),
     testModbusReadFlowFailure: helperExtensions.cleanFlowPositionData(
         [
             {

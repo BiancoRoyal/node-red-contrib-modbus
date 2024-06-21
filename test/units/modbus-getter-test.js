@@ -394,6 +394,35 @@ describe('Getter node Unit Testing', function () {
   })
 
   describe('post', function () {
+    it('should handle input correctly and emit readModbus event', function (done) {
+      const msg = { payload: 'valid' }
+      helper.load(testGetterNodes, testFlows.testGetterNodeFlowExample, function () {
+        const modbusGetterNode = helper.getNode('09f8f0e2049ace2d')
+        const modbusClient = helper.getNode('80aeec4c.0cb9e8')
+        modbusGetterNode.showStatusActivities = true
+        const isNotReadyForInputStub = sinon.stub(modbusGetterNode, 'isNotReadyForInput').returns(false)
+        const isInactiveStub = sinon.stub(modbusClient, 'isInactive').returns(false)
+        const invalidPayloadInStub = sinon.stub(mbBasics, 'invalidPayloadIn').returns(false)
+
+        const buildNewMessageObjectStub = sinon.stub(modbusGetterNode, 'buildNewMessageObject').returns({ messageId: '12345' })
+        const buildNewMessageStub = sinon.stub(mbBasics, 'buildNewMessage').returns({ builtMessage: true })
+        const emitStub = sinon.stub(modbusClient, 'emit')
+
+        modbusGetterNode.emit('input', msg)
+
+        sinon.assert.calledOnce(buildNewMessageObjectStub)
+        sinon.assert.calledOnce(buildNewMessageStub)
+        sinon.assert.calledOnce(emitStub)
+
+        isNotReadyForInputStub.restore()
+        isInactiveStub.restore()
+        invalidPayloadInStub.restore()
+        buildNewMessageObjectStub.restore()
+        buildNewMessageStub.restore()
+        emitStub.restore()
+        done()
+      })
+    })
     it('should fail for invalid node', function (done) {
       helper.load(testGetterNodes, [], function () {
         helper.request().post('/modbus-getter/invalid').expect(404).end(done)
