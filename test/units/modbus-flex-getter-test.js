@@ -499,6 +499,41 @@ describe('Flex Getter node Testing', function () {
       })
     })
   })
+  describe('Modbus Node Input Delay Timer', function () {
+    it('should initialize and trigger input delay timer', function (done) {
+      const flow = Array.from(testFlows.testNodeShouldBeLoadedFlow)
+
+      getPort().then((port) => {
+        flow[2].serverPort = port
+        flow[3].tcpPort = port
+
+        helper.load(testFlexGetterNodes, flow, function () {
+          const modbusFlexGetter = helper.getNode('bc5a61b6.a3972')
+          const verboseWarnStub = sinon.stub()
+          modbusFlexGetter.verboseWarn = verboseWarnStub
+
+          modbusFlexGetter.delayOnStart = true
+          modbusFlexGetter.INPUT_TIMEOUT_MILLISECONDS = 1000
+          modbusFlexGetter.startDelayTime = 1
+
+          const resetInputDelayTimerSpy = sinon.spy(modbusFlexGetter, 'resetInputDelayTimer')
+
+          const setTimeoutStub = sinon.stub(global, 'setTimeout').callsFake((callback, delay) => {
+            callback()
+          })
+
+          modbusFlexGetter.initializeInputDelayTimer()
+          sinon.assert.calledOnce(resetInputDelayTimerSpy)
+          sinon.assert.calledOnce(setTimeoutStub)
+          sinon.assert.calledWith(setTimeoutStub, sinon.match.func, modbusFlexGetter.INPUT_TIMEOUT_MILLISECONDS * modbusFlexGetter.startDelayTime)
+
+          setTimeoutStub.restore()
+          resetInputDelayTimerSpy.restore()
+          done()
+        })
+      })
+    })
+  })
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
