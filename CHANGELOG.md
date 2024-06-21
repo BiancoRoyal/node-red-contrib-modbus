@@ -1,4 +1,4 @@
-# [5.40.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.2...v5.40.0) (2024-06-20)
+# [5.40.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.2...v5.40.0) (2024-06-21)
 
 
 ### Bug Fixes
@@ -17,6 +17,7 @@
 * **modbus:** added a new example flow and fixed test cases ([8181fd4](https://github.com/biancoroyal/node-red-contrib-modbus/commit/8181fd4f05abff6f57a7b4de636689e890cf0ea9))
 * **modbus:** commented the test cases that are failed ([5998a5d](https://github.com/biancoroyal/node-red-contrib-modbus/commit/5998a5d2fceaaf1b8ba972ddba771b70e2a4c2a2))
 * **test_cases:** improved test cases ([bdafa18](https://github.com/biancoroyal/node-red-contrib-modbus/commit/bdafa18508069876ca522ace6e4a73be4c272c49))
+* **test_flows:** fixed old test flows of read node, queue info node ([37b73ee](https://github.com/biancoroyal/node-red-contrib-modbus/commit/37b73ee0c845bb63b9b00d768b52bf8f76898290))
 * **testcase:** fixed test case assertion ([803e7e0](https://github.com/biancoroyal/node-red-contrib-modbus/commit/803e7e08a53052f02ef6d0f4fa517353c228a88b))
 * **test:** fixed  test case for modbus read node ([8fb71e9](https://github.com/biancoroyal/node-red-contrib-modbus/commit/8fb71e9914ceb43249d16498054c5ed2a14cbd5a))
 * **test:** fixed port issue ([28115fe](https://github.com/biancoroyal/node-red-contrib-modbus/commit/28115fe2e5e27a5cb66a403a3d68ee65c96a241b))
