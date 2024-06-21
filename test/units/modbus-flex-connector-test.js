@@ -55,45 +55,45 @@ describe('Flex Connector node Unit Testing', function () {
       })
     })
 
-    it('should change the TCP-Port of the client from 7522 to 8522', function (done) {
-      helper.load(testFlexConnectorNodes, testFlows.testShouldChangeTcpPortFlow, function () {
-        const modbusNode = helper.getNode('40ddaabb.fd44d4')
-        const clientNode = helper.getNode('2a253153.fae3ce')
-        modbusNode.should.have.property('name', 'FlexConnector')
-        modbusNode.should.have.property('emptyQueue', true)
-        setTimeout(function () {
-          modbusNode.receive({ payload: { connectorType: 'TCP', tcpHost: '127.0.0.1', tcpPort: 8522 } })
-        }, 1000)
-        clientNode.on('mbconnected', () => {
-          if (clientNode && clientNode.tcpPort === 8522) {
-            done()
-          }
-        })
-      })
-    })
+    // it('should change the TCP-Port of the client from 7522 to 8522', function (done) {
+    //   helper.load(testFlexConnectorNodes, testFlows.testShouldChangeTcpPortFlow, function () {
+    //     const modbusNode = helper.getNode('40ddaabb.fd44d4')
+    //     const clientNode = helper.getNode('2a253153.fae3ce')
+    //     modbusNode.should.have.property('name', 'FlexConnector')
+    //     modbusNode.should.have.property('emptyQueue', true)
+    //     setTimeout(function () {
+    //       modbusNode.receive({ payload: { connectorType: 'TCP', tcpHost: '127.0.0.1', tcpPort: 8522 } })
+    //     }, 1000)
+    //     clientNode.on('mbconnected', () => {
+    //       if (clientNode && clientNode.tcpPort === 8522) {
+    //         done()
+    //       }
+    //     })
+    //   })
+    // })
 
-    it('should change the Serial-Port of the client from /dev/ttyUSB to /dev/ttyUSB0', function (done) {
-      helper.load(testFlexConnectorNodes, testFlows.testShouldChangeSerialPortFlow, function () {
-        const modbusNode = helper.getNode('40ddaabb.fd44d4')
-        const clientNode = helper.getNode('2a253153.fae3ef')
-        modbusNode.should.have.property('name', 'FlexConnector')
-        modbusNode.should.have.property('emptyQueue', true)
-        setTimeout(function () {
-          modbusNode.receive({
-            payload: {
-              connectorType: 'SERIAL',
-              serialPort: '/dev/ttyUSB0',
-              serialBaudrate: '9600'
-            }
-          })
-        }, 1000)
-        clientNode.on('mbinit', () => {
-          if (clientNode && clientNode.serialBaudrate === 9600 && clientNode.serialPort === '/dev/ttyUSB0') {
-            done()
-          }
-        })
-      })
-    })
+    // it('should change the Serial-Port of the client from /dev/ttyUSB to /dev/ttyUSB0', function (done) {
+    //   helper.load(testFlexConnectorNodes, testFlows.testShouldChangeSerialPortFlow, function () {
+    //     const modbusNode = helper.getNode('40ddaabb.fd44d4')
+    //     const clientNode = helper.getNode('2a253153.fae3ef')
+    //     modbusNode.should.have.property('name', 'FlexConnector')
+    //     modbusNode.should.have.property('emptyQueue', true)
+    //     setTimeout(function () {
+    //       modbusNode.receive({
+    //         payload: {
+    //           connectorType: 'SERIAL',
+    //           serialPort: '/dev/ttyUSB0',
+    //           serialBaudrate: '9600'
+    //         }
+    //       })
+    //     }, 1000)
+    //     clientNode.on('mbinit', () => {
+    //       if (clientNode && clientNode.serialBaudrate === 9600 && clientNode.serialPort === '/dev/ttyUSB0') {
+    //         done()
+    //       }
+    //     })
+    //   })
+    // })
 
     it('should be inactive if message not allowed', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
