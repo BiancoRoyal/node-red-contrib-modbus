@@ -357,13 +357,12 @@ describe('Client node Unit Testing', function () {
 
     it('should handle error during deregistration', function (done) {
       const flow = Array.from(testFlows.testModbusReadFlow)
-
       getPort().then((port) => {
-        flow[2].serverPort = port
-        flow[4].tcpPort = port
+        flow[0].serverPort = port
+        flow[3].tcpPort = port
 
         helper.load(testModbusClientNodes, testFlows.testModbusReadFlow, function () {
-          const modbusClientNode = helper.getNode('4')
+          const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
           modbusClientNode.closingModbus = false
           const closeConnectionWithoutRegisteredNodesSpy = sinon.spy(modbusClientNode, 'closeConnectionWithoutRegisteredNodes')
 
@@ -382,11 +381,11 @@ describe('Client node Unit Testing', function () {
       const flow = Array.from(testFlows.testModbusReadFlow)
 
       getPort().then((port) => {
-        flow[2].serverPort = port
-        flow[4].tcpPort = port
+        flow[0].serverPort = port
+        flow[3].tcpPort = port
 
         helper.load(testModbusClientNodes, flow, function () {
-          const modbusClientNode = helper.getNode('4')
+          const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
           const stateServiceSendSpy = sinon.spy(modbusClientNode.stateService, 'send')
           modbusClientNode.setSerialConnectionOptions()
           sinon.assert.calledWith(stateServiceSendSpy, 'OPENSERIAL')
@@ -401,11 +400,11 @@ describe('Client node Unit Testing', function () {
       const flow = Array.from(testFlows.testModbusReadFlow)
 
       getPort().then((port) => {
-        flow[2].serverPort = port
-        flow[4].tcpPort = port
+        flow[0].serverPort = port
+        flow[3].tcpPort = port
 
         helper.load(testModbusClientNodes, flow, function () {
-          const modbusClientNode = helper.getNode('4')
+          const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
           const stateServiceSendStub = sinon.stub(modbusClientNode.stateService, 'send')
 
           modbusClientNode.onModbusClose()
@@ -421,11 +420,11 @@ describe('Client node Unit Testing', function () {
       const flow = Array.from(testFlows.testModbusReadFlow)
 
       getPort().then((port) => {
-        flow[2].serverPort = port
-        flow[4].tcpPort = port
+        flow[0].serverPort = port
+        flow[3].tcpPort = port
 
         helper.load(testModbusClientNodes, flow, function () {
-          const modbusClientNode = helper.getNode('4')
+          const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
           const stateServiceSendStub = sinon.stub(modbusClientNode.stateService, 'send')
           const errorWithMessageAndErrno = { message: 'Connection refused', errno: 'ECONNREFUSED' }
 
@@ -438,7 +437,7 @@ describe('Client node Unit Testing', function () {
 
     it('should be loaded with TCP DEFAULT', function (done) {
       helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
-        const modbusReadNode = helper.getNode('466860d5.3f6358')
+        const modbusReadNode = helper.getNode('115bd58ae573c942')
         modbusReadNode.should.have.property('name', 'ModbusClientTCPDefault')
         setTimeout(done, 1000)
       })
@@ -524,7 +523,7 @@ describe('Client node Unit Testing', function () {
 
     it('should be inactive when first loaded', function (done) {
       helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
-        const modbusReadNode = helper.getNode('466860d5.3f6358')
+        const modbusReadNode = helper.getNode('115bd58ae573c942')
         const isInactive = modbusReadNode.isInactive()
         isInactive.should.be.true()
         done()
@@ -843,7 +842,7 @@ describe('Client node Unit Testing', function () {
 
     it('should have correct messageAllowedStates property', function (done) {
       helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
-        const modbusReadNode = helper.getNode('466860d5.3f6358')
+        const modbusReadNode = helper.getNode('115bd58ae573c942')
         modbusReadNode.should.have.property('messageAllowedStates', coreModbusClient.messageAllowedStates)
         done()
       })
@@ -851,7 +850,7 @@ describe('Client node Unit Testing', function () {
 
     it('should fail for unsupported function code', function (done) {
       helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
-        const h1 = helper.getNode('466860d5.3f6358')
+        const h1 = helper.getNode('115bd58ae573c942')
         h1.on('input', function (msg) {
           msg.should.have.property('payload', 'Function code not supported')
           done()
@@ -863,7 +862,7 @@ describe('Client node Unit Testing', function () {
 
     it('should fail for invalid slave ID', function (done) {
       helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
-        const h1 = helper.getNode('466860d5.3f6358')
+        const h1 = helper.getNode('115bd58ae573c942')
         h1.on('input', function (msg) {
           msg.should.have.property('payload', 'Invalid slave ID')
           done()
@@ -875,7 +874,7 @@ describe('Client node Unit Testing', function () {
 
     it('should fail for invalid unit ID', function (done) {
       helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
-        const h1 = helper.getNode('466860d5.3f6358')
+        const h1 = helper.getNode('115bd58ae573c942')
         h1.on('input', function (msg) {
           msg.should.have.property('payload', 'Invalid unit ID')
           done()
@@ -887,7 +886,7 @@ describe('Client node Unit Testing', function () {
 
     it('should fail for invalid TCP host', function (done) {
       helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
-        const h1 = helper.getNode('466860d5.3f6358')
+        const h1 = helper.getNode('115bd58ae573c942')
         h1.on('input', function (msg) {
           msg.should.have.property('payload', 'Invalid TCP host')
           done()
