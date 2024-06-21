@@ -17,7 +17,7 @@ const nodeUnderTest = require('../../src/modbus-flex-getter.js')
 const functionNode = require('@node-red/nodes/core/function/10-function')
 
 const testFlexGetterNodes = [injectNode, clientNode, serverNode, nodeUnderTest, functionNode]
-
+const sinon = require('sinon')
 const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
@@ -47,44 +47,6 @@ describe('Flex Getter node Testing', function () {
       done()
     })
   })
-  // describe('unique Port', function () {
-  //   it('should inject 5 messages but only use one to test initial delay', function (done) {
-  //     const flow = Array.from(testFlows.testFlexGetterWithInjectAndDelayFlow)
-  //     getPort().then((port) => {
-  //       flow[8].serverPort = port
-  //       flow[12].tcpPort = port
-  //       helper.load(testFlexGetterNodes, flow, function () {
-  //         const getterNode = helper.getNode('823b8c53.ee14b8')
-  //         const helperNode = helper.getNode('23156c303a59c400')
-  //         let getterCounter = 0
-  //         let helperCounter = 0
-  //         let startingTimestamp = null
-  //         let endTimestamp = null
-
-  //         getterNode.on('input', () => {
-  //           getterCounter++
-
-  //           if (getterCounter === 1) {
-  //             startingTimestamp = Date.now()
-  //           } else if (getterCounter === 5) {
-  //             endTimestamp = Date.now()
-  //           }
-  //         })
-
-  //         helperNode.on('input', () => {
-  //           helperCounter++
-
-  //           const difBetweenTimestamps = endTimestamp - startingTimestamp
-  //           getterCounter.should.be.eql(5) // we want to see 5 msgs on the getter before
-  //           helperCounter.should.be.greaterThanOrEqual(1)
-  //           difBetweenTimestamps.should.be.greaterThanOrEqual(3000)
-
-  //           done()
-  //         })
-  //       })
-  //     })
-  //   })
-  // })
 
   describe('Node', function () {
     it('simple Node should be loaded without client config', function (done) {
@@ -367,6 +329,87 @@ describe('Flex Getter node Testing', function () {
      */
   })
 
+  describe('Modbus Node Test Cases', function () {
+    // let invalidPayloadInStub, isNotReadyForInputStub, isInactiveStub, buildNewMessageObjectStub
+
+    it('should process a valid Modbus message', function (done) {
+      const msg = { payload: 'valid' }
+      const flow = Array.from(testFlows.testNodeShouldBeLoadedFlow)
+
+      getPort().then((port) => {
+        flow[2].serverPort = port
+        flow[3].tcpPort = port
+
+        helper.load(testFlexGetterNodes, flow, function () {
+          const modbusFlexGetter = helper.getNode('bc5a61b6.a3972')
+          const modbusClient = helper.getNode('92e7bf63.2efd7')
+          modbusFlexGetter.showStatusActivities = true
+          const isNotReadyForInputStub = sinon.stub(modbusFlexGetter, 'isNotReadyForInput').returns(false)
+          const isInactiveStub = sinon.stub(modbusClient, 'isInactive').returns(false)
+          const invalidPayloadInStub = sinon.stub(mBasics, 'invalidPayloadIn').returns(false)
+          const buildNewMessageObjectStub = sinon.stub(modbusFlexGetter, 'buildNewMessageObject')
+          buildNewMessageObjectStub.throws(new Error('Error in buildNewMessageObject'))
+
+          const errorProtocolMsgStub = sinon.stub(modbusFlexGetter, 'errorProtocolMsg')
+          const sendEmptyMsgOnFailStub = sinon.stub(mBasics, 'sendEmptyMsgOnFail')
+
+          modbusFlexGetter.emit('input', msg)
+          sinon.assert.calledOnce(errorProtocolMsgStub)
+          sinon.assert.calledOnce(sendEmptyMsgOnFailStub)
+
+          isNotReadyForInputStub.restore()
+          isInactiveStub.restore()
+          invalidPayloadInStub.restore()
+          buildNewMessageObjectStub.restore()
+          errorProtocolMsgStub.restore()
+          sendEmptyMsgOnFailStub.restore()
+          done()
+        })
+      })
+    })
+    it('should process a valid Modbus message and call the required methods', function (done) {
+      const msg = { payload: 'valid' }
+      const flow = Array.from(testFlows.testNodeShouldBeLoadedFlow)
+
+      getPort().then((port) => {
+        flow[2].serverPort = port
+        flow[3].tcpPort = port
+
+        helper.load(testFlexGetterNodes, flow, function () {
+          const modbusFlexGetter = helper.getNode('bc5a61b6.a3972')
+          const modbusClient = helper.getNode('92e7bf63.2efd7')
+
+          const isNotReadyForInputStub = sinon.stub(modbusFlexGetter, 'isNotReadyForInput').returns(false)
+          const isInactiveStub = sinon.stub(modbusClient, 'isInactive').returns(false)
+          const invalidPayloadInStub = sinon.stub(mBasics, 'invalidPayloadIn').returns(false)
+
+          const prepareMsgStub = sinon.stub(modbusFlexGetter, 'prepareMsg').returns({ baz: 'qux' })
+          const isValidModbusMsgStub = sinon.stub(modbusFlexGetter, 'isValidModbusMsg').returns(true)
+          const buildNewMessageObjectStub = sinon.stub(modbusFlexGetter, 'buildNewMessageObject').returns({ messageId: '12345' })
+          const buildNewMessageStub = sinon.stub(mBasics, 'buildNewMessage').returns({ builtMessage: true })
+          const emitStub = sinon.stub(modbusClient, 'emit')
+
+          modbusFlexGetter.emit('input', msg)
+
+          sinon.assert.calledOnce(prepareMsgStub)
+          sinon.assert.calledOnce(isValidModbusMsgStub)
+          sinon.assert.calledOnce(buildNewMessageObjectStub)
+          sinon.assert.calledOnce(buildNewMessageStub)
+          sinon.assert.calledOnce(emitStub)
+
+          isNotReadyForInputStub.restore()
+          isInactiveStub.restore()
+          invalidPayloadInStub.restore()
+          prepareMsgStub.restore()
+          isValidModbusMsgStub.restore()
+          buildNewMessageObjectStub.restore()
+          buildNewMessageStub.restore()
+          emitStub.restore()
+          done()
+        })
+      })
+    })
+  })
   describe('post', function () {
     it('should fail for invalid node', function (done) {
       helper.load(testFlexGetterNodes, [], function () {
