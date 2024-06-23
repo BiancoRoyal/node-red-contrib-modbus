@@ -1,13 +1,13 @@
-verbose: false
+verbose: true
 instrumentation:
-    globals: ['expect']
+    globals: ['expect', 'should', 'assert', 'chai']
     root: ./src
     default-excludes: true
-    excludes: ['src/icons']
+    excludes: ['icons', 'locales']
     include-all-sources: true
     include-pid: false
     es-modules: true
-    ignoreLeaks: false
+    ignoreLeaks: true
     ui: bdd
     embed-source: false
     variable: __coverage__
@@ -28,21 +28,21 @@ reporting:
         statements: [50, 80]
         lines: [50, 80]
         functions: [50, 80]
-        branches: [50, 80]
+        branches: [50, 70]
 hooks:
     hook-run-in-context: false
     post-require-hook: null
     handle-sigint: false
 check:
     global:
-        statements: 0
-        lines: 0
-        branches: 0
-        functions: 0
+        statements: 80
+        lines: 80
+        branches: 60
+        functions: 80
         excludes: []
     each:
-        statements: 0
-        lines: 0
-        branches: 0
-        functions: 0
+        statements: 90
+        lines: 90
+        branches: 70
+        functions: 90
         excludes: []

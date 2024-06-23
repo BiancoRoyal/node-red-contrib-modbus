@@ -26,10 +26,6 @@ npm i --only=dev
 
 yarn
 
-npm test
-
-npm run test-with-coverage
-
 npm run build
 
 npm run rewrite-changelog

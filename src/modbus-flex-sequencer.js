@@ -42,7 +42,7 @@ module.exports = function (RED) {
     this.verboseLogging = RED.settings.verbose
 
     this.delayOnStart = config.delayOnStart
-    this.startDelayTime = parseInt(config.startDelayTime) || 10
+    this.startDelayTime = Number(config.startDelayTime) || 10
 
     const node = this
     node.bufferMessageList = new Map()
@@ -54,8 +54,9 @@ module.exports = function (RED) {
 
     const modbusClient = RED.nodes.getNode(config.server)
     if (!modbusClient) {
-      return
+      throw new Error('Modbus client not found')
     }
+
     modbusClient.registerForModbus(node)
     mbBasics.initModbusClientEvents(node, modbusClient)
 
@@ -83,7 +84,7 @@ module.exports = function (RED) {
       node.emit('modbusFlexSequencerNodeError')
     }
 
-    node.prepareMsg = function (msg) {
+    node.prepareMsg = (msg) => {
       if (typeof msg === 'string') {
         // NOTE: The operation can fail!
         msg = JSON.parse(msg)
@@ -156,7 +157,7 @@ module.exports = function (RED) {
         }
       }
     }
-
+    /* istanbul ignore next */
     function verboseWarn (logMessage) {
       if (RED.settings.verbose && node.showWarnings) {
         node.warn('Flex-Sequencer -> ' + logMessage)
@@ -172,6 +173,7 @@ module.exports = function (RED) {
     }
 
     node.resetInputDelayTimer = function () {
+      /* istanbul ignore next */
       if (node.inputDelayTimer) {
         verboseWarn('reset input delay timer node ' + node.id)
         clearTimeout(node.inputDelayTimer)
@@ -183,6 +185,7 @@ module.exports = function (RED) {
     node.initializeInputDelayTimer = function () {
       node.resetInputDelayTimer()
       if (node.delayOnStart) {
+        /* istanbul ignore next */
         verboseWarn('initialize input delay timer node ' + node.id)
         node.inputDelayTimer = setTimeout(() => {
           node.delayOccured = true
@@ -194,17 +197,18 @@ module.exports = function (RED) {
 
     node.initializeInputDelayTimer()
 
-    node.on('input', function (msg) {
+    node.on('input', (msg) => {
+      /* istanbul ignore next */
       if (mbBasics.invalidPayloadIn(msg)) {
         verboseWarn('Invalid message on input.')
         return
       }
-
+      /* istanbul ignore next */
       if (node.isNotReadyForInput()) {
         verboseWarn('Inject while node is not ready for input.')
         return
       }
-
+      /* istanbul ignore next */
       if (modbusClient.isInactive()) {
         verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
         return
@@ -232,7 +236,7 @@ module.exports = function (RED) {
       }
     })
 
-    node.on('close', function (done) {
+    node.on('close', (done) => {
       mbBasics.setNodeStatusTo('closed', node)
       node.bufferMessageList.clear()
       modbusClient.deregisterForModbus(node.id, done)

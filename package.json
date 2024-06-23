@@ -7,7 +7,7 @@
     "@open-p4nr/modbus-serial": "https://dl.cloudsmith.io/public/iniationware-gmbh/plus4nodered/npm/open-p4nr/modbus-serial/8.1.0/modbus-serial-8.1.0.tgz",
     "@xstate/fsm": "~2.1.0",
     "bson": "~6.7.0",
-    "debug": "~4.3.4",
+    "debug": "~4.3.5",
     "jsmodbus": "~4.0.10",
     "line-by-line": "~0.1.6",
     "source-map-support": "~0.5.21",
@@ -25,7 +25,7 @@
     "biancoroyal"
   ],
   "engines": {
-    "node": ">=14"
+    "node": ">=18.5"
   },
   "repository": {
     "type": "git",
@@ -67,23 +67,28 @@
   "homepage": "https://plus4nodered.com/",
   "scripts": {
     "changelog": "npm run rewrite-changelog",
-    "test": "standard --fix && mocha ./test --parallel --recursive --reporter dot --timeout 5000",
-    "test:e2e": "standard --fix && mocha './test/e2e/*-test.js' --parallel --recursive --timeout 5000",
-    "test:units": "standard --fix && mocha './test/units/*-test.js' --parallel --recursive --timeout 5000",
-    "test:core": "standard --fix && mocha './test/core/*-test.js' --parallel --recursive --timeout 5000",
-    "test-nyc": "nyc --reporter=html --reporter=text mocha --recursive --timeout=5000",
-    "test-npx": "npx nyc@latest --reporter=html --reporter=text mocha --timeout=5000",
-    "test-with-coverage": "nyc --reporter=lcovonly mocha --recursive --timeout 5000 -R spec && cat ./coverage/lcov.info | codacy-coverage --token $CODACY_COVERAGE_TOKEN && rm -rf ./coverage",
-    "coverage": "standard --fix && gulp build && npm test && nyc --reporter=lcov --reporter=text mocha --recursive --reporter dot --timeout 5000",
-    "coverage-nyc": "nyc report --reporter=text-lcov | coveralls",
-    "build": "standard --fix && gulp",
-    "prepublishOnly": "standard --fix && npm run build && npm run rewrite-changelog && npm test && mocha test --recursive --timeout 5000 --reporter dot && nyc mocha --recursive --timeout 5000",
+    "test": "npm run lint && mocha ./test --parallel --recursive --reporter dot",
+    "test:slow": "npm run lint && mocha ./test --recursive --reporter dot",
+    "test:verbose": "npm run lint && mocha ./test --recursive",
+    "test:withStop": "npm run lint && mocha ./test --recursive --bail",
+    "test:publish": "gulp clean && npm run prepublishOnly",
+    "lint": "standard --fix",
+    "test:e2e": "npm run lint && mocha './test/units/modbus-write-e2e-test.js' --parallel --recursive --reporter dot --timeout 100000",
+    "test:units": "npm run lint && mocha './test/units/modbus-client-test.js' --parallel --recursive --reporter dot --timeout 100000",
+    "test:core": "npm run lint && mocha './test/core/*-test.js' --parallel --recursive",
+    "test-nyc": "nyc --reporter=html --reporter=text mocha --recursive",
+    "test-npx": "npx --yes nyc@latest --reporter=html --reporter=text mocha ./test --parallel --recursive --reporter dot --timeout 10000",
+    "test-with-coverage": "nyc --reporter=lcovonly mocha --recursive -R spec && cat ./coverage/lcov.info | codacy-coverage --token $CODACY_COVERAGE_TOKEN && rm -rf ./coverage",
+    "coverage": "npm run lint && nyc mocha ./test --parallel --recursive --reporter dot --timeout 10000",
+    "coverage-nyc": "npm run lint && nyc report --reporter=text-lcov | coveralls",
+    "build": "npm run lint && gulp",
+    "prepublishOnly": "npm run lint && npm run rewrite-changelog && npm test && mocha test --recursive --reporter dot && npm run test-npx && npm run build",
     "ci-publish": "ci-publish",
     "release": "standard-version -a",
     "release:beta": "standard-version --prerelease beta",
     "release:alpha": "standard-version --prerelease alpha",
     "rewrite-changelog": "gulp changelog",
-    "clean": "gulp clean",
+    "clean": "gulp clean && npm run lint",
     "dev-link": "npm i && npm run build && npm link",
     "dev-unlink": "npm unlink node-red-contrib-modbus -g",
     "dev-link-local": "npm run build && npm link"
@@ -92,7 +97,10 @@
     "@babel/cli": "^7.24.5",
     "@babel/core": "^7.24.5",
     "@babel/preset-env": "^7.24.5",
+    "@babel/register": "^7.24.5",
     "@node-red/nodes": "^3.1.9",
+    "address": "^2.0.1",
+    "chai": "^3.5.0",
     "codacy-coverage": "^3.4.0",
     "conventional-changelog-cli": "^5.0.0",
     "coveralls": "^3.1.1",
@@ -110,8 +118,7 @@
     "js-beautify": "^1.15.1",
     "mocha": "^10.4.0",
     "nock": "^13.5.4",
-    "node-red": "^3.1.9",
-    "node-red-contrib-modbus-flex-server": "^1.0.0",
+    "node-red": "^4.0.0-beta.4",
     "node-red-node-test-helper": "^0.3.4",
     "nyc": "^15.1.0",
     "pump": "^3.0.0",
@@ -129,14 +136,28 @@
     "test": "test"
   },
   "standard": {
+    "env": [
+      "mocha"
+    ],
+    "globals": [
+      "chai",
+      "expect",
+      "should",
+      "assert",
+      "sinon"
+    ],
     "ignore": [
       "code/",
+      "coverage/",
       "node_modules/",
       "examples/",
       "modbus/",
       "docs",
-      "test",
-      "extras"
+      "extras",
+      "test/resources/**",
+      "test/e2e/flows/**",
+      "test/integrations/flows/**",
+      "test/units/flows/**"
     ]
   },
   "funding": {

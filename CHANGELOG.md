@@ -1,16 +1,38 @@
-# [5.40.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.2...v5.40.0) (2024-05-13)
+# [5.40.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.27.2...v5.40.0) (2024-06-23)
 
 
 ### Bug Fixes
 
+* **buffer:** nodejs Buffer alloc update ([9a6350c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/9a6350cd67361f10310629a145f8a595e9f3d85c))
+* **codeql:** version codeql ([163101f](https://github.com/biancoroyal/node-red-contrib-modbus/commit/163101f91c784a5202acd86b0a10302a22414495))
 * **config:** [#442](https://github.com/biancoroyal/node-red-contrib-modbus/issues/442) fixing optional to save correct ([de88e25](https://github.com/biancoroyal/node-red-contrib-modbus/commit/de88e25b10e7e92ea8836d22ee91cb25796f3909))
+* **modbus-client-core:** fixed test cases ([0697df3](https://github.com/biancoroyal/node-red-contrib-modbus/commit/0697df3f4fdf71434e3757f9ae68c6e6db22a948))
+* **modbus-client-flow:** fixed modbus client flow example ([8613c89](https://github.com/biancoroyal/node-red-contrib-modbus/commit/8613c892c54d7c73ca818a5fb34729232fb8acef))
+* **modbus-fc-flex:** fixed test case for modbus flex fc file ([93b22f8](https://github.com/biancoroyal/node-red-contrib-modbus/commit/93b22f8cafe5dc269811cfef78fba1c05dc57c69))
+* **modbus-flex-getter:** fixed port server and tcp port ([b48d92f](https://github.com/biancoroyal/node-red-contrib-modbus/commit/b48d92f28c108a1c6e7b6ad03db7089cfe5b13af))
+* **modbus-flex-write:** fixed flow for modbus flex write ([a31b4c4](https://github.com/biancoroyal/node-red-contrib-modbus/commit/a31b4c40259d4ebc8033fbcd006758186efb347e))
+* **modbus-getter:** fixed test cases of modbus getter file ([693087b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/693087bf3c3a92fa52d82a802c7f561e5b980e65))
+* **modbus-io-core:** fixed error  RangeError [ERR_OUT_OF_RANGE]: ([ab932f3](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ab932f3de4a3c362f73ba701da9fd1b0964fb21e))
+* **modbus-read:** fixed test cases of modbus read file ([5c5879e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/5c5879ecb30ca05e61a66fbc8c1a20ee07bf8b8d))
+* **modbus-write:** fix example flow for modbus write node ([04fd17c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/04fd17c9890ce760e36b2ec9402814accfdc2459))
+* **modbus:** added a new example flow and fixed test cases ([8181fd4](https://github.com/biancoroyal/node-red-contrib-modbus/commit/8181fd4f05abff6f57a7b4de636689e890cf0ea9))
+* **modbus:** commented the test cases that are failed ([5998a5d](https://github.com/biancoroyal/node-red-contrib-modbus/commit/5998a5d2fceaaf1b8ba972ddba771b70e2a4c2a2))
+* **test_cases:** fixed test flow of modbus queue info ([732fa9c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/732fa9c57e6b0c536bc50378f8e39081d12e11bc))
+* **test_cases:** improved test cases ([bdafa18](https://github.com/biancoroyal/node-red-contrib-modbus/commit/bdafa18508069876ca522ace6e4a73be4c272c49))
+* **test_flows:** fixed old test flows of read node, queue info node ([37b73ee](https://github.com/biancoroyal/node-red-contrib-modbus/commit/37b73ee0c845bb63b9b00d768b52bf8f76898290))
+* **testcase:** fixed test case assertion ([803e7e0](https://github.com/biancoroyal/node-red-contrib-modbus/commit/803e7e08a53052f02ef6d0f4fa517353c228a88b))
+* **test:** fixed  test case for modbus read node ([8fb71e9](https://github.com/biancoroyal/node-red-contrib-modbus/commit/8fb71e9914ceb43249d16498054c5ed2a14cbd5a))
+* **test:** fixed port issue ([28115fe](https://github.com/biancoroyal/node-red-contrib-modbus/commit/28115fe2e5e27a5cb66a403a3d68ee65c96a241b))
+* **test:** fixed test case ([c16da3c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/c16da3c4c23b06856e15de9138ae9943d5a7a0dc))
+* **tests:** some test fixes ([45c3c86](https://github.com/biancoroyal/node-red-contrib-modbus/commit/45c3c86d137a7f2dc929d0e3b189efa026df88b5))
 
 
 ### Features
 
 * **flex-fc:** add load button ([04fb46e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/04fb46ed4d2764276b7bcfae1800f9ac342da85a))
 * **flex-fc:** add load button for an improved ui experience ([895f446](https://github.com/biancoroyal/node-red-contrib-modbus/commit/895f446bd99c8ea65bb5f96f7e4d0d79dec3da8e))
-* **flex-fc:** map file needs to be json ([74d4522](https://github.com/biancoroyal/node-red-contrib-modbus/commit/74d452254264e8c805a48afac5921a7c5cd68c49))
+* **flex-fc:** map file needs to be json ([28f6010](https://github.com/biancoroyal/node-red-contrib-modbus/commit/28f60102e07b54d4bd5b86660b4d382341dd54b3))
+* **modbus-client-core:** Improve code in modbus-client-core.js file ([f0691e2](https://github.com/biancoroyal/node-red-contrib-modbus/commit/f0691e2cdf8e0986912d60d31432a592de264769))
 * **modbus:** new option for the flex-fc to get input msg ([5ff8167](https://github.com/biancoroyal/node-red-contrib-modbus/commit/5ff81672ac9c575a71bb241fc5861f25357012c8))
 
 

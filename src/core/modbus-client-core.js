@@ -23,55 +23,18 @@ de.biancoroyal.modbus.core.client.networkErrors = ['ESOCKETTIMEDOUT', 'ETIMEDOUT
 de.biancoroyal.modbus.core.client.createStateMachineService = function () {
   this.stateLogEnabled = false
 
-  // failure is a general gate point in states to jump between states
   return this.XStateFSM.createMachine({
     id: 'modbus',
     initial: 'new',
     states: {
-      new: {
-        on: { INIT: 'init', BREAK: 'broken', STOP: 'stopped' }
-      },
-      broken: {
-        on: { INIT: 'init', STOP: 'stopped', FAILURE: 'failed', ACTIVATE: 'activated', RECONNECT: 'reconnecting' }
-      },
-      reconnecting: {
-        on: { INIT: 'init', STOP: 'stopped' }
-      },
-      init: {
-        on: { OPENSERIAL: 'opened', CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' }
-      },
-      opened: {
-        on: { CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', STOP: 'stopped', SWITCH: 'switch' }
-      },
-      connected: {
-        on: { CLOSE: 'closed', ACTIVATE: 'activated', QUEUE: 'queueing', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' }
-      },
-      activated: {
-        on: {
-          READ: 'reading',
-          WRITE: 'writing',
-          QUEUE: 'queueing',
-          BREAK: 'broken',
-          CLOSE: 'closed',
-          FAILURE: 'failed',
-          STOP: 'stopped',
-          SWITCH: 'switch'
-        }
-      },
-      queueing: {
-        on: {
-          ACTIVATE: 'activated',
-          SEND: 'sending',
-          READ: 'reading',
-          WRITE: 'writing',
-          EMPTY: 'empty',
-          BREAK: 'broken',
-          CLOSE: 'closed',
-          FAILURE: 'failed',
-          STOP: 'stopped',
-          SWITCH: 'switch'
-        }
-      },
+      new: { on: { INIT: 'init', BREAK: 'broken', STOP: 'stopped' } },
+      broken: { on: { INIT: 'init', STOP: 'stopped', FAILURE: 'failed', ACTIVATE: 'activated', RECONNECT: 'reconnecting' } },
+      reconnecting: { on: { INIT: 'init', STOP: 'stopped' } },
+      init: { on: { OPENSERIAL: 'opened', CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' } },
+      opened: { on: { CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', STOP: 'stopped', SWITCH: 'switch' } },
+      connected: { on: { CLOSE: 'closed', ACTIVATE: 'activated', QUEUE: 'queueing', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' } },
+      activated: { on: { READ: 'reading', WRITE: 'writing', QUEUE: 'queueing', BREAK: 'broken', CLOSE: 'closed', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' } },
+      queueing: { on: { ACTIVATE: 'activated', SEND: 'sending', READ: 'reading', WRITE: 'writing', EMPTY: 'empty', BREAK: 'broken', CLOSE: 'closed', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' } },
       empty: { on: { QUEUE: 'queueing', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', STOP: 'stopped', SWITCH: 'switch' } },
       sending: { on: { ACTIVATE: 'activated', READ: 'reading', WRITE: 'writing', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' } },
       reading: { on: { ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' } },
@@ -383,6 +346,7 @@ de.biancoroyal.modbus.core.client.writeModbusByFunctionCodeSixteen = function (n
         coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
       } else {
         coreClient.activateSendingOnFailure(node, cberr, err, msg)
+        /* istanbul ignore next */
         node.modbusErrorHandling(err)
       }
     })
@@ -403,6 +367,7 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
       coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg)
       return
     }
+    /* istanbul ignore next */
     delayTime = 500
   }
 
@@ -446,7 +411,6 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
     } catch (err) {
       coreClient.activateSendingOnFailure(node, cberr, err, msg)
       nodeLog(err.message)
-      node.modbusErrorHandling(err)
     }
   }, delayTime)
 }

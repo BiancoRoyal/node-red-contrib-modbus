@@ -10,22 +10,28 @@
 
 'use strict'
 
+const { PortHelper } = require('./test-helper-port')
+const portHelper = new PortHelper()
+
 module.exports = {
   cleanFlowPositionData: (jsonFlow) => {
-    let cleanFlow = []
+    const cleanFlow = []
     // flow is an array of JSON objects with x,y,z from the Node-RED export
-    jsonFlow.forEach( (item, index, array) => {
-      let newObject = JSON.parse(JSON.stringify(item))
-      if(newObject.type === 'helper') {
-        cleanFlow.push({"id": newObject.id, "type": "helper", wires: newObject.wires})
+    jsonFlow.forEach((item, index, array) => {
+      const newObject = JSON.parse(JSON.stringify(item))
+      if (newObject.type === 'helper') {
+        cleanFlow.push({ id: newObject.id, type: 'helper', wires: newObject.wires })
       } else {
-        delete newObject["x"]
-        delete newObject["y"]
-        delete newObject["z"]
+        delete newObject.x
+        delete newObject.y
+        delete newObject.z
         cleanFlow.push(newObject)
       }
-    } )
+    })
 
     return cleanFlow
+  },
+  getPort: async () => {
+    return await portHelper.getPort()
   }
 }

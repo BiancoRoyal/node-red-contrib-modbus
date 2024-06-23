@@ -32,7 +32,7 @@ module.exports = function (RED) {
     this.serverPort = parseInt(config.serverPort)
     this.responseDelay = parseInt(config.responseDelay) || 1
     this.delayUnit = config.delayUnit
-
+    this.showStatusActivities = config.showStatusActivities || false
     this.coilsBufferSize = parseInt(config.coilsBufferSize * bufferFactor)
     this.holdingBufferSize = parseInt(config.holdingBufferSize * bufferFactor)
     this.inputBufferSize = parseInt(config.inputBufferSize * bufferFactor)
@@ -51,6 +51,7 @@ module.exports = function (RED) {
 
     let modbusLogLevel = 'warn'
     if (RED.settings.verbose) {
+      /* istanbul ignore next */
       modbusLogLevel = 'debug'
     }
 
@@ -127,12 +128,19 @@ module.exports = function (RED) {
 
     node.on('close', function (done) {
       mbBasics.setNodeStatusTo('closed', node)
+
       if (node.netServer) {
         node.netServer.close(() => {
           internalDebugLog('Modbus Server closed')
           done()
+          node.removeAllListeners()
+          node.netServer.removeAllListeners()
         })
+      } else {
+        done()
+        node.removeAllListeners()
       }
+
       node.modbusServer = null
     })
   }
@@ -140,6 +148,7 @@ module.exports = function (RED) {
   try {
     RED.nodes.registerType('modbus-server', ModbusServer)
   } catch (err) {
+    /* istanbul ignore next */
     internalDebugLog(err.message)
   }
 }

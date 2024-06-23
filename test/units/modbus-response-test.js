@@ -19,7 +19,6 @@ const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
 const testFlows = require('./flows/modbus-response-flows')
-const mBasics = require('../../src/modbus-basics')
 
 describe('Response node Testing', function () {
   before(function (done) {
@@ -64,7 +63,7 @@ describe('Response node Testing', function () {
     it('should work with short data', function (done) {
       helper.load(testResponseNodes, testFlows.testShortLengthInjectDataFlow, function () {
         const modbusResponseNode = helper.getNode('f1ff9252.b5ce18')
-        modbusResponseNode.on('input', function (msg) {
+        modbusResponseNode.on('input', function () {
           modbusResponseNode.should.have.property('name', 'shortLengthInjectData')
           done()
         })
@@ -74,7 +73,7 @@ describe('Response node Testing', function () {
     it('should work with long data', function (done) {
       helper.load(testResponseNodes, testFlows.testLongLengthInjectDataFlow, function () {
         const modbusResponseNode = helper.getNode('f1ff9252.b5ce18')
-        modbusResponseNode.on('input', function (msg) {
+        modbusResponseNode.on('input', function () {
           modbusResponseNode.should.have.property('name', 'longLengthInjectData')
           done()
         })
@@ -84,7 +83,7 @@ describe('Response node Testing', function () {
     it('should work with short address', function (done) {
       helper.load(testResponseNodes, testFlows.testShortLengthInjectAddressFlow, function () {
         const modbusResponseNode = helper.getNode('f1ff9252.b5ce18')
-        modbusResponseNode.on('input', function (msg) {
+        modbusResponseNode.on('input', function () {
           modbusResponseNode.should.have.property('name', 'shortLengthInjectAddress')
           done()
         })
@@ -94,7 +93,7 @@ describe('Response node Testing', function () {
     it('should work with long address', function (done) {
       helper.load(testResponseNodes, testFlows.testLongLengthInjectAddressFlow, function () {
         const modbusResponseNode = helper.getNode('f1ff9252.b5ce18')
-        modbusResponseNode.on('input', function (msg) {
+        modbusResponseNode.on('input', function () {
           modbusResponseNode.should.have.property('name', 'longLengthInjectAddress')
           done()
         })
@@ -104,7 +103,7 @@ describe('Response node Testing', function () {
     it('should work with just payload', function (done) {
       helper.load(testResponseNodes, testFlows.testInjectJustPayloadFlow, function () {
         const modbusResponseNode = helper.getNode('f1ff9252.b5ce18')
-        modbusResponseNode.on('input', function (msg) {
+        modbusResponseNode.on('input', function () {
           modbusResponseNode.should.have.property('name', 'injectJustPayload')
           done()
         })
@@ -114,7 +113,9 @@ describe('Response node Testing', function () {
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      helper.request().post('/modbus-response/invalid').expect(404).end(done)
+      helper.load(testResponseNodes, testFlows.testInjectJustPayloadFlow, function () {
+        helper.request().post('/modbus-response/invalid').expect(404).end(done)
+      })
     })
   })
 })

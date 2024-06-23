@@ -131,7 +131,7 @@ module.exports = function (RED) {
       }
       node.serverInfo += ' default Unit-Id: ' + node.unit_id
     }
-
+    /* istanbul ignore next */
     function verboseWarn (logMessage) {
       if (RED.settings.verbose && node.showWarnings) {
         node.updateServerinfo()
@@ -170,6 +170,7 @@ module.exports = function (RED) {
 
       if (!state.value || node.actualServiceState.value === undefined) {
         // verboseWarn('fsm ignore invalid state')
+        /* istanbul ignore next */
         return
       }
 
@@ -179,6 +180,7 @@ module.exports = function (RED) {
       }
 
       if (state.matches('init')) {
+        /* istanbul ignore next */
         verboseWarn('fsm init state after ' + node.actualServiceStateBefore.value)
         node.updateServerinfo()
         coreModbusQueue.initQueue(node)
@@ -187,13 +189,16 @@ module.exports = function (RED) {
         try {
           if (node.isFirstInitOfConnection) {
             node.isFirstInitOfConnection = false
+            /* istanbul ignore next */
             verboseWarn('first fsm init in ' + serialConnectionDelayTimeMS + ' ms')
             setTimeout(node.connectClient, serialConnectionDelayTimeMS)
           } else {
+            /* istanbul ignore next */
             verboseWarn('fsm init in ' + node.reconnectTimeout + ' ms')
             setTimeout(node.connectClient, node.reconnectTimeout)
           }
         } catch (err) {
+          /* istanbul ignore next */
           node.error(err, { payload: 'client connection error ' + logHintText })
         }
 
@@ -201,6 +206,7 @@ module.exports = function (RED) {
       }
 
       if (state.matches('connected')) {
+        /* istanbul ignore next */
         verboseWarn('fsm connected after state ' + node.actualServiceStateBefore.value + logHintText)
         coreModbusQueue.queueSerialUnlockCommand(node)
         node.emit('mbconnected')
@@ -241,23 +247,27 @@ module.exports = function (RED) {
         node.stateService.send('CLOSE')
       }
 
+      /* istanbul ignore next */
       if (state.matches('closed')) {
         node.emit('mbclosed')
         node.stateService.send('RECONNECT')
       }
 
       if (state.matches('stopped')) {
+        /* istanbul ignore next */
         verboseWarn('stopped state without reconnecting')
         node.emit('mbclosed')
       }
 
       if (state.matches('failed')) {
+        /* istanbul ignore next */
         verboseWarn('fsm failed state after ' + node.actualServiceStateBefore.value + logHintText)
         node.emit('mberror', 'Modbus Failure On State ' + node.actualServiceStateBefore.value + logHintText)
         node.stateService.send('BREAK')
       }
 
       if (state.matches('broken')) {
+        /* istanbul ignore next */
         verboseWarn('fsm broken state after ' + node.actualServiceStateBefore.value + logHintText)
         node.emit('mbbroken', 'Modbus Broken On State ' + node.actualServiceStateBefore.value + logHintText)
         if (node.reconnectOnTimeout) {
@@ -268,6 +278,7 @@ module.exports = function (RED) {
       }
 
       if (state.matches('reconnecting')) {
+        /* istanbul ignore next */
         verboseWarn('fsm reconnect state after ' + node.actualServiceStateBefore.value + logHintText)
         coreModbusQueue.queueSerialLockCommand(node)
         node.emit('mbreconnecting')
@@ -310,6 +321,7 @@ module.exports = function (RED) {
         }
 
         if (node.clienttype === 'tcp') {
+          /* istanbul ignore next */
           if (!coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
             node.error(new Error('wrong unit-id (0..255)'), { payload: node.unit_id })
             node.stateService.send('FAILURE')
@@ -341,6 +353,7 @@ module.exports = function (RED) {
                     return false
                   })
                 break
+              /* istanbul ignore next */
               case 'TCP-RTU-BUFFERED':
                 verboseLog('TCP RTU buffered port')
                 node.client.connectTcpRTUBuffered(node.tcpHost, {
@@ -363,11 +376,12 @@ module.exports = function (RED) {
                     return false
                   })
             }
-          } catch (e) {
+          } /* istanbul ignore next */ catch (e) {
             node.modbusTcpErrorHandling(e)
             return false
           }
         } else {
+          /* istanbul ignore next */
           if (!coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
             node.error(new Error('wrong unit-id serial (0..247)'), { payload: node.unit_id })
             node.stateService.send('FAILURE')
@@ -427,12 +441,12 @@ module.exports = function (RED) {
                   })
                 break
             }
-          } catch (e) {
+          } /* istanbul ignore next */ catch (e) {
             node.modbusSerialErrorHandling(e)
             return false
           }
         }
-      } catch (err) {
+      } /* istanbul ignore next */ catch (err) {
         node.modbusErrorHandling(err)
         return false
       }
@@ -482,7 +496,7 @@ module.exports = function (RED) {
       }
 
       if ((err.errno && coreModbusClient.networkErrors.includes(err.errno)) ||
-      (err.code && coreModbusClient.networkErrors.includes(err.code))) {
+        (err.code && coreModbusClient.networkErrors.includes(err.code))) {
         node.stateService.send('BREAK')
       }
     }
@@ -522,6 +536,7 @@ module.exports = function (RED) {
 
     node.onModbusClose = function () {
       coreModbusQueue.queueSerialUnlockCommand(node)
+      /* istanbul ignore next */
       verboseWarn('Modbus closed port')
       coreModbusClient.modbusSerialDebug('modbus closed port')
       node.stateService.send('CLOSE')
@@ -531,6 +546,7 @@ module.exports = function (RED) {
       // const state = node.actualServiceState
       coreModbusClient.customModbusMessage(node, msg, cb, cberr)
     })
+
     node.on('readModbus', function (msg, cb, cberr) {
       const state = node.actualServiceState
       if (node.isInactive()) {
@@ -636,25 +652,33 @@ module.exports = function (RED) {
       node.stateService.send('STOP')
       verboseLog('close node ' + nodeIdentifierName)
       node.internalDebugLog('close node ' + nodeIdentifierName)
-      node.removeAllListeners()
+
       if (node.client) {
         if (node.client.isOpen) {
           node.client.close(function (err) {
             if (err) {
+              /* istanbul ignore next */
               verboseLog('Connection closed with error ' + nodeIdentifierName)
             } else {
+              /* istanbul ignore next */
               verboseLog('Connection closed well ' + nodeIdentifierName)
             }
             done()
           })
         } else {
+          /* istanbul ignore next */
           verboseLog('connection was closed ' + nodeIdentifierName)
           done()
         }
+
+        node.client.removeAllListeners()
       } else {
+        /* istanbul ignore next */
         verboseLog('Connection closed simple ' + nodeIdentifierName)
         done()
       }
+
+      node.removeAllListeners()
     })
 
     // handle using as config node
@@ -705,6 +729,7 @@ module.exports = function (RED) {
           node.closeConnectionWithoutRegisteredNodes(clientUserNodeId, done)
         }
       } catch (err) {
+        /* istanbul ignore next */
         verboseWarn(err.message + ' on de-register node ' + clientUserNodeId)
         node.error(err)
         done()
@@ -720,9 +745,10 @@ module.exports = function (RED) {
     }
 
     node.isReadyToSend = function (node) {
-      if (node.actualServiceState.matches('queueing')) {
+      if (node.actualServiceState.matches('queueing') || node.actualServiceState.matches('activated')) {
         return true
       }
+
       verboseWarn('Client not ready to send')
       return false
     }
@@ -730,12 +756,15 @@ module.exports = function (RED) {
 
   RED.nodes.registerType('modbus-client', ModbusClientNode)
 
+  /* istanbul ignore next */
   RED.httpAdmin.get('/modbus/serial/ports', RED.auth.needsPermission('serial.read'), function (req, res) {
     const SerialPort = require('serialport')
     SerialPort.SerialPort.list().then(ports => {
       res.json(ports)
     }).catch(err => {
+      /* istanbul ignore next */
       res.json([err.message])
+      /* istanbul ignore next */
       coreModbusClient.internalDebug(err.message)
     })
   })

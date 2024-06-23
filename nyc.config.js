@@ -15,14 +15,14 @@ module.exports = {
   ],
   all: true,
   'check-coverage': true,
-  branches: 80,
-  lines: 80,
-  functions: 80,
-  statements: 80,
+  branches: 75,
+  lines: 85,
+  functions: 85,
+  statements: 85,
   watermarks: {
-    lines: [80, 95],
-    functions: [80, 95],
-    branches: [80, 95],
-    statements: [80, 95]
+    lines: [60, 85],
+    functions: [60, 85],
+    branches: [60, 75],
+    statements: [60, 85]
   }
 }

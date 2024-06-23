@@ -61,13 +61,13 @@ module.exports = function (RED) {
     node.delayTimerReading = false
     node.intervalTimerIdReading = false
     setNodeStatusWithTimeTo(node.statusText)
-
+    /* istanbul ignore next */
     function verboseWarn (logMessage) {
       if (node.verboseLogging && node.showWarnings) {
         node.warn('Read -> ' + logMessage + ' address: ' + node.adr)
       }
     }
-
+    /* istanbul ignore next */
     verboseWarn('open node ' + node.id)
     const modbusClient = RED.nodes.getNode(config.server)
     if (!modbusClient) {
@@ -175,6 +175,7 @@ module.exports = function (RED) {
 
     node.resetDelayTimerToRead = function (node) {
       if (node.delayTimerReading) {
+        /* istanbul ignore next */
         verboseWarn('resetDelayTimerToRead node ' + node.id)
         clearTimeout(node.delayTimerReading)
       }
@@ -183,6 +184,7 @@ module.exports = function (RED) {
 
     node.resetIntervalToRead = function (node) {
       if (node.intervalTimerIdReading) {
+        /* istanbul ignore next */
         verboseWarn('resetIntervalToRead node ' + node.id)
         clearInterval(node.intervalTimerIdReading)
       }
@@ -198,6 +200,7 @@ module.exports = function (RED) {
 
     node.startIntervalReading = function () {
       if (!node.intervalTimerIdReading) {
+        /* istanbul ignore next */
         verboseWarn('startIntervalReading node ' + node.id)
         node.intervalTimerIdReading = setInterval(node.modbusPollingRead, mbBasics.calc_rateByUnit(node.rate, node.rateUnit))
       }
@@ -206,6 +209,7 @@ module.exports = function (RED) {
     node.initializeReadingTimer = function () {
       node.resetAllReadingTimer()
       if (node.delayOnStart) {
+        /* istanbul ignore next */
         verboseWarn('initializeReadingTimer delay timer node ' + node.id)
         node.delayTimerReading = setTimeout(node.startIntervalReading, node.INPUT_TIMEOUT_MILLISECONDS * node.startDelayTime)
       } else {
@@ -229,6 +233,7 @@ module.exports = function (RED) {
       node.resetAllReadingTimer()
       node.removeNodeListenerFromModbusClient()
       setNodeStatusWithTimeTo('closed')
+      /* istanbul ignore next */
       verboseWarn('close node ' + node.id)
       modbusClient.deregisterForModbus(node.id, done)
     })

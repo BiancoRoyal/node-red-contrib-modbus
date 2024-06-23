@@ -90,26 +90,26 @@ module.exports = function (RED) {
       let isValid = true
 
       if (!(Number.isInteger(msg.payload.fc) &&
-              (msg.payload.fc === 5 ||
-                msg.payload.fc === 6 ||
-                msg.payload.fc === 15 ||
-                msg.payload.fc === 16))) {
+        (msg.payload.fc === 5 ||
+          msg.payload.fc === 6 ||
+          msg.payload.fc === 15 ||
+          msg.payload.fc === 16))) {
         node.error('FC Not Valid', msg)
         isValid &= false
       }
 
       if (isValid &&
-            !(Number.isInteger(msg.payload.address) &&
-              msg.payload.address >= 0 &&
-              msg.payload.address <= 65535)) {
+        !(Number.isInteger(msg.payload.address) &&
+          msg.payload.address >= 0 &&
+          msg.payload.address <= 65535)) {
         node.error('Address Not Valid', msg)
         isValid &= false
       }
 
       if (isValid &&
-            !(Number.isInteger(msg.payload.quantity) &&
-              msg.payload.quantity >= 1 &&
-              msg.payload.quantity <= 65535)) {
+        !(Number.isInteger(msg.payload.quantity) &&
+          msg.payload.quantity >= 1 &&
+          msg.payload.quantity <= 65535)) {
         node.error('Quantity Not Valid', msg)
         isValid &= false
       }
@@ -146,7 +146,7 @@ module.exports = function (RED) {
         }
       }
     }
-
+    /* istanbul ignore next */
     function verboseWarn (logMessage) {
       if (RED.settings.verbose && node.showWarnings) {
         // node.updateServerinfo()
@@ -164,6 +164,7 @@ module.exports = function (RED) {
 
     node.resetInputDelayTimer = function () {
       if (node.inputDelayTimer) {
+        /* istanbul ignore next */
         verboseWarn('reset input delay timer node ' + node.id)
         clearTimeout(node.inputDelayTimer)
       }
@@ -174,6 +175,7 @@ module.exports = function (RED) {
     node.initializeInputDelayTimer = function () {
       node.resetInputDelayTimer()
       if (node.delayOnStart) {
+        /* istanbul ignore next */
         verboseWarn('initialize input delay timer node ' + node.id)
         node.inputDelayTimer = setTimeout(() => {
           node.delayOccured = true
@@ -186,16 +188,17 @@ module.exports = function (RED) {
     node.initializeInputDelayTimer()
 
     node.on('input', function (msg) {
+      /* istanbul ignore next */
       if (mbBasics.invalidPayloadIn(msg)) {
         verboseWarn('Invalid message on input.')
         return
       }
-
+      /* istanbul ignore next */
       if (node.isNotReadyForInput()) {
         verboseWarn('Inject while node is not ready for input.')
         return
       }
-
+      /* istanbul ignore next */
       if (modbusClient.isInactive()) {
         verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
         return false

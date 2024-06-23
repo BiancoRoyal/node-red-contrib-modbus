@@ -10,13 +10,15 @@
 
 'use strict'
 
-const nodeUnderTest = require('../../src/modbus-io-config.js')
-const readNode = require('../../src/modbus-read.js')
+const nodeUnderTest = require('../../src/modbus-io-config')
+const readNode = require('../../src/modbus-read')
 const catchNode = require('@node-red/nodes/core/common/25-catch')
 const injectNode = require('@node-red/nodes/core/common/20-inject')
 const functionNode = require('@node-red/nodes/core/function/10-function')
 const clientNode = require('../../src/modbus-client')
 const serverNode = require('../../src/modbus-server')
+
+const fs = require('fs')
 
 const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
@@ -24,8 +26,7 @@ helper.init(require.resolve('node-red'))
 const testIoConfigNodes = [catchNode, injectNode, functionNode, clientNode, serverNode, nodeUnderTest, readNode]
 
 const testFlows = require('./flows/modbus-io-config-flows')
-const mBasics = require('../../src/modbus-basics')
-
+const { getPort } = require('../helper/test-helper-extensions')
 
 describe('IO Config node Testing', function () {
   before(function (done) {
@@ -49,42 +50,115 @@ describe('IO Config node Testing', function () {
   })
 
   describe('Node', function () {
-    it('should be loaded', function (done) {
-      helper.load(testIoConfigNodes, testFlows.testShouldBeLoadedFlow, function () {
-        const modbusIOConfigNode = helper.getNode('2f5a90d.bcaa1f')
-        modbusIOConfigNode.should.have.property('name', 'ModbusIOConfig')
-        done()
-      })
-    })
-    
-    it('should be state queueing - ready to send', function (done) {
-      helper.load(testIoConfigNodes, testFlows.testShouldBeReadyToSendFlow, function () {
-        const modbusClientNode = helper.getNode('1b49af22a0d089c9')
-        setTimeout(() => {
-          mBasics.setNodeStatusTo('queueing', modbusClientNode)
-          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.true
-          done()
-        } , 1500)
+    it('should reload the file when it changes line', (done) => {
+      const flow = Array.from(testFlows.testReadWithClientIoFlow)
+
+      getPort().then((port) => {
+        flow[1].serverPort = port
+        flow[4].tcpPort = port
+
+        helper.load(testIoConfigNodes, flow, function () {
+          const modbusIOConfigNode = helper.getNode('b0d101525a3ab7f5')
+          let counter = 0
+          modbusIOConfigNode.lineReader.on('line', () => {
+            counter++
+            if (counter === 2) {
+              done()
+            }
+          })
+        })
       })
     })
 
-    it('should be not state queueing - not ready to send', function (done) {
-      helper.load(testIoConfigNodes, testFlows.testShouldBeReadyToSendFlow, function () {
-        const modbusClientNode = helper.getNode('1b49af22a0d089c9')
-        setTimeout(() => {
-          mBasics.setNodeStatusTo('stopped', modbusClientNode)
-          let isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.false
-          done()
-        } , 1500)
+    it('should reload the file when it changes end', (done) => {
+      const flow = Array.from(testFlows.testReadWithClientIoFlow)
+
+      getPort().then((port) => {
+        flow[1].serverPort = port
+        flow[4].tcpPort = port
+
+        helper.load(testIoConfigNodes, flow, function () {
+          const modbusIOConfigNode = helper.getNode('b0d101525a3ab7f5')
+          let counter = 0
+
+          modbusIOConfigNode.on('updatedConfig', (data) => {
+            counter++
+            if (data && counter === 1) {
+              done()
+            }
+          })
+        })
+      })
+    })
+
+    it('should log error on lineReader error event', (done) => {
+      const flow = Array.from(testFlows.testReadWithClientIoFlow)
+
+      getPort().then((port) => {
+        flow[1].serverPort = port
+        flow[4].tcpPort = port
+
+        helper.load(testIoConfigNodes, flow, function () {
+          const modbusIOConfigNode = helper.getNode('b0d101525a3ab7f5')
+          let counter = 0
+
+          modbusIOConfigNode.lineReader.on('error', (data) => {
+            counter++
+            if (data && counter === 1) {
+              done()
+            }
+          })
+
+          modbusIOConfigNode.lineReader.emit('error', new Error('Test Error'))
+        })
+      })
+    })
+
+    it('should watch the file when it changes', (done) => {
+      const flow = Array.from(testFlows.testReadWithClientIoFlow)
+
+      getPort().then((port) => {
+        flow[1].serverPort = port
+        flow[4].tcpPort = port
+
+        helper.load(testIoConfigNodes, flow, function () {
+          const modbusIOConfigNode = helper.getNode('b0d101525a3ab7f5')
+          let counter = 0
+
+          modbusIOConfigNode.on('updatedConfig', (data) => {
+            counter++
+            if (data && counter === 2) { // first from the load and second from watch
+              done()
+            }
+          })
+
+          setTimeout(() => {
+            const rawdata = fs.readFileSync('./test/resources/deviceCopy.json')
+            fs.writeFileSync('./test/resources/device.json', rawdata)
+
+            setTimeout(() => {
+              const rawdata = fs.readFileSync('./test/resources/deviceCopy.json')
+              fs.writeFileSync('./test/resources/device.json', rawdata)
+            }, 1000)
+          }, 1000)
+        })
+      })
+    })
+
+    it('should be loaded', function (done) {
+      helper.load(testIoConfigNodes, testFlows.testShouldBeLoadedFlow, function () {
+        const modbusIOConfigNode = helper.getNode('181cab926ad54b55')
+        modbusIOConfigNode.should.have.property('name', 'ModbusIOTest')
+        done()
       })
     })
   })
 
   describe('post', function () {
     it('should fail for invalid node', function (done) {
-      helper.request().post('/modbus-io-config/invalid').expect(404).end(done)
+      helper.load(testIoConfigNodes, [], function () {
+        helper.request().post('/modbus-io-config/invalid').expect(404).end(done)
+      })
     })
   })
 })

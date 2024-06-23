@@ -1,6 +1,7 @@
 # Version History
 
 ## Node-RED v3.x versions:
+* Node.js 20.x will be supported with v5.40+
 * Node.js 18.x will be supported with v5.22+
 * Node.js 16.x will be supported with v5.22+
 
@@ -17,7 +18,7 @@
 
 ## Node-RED v0.x versions:
 * Node.js 10.x is supported with v4.x
-* Node.js  8.x is supported with v3.x
-* Node.js  6.x is supported with v2.x
-* Node.js  4.x is supported with v1.x
+* Node.js 8.x is supported with v3.x
+* Node.js 6.x is supported with v2.x
+* Node.js 4.x is supported with v1.x
 

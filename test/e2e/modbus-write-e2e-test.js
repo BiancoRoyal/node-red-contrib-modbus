@@ -10,21 +10,21 @@
 
 'use strict'
 
-var injectNode = require('@node-red/nodes/core/common/20-inject')
-var functionNode = require('@node-red/nodes/core/function/10-function')
-var commentNode = require('@node-red/nodes/core/common/90-comment.js')
+const injectNode = require('@node-red/nodes/core/common/20-inject')
+const functionNode = require('@node-red/nodes/core/function/10-function')
+const commentNode = require('@node-red/nodes/core/common/90-comment.js')
 
-var modbusServerNode = require('../../src/modbus-server.js')
-var modbusClientNode = require('../../src/modbus-client.js')
-var modbusWriteNode = require('../../src/modbus-write.js')
-var modbusResponseNode = require('../../src/modbus-response.js')
+const modbusServerNode = require('../../src/modbus-server.js')
+const modbusClientNode = require('../../src/modbus-client.js')
+const modbusWriteNode = require('../../src/modbus-write.js')
+const modbusResponseNode = require('../../src/modbus-response.js')
 
-var helper = require('node-red-node-test-helper')
+const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 
 const nodeList = [injectNode, functionNode, commentNode, modbusServerNode, modbusClientNode, modbusResponseNode, modbusWriteNode]
 
-var testFlows = require('./flows/modbus-write-e2e-flows')
+const testFlows = require('./flows/modbus-write-e2e-flows')
 const receive = require('../helper/receive')
 
 describe('Client Modbus Integration', function () {
@@ -52,9 +52,9 @@ describe('Client Modbus Integration', function () {
     it('should write Modbus via TCP', function (done) {
       helper.load(nodeList, testFlows.testFlowWritingWithoutInject, function () {
         const writeNode = helper.getNode('409b03f21dcb23ad')
-        receive( writeNode, { payload: true } )
+        receive(writeNode, { payload: true })
         writeNode.should.have.property('name', 'ModbusTestWrite')
-        receive( writeNode, { payload: false } )
+        receive(writeNode, { payload: false })
         setTimeout(done, 1000)
       })
     })

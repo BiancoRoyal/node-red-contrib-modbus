@@ -24,7 +24,8 @@
       holdingBufferSize: {value: 10000, validate: RED.validators.number()},
       inputBufferSize: {value: 10000, validate: RED.validators.number()},
       discreteBufferSize: {value: 10000, validate: RED.validators.number()},
-      showErrors: {value: false}
+      showErrors: {value: false},
+      showStatusActivities: {value: false},
     },
     inputs: 1,
     outputs: 5,
@@ -79,6 +80,11 @@
     </div>
     <hr>
     <div class="form-row">
+        <label style="min-width:190px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
+        data-i18n="modbus-contrib.label.showActivities"></span></label>
+        <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
+    </div>
+    <div class="form-row">
         <label style="min-width:190px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
         data-i18n="modbus-contrib.label.showErrors"></span></label>
         <input type="checkbox" id="node-input-showErrors" style="max-width:30px">
@@ -102,6 +108,7 @@
     <p>Output 2: coils Buffer, type, msg</p>
     <p>Output 3: input Buffer, type, msg</p>
     <p>Output 4: discrete Buffer, type, msg</p>
+    <p>Output 5: request msg</p>
     <br>
     <p>Input:
         On injecting a special payload, you can write directly to any register.
