@@ -143,7 +143,7 @@ describe('Server node Testing', function () {
         flow[0].serverPort = port
 
         helper.load(testServerNodes, flow, function () {
-          const modbusServer = helper.getNode('178284ea.5055ab')
+          const modbusServer = helper.getNode('374a21ec15deaee9')
           let errorMessage = ''
           modbusServer.error = function (msg) {
             errorMessage = msg
@@ -163,7 +163,7 @@ describe('Server node Testing', function () {
         flow[0].serverPort = port
 
         helper.load(testServerNodes, flow, function () {
-          const modbusServer = helper.getNode('178284ea.5055ab')
+          const modbusServer = helper.getNode('374a21ec15deaee9')
           const msg = {
             payload: 'invalid message'
           }
@@ -188,7 +188,7 @@ describe('Server node Testing', function () {
         flow[0].serverPort = port
 
         helper.load(testServerNodes, flow, function () {
-          const modbusServer = helper.getNode('178284ea.5055ab')
+          const modbusServer = helper.getNode('46daaa5c3a54773d')
           const msg = {
             payload: {
               register: 'coils',
@@ -224,7 +224,7 @@ describe('Server node Testing', function () {
         flow[0].serverPort = port
 
         helper.load(testServerNodes, flow, function () {
-          const modbusServer = helper.getNode('178284ea.5055ab')
+          const modbusServer = helper.getNode('46daaa5c3a54773d')
           modbusServer.should.have.property('name', 'modbusServer')
 
           done()
@@ -239,7 +239,7 @@ describe('Server node Testing', function () {
         flow[1].serverPort = port
 
         helper.load(testServerNodes, flow, function () {
-          const modbusServer = helper.getNode('178284ea.5055ab')
+          const modbusServer = helper.getNode('e81530bc1ed9fcfb')
           modbusServer.should.have.property('name', 'modbusServer')
           done()
         })
@@ -265,12 +265,18 @@ describe('Server node Testing', function () {
       const flow = Array.from(testFlows.testSimpleNodeShouldThrowErrorFlow)
 
       getPort().then((port) => {
-        flow[0].serverPort = port
+        flow[1].serverPort = port
 
         helper.load(testServerNodes, flow, function () {
           const modbusServer = helper.getNode('178284ea.5055ab')
-          expect(modbusServer.statusText).to.equal('error')
-          done()
+
+          modbusServer.netServer.on('error', function (err) {
+            setTimeout(() => {
+              expect(modbusServer.statusText).to.equal('error')
+              expect(err.message).to.equal('listen EADDRNOTAVAIL: address not available 127.0.0.2:' + port)
+              done()
+            }, 600)
+          })
         })
       })
     })

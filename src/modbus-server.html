@@ -24,7 +24,8 @@
       holdingBufferSize: {value: 10000, validate: RED.validators.number()},
       inputBufferSize: {value: 10000, validate: RED.validators.number()},
       discreteBufferSize: {value: 10000, validate: RED.validators.number()},
-      showErrors: {value: false}
+      showErrors: {value: false},
+      showStatusActivities: {value: false},
     },
     inputs: 1,
     outputs: 5,
@@ -78,6 +79,11 @@
         <input type="text" id="node-input-discreteBufferSize" placeholder="1024">
     </div>
     <hr>
+    <div class="form-row">
+        <label style="min-width:190px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
+        data-i18n="modbus-contrib.label.showActivities"></span></label>
+        <input type="checkbox" id="node-input-showStatusActivities" style="max-width:30px">
+    </div>
     <div class="form-row">
         <label style="min-width:190px" for="node-input-showErrors"><i class="fa fa-th"></i> <span
         data-i18n="modbus-contrib.label.showErrors"></span></label>
