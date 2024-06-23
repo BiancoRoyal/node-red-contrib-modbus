@@ -71,6 +71,7 @@
     "test:slow": "npm run lint && mocha ./test --recursive --reporter dot",
     "test:verbose": "npm run lint && mocha ./test --recursive",
     "test:withStop": "npm run lint && mocha ./test --recursive --bail",
+    "test:publish": "gulp clean && npm run prepublishOnly",
     "lint": "standard --fix",
     "test:e2e": "npm run lint && mocha './test/units/modbus-write-e2e-test.js' --parallel --recursive --reporter dot --timeout 100000",
     "test:units": "npm run lint && mocha './test/units/modbus-client-test.js' --parallel --recursive --reporter dot --timeout 100000",

@@ -129,7 +129,7 @@ module.exports = {
       z: '844e5e46fef5b7e2',
       name: 'modbusServer',
       logEnabled: false,
-      hostname: '192.168.99.1',
+      hostname: '127.0.0.1',
       serverPort: '5503',
       responseDelay: '50',
       delayUnit: 'ms',
