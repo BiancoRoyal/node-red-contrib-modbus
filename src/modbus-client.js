@@ -652,7 +652,7 @@ module.exports = function (RED) {
       node.stateService.send('STOP')
       verboseLog('close node ' + nodeIdentifierName)
       node.internalDebugLog('close node ' + nodeIdentifierName)
-      node.removeAllListeners()
+
       if (node.client) {
         if (node.client.isOpen) {
           node.client.close(function (err) {
@@ -670,11 +670,15 @@ module.exports = function (RED) {
           verboseLog('connection was closed ' + nodeIdentifierName)
           done()
         }
+
+        node.client.removeAllListeners()
       } else {
         /* istanbul ignore next */
         verboseLog('Connection closed simple ' + nodeIdentifierName)
         done()
       }
+
+      node.removeAllListeners()
     })
 
     // handle using as config node

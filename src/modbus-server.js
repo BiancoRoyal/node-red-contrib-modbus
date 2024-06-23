@@ -128,12 +128,19 @@ module.exports = function (RED) {
 
     node.on('close', function (done) {
       mbBasics.setNodeStatusTo('closed', node)
+
       if (node.netServer) {
         node.netServer.close(() => {
           internalDebugLog('Modbus Server closed')
           done()
+          node.removeAllListeners()
+          node.netServer.removeAllListeners()
         })
+      } else {
+        done()
+        node.removeAllListeners()
       }
+
       node.modbusServer = null
     })
   }

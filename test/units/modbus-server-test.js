@@ -275,7 +275,7 @@ describe('Server node Testing', function () {
               expect(modbusServer.statusText).to.equal('error')
               expect(err.message).to.equal('listen EADDRNOTAVAIL: address not available 127.0.0.2:' + port)
               done()
-            }, 600)
+            }, 800)
           })
         })
       })

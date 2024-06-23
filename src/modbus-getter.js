@@ -102,6 +102,7 @@ module.exports = function (RED) {
         }
       }
     }
+
     /* istanbul ignore next */
     function verboseWarn (logMessage) {
       if (RED.settings.verbose && node.showWarnings) {
@@ -178,6 +179,8 @@ module.exports = function (RED) {
 
     node.on('close', function (done) {
       mbBasics.setNodeStatusTo('closed', node)
+      node.resetInputDelayTimer()
+      node.removeAllListeners()
       node.bufferMessageList.clear()
       modbusClient.deregisterForModbus(node.id, done)
     })
