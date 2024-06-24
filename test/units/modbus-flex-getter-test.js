@@ -534,7 +534,29 @@ describe('Flex Getter node Testing', function () {
       })
     })
   })
+  // describe('ModbusFlexGetter', () => {
+  //   it('should send requests sequentially and not get stuck in a queueing state', (done) => {
+  //     helper.load(testFlexGetterNodes, testFlows.testFlexGetterRequest, function () {
+  //       const modbusFlexGetter = helper.getNode('22809a5a7e0bac07')
+  //       const msg = [
+  //         { payload: { fc: 4, unitid: 14, address: 0, quantity: 1 } }, // timeout
+  //         { payload: { fc: 3, unitid: 137, address: 20498, quantity: 2 } },
+  //         { payload: { fc: 3, unitid: 137, address: 24576, quantity: 2 } }
+  //       ]
+  //       let count = 0
+  //       modbusFlexGetter.on('modbusFlexGetterNodeDone', () => {
+  //         count++
+  //         if (count === msg.length) {
+  //           done()
+  //         }
+  //       })
 
+  //       msg.forEach((m) => {
+  //         modbusFlexGetter.emit('input', m)
+  //       })
+  //     })
+  //   })
+  // })
   describe('post', function () {
     it('should fail for invalid node', function (done) {
       helper.load(testFlexGetterNodes, [], function () {
