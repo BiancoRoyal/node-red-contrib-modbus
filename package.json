@@ -74,7 +74,7 @@
     "test:publish": "gulp clean && npm run prepublishOnly",
     "lint": "standard --fix",
     "test:e2e": "npm run lint && mocha './test/units/modbus-write-e2e-test.js' --parallel --recursive --reporter dot --timeout 100000",
-    "test:units": "npm run lint && mocha './test/units/modbus-client-test.js' --parallel --recursive --reporter dot --timeout 100000",
+    "test:units": "npm run lint && mocha './test/units/modbus-flex-getter-test.js' --parallel --recursive --reporter dot --timeout 100000",
     "test:core": "npm run lint && mocha './test/core/*-test.js' --parallel --recursive",
     "test-nyc": "nyc --reporter=html --reporter=text mocha --recursive",
     "test-npx": "npx --yes nyc@latest --reporter=html --reporter=text mocha ./test --parallel --recursive --reporter dot --timeout 10000",
