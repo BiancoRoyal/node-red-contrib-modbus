@@ -7,7 +7,6 @@
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  */
 
-const coreIO = require('./core/modbus-io-core')
 module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
