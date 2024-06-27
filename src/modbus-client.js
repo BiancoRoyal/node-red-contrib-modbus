@@ -223,11 +223,11 @@ module.exports = function (RED) {
         if (node.clienttype === 'tcp') {
           if (!node.parallelUnitIdsAllowed) {
             if (node.serialSendingAllowed) {
-              coreModbusQueue.queueSerialLockCommand(node);
-              node.stateService.send('SEND');
+              coreModbusQueue.queueSerialLockCommand(node)
+              node.stateService.send('SEND')
             }
           } else {
-            node.stateService.send('SEND');
+            node.stateService.send('SEND')
           }
         } else {
           if (node.serialSendingAllowed) {
