@@ -248,6 +248,55 @@ module.exports = {
       format: 'utf8',
       addressOffset: ''
     }
-  ])
+  ]),
+
+  testShouldBeLoadedWithoutFileExistsFlow: helperExtensions.cleanFlowPositionData([
+    {
+      "id": "ec42ecc63a604e82",
+      "type": "tab",
+      "label": "Should Be Loaded",
+      "disabled": false,
+      "info": "",
+      "env": []
+    },
+    {
+      "id": "9c36e42ffe84d1ef",
+      "type": "modbus-read",
+      "z": "ec42ecc63a604e82",
+      "name": "",
+      "topic": "",
+      "showStatusActivities": false,
+      "logIOActivities": false,
+      "showErrors": false,
+      "showWarnings": true,
+      "unitid": "",
+      "dataType": "",
+      "adr": "",
+      "quantity": "",
+      "rate": "",
+      "rateUnit": "",
+      "delayOnStart": false,
+      "startDelayTime": "",
+      "server": "",
+      "useIOFile": true,
+      "ioFile": "181cab926ad54b56",
+      "useIOForPayload": false,
+      "emptyMsgOnFail": false,
+      "x": 450,
+      "y": 160,
+      "wires": [
+        [],
+        []
+      ]
+    },
+    {
+      "id": "181cab926ad54b56",
+      "type": "modbus-io-config",
+      "name": "ModbusIOTest",
+      "path": "./test/resources/devices_not_existing.json",
+      "format": "utf8",
+      "addressOffset": ""
+    }
+  ]),
 
 }

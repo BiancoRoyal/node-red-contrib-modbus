@@ -152,6 +152,14 @@ describe('IO Config node Testing', function () {
         done()
       })
     })
+
+    it('should be loaded while file does not exist', function (done) {
+      helper.load(testIoConfigNodes, testFlows.testShouldBeLoadedWithoutFileExistsFlow, function () {
+        const modbusIOConfigNode = helper.getNode('181cab926ad54b56')
+        modbusIOConfigNode.should.have.property('name', 'ModbusIOTest')
+        done()
+      })
+    })
   })
 
   describe('post', function () {
