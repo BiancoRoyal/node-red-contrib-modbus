@@ -1,4 +1,4 @@
-# [5.41.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.40.0...v5.41.0) (2024-06-24)
+# [5.41.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.40.0...v5.41.0) (2024-06-25)
 
 
 ### Bug Fixes
@@ -6,6 +6,7 @@
 * **buffer:** nodejs Buffer alloc update ([9a6350c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/9a6350cd67361f10310629a145f8a595e9f3d85c))
 * **codeql:** version codeql ([163101f](https://github.com/biancoroyal/node-red-contrib-modbus/commit/163101f91c784a5202acd86b0a10302a22414495))
 * **config:** [#442](https://github.com/biancoroyal/node-red-contrib-modbus/issues/442) fixing optional to save correct ([de88e25](https://github.com/biancoroyal/node-red-contrib-modbus/commit/de88e25b10e7e92ea8836d22ee91cb25796f3909))
+* **issue#472:** Implemented message queue to handle incoming messages asynchronously ([65ea2a7](https://github.com/biancoroyal/node-red-contrib-modbus/commit/65ea2a7dce2e391a0b46412b798fdc4c14e6f750)), closes [issue#472](https://github.com/issue/issues/472)
 * **modbus-client-core:** fixed test cases ([0697df3](https://github.com/biancoroyal/node-red-contrib-modbus/commit/0697df3f4fdf71434e3757f9ae68c6e6db22a948))
 * **modbus-client-flow:** fixed modbus client flow example ([8613c89](https://github.com/biancoroyal/node-red-contrib-modbus/commit/8613c892c54d7c73ca818a5fb34729232fb8acef))
 * **modbus-fc-flex:** fixed test case for modbus flex fc file ([93b22f8](https://github.com/biancoroyal/node-red-contrib-modbus/commit/93b22f8cafe5dc269811cfef78fba1c05dc57c69))
