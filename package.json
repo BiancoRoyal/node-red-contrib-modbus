@@ -79,7 +79,7 @@
     "test-nyc": "nyc --reporter=html --reporter=text mocha --recursive",
     "test-npx": "npx --yes nyc@latest --reporter=html --reporter=text mocha ./test --parallel --recursive --reporter dot --timeout 10000",
     "test-with-coverage": "nyc --reporter=lcovonly mocha --recursive -R spec && cat ./coverage/lcov.info | codacy-coverage --token $CODACY_COVERAGE_TOKEN && rm -rf ./coverage",
-    "coverage": "npm run lint && nyc mocha ./test --parallel --recursive --reporter dot --timeout 10000",
+    "coverage": "npm run lint && nyc --reporter=html --reporter=text mocha ./test --parallel --recursive --reporter dot --timeout 10000",
     "coverage-nyc": "npm run lint && nyc report --reporter=text-lcov | coveralls",
     "build": "npm run lint && gulp",
     "prepublishOnly": "npm run lint && npm run rewrite-changelog && npm test && mocha test --recursive --reporter dot && npm run test-npx && npm run build",
