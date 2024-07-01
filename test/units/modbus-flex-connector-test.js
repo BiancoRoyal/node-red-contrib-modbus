@@ -23,6 +23,7 @@ helper.init(require.resolve('node-red'))
 const testFlows = require('./flows/modbus-flex-connector-flows')
 const mBasics = require('../../src/modbus-basics')
 const _ = require('underscore')
+const expect = require('chai').expect
 
 describe('Flex Connector node Unit Testing', function () {
   before(function (done) {
@@ -46,6 +47,33 @@ describe('Flex Connector node Unit Testing', function () {
   })
 
   describe('Node', function () {
+    it('should process messages through the flow', function (done) {
+      helper.load(testFlexConnectorNodes, testFlows.testForNodeStatus, function () {
+        const flexConnector = helper.getNode('759c96f52b0d1a25')
+        const msg = {
+          payload: {
+            connectorType: 'TCP',
+            tcpHost: '127.0.0.1',
+            tcpPort: '10512',
+            nodeStatus: {
+              fill: 'green',
+              shape: 'ring',
+              text: 'connected'
+            }
+          }
+        }
+        let setStatus = {}
+
+        flexConnector.status = function (status) {
+          setStatus = status
+        }
+        setTimeout(function () {
+          flexConnector.emit('input', msg)
+          expect(setStatus).to.deep.equal({ fill: 'green', shape: 'ring', text: 'connected' })
+          done()
+        }, 1500)
+      })
+    })
     it('should be loaded', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusNode = helper.getNode('40ddaabb.fd44d4')
