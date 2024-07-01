@@ -1,7 +1,136 @@
 const helperExtensions = require('../../helper/test-helper-extensions')
 
 module.exports = {
-
+testForNodeStatus: helperExtensions.cleanFlowPositionData(
+  [
+    {
+        "id": "05c1c765dcc042bc",
+        "type": "tab",
+        "label": "Flow 3",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "ac7e543957121916",
+        "type": "modbus-server",
+        "z": "05c1c765dcc042bc",
+        "name": "Modbus Server",
+        "logEnabled": false,
+        "hostname": "127.0.0.1",
+        "serverPort": "10519",
+        "responseDelay": 100,
+        "delayUnit": "ms",
+        "coilsBufferSize": 10000,
+        "holdingBufferSize": 10000,
+        "inputBufferSize": 10000,
+        "discreteBufferSize": 10000,
+        "showErrors": false,
+        "x": 360,
+        "y": 260,
+        "wires": [
+            [],
+            [],
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "fd64485a412f6417",
+        "type": "inject",
+        "z": "05c1c765dcc042bc",
+        "name": "Inject",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"connectorType\":\"TCP\",\"tcpHost\":\"127.0.0.1\",\"tcpPort\":\"10512\",\"nodeStatus\":{\"fill\":\"green\",\"shape\":\"ring\",\"text\":\"active\"}}",
+        "payloadType": "json",
+        "x": 210,
+        "y": 380,
+        "wires": [
+            [
+                "759c96f52b0d1a25"
+            ]
+        ]
+    },
+    {
+        "id": "759c96f52b0d1a25",
+        "type": "modbus-flex-connector",
+        "z": "05c1c765dcc042bc",
+        "name": "",
+        "maxReconnectsPerMinute": 4,
+        "emptyQueue": false,
+        "showStatusActivities": true,
+        "showErrors": false,
+        "server": "115bd58ae573c942",
+        "x": 450,
+        "y": 380,
+        "wires": [
+            [
+                "4b4e142b36f14ae0"
+            ]
+        ]
+    },
+    {
+        "id": "4b4e142b36f14ae0",
+        "type": "helper",
+        "z": "05c1c765dcc042bc",
+        "name": "helper 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 740,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "115bd58ae573c942",
+        "type": "modbus-client",
+        "name": "12 Channel 192.168.0.41",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "failureLogEnabled": false,
+        "tcpHost": "127.0.0.1",
+        "tcpPort": "10519",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": "41",
+        "commandDelay": "100",
+        "clientTimeout": "1000",
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": "2000",
+        "parallelUnitIdsAllowed": false,
+        "showErrors": false,
+        "showWarnings": false,
+        "showLogs": false
+    }
+]
+  ),
   testShouldBeLoadedFlow: helperExtensions.cleanFlowPositionData([
 
     {
@@ -128,7 +257,8 @@ module.exports = {
     }
   ]),
 
-  testShouldChangeSerialPortFlow: helperExtensions.cleanFlowPositionData([
+  testShouldChangeSerialPortFlow: helperExtensions.cleanFlowPositionData(
+    [
     {
       id: '316b8516b884d511',
       type: 'tab',

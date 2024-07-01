@@ -28,14 +28,15 @@ module.exports = function (RED) {
 
     this.internalDebugLog = internalDebugLog
     this.verboseLogging = RED.settings.verbose
-    this.server = RED.nodes.getNode(config.server)
+    const modbusClient = RED.nodes.getNode(config.server)
     const node = this
+
     mbBasics.setNodeStatusTo('waiting', node)
-    if (!this.server) {
+    if (!modbusClient) {
       return
     }
-    this.server.registerForModbus(node)
-    mbBasics.initModbusClientEvents(node, this.server)
+    modbusClient.registerForModbus(node)
+    mbBasics.initModbusClientEvents(node, modbusClient)
 
     node.onConfigDone = function (msg) {
       const shouldShowStatus = node.showStatusActivities
@@ -43,7 +44,8 @@ module.exports = function (RED) {
         mbBasics.setNodeStatusTo('config done', node)
       }
       if (shouldShowStatus) {
-        mbBasics.setNodeStatusTo(this.server.actualServiceState, node)
+        console.log(modbusClient.actualServiceState, 'jnnjjkjk')
+        mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
       }
 
       if (!shouldShowStatus) {
@@ -64,18 +66,19 @@ module.exports = function (RED) {
         return
       }
 
-      // if (!this.server) {
-      //   return
-      // }
+      if (!modbusClient) {
+        return
+      }
 
       if (node.showStatusActivities) {
-        mbBasics.setNodeStatusTo(this.server.actualServiceState, node)
+        console.log(modbusClient.actualServiceState, 'mnm')
+        mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
       }
 
       if (msg.payload.connectorType) {
         internalDebugLog(`dynamicReconnect: ${JSON.stringify(msg.payload)}`)
         msg.payload.emptyQueue = node.emptyQueue
-        this.server.emit('dynamicReconnect', msg, node.onConfigDone, node.onConfigError)
+        modbusClient.emit('dynamicReconnect', msg, node.onConfigDone, node.onConfigError)
       } else {
         const error = new Error('Payload Not Valid - Connector Type')
         node.error(error, msg)
