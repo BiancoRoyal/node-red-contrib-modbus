@@ -44,7 +44,6 @@ module.exports = function (RED) {
         mbBasics.setNodeStatusTo('config done', node)
       }
       if (shouldShowStatus) {
-        console.log(modbusClient.actualServiceState, 'jnnjjkjk')
         mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
       }
 
@@ -71,7 +70,6 @@ module.exports = function (RED) {
       }
 
       if (node.showStatusActivities) {
-        console.log(modbusClient.actualServiceState, 'mnm')
         mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
       }
 
