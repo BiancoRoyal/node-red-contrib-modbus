@@ -69,6 +69,44 @@ describe('Flex Connector node Unit Testing', function () {
         }
         setTimeout(function () {
           flexConnector.emit('input', msg)
+          expect(msg).to.have.property('payload').that.deep.equals({
+            emptyQueue: false,
+            connectorType: 'TCP',
+            tcpHost: '127.0.0.1',
+            tcpPort: '10512',
+            nodeStatus: {
+              fill: 'green',
+              shape: 'ring',
+              text: 'connected'
+            }
+          })
+          expect(setStatus).to.deep.equal({ fill: 'green', shape: 'ring', text: 'connected' })
+          done()
+        }, 1500)
+      })
+    })
+    it('should process messages through the flow', function (done) {
+      helper.load(testFlexConnectorNodes, testFlows.testForNodeStatus, function () {
+        const flexConnector = helper.getNode('759c96f52b0d1a25')
+        const msg = {
+          payload: {
+            connectorType: 'TCP',
+            tcpHost: '127.0.0.1',
+            tcpPort: '10512',
+            nodeStatus: {
+              fill: 'green',
+              shape: 'ring',
+              text: 'connected'
+            }
+          }
+        }
+        let setStatus = {}
+
+        flexConnector.status = function (status) {
+          setStatus = status
+        }
+        setTimeout(function () {
+          flexConnector.emit('input', msg)
           expect(setStatus).to.deep.equal({ fill: 'green', shape: 'ring', text: 'connected' })
           done()
         }, 1500)
