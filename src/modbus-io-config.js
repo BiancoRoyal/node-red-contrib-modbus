@@ -7,6 +7,12 @@
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  */
 
+/**
+ * Modbus IO Config node.
+ * @module NodeRedModbusIOConfig
+ *
+ * @param RED
+ */
 module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED

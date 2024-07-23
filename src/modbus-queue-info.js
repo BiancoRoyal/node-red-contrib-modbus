@@ -7,8 +7,8 @@
  **/
 
 /**
- * Modbus Read node.
- * @module NodeRedModbusRead
+ * Modbus Queue Info node.
+ * @module NodeRedModbusQueueInfo
  *
  * @param RED
  */

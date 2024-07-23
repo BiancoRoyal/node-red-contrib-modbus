@@ -6,7 +6,9 @@
       "showActivities": "Show Activities",
       "showErrors": "Show Errors",
       "showWarnings": "Show Warnings",
-      "server": "Server"
+      "server": "Server",
+      "emptyMsgOnFail": "Leere msg bei Modbus-Fehler",
+      "configMsgOnChange": "Config msg bei Modbus-Change"
     },
     "tabs-label": {
       "settings": "Einstellungen",

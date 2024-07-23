@@ -5,9 +5,10 @@
 
  @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
  */
+
 /**
- * Modbus flexible Getter node.
- * @module NodeRedModbusFlexGetter
+ * Flex Connector Node.
+ * @module NodeRedModbusFlexConnector
  *
  * @param RED
  */
@@ -19,6 +20,7 @@ module.exports = function (RED) {
 
   function ModbusFlexConnector (config) {
     RED.nodes.createNode(this, config)
+
     this.name = config.name
     this.maxReconnectsPerMinute = config.maxReconnectsPerMinute || 4
     this.emptyQueue = config.emptyQueue
@@ -28,35 +30,67 @@ module.exports = function (RED) {
 
     this.internalDebugLog = internalDebugLog
     this.verboseLogging = RED.settings.verbose
-    const modbusClient = RED.nodes.getNode(config.server)
+    this.server = RED.nodes.getNode(config.server)
+    this.emptyMsgOnFail = config.emptyMsgOnFail
+    this.configMsgOnChange = config.configMsgOnChange
+
     const node = this
+
     mbBasics.setNodeStatusTo('waiting', node)
-    if (!modbusClient) {
+
+    if (!node.server) {
+      mbBasics.setNodeStatusTo('disconnected', node)
       return
     }
-    modbusClient.registerForModbus(node)
-    mbBasics.initModbusClientEvents(node, modbusClient)
+
+    mbBasics.setNodeStatusTo('connecting', node)
+
+    node.server.registerForModbus(node)
+    mbBasics.initModbusClientEvents(node, this.server)
 
     node.onConfigDone = function (msg) {
-      const shouldShowStatus = node.showStatusActivities
-      if (shouldShowStatus) {
-        mbBasics.setNodeStatusTo('config done', node)
-      }
-      if (shouldShowStatus) {
-        mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
-      }
-
-      if (!shouldShowStatus) {
+      if (node.showStatusActivities) {
+        mbBasics.setNodeStatusTo(node.server.actualServiceState, node)
+      } else {
         mbBasics.setNodeDefaultStatus(node)
       }
 
-      msg.error.nodeStatus = node.statusText
-
-      if (node.emptyMsgOnFail) {
-        msg.payload = ''
+      if (node.configMsgOnChange) {
+        msg.payload = msg.payload || {}
+        msg.payload.status = 'changed'
+      } else {
+        msg.config_change = 'emitted'
       }
 
       node.send(msg)
+    }
+
+    node.onConfigError = function (err, msg) {
+      internalDebugLog(err.message)
+
+      if (node.showErrors) {
+        if (node.showStatusActivities) {
+          mbBasics.setNodeStatusTo('error', node)
+        } else {
+          mbBasics.setNodeDefaultStatus(node)
+        }
+
+        if (err && err.message) {
+          msg.error = err
+        } else {
+          msg.error = new Error(err)
+        }
+
+        msg.error.nodeStatus = node.statusText
+
+        node.error(msg.error, msg)
+
+        if (node.emptyMsgOnFail) {
+          msg.payload = ''
+        }
+
+        node.send(msg)
+      }
     }
 
     node.on('input', function (msg) {
@@ -64,18 +98,15 @@ module.exports = function (RED) {
         return
       }
 
-      if (!modbusClient) {
-        return
-      }
-
       if (node.showStatusActivities) {
-        mbBasics.setNodeStatusTo(modbusClient.actualServiceState, node)
+        mbBasics.setNodeStatusTo(node.server.actualServiceState, node)
       }
 
       if (msg.payload.connectorType) {
         internalDebugLog(`dynamicReconnect: ${JSON.stringify(msg.payload)}`)
+
         msg.payload.emptyQueue = node.emptyQueue
-        modbusClient.emit('dynamicReconnect', msg, node.onConfigDone, node.onConfigError)
+        node.server.emit('dynamicReconnect', msg, node.onConfigDone, node.onConfigError)
       } else {
         const error = new Error('Payload Not Valid - Connector Type')
         node.error(error, msg)
@@ -84,7 +115,9 @@ module.exports = function (RED) {
       }
     })
 
-    if (!node.showStatusActivities) {
+    if (node.showStatusActivities) {
+      mbBasics.setNodeStatusTo('active', node)
+    } else {
       mbBasics.setNodeDefaultStatus(node)
     }
   }

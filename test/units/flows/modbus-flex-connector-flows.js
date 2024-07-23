@@ -132,49 +132,61 @@ module.exports = {
   ]
     ),
   testShouldBeLoadedFlow: helperExtensions.cleanFlowPositionData([
-
     {
-      id: '40ddaabb.fd44d4',
-      type: 'modbus-flex-connector',
-      z: '43f07d0e121df598',
-      name: 'FlexConnector',
-      maxReconnectsPerMinute: 4,
-      emptyQueue: true,
-      showStatusActivities: false,
-      showErrors: false,
-      server: '2a253153.fae3ce',
-      x: 460,
-      y: 200,
-      wires: [
+      "id": "cb3ef46652ca069f",
+      "type": "tab",
+      "label": "Flex-Connector No Server",
+      "disabled": false,
+      "info": "",
+      "env": []
+    },
+    {
+      "id": "40ddaabb.fd44d4",
+      "type": "modbus-flex-connector",
+      "z": "cb3ef46652ca069f",
+      "name": "FlexConnector",
+      "maxReconnectsPerMinute": 4,
+      "emptyQueue": true,
+      "showStatusActivities": true,
+      "showErrors": false,
+      "server": "2a253153.fae3ce",
+      "emptyMsgOnFail": false,
+      "configMsgOnChange": false,
+      "x": 520,
+      "y": 120,
+      "wires": [
         []
       ]
     },
     {
-      id: '2a253153.fae3ce',
-      type: 'modbus-client',
-      name: '',
-      clienttype: 'tcp',
-      bufferCommands: true,
-      stateLogEnabled: false,
-      queueLogEnabled: false,
-      failureLogEnabled: false,
-      tcpHost: '127.0.0.1',
-      tcpPort: '11522',
-      tcpType: 'DEFAULT',
-      serialPort: '/dev/ttyUSB',
-      serialType: 'RTU-BUFFERD',
-      serialBaudrate: '9600',
-      serialDatabits: '8',
-      serialStopbits: '1',
-      serialParity: 'none',
-      serialConnectionDelay: '100',
-      serialAsciiResponseStartDelimiter: '',
-      unit_id: '1',
-      commandDelay: '100',
-      clientTimeout: '100',
-      reconnectOnTimeout: true,
-      reconnectTimeout: '200',
-      parallelUnitIdsAllowed: true
+      "id": "2a253153.fae3ce",
+      "type": "modbus-client",
+      "name": "",
+      "clienttype": "tcp",
+      "bufferCommands": true,
+      "stateLogEnabled": false,
+      "queueLogEnabled": false,
+      "failureLogEnabled": false,
+      "tcpHost": "127.0.0.1",
+      "tcpPort": "11522",
+      "tcpType": "DEFAULT",
+      "serialPort": "/dev/ttyUSB",
+      "serialType": "RTU-BUFFERD",
+      "serialBaudrate": "9600",
+      "serialDatabits": "8",
+      "serialStopbits": "1",
+      "serialParity": "none",
+      "serialConnectionDelay": "100",
+      "serialAsciiResponseStartDelimiter": "",
+      "unit_id": "1",
+      "commandDelay": "100",
+      "clientTimeout": "100",
+      "reconnectOnTimeout": true,
+      "reconnectTimeout": "2000",
+      "parallelUnitIdsAllowed": true,
+      "showErrors": false,
+      "showWarnings": false,
+      "showLogs": false
     }
   ]),
 
@@ -313,123 +325,422 @@ module.exports = {
   testFlowAsExpected: helperExtensions.cleanFlowPositionData(
     [
       {
-        id: 'ea7e082eac96bb8f',
-        type: 'modbus-server',
-        z: '3b249606fb2722a7',
-        name: '',
-        logEnabled: false,
-        hostname: '127.0.0.1',
-        serverPort: '10512',
-        responseDelay: 100,
-        delayUnit: 'ms',
-        coilsBufferSize: 10000,
-        holdingBufferSize: 10000,
-        inputBufferSize: 10000,
-        discreteBufferSize: 10000,
-        showErrors: false,
-        x: 445,
-        y: 460,
-        wires: [
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        l: false
+        "id": "f24eb98786e83747",
+        "type": "tab",
+        "label": "Test Felx-Connector UnitId",
+        "disabled": false,
+        "info": "",
+        "env": []
       },
       {
-        id: '1b4644a214cfdec6',
-        type: 'modbus-flex-connector',
-        z: '3b249606fb2722a7',
-        name: '',
-        maxReconnectsPerMinute: 4,
-        emptyQueue: false,
-        showStatusActivities: false,
-        showErrors: false,
-        server: '115bd58ae573c942',
-        x: 530,
-        y: 600,
-        wires: [
+        "id": "ea7e082eac96bb8f",
+        "type": "modbus-server",
+        "z": "f24eb98786e83747",
+        "name": "",
+        "logEnabled": false,
+        "hostname": "127.0.0.1",
+        "serverPort": "10512",
+        "responseDelay": 100,
+        "delayUnit": "ms",
+        "coilsBufferSize": 10000,
+        "holdingBufferSize": 10000,
+        "inputBufferSize": 10000,
+        "discreteBufferSize": 10000,
+        "showErrors": false,
+        "showStatusActivities": false,
+        "x": 345,
+        "y": 80,
+        "wires": [
+          [],
+          [],
+          [],
+          [],
           [
-            '221de567904726a1'
+            "b04c7187f283f1a6"
+          ]
+        ],
+        "l": false
+      },
+      {
+        "id": "1b4644a214cfdec6",
+        "type": "modbus-flex-connector",
+        "z": "f24eb98786e83747",
+        "name": "",
+        "maxReconnectsPerMinute": 4,
+        "emptyQueue": false,
+        "showStatusActivities": true,
+        "showErrors": true,
+        "server": "115bd58ae573c942",
+        "emptyMsgOnFail": true,
+        "configMsgOnChange": false,
+        "x": 610,
+        "y": 220,
+        "wires": [
+          [
+            "0b116c8f15c103bc"
           ]
         ]
       },
       {
-        id: '88ef999a1a2c4c5d',
-        type: 'inject',
-        z: '3b249606fb2722a7',
-        name: '',
-        props: [
+        "id": "88ef999a1a2c4c5d",
+        "type": "inject",
+        "z": "f24eb98786e83747",
+        "name": "Change for Unit-ID",
+        "props": [
           {
-            p: 'payload'
+            "p": "payload"
           },
           {
-            p: 'topic',
-            vt: 'str'
+            "p": "topic",
+            "vt": "str"
           }
         ],
-        repeat: '',
-        crontab: '',
-        once: false,
-        onceDelay: 0.1,
-        topic: '',
-        payload: '{"connectorType":"TCP","tcpHost":"127.0.0.1","tcpPort":"10512"}',
-        payloadType: 'json',
-        x: 270,
-        y: 560,
-        wires: [
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0.5",
+        "topic": "",
+        "payload": "{\"connectorType\":\"TCP\",\"tcpHost\":\"127.0.0.1\",\"tcpPort\":\"10512\",\"unitId\":1}",
+        "payloadType": "json",
+        "x": 190,
+        "y": 200,
+        "wires": [
           [
-            '1b4644a214cfdec6'
+            "1b4644a214cfdec6"
           ]
         ]
       },
       {
-        id: '221de567904726a1',
-        type: 'helper',
-        z: '3b249606fb2722a7',
-        name: 'helper 14',
-        active: true,
-        tosidebar: true,
-        console: false,
-        tostatus: false,
-        complete: 'false',
-        statusVal: '',
-        statusType: 'auto',
-        x: 780,
-        y: 520,
-        wires: []
+        "id": "0b116c8f15c103bc",
+        "type": "helper",
+        "z": "f24eb98786e83747",
+        "name": "helper 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 860,
+        "y": 220,
+        "wires": []
       },
       {
-        id: '115bd58ae573c942',
-        type: 'modbus-client',
-        name: '12 Channel 192.168.0.41',
-        clienttype: 'tcp',
-        bufferCommands: true,
-        stateLogEnabled: false,
-        queueLogEnabled: false,
-        failureLogEnabled: false,
-        tcpHost: '127.0.0.1',
-        tcpPort: '10512',
-        tcpType: 'DEFAULT',
-        serialPort: '/dev/ttyUSB',
-        serialType: 'RTU-BUFFERD',
-        serialBaudrate: '9600',
-        serialDatabits: '8',
-        serialStopbits: '1',
-        serialParity: 'none',
-        serialConnectionDelay: '100',
-        serialAsciiResponseStartDelimiter: '0x3A',
-        unit_id: 41,
-        commandDelay: 100,
-        clientTimeout: 1000,
-        reconnectOnTimeout: true,
-        reconnectTimeout: 2000,
-        parallelUnitIdsAllowed: false,
-        showErrors: false,
-        showWarnings: false,
-        showLogs: false
+        "id": "c7eb8fe4f9b1904a",
+        "type": "inject",
+        "z": "f24eb98786e83747",
+        "name": "",
+        "props": [
+          {
+            "p": "payload"
+          },
+          {
+            "p": "topic",
+            "vt": "str"
+          }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "1",
+        "payloadType": "num",
+        "x": 180,
+        "y": 80,
+        "wires": [
+          [
+            "ea7e082eac96bb8f"
+          ]
+        ]
+      },
+      {
+        "id": "b04c7187f283f1a6",
+        "type": "helper",
+        "z": "f24eb98786e83747",
+        "name": "helper 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 490,
+        "y": 100,
+        "wires": []
+      },
+      {
+        "id": "42075d85efccbcad",
+        "type": "inject",
+        "z": "f24eb98786e83747",
+        "name": "Change for Unit-ID with Error",
+        "props": [
+          {
+            "p": "payload"
+          },
+          {
+            "p": "topic",
+            "vt": "str"
+          }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"connectorType\":\"TCP\",\"tcpHost\":\"0.0.0.0\",\"tcpPort\":\"10513\",\"unitId\":300}",
+        "payloadType": "json",
+        "x": 220,
+        "y": 240,
+        "wires": [
+          [
+            "1b4644a214cfdec6"
+          ]
+        ]
+      },
+      {
+        "id": "115bd58ae573c942",
+        "type": "modbus-client",
+        "name": "12 Channel 192.168.0.41",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "failureLogEnabled": false,
+        "tcpHost": "127.0.0.1",
+        "tcpPort": "10512",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": 41,
+        "commandDelay": 100,
+        "clientTimeout": 1000,
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": 2000,
+        "parallelUnitIdsAllowed": false,
+        "showErrors": false,
+        "showWarnings": false,
+        "showLogs": false
+      }
+    ]
+  ),
+  testFlowAsExpectedWithConfigMessage: helperExtensions.cleanFlowPositionData(
+    [
+      {
+        "id": "a7aa10e1f0e1cdc6",
+        "type": "tab",
+        "label": "Test Felx-Connector With Config Msg",
+        "disabled": false,
+        "info": "",
+        "env": []
+      },
+      {
+        "id": "046bd4d2ce7ca5a2",
+        "type": "modbus-server",
+        "z": "a7aa10e1f0e1cdc6",
+        "name": "",
+        "logEnabled": false,
+        "hostname": "127.0.0.1",
+        "serverPort": "10512",
+        "responseDelay": 100,
+        "delayUnit": "ms",
+        "coilsBufferSize": 10000,
+        "holdingBufferSize": 10000,
+        "inputBufferSize": 10000,
+        "discreteBufferSize": 10000,
+        "showErrors": false,
+        "showStatusActivities": false,
+        "x": 345,
+        "y": 80,
+        "wires": [
+          [],
+          [],
+          [],
+          [],
+          [
+            "82f1e05498822790"
+          ]
+        ],
+        "l": false
+      },
+      {
+        "id": "bf2ba5ae45aefab1",
+        "type": "modbus-flex-connector",
+        "z": "a7aa10e1f0e1cdc6",
+        "name": "",
+        "maxReconnectsPerMinute": 4,
+        "emptyQueue": false,
+        "showStatusActivities": true,
+        "showErrors": true,
+        "server": "115bd58ae573c942",
+        "emptyMsgOnFail": true,
+        "configMsgOnChange": true,
+        "x": 610,
+        "y": 220,
+        "wires": [
+          [
+            "a3769d4f97d705c0"
+          ]
+        ]
+      },
+      {
+        "id": "88cbf42790afe657",
+        "type": "inject",
+        "z": "a7aa10e1f0e1cdc6",
+        "name": "Change for Unit-ID",
+        "props": [
+          {
+            "p": "payload"
+          },
+          {
+            "p": "topic",
+            "vt": "str"
+          }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0.5",
+        "topic": "",
+        "payload": "{\"connectorType\":\"TCP\",\"tcpHost\":\"127.0.0.1\",\"tcpPort\":\"10512\",\"unitId\":1}",
+        "payloadType": "json",
+        "x": 190,
+        "y": 200,
+        "wires": [
+          [
+            "bf2ba5ae45aefab1"
+          ]
+        ]
+      },
+      {
+        "id": "a3769d4f97d705c0",
+        "type": "helper",
+        "z": "a7aa10e1f0e1cdc6",
+        "name": "helper 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 860,
+        "y": 220,
+        "wires": []
+      },
+      {
+        "id": "bb16ef64ed8e8e26",
+        "type": "inject",
+        "z": "a7aa10e1f0e1cdc6",
+        "name": "",
+        "props": [
+          {
+            "p": "payload"
+          },
+          {
+            "p": "topic",
+            "vt": "str"
+          }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "1",
+        "payloadType": "num",
+        "x": 180,
+        "y": 80,
+        "wires": [
+          [
+            "046bd4d2ce7ca5a2"
+          ]
+        ]
+      },
+      {
+        "id": "82f1e05498822790",
+        "type": "helper",
+        "z": "a7aa10e1f0e1cdc6",
+        "name": "helper 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 490,
+        "y": 100,
+        "wires": []
+      },
+      {
+        "id": "0725eaebc8c950d0",
+        "type": "inject",
+        "z": "a7aa10e1f0e1cdc6",
+        "name": "Change for Unit-ID with Error",
+        "props": [
+          {
+            "p": "payload"
+          },
+          {
+            "p": "topic",
+            "vt": "str"
+          }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"connectorType\":\"TCP\",\"tcpHost\":\"0.0.0.0\",\"tcpPort\":\"10513\",\"unitId\":300}",
+        "payloadType": "json",
+        "x": 220,
+        "y": 240,
+        "wires": [
+          [
+            "bf2ba5ae45aefab1"
+          ]
+        ]
+      },
+      {
+        "id": "115bd58ae573c942",
+        "type": "modbus-client",
+        "name": "12 Channel 192.168.0.41",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "failureLogEnabled": false,
+        "tcpHost": "127.0.0.1",
+        "tcpPort": "10512",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": 41,
+        "commandDelay": 100,
+        "clientTimeout": 1000,
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": 2000,
+        "parallelUnitIdsAllowed": false,
+        "showErrors": false,
+        "showWarnings": false,
+        "showLogs": false
       }
     ]
   ),

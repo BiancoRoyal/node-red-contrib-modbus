@@ -642,14 +642,18 @@ module.exports = function (RED) {
         throw new Error('Message Or Payload Not Valid')
       }
 
-      coreModbusClient.internalDebug('Dynamic Reconnect Parameters ' + JSON.stringify(msg.payload))
-      if (coreModbusClient.setNewNodeSettings(node, msg)) {
-        cb(msg)
-      } else {
-        cberr(new Error('Message Or Payload Not Valid'), msg)
+      try {
+        coreModbusClient.internalDebug('Dynamic Reconnect Parameters ' + JSON.stringify(msg.payload))
+        if (coreModbusClient.setNewNodeSettings(node, msg)) {
+          cb(msg)
+        } else {
+          cberr(new Error('Message Or Payload Not Valid'), msg)
+        }
+        coreModbusClient.internalDebug('Dynamic Reconnect Starts on actual state ' + node.actualServiceState.value)
+        node.stateService.send('SWITCH')
+      } catch (err) {
+        cberr(err, msg)
       }
-      coreModbusClient.internalDebug('Dynamic Reconnect Starts on actual state ' + node.actualServiceState.value)
-      node.stateService.send('SWITCH')
     })
 
     node.on('close', function (done) {
