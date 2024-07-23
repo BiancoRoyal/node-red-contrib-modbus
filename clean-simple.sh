@@ -18,6 +18,8 @@ rm package-lock.json
 
 rm yarn.lock
 
+npm run clean
+
 npm cache verify
 
 npm install

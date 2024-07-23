@@ -1,6 +1,139 @@
 const helperExtensions = require('../../helper/test-helper-extensions')
 
 module.exports = {
+    testParallelUnitIdsAllowed: helperExtensions.cleanFlowPositionData(
+        [
+            {
+                "id": "94ea44bb692463f2",
+                "type": "tab",
+                "label": "Flow 1",
+                "disabled": false,
+                "info": "",
+                "env": []
+            },
+            {
+                "id": "22809a5a7e0bac07",
+                "type": "modbus-flex-getter",
+                "z": "94ea44bb692463f2",
+                "name": "",
+                "showStatusActivities": true,
+                "showErrors": true,
+                "showWarnings": true,
+                "logIOActivities": false,
+                "server": "79e791b851e85bfc",
+                "useIOFile": false,
+                "ioFile": "",
+                "useIOForPayload": false,
+                "emptyMsgOnFail": false,
+                "keepMsgProperties": false,
+                "delayOnStart": false,
+                "startDelayTime": "",
+                "x": 620,
+                "y": 340,
+                "wires": [
+                    [
+                        "a1f29b71179b8de8"
+                    ],
+                    []
+                ]
+            },
+            {
+                "id": "18702449c6a2a321",
+                "type": "inject",
+                "z": "94ea44bb692463f2",
+                "name": "",
+                "props": [
+                    {
+                        "p": "payload"
+                    },
+                    {
+                        "p": "topic",
+                        "vt": "str"
+                    }
+                ],
+                "repeat": "",
+                "crontab": "",
+                "once": false,
+                "onceDelay": 0.1,
+                "topic": "",
+                "payload": "",
+                "payloadType": "date",
+                "x": 200,
+                "y": 340,
+                "wires": [
+                    [
+                        "3f337ccb0f1dc5e0"
+                    ]
+                ]
+            },
+            {
+                "id": "3f337ccb0f1dc5e0",
+                "type": "function",
+                "z": "94ea44bb692463f2",
+                "name": "function 81",
+                "func": "\nnode.send({payload: { fc: 4, unitid: 14, address: 0, quantity: 1 }})\nnode.send({payload: { fc: 3, unitid: 137, address: 20498, quantity: 2 }})\n//node.send({payload: { fc: 3, unitid: 1, address: 20498, quantity: 2 }})\n node.send({payload: { fc: 3, unitid: 137, address: 24576, quantity: 2 }})\n// node.send({payload: { fc: 3, unitid: 1, address: 24576, quantity: 2 }})\n// node.send({payload: { fc: 3, unitid: 1, address: 24576, quantity: 2 }})\n// node.send({payload: { fc: 3, unitid: 1, address: 24576, quantity: 2 }})\n// node.send({payload: { fc: 3, unitid: 1, address: 24576, quantity: 2 }})\n// node.send({payload: { fc: 3, unitid: 1, address: 24576, quantity: 2 }})\n// node.send({payload: { fc: 3, unitid: 1, address: 24576, quantity: 2 }})\n// node.send({payload: { fc: 3, unitid: 1, address: 24576, quantity: 2 }})\n// node.send({payload: { fc: 3, unitid: 1, address: 24576, quantity: 2 }})\n// node.send({payload: { fc: 3, unitid: 1, address: 24576, quantity: 2 }})\n// node.send({payload: { fc: 3, unitid: 1, address: 24576, quantity: 2 }})\n// node.send({payload: { fc: 3, unitid: 1, address: 24576, quantity: 2 }})\n// node.send({payload: { fc: 3, unitid: 1, address: 24576, quantity: 2 }})\n// node.send({payload: { fc: 3, unitid: 1, address: 24576, quantity: 2 }})\n// node.send({payload: { fc: 3, unitid: 1, address: 24576, quantity: 2 }})\n// node.send({payload: { fc: 3, unitid: 1, address: 24576, quantity: 2 }})\n",
+                "outputs": 1,
+                "timeout": 0,
+                "noerr": 0,
+                "initialize": "",
+                "finalize": "",
+                "libs": [],
+                "x": 410,
+                "y": 340,
+                "wires": [
+                    [
+                        "22809a5a7e0bac07"
+                    ]
+                ]
+            },
+            {
+                "id": "a1f29b71179b8de8",
+                "type": "helper",
+                "z": "94ea44bb692463f2",
+                "name": "helper 1",
+                "active": true,
+                "tosidebar": true,
+                "console": false,
+                "tostatus": false,
+                "complete": "false",
+                "statusVal": "",
+                "statusType": "auto",
+                "x": 860,
+                "y": 340,
+                "wires": []
+            },
+            {
+                "id": "79e791b851e85bfc",
+                "type": "modbus-client",
+                "name": "modbus-bridge",
+                "clienttype": "tcp",
+                "bufferCommands": true,
+                "stateLogEnabled": true,
+                "queueLogEnabled": true,
+                "failureLogEnabled": true,
+                "tcpHost": "127.0.0.1",
+                "tcpPort": "502",
+                "tcpType": "DEFAULT",
+                "serialPort": "/dev/ttyACM0",
+                "serialType": "RTU-BUFFERD",
+                "serialBaudrate": "9600",
+                "serialDatabits": "8",
+                "serialStopbits": "1",
+                "serialParity": "none",
+                "serialConnectionDelay": "10",
+                "serialAsciiResponseStartDelimiter": "0x3A",
+                "unit_id": "27",
+                "commandDelay": "10",
+                "clientTimeout": "1000",
+                "reconnectOnTimeout": false,
+                "reconnectTimeout": "500",
+                "parallelUnitIdsAllowed": false,
+                "showErrors": false,
+                "showWarnings": true,
+                "showLogs": true
+            }
+        ]
+    ),
     testModbusReadNodeIsActive: helperExtensions.cleanFlowPositionData(
         [
             {
