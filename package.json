@@ -57,9 +57,7 @@
     "docs",
     "examples",
     "modbus",
-    "extras/argumentMaps/defaults",
-    "extras/argumentMaps/ArgumentMaps.md",
-    ".npmrc"
+    "extras"
   ],
   "bugs": {
     "url": "https://github.com/biancoroyal/node-red-contrib-modbus/issues/"
@@ -67,14 +65,14 @@
   "homepage": "https://plus4nodered.com/",
   "scripts": {
     "changelog": "npm run rewrite-changelog",
-    "test": "npm run lint && mocha ./test --parallel --recursive --reporter dot",
-    "test:slow": "npm run lint && mocha ./test --recursive --reporter dot",
+    "test": "npm run lint && mocha ./test --parallel --recursive --reporter dot --timeout 6000",
+    "test:slow": "npm run lint && mocha ./test --recursive --reporter dot --timeout 12000",
     "test:verbose": "npm run lint && mocha ./test --recursive",
     "test:withStop": "npm run lint && mocha ./test --recursive --bail",
     "test:publish": "gulp clean && npm run prepublishOnly",
     "lint": "standard --fix",
     "test:e2e": "npm run lint && mocha './test/units/modbus-write-e2e-test.js' --parallel --recursive --reporter dot --timeout 100000",
-    "test:units": "npm run lint && mocha './test/units/modbus-client-test.js' --parallel --recursive --reporter dot --timeout 100000",
+    "test:units": "npm run lint && mocha './test/units/modbus-client-test.js' --parallel --recursive --reporter dot",
     "test:core": "npm run lint && mocha './test/core/*-test.js' --parallel --recursive",
     "test-nyc": "nyc --reporter=html --reporter=text mocha --recursive",
     "test-npx": "npx --yes nyc@latest --reporter=html --reporter=text mocha ./test --parallel --recursive --reporter dot --timeout 10000",
@@ -82,7 +80,7 @@
     "coverage": "npm run lint && nyc --reporter=html --reporter=text mocha ./test --parallel --recursive --reporter dot --timeout 10000",
     "coverage-nyc": "npm run lint && nyc report --reporter=text-lcov | coveralls",
     "build": "npm run lint && gulp",
-    "prepublishOnly": "npm run lint && npm run rewrite-changelog && npm test && mocha test --recursive --reporter dot && npm run test-npx && npm run build",
+    "prepublishOnly": "npm run clean && npm run lint && npm run rewrite-changelog && npm test && npm run coverage && npm run build",
     "ci-publish": "ci-publish",
     "release": "standard-version -a",
     "release:beta": "standard-version --prerelease beta",
@@ -118,7 +116,7 @@
     "js-beautify": "^1.15.1",
     "mocha": "^10.4.0",
     "nock": "^13.5.4",
-    "node-red": "^4.0.0-beta.4",
+    "node-red": "^4.0.2",
     "node-red-node-test-helper": "^0.3.4",
     "nyc": "^15.1.0",
     "pump": "^3.0.0",

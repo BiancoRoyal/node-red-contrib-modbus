@@ -15,7 +15,9 @@
       emptyQueue: {value: false},
       showStatusActivities: {value: false},
       showErrors: {value: false},
-      server: {type: 'modbus-client', required: true}
+      server: {type: 'modbus-client', required: true},
+      emptyMsgOnFail: {value: false},
+      configMsgOnChange: {value: false}
     },
     inputs: 1,
     outputs: 1,
@@ -49,6 +51,17 @@
         data-i18n="modbus-contrib.label.emptyQueue"></span></label>
         <input type="checkbox" id="node-input-emptyQueue" style="max-width:30px">
     </div> -->
+    <hr>
+    <div class="form-row">
+        <label style="min-width:190px" for="node-input-emptyMsgOnFail"><i class="fa fa-th"></i> <span
+        data-i18n="modbus-contrib.label.emptyMsgOnFail"></span></label>
+        <input type="checkbox" id="node-input-emptyMsgOnFail" style="max-width:30px">
+    </div>
+    <div class="form-row">
+        <label style="min-width:190px" for="node-input-configMsgOnChange"><i class="fa fa-th"></i> <span
+        data-i18n="modbus-contrib.label.configMsgOnChange"></span></label>
+        <input type="checkbox" id="node-input-configMsgOnChange" style="max-width:30px">
+    </div>
     <hr>
     <div class="form-row">
         <label style="min-width:190px" for="node-input-showStatusActivities"><i class="fa fa-th"></i> <span
