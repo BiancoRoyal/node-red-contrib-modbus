@@ -1,0 +1,22 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "unitId": "从站地址",
+      "showActivities": "显示活动",
+      "showErrors": "显示错误",
+      "showWarnings": "显示警告",
+      "functioncode": "FC",
+      "address": "地址",
+      "quantity": "数量",
+      "simpleNegatives": "负 UInt",
+      "server": "服务器",
+      "emptyMsgOnFail": "Modbus 失败时发送空消息",
+      "keepMsgProperties": "保留消息属性",
+      "delayOnStart": "延迟激活输入"
+    },
+    "tabs-label": {
+      "settings": "设置",
+      "options": "选项"
+    }
+  }
+}

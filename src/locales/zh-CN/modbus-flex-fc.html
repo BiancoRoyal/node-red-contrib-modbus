@@ -1,0 +1,65 @@
+<script type="text/x-red" data-help-name="modbus-flex-fc">
+<p>通过 MODBUS 传输和接收非标准功能代码的答案 </p>
+<p>Unit-ID - 节点尝试通过 MODBUS 到达的设备标识。</p>
+<p>
+在 <strong>映射 JSON 的路径</strong> 文本框中提供 JSON 自定义功能代码映射文件，然后按加载按钮，编辑器将尝试加载给定的文件。
+<strong>注意：</strong>如果您想指定与当前目录无关的本地文件，则需要确保您的路径是<strong>绝对</strong>
+而不是相对的。（即 <strong>“/home/username/codes/codes.json”</strong> 可以工作，而 <strong>“./codes/codes.json”</strong> 则不行）。您可以随意命名 codes.json 文件，只需确保它遵循下面指定的布局，或者查看包中附带的示例 (extras/argumentMaps/defaults/codes.json)
+</p>
+<p>
+从下拉列表中选择一个自定义函数代码。然后，编辑器将加载此特定代码的参数映射。
+</p>
+<p>
+选择自定义函数代码后，您可以更改已加载的参数映射。
+如果您犯了错误并想要重新加载模板值，请单击<strong>“重置映射”</strong>按钮，这将从模板数据中重新加载所有值。
+</p>
+<p>
+每个自定义函数代码都有两个可能的参数映射，一个用于请求，一个用于代码的响应部分。它们被加载到各自的编辑器中，您可以在其中更改参数的<strong>名称、值、偏移量或类型</strong>。
+</p>
+
+<p><strong>请求映射编辑器 -</strong> 用于自定义函数代码请求的数据编辑器。</p>
+<p><strong>响应映射编辑器 -</strong> 用于自定义函数代码响应的数据编辑器。</p>
+
+<p>
+参数映射的布局：
+<ul>
+<li><strong>名称 -</strong> 参数的名称。在<strong>请求端</strong>，这仅用于可读性目的，在<strong>响应端</strong>，该名称用于生成有效的
+JSON 响应对象。</li>
+<li><strong>数据 -</strong> 数据值。参数在<strong>请求</strong>中设置为此值。对<strong>响应</strong>没有影响，应设置为<strong>零</strong></li>
+<li><strong>偏移量 -</strong> 数据值的偏移量。解析器使用偏移量将数据放在函数代码的正确位置。 0 偏移量是函数代码后的第一个参数。</li>
+<li><strong>类型 -</strong> 数据类型。在 <strong>请求</strong> 中，此类型将写入数据流。然而，在 <strong>Response</strong> 中，将从流中读取此类型。</li>
+<ul>
+<li><strong>uint8be -</strong> 参数是 8 位无符号整数。</li>
+<li><strong>uint16be -</strong> 参数是编码为大端的 16 位无符号整数。</li>
+<li><strong>uint32be -</strong> 参数是编码为大端的 32 位无符号整数。</li>
+</ul>
+</ul>
+</p>
+
+<p>
+自定义功能代码消息示例：
+<code>
+msg = {
+    topic: 'customFc',
+    from: 'Requester-Name',
+    payload: {
+        unitid: 1,
+        fc: 3,
+        requestCard:[{
+        name: 'Read Registers Request Definition',
+        data: 0,
+        offset: 0,
+        type:'uint16be'
+    }],
+    responseCard: [{
+        name: 'Read Registers Answer Definition',
+        data: 0,
+        offset: 0,
+        type: 'uint16be'
+    }]
+    messageId: mbCore.getObjectId()
+    }
+}
+</code>
+</p>
+</script>

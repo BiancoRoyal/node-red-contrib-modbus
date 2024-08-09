@@ -1,0 +1,14 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "显示活动",
+      "showErrors": "显示错误",
+      "showWarnings": "显示警告",
+      "registerShowMax": "最多显示寄存器数量"
+    },
+    "tabs-label": {
+      "settings": "设置",
+      "options": "选项"
+    }
+  }
+}

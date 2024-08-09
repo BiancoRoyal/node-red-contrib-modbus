@@ -1,0 +1,38 @@
+<script type="text/x-red" data-help-name="modbus-write">
+    <p><strong>
+    如果一个通信配置中有超过 10 个节点，
+    请使用 Modbus-Flex-Writer 或考虑与您的 Modbus 设备建立多个连接！
+    </strong>
+    </p>
+    
+    <p>Modbus TCP/Serial 节点触发 <strong>msg.payload</strong> 进行写入。</p>
+    <p>连接到 Modbus TCP 或串行，以在每个传入消息时写入线圈/寄存器。</p>
+    <p>
+    <h4>当前支持的功能代码包括：</h4>
+    
+    <ul>
+    <li>FC 5：强制单个线圈</li>
+    <li>FC 6：预设单个寄存器</li>
+    <li>FC 15：强制多个线圈</li>
+    <li>FC 16：预设多个寄存器</li>
+    </ul>
+    </p>
+    <p>
+    从下拉菜单中选择一个功能代码 (FC)，
+    选择线圈/寄存器起始地址 (0:65535) 和要写入的数量。
+    选择或编辑 Modbus TCP/串行服务器配置以指定要连接的服务器。
+    </p>
+    
+    <p>Unit-Id (0..255 tcp | 0..247 serial) - 留空，否则将覆盖客户端配置的默认 Unit-ID</p>
+    
+    <p>
+    对于 FC 5，<strong>msg.payload</strong> 的值必须是 1 或 0 或 true 或 false。
+    对于 FC 15，<strong>msg.payload</strong> 必须是逗号分隔的值的数组[]，每个值都为 true 或 false。
+    对于 FC 6，<strong>msg.payload</strong> 必须是 0:65535 之间的单个值。
+    对于 FC 16，<strong>msg.payload</strong> 必须是逗号分隔的值的数组[]，每个值都为 0:65535。
+    </p>
+    
+    <p>输出 1：所有给定数据、modbus 响应缓冲区、输入消息</p>
+    <p>输出 2：modbus 响应缓冲区、所有给定数据、输入消息</p>
+    
+</script>

@@ -1,0 +1,52 @@
+<script type="text/x-red" data-help-name="modbus-flex-getter">
+    <p>
+    带有连接输入参数的 Modbus 灵活输入触发读取节点。
+    </p>
+    <p>连接到 Modbus TCP 或串行，以传入消息的速率读取线圈/输入/寄存器。</p>
+    <p>
+    <h4>当前支持的功能代码 (1:4) 包括：</h4>
+    
+    <ul>
+    <li>FC 1：读取线圈状态</li>
+    <li>FC 2：读取输入状态</li>
+    <li>FC 3：读取保持寄存器</li>
+    <li>FC 4：读取输入寄存器</li>
+    </ul>
+    </p>
+    
+    <p>
+    <strong>用于连接 Modbus 的输入参数</strong>
+    <ul>
+    <li>unitid (0..255 tcp | 0..247 serial) - 覆盖默认 Unit-ID</li>
+    <li>fc (1..4)</li>
+    <li>起始地址 (0:65535)</li>
+    <li>数量(1:65535) 从起始地址读取的线圈/输入/寄存器</li>
+    </ul>
+    </p>
+    
+    <p>输出 1：数据数组 (PDU)、modbus 响应缓冲区、输入消息</p>
+    <p>输出 2：modbus 响应缓冲区、数据数组 (PDU)、输入消息</p>
+    
+    <p>单个输入的功能节点代码示例：</p>
+    <code>
+    msg.payload = { value: msg.payload, 'fc': 1, 'unitid': 1, 'address': 0 , 'quantity': 1 }
+    return msg
+    </code>
+    
+    <p>多个输入的功能节点代码示例：</p>
+    <code>
+    msg.payload = { value: msg.payload, 'fc': 3, 'unitid': 1, 'address': 0 , 'quantity': 10 }
+    return msg
+    </code>
+    
+    <p>
+    如果操作系统打开 dev 时没有错误，则 Flex-Getter-Node 的状态为“活动”。
+    以太网连接的连接问题不会影响此状态。
+    有关以太网连接问题的警告和通知将显示在调试窗口中。
+    </p>
+    
+    <p>
+    要将 Flex-Getter-Node 与“split”和“join”节点一起使用，请确保在节点的“选项”属性中启用“保留消息属性”。
+    </p>
+    
+    </script>

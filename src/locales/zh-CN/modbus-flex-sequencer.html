@@ -1,0 +1,76 @@
+<script type="text/x-red" data-help-name="modbus-flex-sequencer">
+  <p>
+  Modbus TCP/Serial 灵活输入触发自动序列读取节点，带有连接输入参数。
+  </p>
+  <p>
+  连接到 Modbus TPC 或串行以按顺序自动读取线圈/输入/寄存器。
+  </p>
+  <p>
+  使用任何输入来触发请求，但您可以使用以下方式覆盖列表：
+  </p>
+  <code>
+  msg.sequences
+  </code>
+  <p>
+  <strong>当前支持的功能代码 (1:4) 包括：</strong>
+  
+  <ul>
+  <li>FC 1：读取线圈状态</li>
+  <li>FC 2：读取输入状态</li>
+  <li>FC 3：读取保持寄存器</li>
+  <li>FC 4：读取输入寄存器</li>
+  </ul>
+  </p>
+  <p>
+  <strong>用于连接 Modbus 的输入参数</strong>
+  <ul>
+  <li>(混合) fc ('FC1', 'FC2', 'FC3', 'FC4' - 或 - 1:4) - 功能代码</li>
+  <li>(整数) unitid (0..255 tcp | 0..247 serial) - Unit-ID</li>
+  <li>(整数) 地址 (0:65535) - 起始地址</li>
+  <li>(整数) 数量 (1:65535) - 从起始地址读取的线圈/输入/寄存器的数量</li>
+  </ul>
+  </p>
+  
+  <p>输出 1：数据数组 (PDU)、modbus 响应缓冲区、输入消息</p>
+  <p>输出 2：modbus 响应缓冲区、数据数组 (PDU)、输入消息</p>
+  
+  <p>单个输入的函数节点代码示例：</p>
+  <code>
+  msg.sequences = [
+  {
+    name : "Foo",
+    fc : 1,
+    address : 1,
+    unitid: 2,
+    quantile : 6
+  }]
+  return msg;
+  </code>
+  
+  <p>多个输入的函数节点代码示例：</p>
+  <code>
+  msg.sequences = [
+  {
+    name : "Foo",
+    fc : 1,
+    address : 1,
+    unitid: 2,
+    quantile : 6
+  },
+  {
+    name : "Bar",
+    fc : 3,
+    address : 0,
+    unitid: 1,
+    quantile : 10
+  },
+  {
+    name : "Baz",
+    fc : 'FC4',
+    address : 10,
+    unitid: 3,
+    quantile : 46
+  }]
+  return msg;
+  </code>
+  </script>

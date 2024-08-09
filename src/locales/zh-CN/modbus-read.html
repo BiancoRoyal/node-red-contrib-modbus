@@ -1,0 +1,34 @@
+<script type="text/x-red" data-help-name="modbus-read">
+    <p><strong>
+    如果一个通信配置中有超过 10 个节点，请使用 Modbus-Flex-Getter 或考虑与 Modbus 设备建立多个连接！
+    您也可以使用 Modbus-Getter 和 Modbus-Flex-Getter 进行轮询，方法是使用带有间隔的注入节点。
+    </strong></p>
+    
+    <p>Modbus TCP/Serial 读取节点。</p>
+    <p>连接到 Modbus TCP 或串行以使用给定轮询速率读取寄存器/线圈值。</p>
+    <p>
+    <h4>当前支持的功能代码包括：</h4>
+    
+    <ul>
+    <li>FC 1：读取线圈状态</li>
+    <li>FC 2：读取输入状态</li>
+    <li>FC 3：读取保持寄存器</li>
+    <li>FC 4：读取输入寄存器</li>
+    </ul>
+    </p>
+    <p>
+    从下拉菜单中选择一个功能代码 (FC)，
+    选择线圈/输入/寄存器起始地址 (0:65535)，
+    以及从起始地址开始要读取的线圈/输入/寄存器的数量。
+    </p>
+    
+    <p>Unit-Id（0..255 tcp | 0..247 serial）- 留空，否则将覆盖客户端配置的默认 Unit-ID</p>
+    
+    <p>
+    设置轮询率（大于零）和时间单位。
+    选择或编辑 Modbus 连接配置。
+    </p>
+    
+    <p>输出 1：数据数组 (PDU)、modbus 响应缓冲区、输入消息</p>
+    <p>输出 2：modbus 响应缓冲区、数据数组 (PDU)、输入消息</p>
+</script>

@@ -1,0 +1,18 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "emptyQueue": "空队列",
+      "maxReconnectsPerMinute": "最大/分钟",
+      "showActivities": "显示活动",
+      "showErrors": "显示错误",
+      "showWarnings": "显示警告",
+      "server": "服务器",
+      "emptyMsgOnFail": "Modbus 故障时显示空消息",
+      "configMsgOnChange": "Modbus 更改时的配置消息"
+    },
+    "tabs-label": {
+      "settings": "设置",
+      "options": "选项"
+    }
+  }
+}

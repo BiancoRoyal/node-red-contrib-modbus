@@ -1,0 +1,27 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "显示活动",
+      "showErrors": "显示错误",
+      "showWarnings": "显示警告",
+      "address": "绑定地址",
+      "port": "端口",
+      "responseDelay": "响应延迟",
+      "coils": "线圈",
+      "registers": "寄存器",
+      "minAddress": "最小地址",
+      "splitAddress": "分割地址",
+      "unitId": "从站地址",
+      "logEnabled": "启用日志"
+    },
+    "tabs-label": {
+      "settings": "设置",
+      "getCoil": "获取线圈状态",
+      "getDiscreteInput": "获取离散输入状态",
+      "getInput": "获取输入寄存器",
+      "getHolding": "获取保持寄存器",
+      "setCoil": "设置线圈状态",
+      "setRegister": "设置寄存器"
+    }
+  }
+}

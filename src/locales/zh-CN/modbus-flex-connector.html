@@ -1,0 +1,75 @@
+<script type="text/x-red" data-help-name="modbus-flex-connector">
+    <p>
+    Modbus Flex Connector 是一个用于灵活输入触发器的节点，可使用新的连接参数重新连接。
+    </p>
+    
+    <p>
+    <pre>msg.payload.connectorType = 'TCP' || 'SERIAL'</pre>
+    </p>
+    
+    <p>
+    <h3>TCP 选项</h3>
+    
+    <ul>
+    <li>msg.payload.tcpHost || node.tcpHost
+    <li>msg.payload.tcpPort || node.tcpPort
+    <li>msg.payload.tcpType || node.tcpType
+    <li>msg.payload.unitId || node.unit_id
+    <li>msg.payload.commandDelay || node.commandDelay
+    <li>msg.payload.clientTimeout || node.clientTimeout
+    <li>msg.payload.reconnectTimeout| || node.reconnectTimeout
+    </ul>
+    </p>
+    
+    <p>
+    <h3>SERIAL 选项</h3>
+    
+    <ul>
+    <li>msg.payload.serialPort || node.serialPort
+    <li>msg.payload.serialBaudrate || node.serialBaudrate
+    <li>msg.payload.serialDatabits || node.serialDatabits
+    <li>msg.payload.serialStopbits || node.serialStopbits
+    <li>msg.payload.serialParity || node.serialParity
+    <li>msg.payload.serialType || node.serialType
+    <li>msg.payload.serialConnectionDelay || node.serialConnectionDelay
+    <li>msg.payload.unitId || node.unit_id
+    <li>msg.payload.commandDelay || node.commandDelay
+    <li>msg.payload.clientTimeout || node.clientTimeout
+    <li>msg.payload.reconnectTimeout || node.reconnectTimeout
+    <li>msg.payload.serialAsciiResponseStartDelimiter || node.serialAsciiResponseStartDelimiter
+    </ul>
+    </p>
+    
+    <p>
+    <p>TCP 的函数节点代码示例：</p>
+    <code>
+    msg.payload = {
+        'connectorType': 'TCP',
+        'tcpHost': '127.0.0.1',
+        'unitId': 2 
+    }
+    return msg
+    </code>
+    
+    <code>
+    msg.payload = {
+        'connectorType': 'TCP',
+        'tcpHost': '127.0.0.1',
+        'tcpPort': '10502',
+        'unitId': 2 
+    }
+    return msg
+    </code>
+    
+    <p>SERIAL 的函数节点代码示例：</p>
+    <code>
+    msg.payload = {
+        'connectorType': 'SERIAL',
+        'serialPort': '/dev/USB02',
+        'serialBaudrate': '9600'
+        'unitId': 2 
+    }
+    return msg
+    </code>
+    
+    </script>

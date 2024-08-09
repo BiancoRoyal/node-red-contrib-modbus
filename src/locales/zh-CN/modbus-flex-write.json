@@ -1,0 +1,17 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "显示活动",
+      "showErrors": "显示错误",
+      "showWarnings": "显示警告",
+      "server": "服务器",
+      "emptyMsgOnFail": "Modbus 失败时显示空消息",
+      "keepMsgProperties": "保留消息属性",
+      "delayOnStart": "延迟激活输入"
+    },
+    "tabs-label": {
+      "settings": "设置",
+      "options": "选项"
+    }
+  }
+}
