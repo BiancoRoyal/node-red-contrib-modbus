@@ -1,0 +1,38 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "type": "类型",
+      "queueCommands": "队列命令",
+      "queueLogEnabled": "启用队列日志",
+      "stateLogEnabled": "启用状态更改日志",
+      "failureLogEnabled": "启用失败日志",
+      "host": "主机",
+      "port": "端口",
+      "tcpType": "TCP 类型",
+      "serialport": "串行端口",
+      "serialType": "串口类型",
+      "serialEndian": "字节序类型",
+      "baudRate": "波特率",
+      "dataBits": "数据位",
+      "stopBits": "停止位",
+      "parity": "奇偶校验",
+      "serialconnectiondelay": "连接延迟 (ms)",
+      "unitId": "从站地址",
+      "commandDelay": "队列延迟 (ms)",
+      "timeout": "超时时长(ms)",
+      "reconnectOnTimeout": "重新连接超时",
+      "reconnectTimeout": "重新连接超时（毫秒）",
+      "parallelUnitIdsAllowed": "并行队列中的 UnitId",
+      "parallelUnitIdsAllowedInfo": "不要在没有串行网关的情况下将其用于串行。",
+      "serialAsciiResponseStartDelimiter": "ASCII 响应开始分隔符",
+      "showErrors": "显示错误",
+      "showWarnings": "显示警告",
+      "showLogs": "显示日志"
+    },
+    "tabs-label": {
+      "settings": "设置",
+      "queues": "队列",
+      "options": "选项"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+<script type="text/x-red" data-help-name="modbus-flex-write">
+    <p>
+    带有连接输入参数的 Modbus TCP 灵活输入触发写入节点。
+    </p>
+    <p>连接到 Modbus TCP 或串行，以在每个传入消息上写入线圈/寄存器。</p>
+    <p>
+    <h4>当前支持的功能代码包括：</h4>
+    
+    <ul>
+    <li>FC 5：强制单个线圈</li>
+    <li>FC 6：预设单个寄存器</li>
+    <li>FC 15：强制多个线圈</li>
+    <li>FC 16：预设多个寄存器</li>
+    </ul>
+    </p>
+    <p>
+    <strong>用于连接 Modbus 的输入参数</strong>
+    <ul>
+    <li>unitid (0..255 tcp | 0..247 serial) - 覆盖默认 Unit-ID</li>
+    <li>fc (5|6|15|16)</li>
+    <li>起始地址 (0:65535)</li>
+    <li>数量 (1:65535)从起始地址写入的线圈/输入/寄存器</li>
+    </ul>
+    </p>
+    
+    <p>
+    对于 FC 5，<strong>msg.payload</strong> 的值必须是 1 或 0 或 true 或 false。
+    对于 FC 6，<strong>msg.payload</strong> 必须是 0:65535 之间的单个值。
+    对于 FC 16，<strong>msg.payload</strong> 必须是 0:65535 之间的逗号分隔值的数组 []。
+    </p>
+    
+    <p>输出 1：所有给定数据，modbus 响应缓冲区，输入消息</p>
+    <p>输出 2：modbus 响应缓冲区，所有给定数据，输入消息</p>
+    
+    <p>单次写入的函数节点代码示例：</p>
+    <code>
+    msg.payload = { value: msg.payload, 'fc': 5, 'unitid': 1, 'address': 0 , 'quantity': 1 }
+    return msg
+    </code>
+    
+    <p>多次写入的函数节点代码示例：</p>
+    <code>
+    msg.payload = { value: msg.payload, 'fc': 15, 'unitid': 1, 'address': 0 , 'quantity': 10 }
+    return msg
+    </code>
+    
+    </script>

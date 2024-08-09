@@ -1,0 +1,47 @@
+<script type="text/x-red" data-help-name="modbus-flex-write">
+    <p>
+        Modbus TCP flexible input triggered write node with connection input parameters.
+    </p>
+    <p>Connects to a Modbus TCP or serial to write coils/registers on each incoming msg.</p>
+    <p>
+        <h4>Function codes currently supported include:</h4>
+
+        <ul>
+          <li>FC 5: Force Single Coil</li>
+          <li>FC 6: Preset Single Register</li>
+          <li>FC 15: Force Multiple Coils</li>
+          <li>FC 16: Preset Multiple Registers</li>
+        </ul>
+    </p>
+     <p>
+         <strong>Input parameter for connecting Modbus</strong>
+         <ul>
+             <li>unitid (0..255 tcp | 0..247 serial) - overrides default Unit-ID</li>
+             <li>fc (5|6|15|16)</li>
+             <li>start address (0:65535)</li>
+             <li>quantity (1:65535) of coils/inputs/registers to be written from the start address</li>
+         </ul>
+     </p>
+
+    <p>
+        For FC 5, <strong>msg.payload</strong> must be a value of 1 or 0 or true or false.
+        For FC 6, <strong>msg.payload</strong> must be a single value between 0:65535.
+        For FC 16, <strong>msg.payload</strong> must be an array[] of comma separated values between 0:65535 each.
+    </p>
+
+     <p>Output 1: all given data, modbus response Buffer, input message</p>
+     <p>Output 2: modbus response Buffer, all given data, input message</p>
+
+     <p>Function node code example for single write:</p>
+     <code>
+        msg.payload = { value: msg.payload, 'fc': 5, 'unitid': 1, 'address': 0 , 'quantity': 1 }
+        return msg
+     </code>
+
+     <p>Function node code example for multiple write:</p>
+     <code>
+        msg.payload = { value: msg.payload, 'fc': 15, 'unitid': 1, 'address': 0 , 'quantity': 10 }
+        return msg
+     </code>
+
+</script>

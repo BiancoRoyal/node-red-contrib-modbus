@@ -1,0 +1,43 @@
+<script type="text/x-red" data-help-name="modbus-queue-info">
+  <p><strong>
+  每个单元都设置一个队列 - 设置 unit-id 以获取正确的信息。
+  </strong></p>
+  
+  <p>Modbus TCP/Serial 队列信息节点。</p>
+  
+  <p>Unit-Id (0..255 tcp | 0..247 serial)</p>
+  <p>Unit-Id 0 用于广播 Modbus 消息。</p>
+  
+  <p>使用 <pre>msg.resetQueue = true</pre> 的注入来
+  重置队列。</p>
+  
+  <p>在高级别重置以连接捕获节点</p>
+  <p><pre>
+  [{"id":"430f76bf.9de2d8","type":"function","z":"b245d3e4.b52de","name":"reset on High",
+  "func":"if(\"high level reached\" === msg.state) {\n msg.payload.resetQueue = true;\n return msg;\n}\n",
+  "outputs":1,"noerr":0,"x":410,"y":140,"wires":[[]]}]
+  </pre></p>
+  
+  <p>在高高电平上重置以连接到捕获节点</p>
+  <p>
+  <pre>
+  [{"id":"fc74491.2ddc9b8","type":"function","z":"b245d3e4.b52de","name":"reset on HighHigh",
+  "func":"if(\"high high level reached\" === msg.state) {\n msg.payload.resetQueue = true;\n return msg;\n}\n",
+  "outputs":1,"noerr":0,"x":430,"y":180,"wires":[[]]}]
+  </pre>
+  </p>
+  
+  <p>
+  可以通过选中“所有队列”选项来监视所有单元队列的更新(0-255)”。
+  使用该选项，它会发送每个队列事件的消息，其中包含队列编号和信息。
+  如果激活该选项，则每个客户端配置仅使用一个队列信息节点！
+  重置输入将在该模式下重置所有队列（0-255）。
+  </p>
+  
+  <p>“高级别错误”使用该选项，节点在达到高级别时发送错误。</p>
+  
+  <p>达到高级别时会出现警告，达到高级别时会出现错误，用于处理捕获节点</p>
+  
+  <p>输出：所有队列信息 - 使用带调试的完整消息</p>
+  
+  </script>

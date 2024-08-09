@@ -1,0 +1,37 @@
+<script type="text/x-red" data-help-name="modbus-read">
+    <p><strong>
+        If you have more than 10 nodes on one communication configuration,
+        use the Modbus-Flex-Getter or think about multiple connections to your Modbus device, please!
+        You can do polling with the Modbus-Getter and Modbus-Flex-Getter, too by using an injecting node
+        with an interval.
+    </strong></p>
+
+    <p>Modbus TCP/Serial read node.</p>
+    <p>Connects to a Modbus TCP or serial to read registers/coils values with a given polling rate.</p>
+    <p>
+        <h4>Function codes currently supported include:</h4>
+
+        <ul>
+          <li>FC 1: Read Coil Status</li>
+          <li>FC 2: Read Input Status</li>
+          <li>FC 3: Read Holding Registers</li>
+          <li>FC 4: Read Input Registers</li>
+        </ul>
+        </p>
+     <p>
+         Choose a function code (FC) from the dropdown menu,
+         select the coil/input/register start address (0:65535),
+         and the quantity of coils/inputs/registers to be read from the start address.
+     </p>
+
+     <p>Unit-Id (0..255 tcp | 0..247 serial) - leave empty, otherwise it overrides the default Unit-ID of client
+     config</p>
+
+     <p>
+         Setup a polling rate (greater than zero) and the time unit.
+         Choose or edit the Modbus connection configuration.
+     </p>
+
+     <p>Output 1: data Array (PDU), modbus response Buffer, input message</p>
+     <p>Output 2: modbus response Buffer, data Array (PDU), input message</p>
+</script>

@@ -1,0 +1,20 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "显示活动",
+      "showErrors": "显示错误",
+      "showWarnings": "显示警告",
+      "file": "IO 文件",
+      "path": "IO 文件",
+      "format": "格式",
+      "utf8": "UTF-8",
+      "ansi": "ANSI",
+      "buffer": "缓冲区",
+      "addressOffset": "地址偏移量"
+    },
+    "tabs-label": {
+      "settings": "设置",
+      "options": "选项"
+    }
+  }
+}

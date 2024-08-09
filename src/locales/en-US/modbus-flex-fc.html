@@ -1,0 +1,70 @@
+
+<script type="text/x-red" data-help-name="modbus-flex-fc">
+    <p>Transmits and Recieves Answers for Nonstandard Functioncodes via MODBUS </p>
+    <p>Unit-ID - The Device Identification the Node tries to reach via MODBUS.</p>
+    <p>
+      Supply a JSON Custom Function Code map file in the <strong>Path to Map JSON</strong> textbox then press the load button the editor will then try to load the given file.
+      <strong>NOTE:</strong> If you want to specify a local file that is not relative to your current directory, you need to make sure that your path is <strong>absolute</strong>
+      and not relative. (i.e. <strong>"/home/username/codes/codes.json"</strong> will work while <strong>"./codes/codes.json"</strong> would not). You can name your codes.json file whatever you want just make
+      sure that it follows the specified layout below or take a look at the examples that are coming with the packages (extras/argumentMaps/defaults/codes.json)
+    </p>
+    <p>
+      Choose a Custom Functioncode from the dropdown. The editors will then load the Argument Maps for this certain Code.
+    </p>
+    <p>
+      After selecting a Custom Functioncode you can make changes to the loaded ArgumentMaps.
+      If you made a mistake and want to reload the template values click the <strong>'Reset Maps'</strong> button this will reload all values from
+      the template data.
+    </p>
+    <p>
+      Every Custom Functioncode has two possible Argument Maps one for the Request and one for the
+      Response part of the code. These get loaded in their respective Editors where you can make changes
+      to the <strong>names,values, offsets or types</strong> of the arguments.
+    </p>
+
+    <p><strong>Request Map Editor -</strong> Data editor for the request of the custom function code.</p>
+    <p><strong>Response Map Editor -</strong> Data editor for the response of the custom function code.</p>
+
+    <p>
+      layout of an argument map:
+        <ul>
+          <li><strong>Name -</strong> The Name of the Argument. On the <strong>Request side</strong> this will only be used for readability purposes, on the <strong>Response side</strong> the name is used to generate a valid
+          JSON response object.</li>
+          <li><strong>Data -</strong> The Data value. The Argument get set to this value in the <strong>request</strong>. Has no effect on the <strong>response</strong> and should be set to <strong>zero</strong></li>
+          <li><strong>Offset -</strong> The Offset of the Data Value. The Offset is used by the Parser to put the Data in the right place of the function code. The 0 offset is the first argument after the functioncode.</li>
+          <li><strong>Type -</strong> The Datatype. In the <strong>Request</strong> this type will be written into the datastream. In the <strong>Response</strong> however this type will be read from the stream.</li>
+            <ul>
+              <li><strong>uint8be -</strong> The Argument is a 8Bit Unsigned Integer.</li>
+              <li><strong>uint16be -</strong> The Argument is a 16Bit Unsigned Integer encoded as Big Endian.</li>
+              <li><strong>uint32be -</strong> The Argument is a 32Bit Unsigned Integer encoded as Big Endian.</li>
+            </ul>
+        </ul>
+    </p>
+
+    <p>
+    Example of a custom function code message:
+      <code>
+        msg = {
+            topic: 'customFc',
+            from: 'Requester-Name',
+            payload: {
+              unitid: 1,
+              fc: 3,
+              requestCard:[{
+                name: 'Read Registers Request Definition',
+                data: 0,
+                offset: 0,
+                type: 'uint16be'
+              }],
+              responseCard: [{
+                name: 'Read Registers Answer Definition',
+                data: 0,
+                offset: 0,
+                type: 'uint16be'
+              }]
+              messageId: mbCore.getObjectId()
+            }
+          }
+      </code>
+    </p>
+</script>

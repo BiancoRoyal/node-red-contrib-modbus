@@ -1,0 +1,25 @@
+<script type="text/x-red" data-help-name="modbus-io-config">
+    <p>MODBUS I/O JSON 用于寄存器和线圈地址。</p>
+    
+    <p>Modbus 输出 – %QX / %QB / %QW / %QD</p>
+    
+    <p>Modbus 输入 – %IX / %IB / %IW / %ID</p>
+    
+    <div>
+    <h3>IO 文件格式</h3>
+    <p>无论您的来源是什么，您都必须使用 构建 JSON 文件</p>
+    <p>CODESYS CSV 导出转换为 JSON-IO 文件示例：</p>
+    <pre>
+        {"name":"Modbus Holding Registers","valueAddress":"%IW0"}
+        {"name":"iCountDummyBorder","valueAddress":"%IW0"}
+        {"name":"bReset","valueAddress":"%IX8.0"}
+        {"name":"Modbus Input Registers","valueAddress":"%QW0"}
+        {"name":"iBooleanSetOne","valueAddress":"%QW4"}
+        {"name":"bOperationActive","valueAddress":"%QX8.0"}
+    </pre>
+    </div>
+    <div>
+    <a href="https://gist.github.com/biancode/46bfc4fe78cc059a379b383ea445d2d0" target="_blank">查看转换器流程</a>
+    </div>
+    
+</script>

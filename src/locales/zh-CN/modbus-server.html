@@ -1,0 +1,39 @@
+<script type="text/x-red" data-help-name="modbus-server">
+    <p>Node 提供基于 node-modbus (jsmodbus) 的 Modbus TCP 服务器以供测试。</p>
+    
+    <p>注入时，服务器将缓冲区发送到单独的输出</p>
+    <p>您可以使用 Modbus 写入节点 (FC) 将数据写入服务器缓冲区。</p>
+    <p>您可以使用 Modbus 读取节点 (FC) 从服务器缓冲区读取数据。</p>
+    
+    <p>输出 1：保持缓冲区、类型、消息</p>
+    <p>输出 2：线圈缓冲区、类型、消息</p>
+    <p>输出 3：输入缓冲区、类型、消息</p>
+    <p>输出 4：离散缓冲区、类型、消息</p>
+    <p>输出 5：请求消息</p>
+    <br>
+    <p>输入：
+    注入特殊payload，您可以直接写入任何寄存器。
+    这只应在您想要模拟 Modbus 客户端时使用。
+    <code>
+    msg.payload = {
+        'value': msg.payload,
+        'register': 'holding',
+        'address': 1 ,
+        'disableMsgOutput' : 0
+    };
+    return msg;
+    </code>
+    </p>
+    <p>该值也可以是 UInt8 数字列表，它们将被写入缓冲区。</p>
+    <p>
+    有效寄存器为：
+    <ul>
+        <li>holding
+        <li>coils
+        <li>input
+        <li>discrete
+    </ul>
+    如果您想在注入时禁用服务器输出，请设置 disableMsgOutput。
+    </p>
+    
+</script>

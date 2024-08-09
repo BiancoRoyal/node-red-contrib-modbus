@@ -1,0 +1,51 @@
+<script type="text/x-red" data-help-name="modbus-client">
+    <p><strong>
+        如果您在此通信上有许多节点（请参阅配置节点），请考虑与您的 Modbus 设备建立多个连接！许多设备能够连接多个。
+    </strong></p>
+
+   <p>
+    在你的流程中添加一个捕获项：
+       <pre>
+            [{"id":"cdd076d5.dab728","type":"catch","z":"b245d3e4.b52de","name":"","scope":null,"x":1020,"y":40,
+            "wires":[["8516d63d.1c29a8"]]},{"id":"8516d63d.1c29a8","type":"debug","z":"b245d3e4.b52de","name":"",
+            "active":true,"console":"false","complete":"true","x":1170,"y":40,"wires":[]}]
+       </pre>
+   </p>
+
+
+   <p>使用 ModbusRTU ('modbus-serial') 通过以太网主机：端口或 TTY 寄存器/线圈/输入地址进行读取/写入。</p>
+   <p>Xstate 机 ('Xstate/fsm') 组织状态以与重新连接和命令队列一起工作。</p>
+   <p>
+   <h3>基础知识</h3>
+   <ul>
+   <li>类型 (TCP/Serial)</li>
+   <li>队列命令 (true/false) - 如果为 true，它会缓冲传入的 Modbus 命令并以延迟发送它们</li>
+   <li>队列工作延迟 (默认 0 毫秒) - 延迟从队列发送命令的毫秒间隔 (sumOfWaiting=requestsPerCycle*delay)</li>
+   <li>Unit-ID (默认 1 [serial] 或 0 [tcp]) - 为所有没有 Unit-ID 的节点设置一个 Unit-ID。
+   将 Read/Write/Getter 节点的 Unit-ID 设置为空以使用此 ID</li>
+   <li>超时（默认 1000 毫秒）- ModbusRTU 命令的命令超时毫秒数</li>
+   <li>重新连接超时（默认 2000 毫秒）- 下次发送之前等待重新连接的时间</li>
+   <li>超时时重新连接 - 客户端是否在超时时重新连接</li>
+   <li>允许并行 UnitId - 是否按 UnitId 并行处理命令</li>
+   </ul>
+   
+   <h3>TCP</h3>
+   <ul>
+   <li>主机 - IP 地址</li>
+   <li>端口（默认 502）</li>
+   </ul>
+   
+   <h3>串行</h3>
+   <ul>
+   <li>串行端口 (/dev/tty.usbserial | COM[1..n])</li>
+   <li>串行波特率速率</li>
+   <li>串行数据位</li>
+   <li>串行停止位</li>
+   <li>串行奇偶校验</li>
+   <li>串行类型</li>
+   <li>串行连接延迟（默认 500 毫秒） - 重新连接后延迟发送第一个命令的时间</li>
+   <li>ASCII 起始分隔符（默认 0x3A，冒号） - 用于标识从属响应开始的分隔符</li>
+   </ul>
+   </p>
+
+</script>

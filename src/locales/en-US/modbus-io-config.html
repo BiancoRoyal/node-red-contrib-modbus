@@ -1,0 +1,25 @@
+<script type="text/x-red" data-help-name="modbus-io-config">
+    <p>MODBUS I/O JSON for register and coil addresses.</p>
+
+    <p>Modbus Outputs – %QX / %QB / %QW / %QD</p>
+
+    <p>Modbus Inputs  – %IX / %IB / %IW / %ID</p>
+
+    <div>
+        <h3>IO-File Format</h3>
+        <p>No matter what is your source, you have to build a JSON file with the</p>
+        <p>CODESYS CSV Export transformed to JSON-IO-File example:</p>
+        <pre>
+            {"name":"Modbus Holding Registers","valueAddress":"%IW0"}
+            {"name":"iCountDummyBorder","valueAddress":"%IW0"}
+            {"name":"bReset","valueAddress":"%IX8.0"}
+            {"name":"Modbus Input Registers","valueAddress":"%QW0"}
+            {"name":"iBooleanSetOne","valueAddress":"%QW4"}
+            {"name":"bOperationActive","valueAddress":"%QX8.0"}
+        </pre>
+    </div>
+    <div>
+        <a href="https://gist.github.com/biancode/46bfc4fe78cc059a379b383ea445d2d0" target="_blank">see Converter Flow</a>
+    </div>
+
+</script>
