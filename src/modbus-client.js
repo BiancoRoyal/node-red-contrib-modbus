@@ -372,6 +372,17 @@ module.exports = function (RED) {
                     return false
                   })
                 break
+              case 'UDP':
+                verboseLog('UDP port')
+                node.client.connectUDP(node.tcpHost, {
+                  port: node.tcpPort,
+                  autoOpen: true
+                }).then(node.setTCPConnectionOptions)
+                  .catch((err) => {
+                    node.modbusTcpErrorHandling(err)
+                    return false
+                  })
+                break
               default:
                 verboseLog('TCP port')
                 node.client.connectTCP(node.tcpHost, {
