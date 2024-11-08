@@ -1,0 +1,191 @@
+const helperExtensions = require('../../helper/test-helper-extensions')
+
+module.exports = {
+  testFlowWithDisabledClient: helperExtensions.cleanFlowPositionData(
+    [
+      {
+        "id": "0e37c0f212591d47",
+        "type": "modbus-read",
+        "z": "a6f85631cfe903d4",
+        "name": "Always running",
+        "topic": "",
+        "showStatusActivities": false,
+        "logIOActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "unitid": "",
+        "dataType": "HoldingRegister",
+        "adr": "0",
+        "quantity": "1",
+        "rate": "1",
+        "rateUnit": "s",
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "server": "5c2b693859e05456",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "x": 440,
+        "y": 380,
+        "wires": [
+          [
+            "afb50fd3c0625b15"
+          ],
+          []
+        ]
+      },
+      {
+        "id": "a75206a1b33c393c",
+        "type": "modbus-read",
+        "z": "a6f85631cfe903d4",
+        "d": true,
+        "name": "Right-click > Node > Disable me!",
+        "topic": "",
+        "showStatusActivities": false,
+        "logIOActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "unitid": "",
+        "dataType": "HoldingRegister",
+        "adr": "1",
+        "quantity": "1",
+        "rate": "1",
+        "rateUnit": "s",
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "server": "5c2b693859e05456",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "x": 490,
+        "y": 500,
+        "wires": [
+          [
+            "b022b089788ec0af"
+          ],
+          []
+        ]
+      },
+      {
+        "id": "24bff9ce523ba95d",
+        "type": "comment",
+        "z": "a6f85631cfe903d4",
+        "name": "Right-click and disable the node below.",
+        "info": "",
+        "x": 510,
+        "y": 440,
+        "wires": []
+      },
+      {
+        "id": "84a2aed2a22b5929",
+        "type": "modbus-server",
+        "z": "a6f85631cfe903d4",
+        "name": "",
+        "logEnabled": false,
+        "hostname": "127.0.0.1",
+        "serverPort": 10502,
+        "responseDelay": 100,
+        "delayUnit": "ms",
+        "coilsBufferSize": 10000,
+        "holdingBufferSize": 10000,
+        "inputBufferSize": 10000,
+        "discreteBufferSize": 10000,
+        "showErrors": false,
+        "showStatusActivities": false,
+        "x": 440,
+        "y": 240,
+        "wires": [
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "id": "66bc7cb59eb28303",
+        "type": "comment",
+        "z": "a6f85631cfe903d4",
+        "name": "\"Deploy modified nodes\"",
+        "info": "",
+        "x": 470,
+        "y": 560,
+        "wires": []
+      },
+      {
+        "id": "8e4ef4f6177cbd29",
+        "type": "comment",
+        "z": "a6f85631cfe903d4",
+        "name": "Deploy this example",
+        "info": "",
+        "x": 460,
+        "y": 320,
+        "wires": []
+      },
+      {
+        "id": "b022b089788ec0af",
+        "type": "helper",
+        "z": "a6f85631cfe903d4",
+        "name": "helper 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 720,
+        "y": 500,
+        "wires": []
+      },
+      {
+        "id": "afb50fd3c0625b15",
+        "type": "helper",
+        "z": "a6f85631cfe903d4",
+        "name": "helper 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 660,
+        "y": 380,
+        "wires": []
+      },
+      {
+        "id": "5c2b693859e05456",
+        "type": "modbus-client",
+        "name": "test_server",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "failureLogEnabled": true,
+        "tcpHost": "127.0.0.1",
+        "tcpPort": "10502",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": "1",
+        "commandDelay": "1",
+        "clientTimeout": "1000",
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": "2000",
+        "parallelUnitIdsAllowed": true,
+        "showErrors": false,
+        "showWarnings": true,
+        "showLogs": true
+      }
+    ]
+  )
+}
