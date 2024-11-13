@@ -707,7 +707,7 @@ module.exports = function (RED) {
     node.registeredNodeList = {}
 
     node.registerForModbus = function (clientUserNodeId) {
-      node.registeredNodeList[clientUserNodeId] = clientUserNodeId
+      node.registeredNodeList[clientUserNodeId.id] = clientUserNodeId
       if (Object.keys(node.registeredNodeList).length === 1) {
         node.closingModbus = false
         node.stateService.send('NEW')
