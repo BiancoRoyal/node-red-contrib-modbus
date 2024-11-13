@@ -725,12 +725,12 @@ module.exports = function (RED) {
     node.closeConnectionWithoutRegisteredNodes = function (clientUserNodeId, done) {
       if (Object.keys(node.registeredNodeList).length === 0) {
         node.closingModbus = true
-        if (node.client && node.actualServiceState.value !== 'stopped') {
+        if (node.client && node.client.close && node.actualServiceState.value !== 'stopped') {
           if (node.client.isOpen) {
             node.client.close(function () {
               node.setStoppedState(clientUserNodeId, done)
             })
-          } else {
+            return
             node.setStoppedState(clientUserNodeId, done)
           }
         } else {
@@ -739,6 +739,8 @@ module.exports = function (RED) {
       } else {
         node.setStoppedState(clientUserNodeId, done)
       }
+
+      node.setStoppedState(clientUserNodeId, done)
     }
 
     node.deregisterForModbus = function (clientUserNodeId, done) {
