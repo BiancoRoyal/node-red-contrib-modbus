@@ -731,14 +731,10 @@ module.exports = function (RED) {
             node.client.close(function () {
               node.setStoppedState(clientUserNodeId, done)
             })
+
             return
-            node.setStoppedState(clientUserNodeId, done)
           }
-        } else {
-          node.setStoppedState(clientUserNodeId, done)
         }
-      } else {
-        node.setStoppedState(clientUserNodeId, done)
       }
 
       node.setStoppedState(clientUserNodeId, done)
