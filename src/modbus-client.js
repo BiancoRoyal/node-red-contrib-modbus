@@ -723,6 +723,7 @@ module.exports = function (RED) {
     }
 
     node.closeConnectionWithoutRegisteredNodes = function (clientUserNodeId, done) {
+      // TODO(Kay): This could be simplified!
       if (Object.keys(node.registeredNodeList).length === 0) {
         node.closingModbus = true
         if (node.client && node.client.close && node.actualServiceState.value !== 'stopped') {
