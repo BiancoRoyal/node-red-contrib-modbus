@@ -83,7 +83,10 @@ module.exports = function (RED) {
     const node = this
     node.isFirstInitOfConnection = true
     node.closingModbus = false
+
+    /** @type {ModbusRTU} */
     node.client = null
+
     node.bufferCommandList = new Map()
     node.sendingAllowed = new Map()
     node.unitSendingAllowed = []
