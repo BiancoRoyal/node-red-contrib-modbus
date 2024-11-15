@@ -101,8 +101,11 @@ module.exports = function (RED) {
       }
     }
 
-    node.onModbusClose = function () {
-      setNodeStatusWithTimeTo('closed')
+    node.onModbusClose = function (nodeId) {
+      if (nodeId === node.id) {
+        node.removeNodeListenerFromModbusClient()
+        setNodeStatusWithTimeTo('closed')
+      }
     }
 
     node.onModbusBroken = function () {
@@ -229,7 +232,6 @@ module.exports = function (RED) {
     this.on('close', function (done) {
       // TODO
       // node.resetAllReadingTimer()
-      node.removeNodeListenerFromModbusClient()
       setNodeStatusWithTimeTo('closed')
       /* istanbul ignore next */
       verboseWarn('close node ' + node.id)
