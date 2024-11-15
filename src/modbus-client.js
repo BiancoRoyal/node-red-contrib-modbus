@@ -723,22 +723,19 @@ module.exports = function (RED) {
     }
 
     node.closeConnectionWithoutRegisteredNodes = function (clientUserNodeId, done) {
-      // TODO(Kay): This could be simplified!
-      if (Object.keys(node.registeredNodeList).length === 0) {
-        node.closingModbus = true
-        if (node.client && node.client.close && node.actualServiceState.value !== 'stopped') {
-          if (node.client.isOpen) {
-            node.client.close(function () {
-              node.setStoppedState(clientUserNodeId, done)
-            })
-
-            return
-          }
+      if (node.client && node.client.close && node.actualServiceState.value !== 'stopped') {
+        if (node.client.isOpen) {
+          // NOTE(Kay): This is calling out into node-modbus-serial and closes the connection
+          node.client.close(function () {
+            verboseLog('closed modbus tcp/serialport connection')
+            node.setStoppedState(clientUserNodeId, done)
+          })
         }
       }
-
-      node.setStoppedState(clientUserNodeId, done)
     }
+
+    /**
+     * __NOTE__: If there are no more listening nodes for the current connection the client will be closed permanently
 
     node.deregisterForModbus = function (clientUserNodeId, done) {
       try {
