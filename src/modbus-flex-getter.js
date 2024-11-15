@@ -232,6 +232,7 @@ module.exports = function (RED) {
       node.resetInputDelayTimer()
       mbBasics.setNodeStatusTo('closed', node)
       node.bufferMessageList.clear()
+      // NOTE(Kay): The event listeners for this node get setup in modbus-basic.js so this should work as well here!
       modbusClient.deregisterForModbus(node.id, done)
     })
 
