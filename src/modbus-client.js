@@ -742,8 +742,13 @@ module.exports = function (RED) {
     }
 
     /**
+     * Delete a node from the registeredNodeList the node in question will no longer receive any messages from the
+     * client
+     *
      * __NOTE__: If there are no more listening nodes for the current connection the client will be closed permanently
-
+     * @param clientUserNodeId {Number} the id of the node that wants to unsubscribe.
+     * @param done {function} node-red done callback
+     */
     node.deregisterForModbus = function (clientUserNodeId, done) {
       try {
         delete node.registeredNodeList[clientUserNodeId]
