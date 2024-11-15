@@ -740,7 +740,7 @@ module.exports = function (RED) {
     node.deregisterForModbus = function (clientUserNodeId, done) {
       try {
         delete node.registeredNodeList[clientUserNodeId]
-        if (node.closingModbus) {
+        if (Object.keys(node.registeredNodeList).length !== 0) {
           done()
           node.emit('mbderegister', clientUserNodeId)
         } else {
