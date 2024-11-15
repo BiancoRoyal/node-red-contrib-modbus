@@ -722,6 +722,13 @@ module.exports = function (RED) {
       done()
     }
 
+    /**
+     * Closes the internal connection if no modbus nodes are listening on the client.
+     *
+     * @param clientUserNodeId The id of the last node that still needs to be closed down
+     * @param done done callback (node-red)
+     */
+
     node.closeConnectionWithoutRegisteredNodes = function (clientUserNodeId, done) {
       if (node.client && node.client.close && node.actualServiceState.value !== 'stopped') {
         if (node.client.isOpen) {
