@@ -11,12 +11,9 @@
 'use strict'
 
 const injectNode = require('@node-red/nodes/core/common/20-inject')
-const functionNode = require('@node-red/nodes/core/function/10-function')
-const commentNode = require('@node-red/nodes/core/common/90-comment.js')
 
 const modbusServerNode = require('../../src/modbus-server.js')
 const modbusClientNode = require('../../src/modbus-client.js')
-const modbusReadNode = require('../../src/modbus-read.js')
 const modbusFlexFc = require('../../src/modbus-flex-fc.js')
 
 const helper = require('node-red-node-test-helper')
@@ -24,7 +21,7 @@ helper.init(require.resolve('node-red'))
 const expect = require('chai').expect
 const sinon = require('sinon')
 const mbBasics = require('../../src/modbus-basics.js')
-const nodeList = [injectNode, functionNode, commentNode, modbusServerNode, modbusClientNode, modbusReadNode, modbusFlexFc]
+const nodeList = [injectNode, modbusServerNode, modbusClientNode, modbusFlexFc]
 
 const testFcFlexFlows = require('./flows/modbus-fc-flex-e2e-flows')
 
