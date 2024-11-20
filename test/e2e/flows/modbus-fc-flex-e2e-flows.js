@@ -4,141 +4,89 @@ module.exports = {
   testFlowWithError: helperExtensions.cleanFlowPositionData(
     [
       {
-        id: 'fd671d8e8a41aa59',
-        type: 'tab',
-        label: 'Flow 5',
-        disabled: false,
-        info: '',
-        env: []
-      },
-      {
-        id: 'b8ab5d58623f7665',
-        type: 'inject',
-        z: 'fd671d8e8a41aa59',
-        name: '',
-        props: [
-          {
-            p: 'payload'
-          },
-          {
-            p: 'topic',
-            vt: 'str'
-          }
-        ],
-        repeat: '',
-        crontab: '',
-        once: false,
-        onceDelay: 0.1,
-        topic: '',
-        payload: '',
-        payloadType: 'date',
-        x: 280,
-        y: 340,
-        wires: [
-          [
-            '5bd25e14c9c67f95'
+          "id": "5bd25e14c9c67f95",
+          "type": "modbus-flex-fc",
+          "z": "fd671d8e8a41aa59",
+          "name": "",
+          "showStatusActivities": false,
+          "showErrors": true,
+          "showWarnings": true,
+          "unitid": "1",
+          "server": "a24bea7c.848da",
+          "emptyMsgOnFail": false,
+          "keepMsgProperties": false,
+          "mapPath": "",
+          "selectedFc": "656f1f56-4193-11ee-8eb6-07ee4f160ac8",
+          "fc": "0x04",
+          "requestCard": [
+              {
+                  "name": "startingAddress",
+                  "data": 0,
+                  "offset": 0,
+                  "type": "uint16be"
+              },
+              {
+                  "name": "quantityInputRegisters",
+                  "data": 1,
+                  "offset": 2,
+                  "type": "uint16be"
+              }
+          ],
+          "responseCard": [
+              {
+                  "name": "byteCount",
+                  "data": 0,
+                  "offset": 0,
+                  "type": "uint8be"
+              },
+              {
+                  "name": "inputRegisterValue",
+                  "data": 0,
+                  "offset": 1,
+                  "type": "uint16be"
+              }
+          ],
+          "lastSelectedFc": "656f1f56-4193-11ee-8eb6-07ee4f160ac8",
+          "x": 500,
+          "y": 340,
+          "wires": [
+              [
+                  "0799672c3be62e41"
+              ]
           ]
-        ]
       },
       {
-        id: '5bd25e14c9c67f95',
-        type: 'modbus-flex-fc',
-        z: 'fd671d8e8a41aa59',
-        name: '',
-        showStatusActivities: false,
-        showErrors: true,
-        showWarnings: true,
-        unitid: '1',
-        server: 'a24bea7c.848da',
-        emptyMsgOnFail: false,
-        keepMsgProperties: false,
-        mapPath: '',
-        selectedFc: '656f1f56-4193-11ee-8eb6-07ee4f160ac8',
-        fc: '0x04',
-        requestCard: [
-          {
-            name: 'startingAddress',
-            data: 0,
-            offset: 0,
-            type: 'uint16be'
-          },
-          {
-            name: 'quantityInputRegisters',
-            data: 1,
-            offset: 2,
-            type: 'uint16be'
-          }
-        ],
-        responseCard: [
-          {
-            name: 'byteCount',
-            data: 0,
-            offset: 0,
-            type: 'uint8be'
-          },
-          {
-            name: 'inputRegisterValue',
-            data: 0,
-            offset: 1,
-            type: 'uint16be'
-          }
-        ],
-        lastSelectedFc: '656f1f56-4193-11ee-8eb6-07ee4f160ac8',
-        x: 630,
-        y: 400,
-        wires: [
-          [
-            '0799672c3be62e41'
-          ]
-        ]
-      },
-      {
-        id: '0799672c3be62e41',
-        type: 'helper',
-        z: 'fd671d8e8a41aa59',
-        name: 'helper 4',
-        active: true,
-        tosidebar: true,
-        console: false,
-        tostatus: false,
-        complete: 'false',
-        statusVal: '',
-        statusType: 'auto',
-        x: 840,
-        y: 380,
-        wires: []
-      },
-      {
-        id: 'a24bea7c.848da',
-        type: 'modbus-client',
-        name: '',
-        clienttype: 'tcp',
-        bufferCommands: true,
-        stateLogEnabled: true,
-        queueLogEnabled: true,
-        failureLogEnabled: false,
-        tcpHost: '127.0.0.1',
-        tcpPort: '10509',
-        tcpType: 'DEFAULT',
-        serialPort: '/dev/ttyUSB',
-        serialType: 'RTU-BUFFERD',
-        serialBaudrate: '9600',
-        serialDatabits: '8',
-        serialStopbits: '1',
-        serialParity: 'none',
-        serialConnectionDelay: '100',
-        serialAsciiResponseStartDelimiter: '',
-        unit_id: '1',
-        commandDelay: '1',
-        clientTimeout: '1000',
-        reconnectOnTimeout: true,
-        reconnectTimeout: '2000',
-        parallelUnitIdsAllowed: true,
-        showErrors: false,
-        showWarnings: true,
-        showLogs: true
+          "id": "a24bea7c.848da",
+          "type": "modbus-client",
+          "name": "Flex FC Server (Flow With Error)",
+          "clienttype": "tcp",
+          "bufferCommands": true,
+          "stateLogEnabled": true,
+          "queueLogEnabled": true,
+          "failureLogEnabled": false,
+          "tcpHost": "127.0.0.1",
+          "tcpPort": "10000",
+          "tcpType": "DEFAULT",
+          "serialPort": "/dev/ttyUSB",
+          "serialType": "RTU-BUFFERD",
+          "serialBaudrate": "9600",
+          "serialDatabits": "8",
+          "serialStopbits": "1",
+          "serialParity": "none",
+          "serialConnectionDelay": "100",
+          "serialAsciiResponseStartDelimiter": "",
+          "unit_id": "1",
+          "commandDelay": "1",
+          "clientTimeout": "1000",
+          "reconnectOnTimeout": true,
+          "reconnectTimeout": "2000",
+          "parallelUnitIdsAllowed": true,
+          "showErrors": false,
+          "showWarnings": true,
+          "showLogs": true
       }
-    ]),
+  ]
+    ),
   testFlowWithMapPath: helperExtensions.cleanFlowPositionData(
     [
       {
