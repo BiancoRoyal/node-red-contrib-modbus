@@ -185,7 +185,7 @@ describe('Response Filter node Testing', function () {
 
     it('should be loaded and handle wrong input without crash', function (done) {
       helper.load(testResponseFilterNodes, testFlows.testHandleWrongInputWithoutCrashFlow, function () {
-        const modbusResponseFilter = helper.getNode('50f41d03.d1eff4')
+        const modbusResponseFilter = helper.getNode('e8c34b35e0017e7c')
         setTimeout(function () {
           modbusResponseFilter.receive({})
           done()
@@ -195,7 +195,7 @@ describe('Response Filter node Testing', function () {
 
     it('should stop on input with wrong count of registers', function (done) {
       helper.load(testResponseFilterNodes, testFlows.testStopOnInputWrongCountFlow, function () {
-        const modbusResponseFilter = helper.getNode('50f41d03.d1eff4')
+        const modbusResponseFilter = helper.getNode('52db22141d61edb2')
         setTimeout(function () {
           modbusResponseFilter.receive({ payload: {}, registers: [0, 1, 0, 1] })
           done()
@@ -205,7 +205,7 @@ describe('Response Filter node Testing', function () {
 
     it('should work on input with exact count registers', function (done) {
       helper.load(testResponseFilterNodes, testFlows.testWorkOnInputExactCountFlow, function () {
-        const modbusResponseFilter = helper.getNode('50f41d03.d1eff4')
+        const modbusResponseFilter = helper.getNode('6f35b527e1a998ad')
         setTimeout(function () {
           modbusResponseFilter.receive({ payload: {}, registers: [0, 1, 0, 1] })
           done()
