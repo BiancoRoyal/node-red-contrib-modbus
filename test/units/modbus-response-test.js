@@ -72,7 +72,7 @@ describe('Response node Testing', function () {
 
     it('should work with long data', function (done) {
       helper.load(testResponseNodes, testFlows.testLongLengthInjectDataFlow, function () {
-        const modbusResponseNode = helper.getNode('f1ff9252.b5ce18')
+        const modbusResponseNode = helper.getNode('d2e1ea25b04bb763')
         modbusResponseNode.on('input', function () {
           modbusResponseNode.should.have.property('name', 'longLengthInjectData')
           done()
@@ -82,7 +82,7 @@ describe('Response node Testing', function () {
 
     it('should work with short address', function (done) {
       helper.load(testResponseNodes, testFlows.testShortLengthInjectAddressFlow, function () {
-        const modbusResponseNode = helper.getNode('f1ff9252.b5ce18')
+        const modbusResponseNode = helper.getNode('975548ef841a5c36')
         modbusResponseNode.on('input', function () {
           modbusResponseNode.should.have.property('name', 'shortLengthInjectAddress')
           done()
@@ -92,7 +92,7 @@ describe('Response node Testing', function () {
 
     it('should work with long address', function (done) {
       helper.load(testResponseNodes, testFlows.testLongLengthInjectAddressFlow, function () {
-        const modbusResponseNode = helper.getNode('f1ff9252.b5ce18')
+        const modbusResponseNode = helper.getNode('945f19a0f84d2de2')
         modbusResponseNode.on('input', function () {
           modbusResponseNode.should.have.property('name', 'longLengthInjectAddress')
           done()
@@ -102,7 +102,7 @@ describe('Response node Testing', function () {
 
     it('should work with just payload', function (done) {
       helper.load(testResponseNodes, testFlows.testInjectJustPayloadFlow, function () {
-        const modbusResponseNode = helper.getNode('f1ff9252.b5ce18')
+        const modbusResponseNode = helper.getNode('672b5322fc5e27c5')
         modbusResponseNode.on('input', function () {
           modbusResponseNode.should.have.property('name', 'injectJustPayload')
           done()
