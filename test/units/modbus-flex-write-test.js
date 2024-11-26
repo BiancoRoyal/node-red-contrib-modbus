@@ -51,7 +51,7 @@ describe('Flex Write node Testing', function () {
   describe('Node', function () {
     it('should initialize input delay timer when delayOnStart is true', function (done) {
       helper.load(testWriteParametersNodes, testFlows.testModbusFlexWriteFlow, function () {
-        const modbusFlexWrite = helper.getNode('dcb6fa4b3549ae4f')
+        const modbusFlexWrite = helper.getNode('8ded745fb67db73c')
         modbusFlexWrite.delayOnStart = true
         const setTimeoutStub = sinon.stub(global, 'setTimeout')
 
@@ -71,7 +71,7 @@ describe('Flex Write node Testing', function () {
       }
 
       helper.load(testWriteParametersNodes, testFlows.testModbusFlexWriteFlow, function () {
-        const modbusFlexWrite = helper.getNode('dcb6fa4b3549ae4f')
+        const modbusFlexWrite = helper.getNode('8ded745fb67db73c')
 
         const processedMsg = modbusFlexWrite.setMsgPayloadFromHTTPRequests(msg)
         setTimeout(function () {
@@ -91,7 +91,7 @@ describe('Flex Write node Testing', function () {
       const logMsgErrorSpy = sinon.spy(mBasics, 'logMsgError')
 
       helper.load(testWriteParametersNodes, testFlows.testModbusFlexWriteFlow, function () {
-        const modbusFlexWrite = helper.getNode('dcb6fa4b3549ae4f')
+        const modbusFlexWrite = helper.getNode('8ded745fb67db73c')
 
         modbusFlexWrite.showErrors = true
 
@@ -112,7 +112,7 @@ describe('Flex Write node Testing', function () {
       }
 
       helper.load(testWriteParametersNodes, testFlows.testModbusFlexWriteFlow, function () {
-        const modbusFlexWrite = helper.getNode('dcb6fa4b3549ae4f')
+        const modbusFlexWrite = helper.getNode('8ded745fb67db73c')
         const emitSpy = sinon.spy(modbusFlexWrite, 'emit')
 
         modbusFlexWrite.onModbusWriteError(err, msg)
@@ -126,7 +126,7 @@ describe('Flex Write node Testing', function () {
 
     it('should update status, send message, and emit event', function (done) {
       helper.load(testWriteParametersNodes, testFlows.testModbusFlexWriteFlow, function () {
-        const modbusFlexWrite = helper.getNode('dcb6fa4b3549ae4f')
+        const modbusFlexWrite = helper.getNode('8ded745fb67db73c')
         const resp = { value: 'response' }
         const msg = { payload: 'request' }
         const emitSpy = sinon.spy(modbusFlexWrite, 'emit')
@@ -149,7 +149,7 @@ describe('Flex Write node Testing', function () {
 
     it('simple Node should be loaded', function (done) {
       helper.load(testWriteParametersNodes, testFlows.testShouldBeLoadedFlow, function () {
-        const modbusFlexWrite = helper.getNode('c02b6d1.d419c1')
+        const modbusFlexWrite = helper.getNode('7ba88d8637607edd')
         modbusFlexWrite.should.have.property('name', 'modbusFlexWrite')
         done()
       })
@@ -172,11 +172,11 @@ describe('Flex Write node Testing', function () {
         flow[7].tcpPort = port
 
         helper.load(testWriteParametersNodes, flow, function () {
-          const h1 = helper.getNode('h1')
+          const h1 = helper.getNode('65f4da8c3bf698b5')
           h1.on('input', function () {
             throw Error('Should Not Get A Message On Wrong Input To Flex Writer')
           })
-          const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+          const flexWriter = helper.getNode('8fb79d1884c099c2')
           setTimeout(function () {
             flexWriter.receive({})
           }, 800)
@@ -193,11 +193,11 @@ describe('Flex Write node Testing', function () {
         flow[7].tcpPort = port
 
         helper.load(testWriteParametersNodes, flow, function () {
-          const h1 = helper.getNode('h1')
+          const h1 = helper.getNode('65f4da8c3bf698b5')
           h1.on('input', function () {
             throw Error('Should Not Get A Message On Wrong Input To Flex Writer')
           })
-          const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+          const flexWriter = helper.getNode('8fb79d1884c099c2')
           setTimeout(function () {
             flexWriter.receive({ payload: '{ "value": true, "fc": 1, "unitid": 1,"address": 0, "quantity": 1 }' })
           }, 800)
@@ -214,11 +214,11 @@ describe('Flex Write node Testing', function () {
         flow[7].tcpPort = port
 
         helper.load(testWriteParametersNodes, flow, function () {
-          const h1 = helper.getNode('h1')
+          const h1 = helper.getNode('65f4da8c3bf698b5')
           h1.on('input', function () {
             throw Error('Should Not Get A Message On Wrong Input To Flex Writer')
           })
-          const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+          const flexWriter = helper.getNode('8fb79d1884c099c2')
           setTimeout(function () {
             flexWriter.receive({ payload: '{ "value": true, "fc": 5, "unitid": 1,"address": -1, "quantity": 1 }' })
           }, 800)
@@ -235,11 +235,11 @@ describe('Flex Write node Testing', function () {
         flow[7].tcpPort = port
 
         helper.load(testWriteParametersNodes, flow, function () {
-          const h1 = helper.getNode('h1')
+          const h1 = helper.getNode('4c3ab10efa3abb4b')
           h1.on('input', function () {
             throw Error('Should Not Get A Message On Wrong Input To Flex Writer')
           })
-          const flexWriter = helper.getNode('82fe7fe4.7b7bc8')
+          const flexWriter = helper.getNode('8fb79d1884c099c2')
           setTimeout(function () {
             flexWriter.receive({ payload: '{ "value": true, "fc": 5, "unitid": 1,"address": 1, "quantity": -1 }' })
           }, 800)
@@ -344,7 +344,7 @@ describe('Flex Write node Testing', function () {
         flow[7].tcpPort = port
 
         helper.load(testWriteParametersNodes, flow, function () {
-          const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
+          const modbusClientNode = helper.getNode('3a08b5d428fa343b')
           _.isUndefined(modbusClientNode).should.be.false()
 
           modbusClientNode.receive({ payload: 'test' })
@@ -377,7 +377,7 @@ describe('Flex Write node Testing', function () {
         flow[7].tcpPort = port
 
         helper.load(testWriteParametersNodes, flow, function () {
-          const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
+          const modbusClientNode = helper.getNode('3a08b5d428fa343b')
           setTimeout(() => {
             mBasics.setNodeStatusTo('queueing', modbusClientNode)
             const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
@@ -396,7 +396,7 @@ describe('Flex Write node Testing', function () {
         flow[7].tcpPort = port
 
         helper.load(testWriteParametersNodes, flow, function () {
-          const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
+          const modbusClientNode = helper.getNode('3a08b5d428fa343b')
           setTimeout(() => {
             mBasics.setNodeStatusTo('stopped', modbusClientNode)
             const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
