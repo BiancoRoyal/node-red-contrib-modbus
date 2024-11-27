@@ -440,7 +440,8 @@ describe('Client node Unit Testing', function () {
       helper.load(testModbusClientNodes, testFlows.testShouldBeTcpDefaultFlow, function () {
         const modbusReadNode = helper.getNode('e06cc7f0407b0278')
         modbusReadNode.should.have.property('name', 'Modbus Client (Test Should Be Tcp Default Flow)')
-        setTimeout(done, 800)
+        done()
+        // setTimeout(done, 800)
       })
     })
 
@@ -458,7 +459,8 @@ describe('Client node Unit Testing', function () {
       helper.load(testModbusClientNodes, testFlows.testShouldBeTcpTelnetFlow, function () {
         const modbusReadNode = helper.getNode('ab95db086ccc1130')
         modbusReadNode.should.have.property('name', 'Modbus Client (Test Should Be Tcp Telnet Flow)')
-        setTimeout(done, 800)
+        done()
+        // setTimeout(done, 800)
       })
     })
 
@@ -466,7 +468,8 @@ describe('Client node Unit Testing', function () {
       helper.load(testModbusClientNodes, testFlows.testShouldBeTcpRtuBufferedFlow, function () {
         const modbusReadNode = helper.getNode('1d4a92696aabe2ec')
         modbusReadNode.should.have.property('name', 'ModbusClientTCPRTUB')
-        setTimeout(done, 800)
+        done()
+        // setTimeout(done, 800)
       })
     })
 
@@ -474,7 +477,8 @@ describe('Client node Unit Testing', function () {
       helper.load(testModbusClientNodes, testFlows.testShouldBeTcpC701Flow, function () {
         const modbusReadNode = helper.getNode('8b970d8257c62e4f')
         modbusReadNode.should.have.property('name', 'ModbusClientTCPC701')
-        setTimeout(done, 800)
+        done()
+        // setTimeout(done, 800)
       })
     })
 
@@ -482,7 +486,8 @@ describe('Client node Unit Testing', function () {
       helper.load(testModbusClientNodes, testFlows.testShouldBeSerialRtuBufferedFlow, function () {
         const modbusReadNode = helper.getNode('21a11dc2d2e1826c')
         modbusReadNode.should.have.property('name', 'ModbusClientSerialRTUB')
-        setTimeout(done, 800)
+        done()
+        // setTimeout(done, 800)
       })
     })
 
@@ -490,7 +495,8 @@ describe('Client node Unit Testing', function () {
       helper.load(testModbusClientNodes, testFlows.testShouldBeSerialRtuFlow, function () {
         const modbusReadNode = helper.getNode('ebd8d330901cc90b')
         modbusReadNode.should.have.property('name', 'ModbusClientSerialRTU')
-        setTimeout(done, 800)
+        done()
+        // setTimeout(done, 800)
       })
     })
 
@@ -498,7 +504,8 @@ describe('Client node Unit Testing', function () {
       helper.load(testModbusClientNodes, testFlows.testShouldBeSerialAsciiFlow, function () {
         const modbusReadNode = helper.getNode('858b253b6b7c2681')
         modbusReadNode.should.have.property('name', 'ModbusClientSerialASCII')
-        setTimeout(done, 800)
+        done()
+        // setTimeout(done, 800)
       })
     })
 
@@ -506,7 +513,8 @@ describe('Client node Unit Testing', function () {
       helper.load(testModbusClientNodes, testFlows.testShouldBeSerialAsciiFlow, function () {
         const modbusClientNode = helper.getNode('858b253b6b7c2681')
         modbusClientNode.should.have.property('messageAllowedStates', coreModbusClient.messageAllowedStates)
-        setTimeout(done, 800)
+        done()
+        // setTimeout(done, 800)
       })
     })
 
