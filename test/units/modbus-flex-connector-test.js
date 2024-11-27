@@ -76,6 +76,7 @@ describe('Flex Connector node Unit Testing', function () {
 
           setTimeout(function () {
             modbusNode.receive({ payload: { connectorType: 'TCP', tcpHost: '127.0.0.1', tcpPort: port } })
+            done()
           }, 1000)
         })
       })
@@ -95,6 +96,7 @@ describe('Flex Connector node Unit Testing', function () {
               serialBaudrate: '9600'
             }
           })
+          done()
         }, 1000)
         clientNode.on('mbinit', () => {
           if (clientNode && clientNode.serialBaudrate === 9600 && clientNode.serialPort === '/dev/ttyUSB0') {
