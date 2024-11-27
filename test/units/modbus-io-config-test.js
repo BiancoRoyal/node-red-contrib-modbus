@@ -139,8 +139,9 @@ describe('IO Config node Testing', function () {
             setTimeout(() => {
               const rawdata = fs.readFileSync('./test/resources/deviceCopy.json')
               fs.writeFileSync('./test/resources/device.json', rawdata)
+              done()
             }, 1000)
-          }, 1000)
+          }, 2000)
         })
       })
     })
