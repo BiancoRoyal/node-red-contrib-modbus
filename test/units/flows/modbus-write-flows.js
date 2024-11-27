@@ -260,7 +260,7 @@ module.exports = {
           "type": "modbus-client",
           "name": "Modbus Write (Test Simple Write Flow)",
           "clienttype": "tcp",
-          "bufferCommands": true,
+          "bufferCommands": false,
           "stateLogEnabled": false,
           "queueLogEnabled": false,
           "failureLogEnabled": false,
