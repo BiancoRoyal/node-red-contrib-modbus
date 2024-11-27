@@ -179,8 +179,8 @@ describe('Flex Write node Testing', function () {
           const flexWriter = helper.getNode('8fb79d1884c099c2')
           setTimeout(function () {
             flexWriter.receive({})
+            done()
           }, 800)
-          setTimeout(done, 1200)
         })
       })
     })
@@ -200,8 +200,8 @@ describe('Flex Write node Testing', function () {
           const flexWriter = helper.getNode('8fb79d1884c099c2')
           setTimeout(function () {
             flexWriter.receive({ payload: '{ "value": true, "fc": 1, "unitid": 1,"address": 0, "quantity": 1 }' })
+            done()
           }, 800)
-          setTimeout(done, 1200)
         })
       })
     })
@@ -221,8 +221,8 @@ describe('Flex Write node Testing', function () {
           const flexWriter = helper.getNode('8fb79d1884c099c2')
           setTimeout(function () {
             flexWriter.receive({ payload: '{ "value": true, "fc": 5, "unitid": 1,"address": -1, "quantity": 1 }' })
+            done()
           }, 800)
-          setTimeout(done, 1200)
         })
       })
     })
@@ -242,8 +242,8 @@ describe('Flex Write node Testing', function () {
           const flexWriter = helper.getNode('8fb79d1884c099c2')
           setTimeout(function () {
             flexWriter.receive({ payload: '{ "value": true, "fc": 5, "unitid": 1,"address": 1, "quantity": -1 }' })
+            done()
           }, 800)
-          setTimeout(done, 1200)
         })
       })
     })
