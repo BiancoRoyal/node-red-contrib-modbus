@@ -737,6 +737,9 @@ module.exports = function (RED) {
           node.setStoppedState(clientUserNodeId, done)
         }
       } else {
+        //  Todo: this looks wrong - client should not stop,
+        //   it should just inform the node with corresponding id,
+        //   about de-registration was done
         node.setStoppedState(clientUserNodeId, done)
       }
     }

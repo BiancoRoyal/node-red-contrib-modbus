@@ -158,7 +158,7 @@ describe('Flex Sequencer node Testing', function () {
       })
     })
 
-    it('the user  has the option to input function code strings "FC1,FC2, FC3,FC4" and these will be converted into the right values', function (done) {
+    it('the user has the option to input function code strings "FC1, FC2, FC3, FC4" and these will be converted into the right values', function (done) {
       helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
         setTimeout(() => {
           const flexSequencer = helper.getNode('3493f55536112011')
@@ -173,7 +173,7 @@ describe('Flex Sequencer node Testing', function () {
             result.quantity.should.equal(1)
           }
           done()
-        }, 6500)
+        }, 1000)
       })
     })
 

@@ -197,7 +197,7 @@ describe('Write node Testing', function () {
       })
     })
 
-    /*it('should inject at least 4 messages but only use one to test initial delay', function (done) {
+    /* it('should inject at least 4 messages but only use one to test initial delay', function (done) {
       const flow = Array.from(testFlows.testSimpleWriteFlow)
 
       getPort().then((port) => {
@@ -237,7 +237,7 @@ describe('Write node Testing', function () {
           })
         })
       })
-    })*/
+    }) */
   })
 
   describe('post', function () {

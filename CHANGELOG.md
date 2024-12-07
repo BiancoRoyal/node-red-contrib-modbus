@@ -1,4 +1,4 @@
-# [5.43.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.41.0...v5.43.0) (2024-11-02)
+# [5.44.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.41.0...v5.44.0) (2024-12-07)
 
 
 ### Bug Fixes
@@ -30,11 +30,18 @@
 
 ### Features
 
+* **flex-fc-unit:** reexported all tests, changed some tests ([e8429e1](https://github.com/biancoroyal/node-red-contrib-modbus/commit/e8429e16b96d02294dadebd27989e8250b77448d))
 * **flex-fc:** add load button ([04fb46e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/04fb46ed4d2764276b7bcfae1800f9ac342da85a))
 * **flex-fc:** add load button for an improved ui experience ([895f446](https://github.com/biancoroyal/node-red-contrib-modbus/commit/895f446bd99c8ea65bb5f96f7e4d0d79dec3da8e))
 * **flex-fc:** map file needs to be json ([28f6010](https://github.com/biancoroyal/node-red-contrib-modbus/commit/28f60102e07b54d4bd5b86660b4d382341dd54b3))
+* **flex-seq-unit:** reexported tests, fixed ids ([2b12a69](https://github.com/biancoroyal/node-red-contrib-modbus/commit/2b12a69a63415c8666e132446751e39652147b46))
+* **flex-write-unit:** reexported tests, fixed ids ([9f310ce](https://github.com/biancoroyal/node-red-contrib-modbus/commit/9f310ce53f5503336b424040e4b94c7110eea166))
+* **getter-unit:** reexported flows, fixed ids ([48d77df](https://github.com/biancoroyal/node-red-contrib-modbus/commit/48d77dfd0d52bf1b0b2b3f18ef307fb45b99f310))
+* **io-config-unit:** reexported all flows, changed timeout values ([0617684](https://github.com/biancoroyal/node-red-contrib-modbus/commit/0617684b96b7f5ee5a1a5c5b43328b543ee2bbb7))
 * **modbus-client-core:** Improve code in modbus-client-core.js file ([f0691e2](https://github.com/biancoroyal/node-red-contrib-modbus/commit/f0691e2cdf8e0986912d60d31432a592de264769))
+* **modbus-flex-getter-unit:** reexported flows, replaced id's ([ac625b3](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ac625b3e79601575bba13769801bcefcfdfdbcad))
 * **modbus:** new option for the flex-fc to get input msg ([5ff8167](https://github.com/biancoroyal/node-red-contrib-modbus/commit/5ff81672ac9c575a71bb241fc5861f25357012c8))
+* **response-filter-flow:** reexported all tests ([7f9d445](https://github.com/biancoroyal/node-red-contrib-modbus/commit/7f9d4454dbb637e8bce86f4f99397375e371ddfa))
 * **test-flow:** added tets flow for github issue 473 ([6130171](https://github.com/biancoroyal/node-red-contrib-modbus/commit/6130171e2542dc5c8a2c900b4f6b81d5f07367cf))
 
 
@@ -137,7 +144,7 @@
 
 
 
-# [5.23.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.15.0...v5.23.0) (2022-08-01)
+# [5.23.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.16.0...v5.23.0) (2022-08-01)
 
 
 ### Bug Fixes
@@ -169,23 +176,39 @@
 
 
 
-# [5.14.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.13.1...v5.14.0) (2021-04-10)
+# [5.14.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.13.3...v5.14.0) (2021-04-10)
 
 
 ### Bug Fixes
 
 * **basics:** [#210](https://github.com/biancoroyal/node-red-contrib-modbus/issues/210) missing parameter node ([806f944](https://github.com/biancoroyal/node-red-contrib-modbus/commit/806f944d3acdb46750611b74497940224463acfa))
+
+
+
+## [5.13.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.13.1...v5.13.2) (2020-05-26)
+
+
+### Bug Fixes
+
 * **msg:** modbus request data in msg object [#203](https://github.com/biancoroyal/node-red-contrib-modbus/issues/203) ([380357f](https://github.com/biancoroyal/node-red-contrib-modbus/commit/380357f825ebe0b3648b1d146bad136f1a195d89))
 
 
 
-## [5.13.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.12.0...v5.13.1) (2020-05-24)
+## [5.13.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.13.0...v5.13.1) (2020-05-24)
+
+
+### Bug Fixes
+
+* **serial:** queue serial sequenced sending [#202](https://github.com/biancoroyal/node-red-contrib-modbus/issues/202) ([e11cb49](https://github.com/biancoroyal/node-red-contrib-modbus/commit/e11cb492037e0d91eb13f82596cbecbc87c6e24d))
+
+
+
+# [5.13.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.12.0...v5.13.0) (2020-05-21)
 
 
 ### Bug Fixes
 
 * **serial:** [#202](https://github.com/biancoroyal/node-red-contrib-modbus/issues/202) locked queue on serial error ([757f341](https://github.com/biancoroyal/node-red-contrib-modbus/commit/757f34192885e7cf157aa438e22266928d477357))
-* **serial:** queue serial sequenced sending [#202](https://github.com/biancoroyal/node-red-contrib-modbus/issues/202) ([e11cb49](https://github.com/biancoroyal/node-red-contrib-modbus/commit/e11cb492037e0d91eb13f82596cbecbc87c6e24d))
 
 
 ### Features
