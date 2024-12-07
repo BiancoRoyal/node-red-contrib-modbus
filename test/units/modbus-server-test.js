@@ -48,7 +48,7 @@ describe('Server node Testing', function () {
       const flow = Array.from(testFlows.testServerConfig)
 
       getPort().then((port) => {
-        flow[0].serverPort = port
+        flow[1].serverPort = port
 
         helper.load(testServerNodes, flow, function () {
           const modbusServer = helper.getNode('249922d5ac72b8cd')
@@ -70,7 +70,7 @@ describe('Server node Testing', function () {
       const flow = Array.from(testFlows.testServerConfig)
 
       getPort().then((port) => {
-        flow[0].serverPort = port
+        flow[1].serverPort = port
 
         helper.load(testServerNodes, flow, function () {
           const modbusServer = helper.getNode('249922d5ac72b8cd')
@@ -99,7 +99,7 @@ describe('Server node Testing', function () {
       const flow = Array.from(testFlows.testServerConfig)
 
       getPort().then((port) => {
-        flow[0].serverPort = port
+        flow[1].serverPort = port
 
         helper.load(testServerNodes, flow, function () {
           const modbusServer = helper.getNode('249922d5ac72b8cd')
@@ -120,7 +120,7 @@ describe('Server node Testing', function () {
       const flow = Array.from(testFlows.testServerConfig)
 
       getPort().then((port) => {
-        flow[0].serverPort = port
+        flow[1].serverPort = port
 
         helper.load(testServerNodes, flow, function () {
           const modbusServer = helper.getNode('249922d5ac72b8cd')
@@ -140,7 +140,7 @@ describe('Server node Testing', function () {
       const flow = Array.from(testFlows.testSimpleNodeToLogError)
 
       getPort().then((port) => {
-        flow[0].serverPort = port
+        flow[1].serverPort = port
 
         helper.load(testServerNodes, flow, function () {
           const modbusServer = helper.getNode('374a21ec15deaee9')
@@ -160,7 +160,7 @@ describe('Server node Testing', function () {
       const flow = Array.from(testFlows.testSimpleNodeToLogError)
 
       getPort().then((port) => {
-        flow[0].serverPort = port
+        flow[1].serverPort = port
 
         helper.load(testServerNodes, flow, function () {
           const modbusServer = helper.getNode('374a21ec15deaee9')
@@ -185,7 +185,7 @@ describe('Server node Testing', function () {
       const flow = Array.from(testFlows.testSimpleNodeShouldBeLoadedFlow)
 
       getPort().then((port) => {
-        flow[0].serverPort = port
+        flow[1].serverPort = port
 
         helper.load(testServerNodes, flow, function () {
           const modbusServer = helper.getNode('46daaa5c3a54773d')
@@ -221,7 +221,7 @@ describe('Server node Testing', function () {
       const flow = Array.from(testFlows.testSimpleNodeShouldBeLoadedFlow)
 
       getPort().then((port) => {
-        flow[0].serverPort = port
+        flow[1].serverPort = port
 
         helper.load(testServerNodes, flow, function () {
           const modbusServer = helper.getNode('46daaa5c3a54773d')
@@ -253,7 +253,7 @@ describe('Server node Testing', function () {
         flow[1].serverPort = port
 
         helper.load(testServerNodes, flow, function () {
-          const h1 = helper.getNode('h1')
+          const h1 = helper.getNode('0939f7adc67c2fca')
           h1.on('input', function () {
             done()
           })

@@ -51,7 +51,7 @@ describe('Client Modbus Integration', function () {
   describe('Modbus Write', function () {
     it('should write Modbus via TCP', function (done) {
       helper.load(nodeList, testFlows.testFlowWritingWithoutInject, function () {
-        const writeNode = helper.getNode('409b03f21dcb23ad')
+        const writeNode = helper.getNode('b214ab1595472566')
         receive(writeNode, { payload: true })
         writeNode.should.have.property('name', 'ModbusTestWrite')
         receive(writeNode, { payload: false })

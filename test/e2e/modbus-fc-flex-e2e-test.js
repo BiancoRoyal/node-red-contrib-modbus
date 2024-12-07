@@ -11,12 +11,9 @@
 'use strict'
 
 const injectNode = require('@node-red/nodes/core/common/20-inject')
-const functionNode = require('@node-red/nodes/core/function/10-function')
-const commentNode = require('@node-red/nodes/core/common/90-comment.js')
 
 const modbusServerNode = require('../../src/modbus-server.js')
 const modbusClientNode = require('../../src/modbus-client.js')
-const modbusReadNode = require('../../src/modbus-read.js')
 const modbusFlexFc = require('../../src/modbus-flex-fc.js')
 
 const helper = require('node-red-node-test-helper')
@@ -24,7 +21,7 @@ helper.init(require.resolve('node-red'))
 const expect = require('chai').expect
 const sinon = require('sinon')
 const mbBasics = require('../../src/modbus-basics.js')
-const nodeList = [injectNode, functionNode, commentNode, modbusServerNode, modbusClientNode, modbusReadNode, modbusFlexFc]
+const nodeList = [injectNode, modbusServerNode, modbusClientNode, modbusFlexFc]
 
 const testFcFlexFlows = require('./flows/modbus-fc-flex-e2e-flows')
 
@@ -95,8 +92,8 @@ describe('Modbus E2E Flex FC-Functionality tests', function () {
 
     it('should set node status if showStatusActivities is true', function (done) {
       helper.load(nodeList, testFcFlexFlows.testFlowForReading, function () {
-        const flexNode = helper.getNode('c2727803d7b31f68')
-        const clientNode = helper.getNode('4')
+        const flexNode = helper.getNode('e7027eb89e7951dc')
+        const clientNode = helper.getNode('aaa97cb90fe9cf75')
 
         flexNode.showStatusActivities = true
         invalidPayloadInStub = sinon.stub(mbBasics, 'invalidPayloadIn').returns(false)
@@ -153,14 +150,15 @@ describe('Modbus E2E Flex FC-Functionality tests', function () {
 
     it('should set node status and call modbusRead on modbus connect', function (done) {
       helper.load(nodeList, testFcFlexFlows.testFlowForReading, function () {
-        const flexNode = helper.getNode('c2727803d7b31f68')
+        const flexNode = helper.getNode('e7027eb89e7951dc')
         flexNode.onModbusConnect()
         done()
       })
     })
+
     it('should call internalDebugLog, errorProtocolMsg, sendEmptyMsgOnFail, and setModbusError', function (done) {
       helper.load(nodeList, testFcFlexFlows.testFlowForReading, function () {
-        const flexNode = helper.getNode('c2727803d7b31f68')
+        const flexNode = helper.getNode('e7027eb89e7951dc')
         const internalDebugLogStub = sinon.stub(flexNode, 'internalDebugLog')
         const errorProtocolMsgStub = sinon.stub(flexNode, 'errorProtocolMsg')
         const sendEmptyMsgOnFailStub = sinon.stub(mbBasics, 'sendEmptyMsgOnFail')
@@ -175,9 +173,10 @@ describe('Modbus E2E Flex FC-Functionality tests', function () {
         done()
       })
     })
+
     it('should call resetAllReadingTimer, removeNodeListenerFromModbusClient, setNodeStatusWithTimeTo, and deregisterForModbus', function (done) {
       helper.load(nodeList, testFcFlexFlows.testFlowForReading, function () {
-        const flexNode = helper.getNode('c2727803d7b31f68')
+        const flexNode = helper.getNode('e7027eb89e7951dc')
         const doneMock = sinon.stub()
         flexNode.emit('close', doneMock)
         done()
@@ -186,7 +185,7 @@ describe('Modbus E2E Flex FC-Functionality tests', function () {
 
     it('should call mbBasics.logMsgError when showErrors is true', function (done) {
       helper.load(nodeList, testFcFlexFlows.testFlowForReading, function () {
-        const flexNode = helper.getNode('c2727803d7b31f68')
+        const flexNode = helper.getNode('e7027eb89e7951dc')
         const logMsgErrorStub = sinon.stub(mbBasics, 'logMsgError')
         const fakeError = new Error('Fake error')
         const fakeMsg = { payload: 'fakePayload' }
@@ -223,53 +222,59 @@ describe('Modbus E2E Flex FC-Functionality tests', function () {
 
     it('should set status to waiting if client is not available in modbusRead', function (done) {
       helper.load(nodeList, testFcFlexFlows.testFlowForReading, function () {
-        const flexNode = helper.getNode('c2727803d7b31f68')
+        const flexNode = helper.getNode('e7027eb89e7951dc')
         flexNode.modbusRead()
 
         done()
       })
     })
-    it('the request-map-editor should contain the correct map', function (done) {
-      helper.load(nodeList, testFcFlexFlows.testFlexFCFunctionality, function () {
-        const flexNode = helper.getNode('4f80ae4fa5b8af80')
-        flexNode.should.have.property('fc', '0x01')
-        flexNode.should.have.property('requestCard', JSON.parse('[\n' +
-          '          {\n' +
-          '            "name": "startingAddress",\n' +
-          '            "data": 0,\n' +
-          '            "offset": 0,\n' +
-          '            "type": "uint16be"\n' +
-          '          },\n' +
-          '          {\n' +
-          '            "name": "quantityCoils",\n' +
-          '            "data": 8,\n' +
-          '            "offset": 2,\n' +
-          '            "type": "uint16be"\n' +
-          '          }\n' +
-          '        ]')
-        )
-        done()
-      })
-    })
 
     it('the request-map-editor should contain the correct map', function (done) {
       helper.load(nodeList, testFcFlexFlows.testFlexFCFunctionality, function () {
         const flexNode = helper.getNode('4f80ae4fa5b8af80')
-        flexNode.should.have.property('requestCard', JSON.parse('[\n' +
-          '          {\n' +
-          '            "name": "startingAddress",\n' +
-          '            "data": 0,\n' +
-          '            "offset": 0,\n' +
-          '            "type": "uint16be"\n' +
-          '          },\n' +
-          '          {\n' +
-          '            "name": "quantityCoils",\n' +
-          '            "data": 8,\n' +
-          '            "offset": 2,\n' +
-          '            "type": "uint16be"\n' +
-          '          }\n' +
-          '        ]')
-        )
+        flexNode.should.have.property('fc', '0x01')
+        const result = flexNode.requestCard
+        const expectedJson =
+          [
+            {
+              name: 'startingAddress',
+              data: 0,
+              offset: 0,
+              type: 'uint16be'
+            },
+            {
+              name: 'quantityCoils',
+              data: 8,
+              offset: 2,
+              type: 'uint16be'
+            }
+          ]
+
+        expect(result).deep.equal(expectedJson)
+        done()
+      })
+    })
+
+    it('the response-map-editor should contain the correct map', function (done) {
+      helper.load(nodeList, testFcFlexFlows.testFlexFCFunctionality, function () {
+        const flexNode = helper.getNode('4f80ae4fa5b8af80')
+        const result = flexNode.responseCard
+        const expectedJson = [
+          {
+            name: 'byteCount',
+            data: 0,
+            offset: 0,
+            type: 'uint8be'
+          },
+          {
+            name: 'coilStatus',
+            data: 0,
+            offset: 1,
+            type: 'uint8be'
+          }
+        ]
+
+        expect(result).deep.equal(expectedJson)
         done()
       })
     })

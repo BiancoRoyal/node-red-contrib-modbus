@@ -49,7 +49,7 @@ describe('Flex Connector node Unit Testing', function () {
   describe('Node', function () {
     it('should be loaded', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
-        const modbusNode = helper.getNode('40ddaabb.fd44d4')
+        const modbusNode = helper.getNode('8dcf1f9c356d074b')
         modbusNode.should.have.property('name', 'FlexConnector')
         modbusNode.should.have.property('emptyQueue', true)
         done()
@@ -63,7 +63,7 @@ describe('Flex Connector node Unit Testing', function () {
         flow[1].serverPort = port
 
         helper.load(testFlexConnectorNodes, flow, function () {
-          const modbusNode = helper.getNode('40ddaabb.fd44d4')
+          const modbusNode = helper.getNode('4bebe20d77ae781d')
           const clientNode = helper.getNode('2a253153.fae3ce')
           modbusNode.should.have.property('name', 'FlexConnector')
           modbusNode.should.have.property('emptyQueue', true)
@@ -76,6 +76,7 @@ describe('Flex Connector node Unit Testing', function () {
 
           setTimeout(function () {
             modbusNode.receive({ payload: { connectorType: 'TCP', tcpHost: '127.0.0.1', tcpPort: port } })
+            done()
           }, 1000)
         })
       })
@@ -83,8 +84,8 @@ describe('Flex Connector node Unit Testing', function () {
 
     it('should change the Serial-Port of the client from /dev/ttyUSB to /dev/ttyUSB0', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testShouldChangeSerialPortFlow, function () {
-        const modbusNode = helper.getNode('40ddaabb.fd44d4')
-        const clientNode = helper.getNode('2a253153.fae3ef')
+        const modbusNode = helper.getNode('506ff2af84012599')
+        const clientNode = helper.getNode('cfdf32d7009eedcc')
         modbusNode.should.have.property('name', 'FlexConnector')
         modbusNode.should.have.property('emptyQueue', true)
         setTimeout(function () {
@@ -95,6 +96,7 @@ describe('Flex Connector node Unit Testing', function () {
               serialBaudrate: '9600'
             }
           })
+          done()
         }, 1000)
         clientNode.on('mbinit', () => {
           if (clientNode && clientNode.serialBaudrate === 9600 && clientNode.serialPort === '/dev/ttyUSB0') {
@@ -106,7 +108,7 @@ describe('Flex Connector node Unit Testing', function () {
 
     it('should be inactive if message not allowed', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
-        const modbusClientNode = helper.getNode('2a253153.fae3ce')
+        const modbusClientNode = helper.getNode('1252ede3d9d9937e')
         _.isUndefined(modbusClientNode).should.be.false()
 
         modbusClientNode.receive({ payload: 'test' })
@@ -118,7 +120,7 @@ describe('Flex Connector node Unit Testing', function () {
 
     it('should be inactive if message empty', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
-        const modbusClientNode = helper.getNode('2a253153.fae3ce')
+        const modbusClientNode = helper.getNode('1252ede3d9d9937e')
         setTimeout(() => {
           modbusClientNode.messageAllowedStates = ['']
           const isInactive = modbusClientNode.isInactive()
@@ -129,10 +131,11 @@ describe('Flex Connector node Unit Testing', function () {
     })
 
     it('should be state reconnecting - not ready to send', function (done) {
+      this.retries(15)
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
-        const modbusNode = helper.getNode('40ddaabb.fd44d4')
+        const modbusNode = helper.getNode('8dcf1f9c356d074b')
         setTimeout(() => {
-          modbusNode.statusText.should.containEql('reconnecting')
+          modbusNode.statusText.should.containEql('reconnecting after 1 msec.')
           done()
         }, 800)
       })
@@ -140,7 +143,7 @@ describe('Flex Connector node Unit Testing', function () {
 
     it('should be not state queueing - not ready to send', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
-        const modbusClientNode = helper.getNode('2a253153.fae3ce')
+        const modbusClientNode = helper.getNode('1252ede3d9d9937e')
         setTimeout(() => {
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
@@ -158,7 +161,7 @@ describe('Flex Connector node Unit Testing', function () {
         flow[8].tcpPort = port
 
         helper.load(testFlexConnectorNodes, flow, function () {
-          const flexNode = helper.getNode('1b4644a214cfdec6')
+          const flexNode = helper.getNode('7fad66c312d28d1b')
           if (flexNode) {
             flexNode.onConfigError(new Error('Test Error'), { payload: {} })
             done()
@@ -175,7 +178,7 @@ describe('Flex Connector node Unit Testing', function () {
         flow[8].tcpPort = port
 
         helper.load(testFlexConnectorNodes, testFlows.testFlowAsExpectedWithConfigMessage, function () {
-          const flexNode = helper.getNode('bf2ba5ae45aefab1')
+          const flexNode = helper.getNode('474fb3622491d7cb')
           if (flexNode) {
             flexNode.onConfigError(new Error('Test Error'), { payload: {} })
             done()

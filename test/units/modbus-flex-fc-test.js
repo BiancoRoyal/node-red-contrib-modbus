@@ -52,8 +52,6 @@ describe('modbus flex fc unit test', function () {
       modbusFlexFc.should.have.property('name', 'read_discrete_inputs')
       modbusFlexFc.should.have.property('type', 'modbus-flex-fc')
       done()
-    }, function () {
-      helper.log('function callback')
     })
   })
 
@@ -63,8 +61,6 @@ describe('modbus flex fc unit test', function () {
       const isReady = modbusClientNode.statusText
       isReady.should.be.equal('waiting ...')
       done()
-    }, function () {
-      helper.log('function callback')
     })
   })
 
@@ -73,8 +69,6 @@ describe('modbus flex fc unit test', function () {
       const node = helper.getNode('d975b1203f71a3b5')
       node.isNotReadyForInput().should.be.equal(true)
       done()
-    }, function () {
-      helper.log('function callback')
     })
   })
 
@@ -86,8 +80,6 @@ describe('modbus flex fc unit test', function () {
       })
 
       done()
-    }, function () {
-      helper.log('function callback')
     })
   })
 
@@ -144,7 +136,7 @@ describe('modbus flex fc unit test', function () {
   it('a flex-fc-node which is ready and active whom received a well formed message will try to communicate with the server', function (done) {
     helper.load(testFlexFcNodes, testFlows.testReadCoilMode, function () {
       const node = helper.getNode('d975b1203f71a3b5')
-      const client = helper.getNode('5c2b693859e05456')
+      const client = helper.getNode('6420373db0f46845')
 
       node.environmentVerbosity = true
       // let mockVerboseWarnMessage = ''

@@ -2,633 +2,661 @@ const helperExtensions = require('../../helper/test-helper-extensions')
 
 module.exports = {
 
-  testShouldBeLoadedFlow: helperExtensions.cleanFlowPositionData([
-    {
-      "id": "cb3ef46652ca069f",
-      "type": "tab",
-      "label": "Flex-Connector No Server",
-      "disabled": false,
-      "info": "",
-      "env": []
-    },
-    {
-      "id": "40ddaabb.fd44d4",
-      "type": "modbus-flex-connector",
-      "z": "cb3ef46652ca069f",
-      "name": "FlexConnector",
-      "maxReconnectsPerMinute": 4,
-      "emptyQueue": true,
-      "showStatusActivities": true,
-      "showErrors": false,
-      "server": "2a253153.fae3ce",
-      "emptyMsgOnFail": false,
-      "configMsgOnChange": false,
-      "x": 520,
-      "y": 120,
-      "wires": [
-        []
-      ]
-    },
-    {
-      "id": "2a253153.fae3ce",
-      "type": "modbus-client",
-      "name": "",
-      "clienttype": "tcp",
-      "bufferCommands": true,
-      "stateLogEnabled": false,
-      "queueLogEnabled": false,
-      "failureLogEnabled": false,
-      "tcpHost": "127.0.0.1",
-      "tcpPort": "11522",
-      "tcpType": "DEFAULT",
-      "serialPort": "/dev/ttyUSB",
-      "serialType": "RTU-BUFFERD",
-      "serialBaudrate": "9600",
-      "serialDatabits": "8",
-      "serialStopbits": "1",
-      "serialParity": "none",
-      "serialConnectionDelay": "100",
-      "serialAsciiResponseStartDelimiter": "",
-      "unit_id": "1",
-      "commandDelay": "100",
-      "clientTimeout": "100",
-      "reconnectOnTimeout": true,
-      "reconnectTimeout": "2000",
-      "parallelUnitIdsAllowed": true,
-      "showErrors": false,
-      "showWarnings": false,
-      "showLogs": false
-    }
-  ]),
+  testShouldBeLoadedFlow: helperExtensions.cleanFlowPositionData(
+    [
+      {
+        'id': 'dee6791347fc9889',
+        'type': 'tab',
+        'label': 'Modbus Flex Connector (Test Should Be Loaded Flow)',
+        'disabled': false,
+        'info': '',
+        'env': []
+      },
+      {
+        'id': '8dcf1f9c356d074b',
+        'type': 'modbus-flex-connector',
+        'z': 'dee6791347fc9889',
+        'name': 'FlexConnector',
+        'maxReconnectsPerMinute': 4,
+        'emptyQueue': true,
+        'showStatusActivities': true,
+        'showErrors': false,
+        'server': '1252ede3d9d9937e',
+        'emptyMsgOnFail': false,
+        'configMsgOnChange': false,
+        'x': 430,
+        'y': 280,
+        'wires': [
+          []
+        ]
+      },
+      {
+        'id': '1252ede3d9d9937e',
+        'type': 'modbus-client',
+        'name': 'Modbus Flex Connector (Test Should Be Loaded Flow)',
+        'clienttype': 'tcp',
+        'bufferCommands': true,
+        'stateLogEnabled': false,
+        'queueLogEnabled': false,
+        'failureLogEnabled': true,
+        'tcpHost': '127.0.0.1',
+        'tcpPort': '10032',
+        'tcpType': 'DEFAULT',
+        'serialPort': '/dev/ttyUSB',
+        'serialType': 'RTU-BUFFERD',
+        'serialBaudrate': '9600',
+        'serialDatabits': '8',
+        'serialStopbits': '1',
+        'serialParity': 'none',
+        'serialConnectionDelay': '100',
+        'serialAsciiResponseStartDelimiter': '0x3A',
+        'unit_id': '1',
+        'commandDelay': '1',
+        'clientTimeout': '1000',
+        'reconnectOnTimeout': true,
+        'reconnectTimeout': '1',
+        'parallelUnitIdsAllowed': true,
+        'showErrors': false,
+        'showWarnings': true,
+        'showLogs': true
+      }
+    ]
+  ),
 
-  testShouldChangeTcpPortFlow: helperExtensions.cleanFlowPositionData([
-    {
-      id: '6526da2265adb5f1',
-      type: 'tab',
-      label: 'Should Change TCP Port',
-      disabled: false,
-      info: '',
-      env: []
-    },
-    {
-      id: '445454e4.968564',
-      type: 'modbus-server',
-      z: '6526da2265adb5f1',
-      name: '',
-      logEnabled: true,
-      hostname: '127.0.0.1',
-      serverPort: '8522',
-      responseDelay: 100,
-      delayUnit: 'ms',
-      coilsBufferSize: 10000,
-      holdingBufferSize: 10000,
-      inputBufferSize: 10000,
-      discreteBufferSize: 10000,
-      showErrors: false,
-      x: 400,
-      y: 240,
-      wires: [
-        [],
-        [],
-        [],
-        [],
-        []
-      ]
-    },
-    {
-      id: '40ddaabb.fd44d4',
-      type: 'modbus-flex-connector',
-      z: '6526da2265adb5f1',
-      name: 'FlexConnector',
-      maxReconnectsPerMinute: 4,
-      emptyQueue: true,
-      showStatusActivities: false,
-      showErrors: false,
-      server: '2a253153.fae3ce',
-      x: 480,
-      y: 400,
-      wires: [
-        []
-      ]
-    },
-    {
-      id: '2a253153.fae3ce',
-      type: 'modbus-client',
-      name: '',
-      clienttype: 'tcp',
-      bufferCommands: true,
-      stateLogEnabled: false,
-      queueLogEnabled: false,
-      failureLogEnabled: false,
-      tcpHost: '127.0.0.1',
-      tcpPort: '7522',
-      tcpType: 'DEFAULT',
-      serialPort: '/dev/ttyUSB',
-      serialType: 'RTU-BUFFERD',
-      serialBaudrate: '9600',
-      serialDatabits: '8',
-      serialStopbits: '1',
-      serialParity: 'none',
-      serialConnectionDelay: '100',
-      serialAsciiResponseStartDelimiter: '',
-      unit_id: '1',
-      commandDelay: '100',
-      clientTimeout: '100',
-      reconnectOnTimeout: true,
-      reconnectTimeout: '200',
-      parallelUnitIdsAllowed: true
-    }
-  ]),
+  testShouldChangeTcpPortFlow: helperExtensions.cleanFlowPositionData(
+    [
+      {
+        'id': 'dbb457ce606a979c',
+        'type': 'tab',
+        'label': 'Modbus Flex Connector (Test Should Change Tcp Port Flow)',
+        'disabled': false,
+        'info': '',
+        'env': []
+      },
+      {
+        'id': 'fc6ca1939ab63a34',
+        'type': 'modbus-server',
+        'z': 'dbb457ce606a979c',
+        'name': '',
+        'logEnabled': true,
+        'hostname': '127.0.0.1',
+        'serverPort': '10033',
+        'responseDelay': 100,
+        'delayUnit': 'ms',
+        'coilsBufferSize': 10000,
+        'holdingBufferSize': 10000,
+        'inputBufferSize': 10000,
+        'discreteBufferSize': 10000,
+        'showErrors': false,
+        'showStatusActivities': false,
+        'x': 400,
+        'y': 240,
+        'wires': [
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        'id': '4bebe20d77ae781d',
+        'type': 'modbus-flex-connector',
+        'z': 'dbb457ce606a979c',
+        'name': 'FlexConnector',
+        'maxReconnectsPerMinute': 4,
+        'emptyQueue': true,
+        'showStatusActivities': false,
+        'showErrors': false,
+        'server': '2a253153.fae3ce',
+        'emptyMsgOnFail': false,
+        'configMsgOnChange': false,
+        'x': 480,
+        'y': 400,
+        'wires': [
+          []
+        ]
+      },
+      {
+        'id': '2a253153.fae3ce',
+        'type': 'modbus-client',
+        'name': 'Modbus Flex Connector (Test Should Change Tcp Port Flow)',
+        'clienttype': 'tcp',
+        'bufferCommands': true,
+        'stateLogEnabled': false,
+        'queueLogEnabled': false,
+        'failureLogEnabled': false,
+        'tcpHost': '127.0.0.1',
+        'tcpPort': '10033',
+        'tcpType': 'DEFAULT',
+        'serialPort': '/dev/ttyUSB',
+        'serialType': 'RTU-BUFFERD',
+        'serialBaudrate': '9600',
+        'serialDatabits': '8',
+        'serialStopbits': '1',
+        'serialParity': 'none',
+        'serialConnectionDelay': '100',
+        'serialAsciiResponseStartDelimiter': '',
+        'unit_id': '1',
+        'commandDelay': '100',
+        'clientTimeout': '100',
+        'reconnectOnTimeout': true,
+        'reconnectTimeout': '2000',
+        'parallelUnitIdsAllowed': true,
+        'showErrors': false,
+        'showWarnings': false,
+        'showLogs': false
+      }
+    ]
+  ),
 
-  testShouldChangeSerialPortFlow: helperExtensions.cleanFlowPositionData([
-    {
-      id: '316b8516b884d511',
-      type: 'tab',
-      label: 'Should Change Serial Port',
-      disabled: false,
-      info: '',
-      env: []
-    },
-    {
-      id: '40ddaabb.fd44d4',
-      type: 'modbus-flex-connector',
-      z: '316b8516b884d511',
-      name: 'FlexConnector',
-      maxReconnectsPerMinute: 4,
-      emptyQueue: true,
-      showStatusActivities: false,
-      showErrors: false,
-      server: '2a253153.fae3ef',
-      x: 380,
-      y: 240,
-      wires: [
-        []
-      ]
-    },
-    {
-      id: '2a253153.fae3ef',
-      type: 'modbus-client',
-      name: '',
-      clienttype: 'serial',
-      bufferCommands: true,
-      stateLogEnabled: false,
-      queueLogEnabled: false,
-      failureLogEnabled: false,
-      tcpHost: '127.0.0.1',
-      tcpPort: '7522',
-      tcpType: 'DEFAULT',
-      serialPort: '/dev/ttyUSB',
-      serialType: 'RTU-BUFFERD',
-      serialBaudrate: '0',
-      serialDatabits: '8',
-      serialStopbits: '1',
-      serialParity: 'none',
-      serialConnectionDelay: '100',
-      serialAsciiResponseStartDelimiter: '',
-      unit_id: '1',
-      commandDelay: '100',
-      clientTimeout: '100',
-      reconnectOnTimeout: true,
-      reconnectTimeout: '200',
-      parallelUnitIdsAllowed: true
-    }
-  ]),
+  testShouldChangeSerialPortFlow: helperExtensions.cleanFlowPositionData(
+    [
+      {
+        'id': '075216db9c7f9b03',
+        'type': 'tab',
+        'label': 'Modbus Flex Connector (Test Should Change Serial Port Flow)',
+        'disabled': false,
+        'info': '',
+        'env': []
+      },
+      {
+        'id': '506ff2af84012599',
+        'type': 'modbus-flex-connector',
+        'z': '075216db9c7f9b03',
+        'name': 'FlexConnector',
+        'maxReconnectsPerMinute': 4,
+        'emptyQueue': true,
+        'showStatusActivities': false,
+        'showErrors': false,
+        'server': 'cfdf32d7009eedcc',
+        'emptyMsgOnFail': false,
+        'configMsgOnChange': false,
+        'x': 380,
+        'y': 240,
+        'wires': [
+          []
+        ]
+      },
+      {
+        'id': 'cfdf32d7009eedcc',
+        'type': 'modbus-client',
+        'name': 'Modbus Flex Connector (Test Should Change Serial Port Flow)',
+        'clienttype': 'serial',
+        'bufferCommands': true,
+        'stateLogEnabled': false,
+        'queueLogEnabled': false,
+        'failureLogEnabled': false,
+        'tcpHost': '127.0.0.1',
+        'tcpPort': '7522',
+        'tcpType': 'DEFAULT',
+        'serialPort': '/dev/ttyUSB',
+        'serialType': 'RTU-BUFFERD',
+        'serialBaudrate': '0',
+        'serialDatabits': '8',
+        'serialStopbits': '1',
+        'serialParity': 'none',
+        'serialConnectionDelay': '100',
+        'serialAsciiResponseStartDelimiter': '',
+        'unit_id': '1',
+        'commandDelay': '100',
+        'clientTimeout': '100',
+        'reconnectOnTimeout': true,
+        'reconnectTimeout': '200',
+        'parallelUnitIdsAllowed': true,
+        'showErrors': false,
+        'showWarnings': true,
+        'showLogs': true
+      }
+    ]
+  ),
   testFlowAsExpected: helperExtensions.cleanFlowPositionData(
     [
       {
-        "id": "f24eb98786e83747",
-        "type": "tab",
-        "label": "Test Felx-Connector UnitId",
-        "disabled": false,
-        "info": "",
-        "env": []
+        'id': '4b20ca5bb2263be0',
+        'type': 'tab',
+        'label': 'Modbus Flex Connector (Test Flow As Expected)',
+        'disabled': false,
+        'info': '',
+        'env': []
       },
       {
-        "id": "ea7e082eac96bb8f",
-        "type": "modbus-server",
-        "z": "f24eb98786e83747",
-        "name": "",
-        "logEnabled": false,
-        "hostname": "127.0.0.1",
-        "serverPort": "10512",
-        "responseDelay": 100,
-        "delayUnit": "ms",
-        "coilsBufferSize": 10000,
-        "holdingBufferSize": 10000,
-        "inputBufferSize": 10000,
-        "discreteBufferSize": 10000,
-        "showErrors": false,
-        "showStatusActivities": false,
-        "x": 345,
-        "y": 80,
-        "wires": [
+        'id': 'f9f48195b450081d',
+        'type': 'modbus-server',
+        'z': '4b20ca5bb2263be0',
+        'name': '',
+        'logEnabled': false,
+        'hostname': '127.0.0.1',
+        'serverPort': '10034',
+        'responseDelay': 100,
+        'delayUnit': 'ms',
+        'coilsBufferSize': 10000,
+        'holdingBufferSize': 10000,
+        'inputBufferSize': 10000,
+        'discreteBufferSize': 10000,
+        'showErrors': false,
+        'showStatusActivities': false,
+        'x': 685,
+        'y': 260,
+        'wires': [
           [],
           [],
           [],
           [],
           [
-            "b04c7187f283f1a6"
+            '1a982501c28fd875'
           ]
         ],
-        "l": false
+        'l': false
       },
       {
-        "id": "1b4644a214cfdec6",
-        "type": "modbus-flex-connector",
-        "z": "f24eb98786e83747",
-        "name": "",
-        "maxReconnectsPerMinute": 4,
-        "emptyQueue": false,
-        "showStatusActivities": true,
-        "showErrors": true,
-        "server": "115bd58ae573c942",
-        "emptyMsgOnFail": true,
-        "configMsgOnChange": false,
-        "x": 610,
-        "y": 220,
-        "wires": [
+        'id': '7fad66c312d28d1b',
+        'type': 'modbus-flex-connector',
+        'z': '4b20ca5bb2263be0',
+        'name': '',
+        'maxReconnectsPerMinute': 4,
+        'emptyQueue': false,
+        'showStatusActivities': true,
+        'showErrors': true,
+        'server': 'c96bdff8122a029e',
+        'emptyMsgOnFail': true,
+        'configMsgOnChange': false,
+        'x': 950,
+        'y': 400,
+        'wires': [
           [
-            "0b116c8f15c103bc"
+            'c4603e531e165478'
           ]
         ]
       },
       {
-        "id": "88ef999a1a2c4c5d",
-        "type": "inject",
-        "z": "f24eb98786e83747",
-        "name": "Change for Unit-ID",
-        "props": [
+        'id': '733ae94ab35e5337',
+        'type': 'inject',
+        'z': '4b20ca5bb2263be0',
+        'name': 'Change for Unit-ID',
+        'props': [
           {
-            "p": "payload"
+            'p': 'payload'
           },
           {
-            "p": "topic",
-            "vt": "str"
+            'p': 'topic',
+            'vt': 'str'
           }
         ],
-        "repeat": "",
-        "crontab": "",
-        "once": true,
-        "onceDelay": "0.5",
-        "topic": "",
-        "payload": "{\"connectorType\":\"TCP\",\"tcpHost\":\"127.0.0.1\",\"tcpPort\":\"10512\",\"unitId\":1}",
-        "payloadType": "json",
-        "x": 190,
-        "y": 200,
-        "wires": [
+        'repeat': '',
+        'crontab': '',
+        'once': true,
+        'onceDelay': '0.5',
+        'topic': '',
+        'payload': '{"connectorType":"TCP","tcpHost":"127.0.0.1","tcpPort":"10034","unitId":1}',
+        'payloadType': 'json',
+        'x': 530,
+        'y': 380,
+        'wires': [
           [
-            "1b4644a214cfdec6"
+            '7fad66c312d28d1b'
           ]
         ]
       },
       {
-        "id": "0b116c8f15c103bc",
-        "type": "helper",
-        "z": "f24eb98786e83747",
-        "name": "helper 1",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 860,
-        "y": 220,
-        "wires": []
+        'id': 'c4603e531e165478',
+        'type': 'helper',
+        'z': '4b20ca5bb2263be0',
+        'name': 'helper 1',
+        'active': true,
+        'tosidebar': true,
+        'console': false,
+        'tostatus': false,
+        'complete': 'false',
+        'statusVal': '',
+        'statusType': 'auto',
+        'x': 1200,
+        'y': 400,
+        'wires': []
       },
       {
-        "id": "c7eb8fe4f9b1904a",
-        "type": "inject",
-        "z": "f24eb98786e83747",
-        "name": "",
-        "props": [
+        'id': 'bb9aafd866db4378',
+        'type': 'inject',
+        'z': '4b20ca5bb2263be0',
+        'name': '',
+        'props': [
           {
-            "p": "payload"
+            'p': 'payload'
           },
           {
-            "p": "topic",
-            "vt": "str"
+            'p': 'topic',
+            'vt': 'str'
           }
         ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "1",
-        "payloadType": "num",
-        "x": 180,
-        "y": 80,
-        "wires": [
+        'repeat': '',
+        'crontab': '',
+        'once': false,
+        'onceDelay': 0.1,
+        'topic': '',
+        'payload': '1',
+        'payloadType': 'num',
+        'x': 520,
+        'y': 260,
+        'wires': [
           [
-            "ea7e082eac96bb8f"
+            'f9f48195b450081d'
           ]
         ]
       },
       {
-        "id": "b04c7187f283f1a6",
-        "type": "helper",
-        "z": "f24eb98786e83747",
-        "name": "helper 2",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 490,
-        "y": 100,
-        "wires": []
+        'id': '1a982501c28fd875',
+        'type': 'helper',
+        'z': '4b20ca5bb2263be0',
+        'name': 'helper 2',
+        'active': true,
+        'tosidebar': true,
+        'console': false,
+        'tostatus': false,
+        'complete': 'true',
+        'targetType': 'full',
+        'statusVal': '',
+        'statusType': 'auto',
+        'x': 830,
+        'y': 280,
+        'wires': []
       },
       {
-        "id": "42075d85efccbcad",
-        "type": "inject",
-        "z": "f24eb98786e83747",
-        "name": "Change for Unit-ID with Error",
-        "props": [
+        'id': 'd2af532041d97a73',
+        'type': 'inject',
+        'z': '4b20ca5bb2263be0',
+        'name': 'Change for Unit-ID with Error',
+        'props': [
           {
-            "p": "payload"
+            'p': 'payload'
           },
           {
-            "p": "topic",
-            "vt": "str"
+            'p': 'topic',
+            'vt': 'str'
           }
         ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "{\"connectorType\":\"TCP\",\"tcpHost\":\"0.0.0.0\",\"tcpPort\":\"10513\",\"unitId\":300}",
-        "payloadType": "json",
-        "x": 220,
-        "y": 240,
-        "wires": [
+        'repeat': '',
+        'crontab': '',
+        'once': false,
+        'onceDelay': 0.1,
+        'topic': '',
+        'payload': '{"connectorType":"TCP","tcpHost":"0.0.0.0","tcpPort":"10034 ","unitId":300}',
+        'payloadType': 'json',
+        'x': 560,
+        'y': 420,
+        'wires': [
           [
-            "1b4644a214cfdec6"
+            '7fad66c312d28d1b'
           ]
         ]
       },
       {
-        "id": "115bd58ae573c942",
-        "type": "modbus-client",
-        "name": "12 Channel 192.168.0.41",
-        "clienttype": "tcp",
-        "bufferCommands": true,
-        "stateLogEnabled": false,
-        "queueLogEnabled": false,
-        "failureLogEnabled": false,
-        "tcpHost": "127.0.0.1",
-        "tcpPort": "10512",
-        "tcpType": "DEFAULT",
-        "serialPort": "/dev/ttyUSB",
-        "serialType": "RTU-BUFFERD",
-        "serialBaudrate": "9600",
-        "serialDatabits": "8",
-        "serialStopbits": "1",
-        "serialParity": "none",
-        "serialConnectionDelay": "100",
-        "serialAsciiResponseStartDelimiter": "0x3A",
-        "unit_id": 41,
-        "commandDelay": 100,
-        "clientTimeout": 1000,
-        "reconnectOnTimeout": true,
-        "reconnectTimeout": 2000,
-        "parallelUnitIdsAllowed": false,
-        "showErrors": false,
-        "showWarnings": false,
-        "showLogs": false
+        'id': 'c96bdff8122a029e',
+        'type': 'modbus-client',
+        'name': 'Modbus Flex Connector (Test Flow As Expected)',
+        'clienttype': 'tcp',
+        'bufferCommands': true,
+        'stateLogEnabled': false,
+        'queueLogEnabled': false,
+        'failureLogEnabled': true,
+        'tcpHost': '127.0.0.1',
+        'tcpPort': '10034',
+        'tcpType': 'DEFAULT',
+        'serialPort': '/dev/ttyUSB',
+        'serialType': 'RTU-BUFFERD',
+        'serialBaudrate': '9600',
+        'serialDatabits': '8',
+        'serialStopbits': '1',
+        'serialParity': 'none',
+        'serialConnectionDelay': '100',
+        'serialAsciiResponseStartDelimiter': '0x3A',
+        'unit_id': '1',
+        'commandDelay': '1',
+        'clientTimeout': '1000',
+        'reconnectOnTimeout': true,
+        'reconnectTimeout': '2000',
+        'parallelUnitIdsAllowed': true,
+        'showErrors': false,
+        'showWarnings': true,
+        'showLogs': true
       }
     ]
   ),
   testFlowAsExpectedWithConfigMessage: helperExtensions.cleanFlowPositionData(
     [
       {
-        "id": "a7aa10e1f0e1cdc6",
-        "type": "tab",
-        "label": "Test Felx-Connector With Config Msg",
-        "disabled": false,
-        "info": "",
-        "env": []
+        'id': '9b74dc2f25ab7091',
+        'type': 'tab',
+        'label': 'Modbus Flex Connector (Test Flow As Expected With Config Message)',
+        'disabled': false,
+        'info': '',
+        'env': []
       },
       {
-        "id": "046bd4d2ce7ca5a2",
-        "type": "modbus-server",
-        "z": "a7aa10e1f0e1cdc6",
-        "name": "",
-        "logEnabled": false,
-        "hostname": "127.0.0.1",
-        "serverPort": "10512",
-        "responseDelay": 100,
-        "delayUnit": "ms",
-        "coilsBufferSize": 10000,
-        "holdingBufferSize": 10000,
-        "inputBufferSize": 10000,
-        "discreteBufferSize": 10000,
-        "showErrors": false,
-        "showStatusActivities": false,
-        "x": 345,
-        "y": 80,
-        "wires": [
+        'id': '2c2d414ba5f9fb4c',
+        'type': 'modbus-server',
+        'z': '9b74dc2f25ab7091',
+        'name': '',
+        'logEnabled': false,
+        'hostname': '127.0.0.1',
+        'serverPort': '10035',
+        'responseDelay': 100,
+        'delayUnit': 'ms',
+        'coilsBufferSize': 10000,
+        'holdingBufferSize': 10000,
+        'inputBufferSize': 10000,
+        'discreteBufferSize': 10000,
+        'showErrors': false,
+        'showStatusActivities': false,
+        'x': 345,
+        'y': 80,
+        'wires': [
           [],
           [],
           [],
           [],
           [
-            "82f1e05498822790"
+            '9c2769f07d883058'
           ]
         ],
-        "l": false
+        'l': false
       },
       {
-        "id": "bf2ba5ae45aefab1",
-        "type": "modbus-flex-connector",
-        "z": "a7aa10e1f0e1cdc6",
-        "name": "",
-        "maxReconnectsPerMinute": 4,
-        "emptyQueue": false,
-        "showStatusActivities": true,
-        "showErrors": true,
-        "server": "115bd58ae573c942",
-        "emptyMsgOnFail": true,
-        "configMsgOnChange": true,
-        "x": 610,
-        "y": 220,
-        "wires": [
+        'id': '474fb3622491d7cb',
+        'type': 'modbus-flex-connector',
+        'z': '9b74dc2f25ab7091',
+        'name': '',
+        'maxReconnectsPerMinute': 4,
+        'emptyQueue': false,
+        'showStatusActivities': true,
+        'showErrors': true,
+        'server': 'ba25dc3f23303624',
+        'emptyMsgOnFail': true,
+        'configMsgOnChange': true,
+        'x': 610,
+        'y': 220,
+        'wires': [
           [
-            "a3769d4f97d705c0"
+            '420f3fb44ecdcbbf'
           ]
         ]
       },
       {
-        "id": "88cbf42790afe657",
-        "type": "inject",
-        "z": "a7aa10e1f0e1cdc6",
-        "name": "Change for Unit-ID",
-        "props": [
+        'id': 'ea81d9f9d2eea3d8',
+        'type': 'inject',
+        'z': '9b74dc2f25ab7091',
+        'name': 'Change for Unit-ID',
+        'props': [
           {
-            "p": "payload"
+            'p': 'payload'
           },
           {
-            "p": "topic",
-            "vt": "str"
+            'p': 'topic',
+            'vt': 'str'
           }
         ],
-        "repeat": "",
-        "crontab": "",
-        "once": true,
-        "onceDelay": "0.5",
-        "topic": "",
-        "payload": "{\"connectorType\":\"TCP\",\"tcpHost\":\"127.0.0.1\",\"tcpPort\":\"10512\",\"unitId\":1}",
-        "payloadType": "json",
-        "x": 190,
-        "y": 200,
-        "wires": [
+        'repeat': '',
+        'crontab': '',
+        'once': true,
+        'onceDelay': '0.5',
+        'topic': '',
+        'payload': '{"connectorType":"TCP","tcpHost":"127.0.0.1","tcpPort":"10513","unitId":1}',
+        'payloadType': 'json',
+        'x': 190,
+        'y': 200,
+        'wires': [
           [
-            "bf2ba5ae45aefab1"
+            '474fb3622491d7cb'
           ]
         ]
       },
       {
-        "id": "a3769d4f97d705c0",
-        "type": "helper",
-        "z": "a7aa10e1f0e1cdc6",
-        "name": "helper 1",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 860,
-        "y": 220,
-        "wires": []
+        'id': '420f3fb44ecdcbbf',
+        'type': 'helper',
+        'z': '9b74dc2f25ab7091',
+        'name': 'helper 1',
+        'active': true,
+        'tosidebar': true,
+        'console': false,
+        'tostatus': false,
+        'complete': 'false',
+        'statusVal': '',
+        'statusType': 'auto',
+        'x': 860,
+        'y': 220,
+        'wires': []
       },
       {
-        "id": "bb16ef64ed8e8e26",
-        "type": "inject",
-        "z": "a7aa10e1f0e1cdc6",
-        "name": "",
-        "props": [
+        'id': 'ffa3e8f4b3270384',
+        'type': 'inject',
+        'z': '9b74dc2f25ab7091',
+        'name': '',
+        'props': [
           {
-            "p": "payload"
+            'p': 'payload'
           },
           {
-            "p": "topic",
-            "vt": "str"
+            'p': 'topic',
+            'vt': 'str'
           }
         ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "1",
-        "payloadType": "num",
-        "x": 180,
-        "y": 80,
-        "wires": [
+        'repeat': '',
+        'crontab': '',
+        'once': false,
+        'onceDelay': 0.1,
+        'topic': '',
+        'payload': '1',
+        'payloadType': 'num',
+        'x': 180,
+        'y': 80,
+        'wires': [
           [
-            "046bd4d2ce7ca5a2"
+            '2c2d414ba5f9fb4c'
           ]
         ]
       },
       {
-        "id": "82f1e05498822790",
-        "type": "helper",
-        "z": "a7aa10e1f0e1cdc6",
-        "name": "helper 2",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 490,
-        "y": 100,
-        "wires": []
+        'id': '9c2769f07d883058',
+        'type': 'helper',
+        'z': '9b74dc2f25ab7091',
+        'name': 'helper 2',
+        'active': true,
+        'tosidebar': true,
+        'console': false,
+        'tostatus': false,
+        'complete': 'true',
+        'targetType': 'full',
+        'statusVal': '',
+        'statusType': 'auto',
+        'x': 490,
+        'y': 100,
+        'wires': []
       },
       {
-        "id": "0725eaebc8c950d0",
-        "type": "inject",
-        "z": "a7aa10e1f0e1cdc6",
-        "name": "Change for Unit-ID with Error",
-        "props": [
+        'id': '2a793271df72b547',
+        'type': 'inject',
+        'z': '9b74dc2f25ab7091',
+        'name': 'Change for Unit-ID with Error',
+        'props': [
           {
-            "p": "payload"
+            'p': 'payload'
           },
           {
-            "p": "topic",
-            "vt": "str"
+            'p': 'topic',
+            'vt': 'str'
           }
         ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "{\"connectorType\":\"TCP\",\"tcpHost\":\"0.0.0.0\",\"tcpPort\":\"10513\",\"unitId\":300}",
-        "payloadType": "json",
-        "x": 220,
-        "y": 240,
-        "wires": [
+        'repeat': '',
+        'crontab': '',
+        'once': false,
+        'onceDelay': 0.1,
+        'topic': '',
+        'payload': '{"connectorType":"TCP","tcpHost":"0.0.0.0","tcpPort":"10513","unitId":300}',
+        'payloadType': 'json',
+        'x': 220,
+        'y': 240,
+        'wires': [
           [
-            "bf2ba5ae45aefab1"
+            '474fb3622491d7cb'
           ]
         ]
       },
       {
-        "id": "115bd58ae573c942",
-        "type": "modbus-client",
-        "name": "12 Channel 192.168.0.41",
-        "clienttype": "tcp",
-        "bufferCommands": true,
-        "stateLogEnabled": false,
-        "queueLogEnabled": false,
-        "failureLogEnabled": false,
-        "tcpHost": "127.0.0.1",
-        "tcpPort": "10512",
-        "tcpType": "DEFAULT",
-        "serialPort": "/dev/ttyUSB",
-        "serialType": "RTU-BUFFERD",
-        "serialBaudrate": "9600",
-        "serialDatabits": "8",
-        "serialStopbits": "1",
-        "serialParity": "none",
-        "serialConnectionDelay": "100",
-        "serialAsciiResponseStartDelimiter": "0x3A",
-        "unit_id": 41,
-        "commandDelay": 100,
-        "clientTimeout": 1000,
-        "reconnectOnTimeout": true,
-        "reconnectTimeout": 2000,
-        "parallelUnitIdsAllowed": false,
-        "showErrors": false,
-        "showWarnings": false,
-        "showLogs": false
+        'id': 'ba25dc3f23303624',
+        'type': 'modbus-client',
+        'name': 'Modbus Flex Connector (Test Flow As Expected With Config Message)',
+        'clienttype': 'tcp',
+        'bufferCommands': true,
+        'stateLogEnabled': false,
+        'queueLogEnabled': false,
+        'failureLogEnabled': false,
+        'tcpHost': '127.0.0.1',
+        'tcpPort': '10035',
+        'tcpType': 'DEFAULT',
+        'serialPort': '/dev/ttyUSB',
+        'serialType': 'RTU-BUFFERD',
+        'serialBaudrate': '9600',
+        'serialDatabits': '8',
+        'serialStopbits': '1',
+        'serialParity': 'none',
+        'serialConnectionDelay': '100',
+        'serialAsciiResponseStartDelimiter': '0x3A',
+        'unit_id': '41',
+        'commandDelay': '1',
+        'clientTimeout': '1000',
+        'reconnectOnTimeout': true,
+        'reconnectTimeout': '2000',
+        'parallelUnitIdsAllowed': false,
+        'showErrors': false,
+        'showWarnings': false,
+        'showLogs': false
       }
     ]
   ),
-  testonConfigDone: helperExtensions.cleanFlowPositionData(
+  testOnConfigDone: helperExtensions.cleanFlowPositionData(
     [
       {
-        id: '88170d215343af66',
-        type: 'modbus-flex-connector',
-        z: 'b9132d8cd4b074f4',
-        name: '',
-        maxReconnectsPerMinute: 4,
-        emptyQueue: false,
-        showStatusActivities: false,
-        showErrors: false,
-        x: 530,
-        y: 220,
-        wires: [
+        'id': '16edcfbcc1637eec',
+        'type': 'tab',
+        'label': 'Modbus Flex Connector (Test On Config Done)',
+        'disabled': false,
+        'info': '',
+        'env': []
+      },
+      {
+        'id': '88170d215343af66',
+        'type': 'modbus-flex-connector',
+        'z': '16edcfbcc1637eec',
+        'name': '',
+        'maxReconnectsPerMinute': 4,
+        'emptyQueue': false,
+        'showStatusActivities': false,
+        'showErrors': false,
+        'server': '',
+        'emptyMsgOnFail': false,
+        'configMsgOnChange': false,
+        'x': 310,
+        'y': 280,
+        'wires': [
           []
         ]
       }

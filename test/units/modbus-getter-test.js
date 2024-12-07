@@ -10,11 +10,11 @@
 
 'use strict'
 
-const injectNode = require('@node-red/nodes/core/common/20-inject.js')
+const injectNode = require('@node-red/nodes/core/common/20-inject')
 
-const clientNode = require('../../src/modbus-client.js')
-const serverNode = require('../../src/modbus-server.js')
-const getterNode = require('../../src/modbus-getter.js')
+const clientNode = require('../../src/modbus-client')
+const serverNode = require('../../src/modbus-server')
+const getterNode = require('../../src/modbus-getter')
 const ioConfigNode = require('../../src/modbus-io-config')
 const sinon = require('sinon')
 const helper = require('node-red-node-test-helper')
@@ -99,8 +99,8 @@ describe('Getter node Unit Testing', function () {
         flow[5].tcpPort = port
 
         helper.load(testGetterNodes, flow, function () {
-          const modbusWriteNode = helper.getNode('09f8f0e2049ace2d')
-          modbusWriteNode.showErrors = true
+          const getterNodeInstance = helper.getNode('375b0a4560f95296')
+          getterNodeInstance.showErrors = true
           const msg = {
             payload: {
               value: 'payloadValue'
@@ -110,10 +110,10 @@ describe('Getter node Unit Testing', function () {
 
           sinon.stub(mbBasics, 'logMsgError').returns()
 
-          modbusWriteNode.errorProtocolMsg(err, msg)
+          getterNodeInstance.errorProtocolMsg(err, msg)
 
           sinon.assert.calledOnce(mbBasics.logMsgError)
-          sinon.assert.calledWith(mbBasics.logMsgError, modbusWriteNode, err, msg)
+          sinon.assert.calledWith(mbBasics.logMsgError, getterNodeInstance, err, msg)
 
           sinon.restore()
         })
@@ -128,7 +128,7 @@ describe('Getter node Unit Testing', function () {
         flow[5].tcpPort = port
 
         helper.load(testGetterNodes, flow, function () {
-          const modbusWriteNode = helper.getNode('09f8f0e2049ace2d')
+          const modbusWriteNode = helper.getNode('375b0a4560f95296')
           const msg = {
             topic: 'topic',
             payload: {
@@ -155,7 +155,7 @@ describe('Getter node Unit Testing', function () {
         flow[5].tcpPort = port
 
         helper.load(testGetterNodes, flow, function () {
-          const modbusWriteNode = helper.getNode('09f8f0e2049ace2d')
+          const modbusWriteNode = helper.getNode('375b0a4560f95296')
           modbusWriteNode.showStatusActivities = true
           const emitSpy = sinon.spy(modbusWriteNode, 'emit')
           const resp = { data: [1, 2, 3, 4] }
@@ -198,7 +198,7 @@ describe('Getter node Unit Testing', function () {
         flow[5].tcpPort = port
 
         helper.load(testGetterNodes, flow, function () {
-          const modbusGetter = helper.getNode('cea01c8.36f8f6')
+          const modbusGetter = helper.getNode('61be47b99f8a6f7d')
           modbusGetter.delayOnStart = true
 
           const verboseWarnSpy = sinon.spy()
@@ -242,8 +242,8 @@ describe('Getter node Unit Testing', function () {
           const modbusServer = helper.getNode('996023fe.ea04b')
           modbusServer.should.have.property('name', 'modbusServer')
 
-          const modbusClient = helper.getNode('9660d4a8f8cc2b44')
-          modbusClient.should.have.property('name', 'modbusClient')
+          const modbusClient = helper.getNode('191ab2c8e10971f3')
+          modbusClient.should.have.property('name', 'Modbus Getter (Test Getter With Client Flow)')
 
           const modbusGetter = helper.getNode('322daf89.be8dd')
           modbusGetter.should.have.property('name', 'modbusGetter')
@@ -323,7 +323,7 @@ describe('Getter node Unit Testing', function () {
         flow[4].tcpPort = port
 
         helper.load(testGetterNodes, flow, function () {
-          const modbusGetter = helper.getNode('cea01c8.36f8f6')
+          const modbusGetter = helper.getNode('54c3ff16ec3181e2')
           modbusGetter.receive({ payload: '{ "value": "true", "fc": 5, "unitid": 1,"address": 0, "quantity": 4 }' })
           done()
         })
@@ -338,7 +338,7 @@ describe('Getter node Unit Testing', function () {
         flow[4].tcpPort = port
 
         helper.load(testGetterNodes, flow, function () {
-          const modbusGetter = helper.getNode('cea01c8.36f8f6')
+          const modbusGetter = helper.getNode('54c3ff16ec3181e2')
           modbusGetter.receive({ payload: '{ "fc": 1, "unitid": 1,"address": -1, "quantity": 4 }' })
           done()
         })
@@ -353,7 +353,7 @@ describe('Getter node Unit Testing', function () {
         flow[4].tcpPort = port
 
         helper.load(testGetterNodes, flow, function () {
-          const modbusGetter = helper.getNode('cea01c8.36f8f6')
+          const modbusGetter = helper.getNode('54c3ff16ec3181e2')
           modbusGetter.receive({ payload: '{ "fc": 1, "unitid": 1,"address": 0, "quantity": -1 }' })
           done()
         })
@@ -384,7 +384,7 @@ describe('Getter node Unit Testing', function () {
         flow[5].tcpPort = port
 
         helper.load(testGetterNodes, flow, function () {
-          const modbusClientNode = helper.getNode('a2adb6ed727a01d6')
+          const modbusClientNode = helper.getNode('acf0145ba2f051ee')
           const errorMessage = new Error('Test error')
           const msg = { payload: 'test' }
 
@@ -414,7 +414,7 @@ describe('Getter node Unit Testing', function () {
         flow[5].tcpPort = port
 
         helper.load(testGetterNodes, flow, function () {
-          const modbusGetter = helper.getNode('a2adb6ed727a01d6')
+          const modbusGetter = helper.getNode('f4a0e18fe716917b')
           const errorMessage = new Error('Test error')
           const msg = { payload: 'test' }
           const emitSpy = sinon.spy(modbusGetter, 'emit')
@@ -438,8 +438,8 @@ describe('Getter node Unit Testing', function () {
         flow[5].tcpPort = port
 
         helper.load(testGetterNodes, flow, function () {
-          const modbusGetterNode = helper.getNode('09f8f0e2049ace2d')
-          const modbusClient = helper.getNode('80aeec4c.0cb9e8')
+          const modbusGetterNode = helper.getNode('375b0a4560f95296')
+          const modbusClient = helper.getNode('4477f0c627dcb4ee')
           modbusGetterNode.showStatusActivities = true
           const isNotReadyForInputStub = sinon.stub(modbusGetterNode, 'isNotReadyForInput').returns(false)
           const isInactiveStub = sinon.stub(modbusClient, 'isInactive').returns(false)

@@ -58,8 +58,8 @@ describe('Read node Testing', function () {
         const modbusServer = helper.getNode('b071294594e37a6c')
         modbusServer.should.have.property('name', 'modbusServer')
 
-        const modbusClient = helper.getNode('9018f377f076609d')
-        modbusClient.should.have.property('name', 'modbusClient')
+        const modbusClient = helper.getNode('b5e36b16f90d0621')
+        modbusClient.should.have.property('name', 'Modbus Read (Test Read With Client Flow)')
 
         const modbusRead = helper.getNode('09846c74de630616')
         modbusRead.should.have.property('name', 'modbusRead')

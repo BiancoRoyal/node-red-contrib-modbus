@@ -20,6 +20,32 @@ de.biancoroyal.modbus.core.client.networkErrors = ['ESOCKETTIMEDOUT', 'ETIMEDOUT
   'ECONNABORTED', 'ECONNREFUSED', 'ENETUNREACH', 'ENOTCONN',
   'ESHUTDOWN', 'EHOSTDOWN', 'ENETDOWN', 'EWOULDBLOCK', 'EAGAIN', 'EHOSTUNREACH']
 
+/**
+ * Creates a state machine service specifically for handling Modbus states.
+ *
+ * This function initializes a finite state machine using the XState library,
+ * defining the various states and transitions possible for a Modbus connection workflow.
+ *
+ * States included are:
+ * - new: Starting state, can transition to 'init', 'broken', or 'stopped'.
+ * - broken: Transition from 'init', 'stopped', 'failed', 'activated', 'reconnecting'.
+ * - reconnecting: Transitional state to 'init', 'stopped'.
+ * - init: Initialize to 'opened', 'connected', 'broken', 'failed', 'stopped', 'switch'.
+ * - opened: Once open, proceed to 'connected', 'broken', 'failed', 'closed', 'stopped', 'switch'.
+ * - connected: Once connected, possible to go 'closed', 'activated', 'queueing', 'broken', 'failed', 'stopped', 'switch'.
+ * - activated: From here, transitions available to 'reading', 'writing', 'queueing', 'broken', 'closed', 'failed', 'stopped', 'switch'.
+ * - queueing: Can activate or go 'sending', 'reading', 'writing', 'empty', 'broken', 'closed', 'failed', 'stopped', 'switch'.
+ * - empty: Queueing returns to 'queueing', or transitions to 'broken', 'failed', 'closed', 'stopped', 'switch'.
+ * - sending: Transitions included are 'activated', 'reading', 'writing', 'broken', 'failed', and 'stopped', 'switch'.
+ * - reading: Here, transitions are to 'activated', 'broken', 'failed', 'stopped'.
+ * - writing: Similar transitions to 'reading', which includes 'activated', 'broken', 'failed', 'stopped'.
+ * - closed: From here, options include 'failed', 'broken', 'connected', 'reconnecting', 'init', 'stopped', 'switch'.
+ * - failed: State transitions are 'closed', 'broken', 'stopped', 'switch'.
+ * - switch: Simply transitions to 'closed', 'broken', 'stopped'.
+ * - stopped: Terminal state with possible transition back to 'new' or staying 'stopped'.
+ *
+ * @return {StateMachine} Returns the created state machine instance with defined states and transitions for Modbus.
+ */
 de.biancoroyal.modbus.core.client.createStateMachineService = function () {
   this.stateLogEnabled = false
 

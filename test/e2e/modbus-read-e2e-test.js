@@ -35,7 +35,7 @@ describe('ModbusRead node', () => {
   it('should update status correctly during different stages', (done) => {
     helper.load(testReadNodes, testFlow.testFlowFore2eTesting, async () => {
       const readNode = helper.getNode('7ae5c3a814b3c02b')
-      const modbusClient = helper.getNode('699247754b70bb94')
+      const modbusClient = helper.getNode('6e3a8b60f1522f98')
       modbusClient.serialSendingAllowed = true
 
       let setStatus = {}
@@ -52,7 +52,7 @@ describe('ModbusRead node', () => {
   })
   it('should send message with values and valueNames when useIOFile is false', function (done) {
     helper.load(testReadNodes, testFlow.testFlowForuseIOFileFalse, async () => {
-      const readNode = helper.getNode('7ae5c3a814b3c02b')
+      const readNode = helper.getNode('d06a1a340e4c0ffc')
       readNode.ioFile = { lastUpdatedAt: Date.now() }
       const response = { data: [1, 2, 3] }
       const msg = { topic: 'testTopic' }
@@ -68,7 +68,7 @@ describe('ModbusRead node', () => {
 
   it('should initialize delay timer when delayOnStart is true', function (done) {
     helper.load(testReadNodes, testFlow.testFlowForDelayOnStart, async () => {
-      const readNode = helper.getNode('7ae5c3a814b3c02b')
+      const readNode = helper.getNode('3f7265d250258d75')
 
       const clock = sinon.useFakeTimers()
 
@@ -83,7 +83,7 @@ describe('ModbusRead node', () => {
   })
   it('should log error message when showErrors is true', function (done) {
     helper.load(testReadNodes, testFlow.testFlowForuseIOFileFalse, function () {
-      const readNode = helper.getNode('7ae5c3a814b3c02b')
+      const readNode = helper.getNode('d06a1a340e4c0ffc')
 
       const error = new Error('Test error')
       const errorMessage = 'Test error message'
@@ -104,7 +104,7 @@ describe('ModbusRead node', () => {
 
   it('should send message with values and response when useIOFile and useIOForPayload are true', function (done) {
     helper.load(testReadNodes, testFlow.testFlowForSendingDataTesting, async () => {
-      const readNode = helper.getNode('7ae5c3a814b3c02b')
+      const readNode = helper.getNode('7629bf2804e3a032')
       readNode.ioFile = { lastUpdatedAt: Date.now() }
       const response = { data: [1, 2, 3] }
       const msg = { topic: 'testTopic' }
@@ -118,7 +118,7 @@ describe('ModbusRead node', () => {
           topic: 'testTopic',
           responseBuffer: { data: [1, 2, 3] },
           input: { topic: 'testTopic' },
-          sendingNodeId: '7ae5c3a814b3c02b',
+          sendingNodeId: '7629bf2804e3a032',
           payload: [],
           values: [1, 2, 3]
         },
@@ -128,7 +128,7 @@ describe('ModbusRead node', () => {
           values: [1, 2, 3],
           input: { topic: 'testTopic' },
           valueNames: [],
-          sendingNodeId: '7ae5c3a814b3c02b'
+          sendingNodeId: '7629bf2804e3a032'
         }
       ])
       done()

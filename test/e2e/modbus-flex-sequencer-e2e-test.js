@@ -71,7 +71,7 @@ describe('Flex Sequencer node Testing', function () {
 
     it('should process valid sequences', function (done) {
       helper.load(testFlexSequencerNodes, testFlows.testNodeWithValidSequence, () => {
-        const flexSequencerNode = helper.getNode('607b91b18be2a9ee')
+        const flexSequencerNode = helper.getNode('2b7063dbd84388c7')
         const msg = {
           payload: 'test payload',
           sequences: [
@@ -98,7 +98,7 @@ describe('Flex Sequencer node Testing', function () {
 
     it('should handle modbus read error', function (done) {
       helper.load(testFlexSequencerNodes, testFlows.testNodeWithModbusReadError, () => {
-        const flexSequencerNode = helper.getNode('bc5a61b6.a3972')
+        const flexSequencerNode = helper.getNode('a60a969b9c758802')
         const error = new Error('Test error')
         const msg = { payload: 'test payload' }
         const emitSpy = sinon.spy(flexSequencerNode, 'emit')
@@ -110,8 +110,8 @@ describe('Flex Sequencer node Testing', function () {
 
     it('should handle invalid payload in input message', function (done) {
       helper.load(testFlexSequencerNodes, testFlows.testNodeWithInvalidMessage, function () {
-        const flexSequencerNode = helper.getNode('42c7ed2cf52e284e')
-        const modbusClient = helper.getNode('92e7bf63.2efd7')
+        const flexSequencerNode = helper.getNode('227c0ce1950c49dd')
+        const modbusClient = helper.getNode('2a5ef5fd62f7a4a0')
         modbusClient.isInactive = () => false
         const msg = { payload: undefined }
         flexSequencerNode.emit('input', msg)

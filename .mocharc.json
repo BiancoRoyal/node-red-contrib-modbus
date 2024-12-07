@@ -1,3 +1,16 @@
 {
-  "timeout": 8000
+  "extension": ["js"],
+  "spec": "test/**/*.test.js",
+  "require": ["./test/helper/receive.js", "./test/helper/test-helper-port.js", "./test/helper/test-helper-extensions.js"],
+  "timeout": 10000,
+  "recursive": false,
+  "parallel": false,
+  "async-only": false,
+  "bail": true,
+  "fail-zero": true,
+  "check-leaks": true,
+  "slow": 6000,
+  "retries": 0,
+  "exit": true,
+  "ui": "bdd"
 }

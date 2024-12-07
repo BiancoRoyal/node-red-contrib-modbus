@@ -1,0 +1,16 @@
+{
+  "extension": ["ts"],
+  "require": ["ts-node/register", "./test/helper/mochaGlobalFixtures.js", "./test/helper/test-helper-extension.js"],
+  "global": ["portHelper", "portList"],
+  "timeout": 35000,
+  "recursive": false,
+  "parallel": false,
+  "async-only": true,
+  "bail": true,
+  "fail-zero": true,
+  "check-leaks": true,
+  "slow": 6000,
+  "retries": 0,
+  "exit": true,
+  "ui": "bdd"
+}
