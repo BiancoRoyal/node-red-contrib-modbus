@@ -14,10 +14,41 @@ const _ = require('underscore')
 var de = de || { biancoroyal: { modbus: { core: { server: { } } } } } // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.core.server.internalDebug = de.biancoroyal.modbus.core.server.internalDebug || require('debug')('contribModbus:core:server') // eslint-disable-line no-use-before-define
 
-de.biancoroyal.modbus.core.server.bufferFactor = 8
+de.biancoroyal.modbus.core.server.bufferFactor = 2 // 8
 de.biancoroyal.modbus.core.server.memoryTypes = ['holding', 'coils', 'input', 'discrete']
 de.biancoroyal.modbus.core.server.memoryUint16Types = ['holding', 'input']
 de.biancoroyal.modbus.core.server.memoryUint8Types = ['coils', 'discrete']
+
+de.biancoroyal.modbus.core.server.writeBit = function (buffer, byteIndex, bitPosition, value) {
+  if (value) {
+    // Set the bit (OR operation)
+    buffer[byteIndex] |= (1 << bitPosition)
+  } else {
+    // Clear the bit (AND operation with the negated bit mask)
+    buffer[byteIndex] &= ~(1 << bitPosition)
+  }
+}
+
+de.biancoroyal.modbus.core.server.writeBitArray = function (currentBuffer, insertBuffer, position) {
+  let byteIndex = Math.floor(position / 8) // Determine which byte to modify
+  let bitPosition = position % 8 // Determine the starting bit position within the byte
+
+  insertBuffer.forEach(bit => {
+    if (bit === 1) {
+      currentBuffer[byteIndex] |= (1 << (bitPosition)) // Set the bit at the position
+    } else {
+      currentBuffer[byteIndex] &= ~(1 << (bitPosition)) // Clear the bit
+    }
+
+    bitPosition++ // Move to the next bit
+
+    if (bitPosition > 7) { // Move to the next byte if we've written 8 bits
+      bitPosition = 0
+      byteIndex++
+    }
+  })
+  return currentBuffer
+}
 
 de.biancoroyal.modbus.core.server.getLogFunction = function (node) {
   if (node.internalDebugLog) {
@@ -94,8 +125,21 @@ de.biancoroyal.modbus.core.server.writeModbusFlexServerMemory = function (node, 
 de.biancoroyal.modbus.core.server.convertInputForBufferWrite = function (msg) {
   let isMultipleWrite = false
   if (msg.payload.value?.length) {
-    msg.bufferPayload = new Uint8Array(msg.payload?.value)
-    msg.bufferData = Buffer.alloc(msg.bufferPayload.buffer.byteLength, msg.bufferPayload)
+    if (msg.payload.register === 'holding' || msg.payload.register === 'input') {
+      const arr = []
+      for (let i = 0; i < msg.payload.value.length; i++) {
+        arr.push(0)
+        arr.push(msg.payload.value[i])
+      }
+      msg.payload.value = arr
+      msg.bufferPayload = new Uint8Array(msg.payload?.value)
+      msg.bufferData = Buffer.alloc(msg.bufferPayload.buffer.byteLength, msg.bufferPayload)
+    } else if (msg.payload.register === 'coils' || msg.payload.register === 'discrete') {
+      msg.bufferData = msg.payload.value
+    } else {
+      msg.bufferPayload = new Uint8Array(msg.payload?.value)
+      msg.bufferData = Buffer.alloc(msg.bufferPayload.buffer.byteLength, msg.bufferPayload)
+    }
     isMultipleWrite = true
     msg.wasMultipleWrite = true
   } else {
@@ -112,13 +156,13 @@ de.biancoroyal.modbus.core.server.copyToModbusBuffer = function (node, msg) {
       msg.bufferData.copy(node.modbusServer.holding, msg.bufferAddress)
       break
     case 'coils':
-      msg.bufferData.copy(node.modbusServer.coils, msg.bufferAddress)
+      de.biancoroyal.modbus.core.server.writeBitArray(node.modbusServer.coils, msg.payload.value, msg.payload.address)
       break
     case 'input':
       msg.bufferData.copy(node.modbusServer.input, msg.bufferAddress)
       break
     case 'discrete':
-      msg.bufferData.copy(node.modbusServer.discrete, msg.bufferAddress)
+      de.biancoroyal.modbus.core.server.writeBitArray(node.modbusServer.discrete, msg.payload.value, msg.payload.address)
       break
     default:
       return false
@@ -132,13 +176,13 @@ de.biancoroyal.modbus.core.server.writeToModbusBuffer = function (node, msg) {
       node.modbusServer.holding.writeUInt16BE((Buffer.isBuffer(msg.bufferPayload)) ? msg.bufferPayload.readUInt16BE(0) : msg.bufferPayload, msg.bufferAddress)
       break
     case 'coils':
-      node.modbusServer.coils.writeUInt8((Buffer.isBuffer(msg.bufferPayload)) ? msg.bufferPayload.readUInt8(0) : msg.bufferPayload, msg.bufferAddress)
+      de.biancoroyal.modbus.core.server.writeBit(node.modbusServer.coils, 0, msg.bufferAddress / 2, msg.bufferPayload)
       break
     case 'input':
       node.modbusServer.input.writeUInt16BE((Buffer.isBuffer(msg.bufferPayload)) ? msg.bufferPayload.readUInt16BE(0) : msg.bufferPayload, msg.bufferAddress)
       break
     case 'discrete':
-      node.modbusServer.discrete.writeUInt8((Buffer.isBuffer(msg.bufferPayload)) ? msg.bufferPayload.readUInt8(0) : msg.bufferPayload, msg.bufferAddress)
+      de.biancoroyal.modbus.core.server.writeBit(node.modbusServer.discrete, 0, msg.bufferAddress / 2, msg.bufferPayload)
       break
     default:
       return false
