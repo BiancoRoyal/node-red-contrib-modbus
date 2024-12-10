@@ -669,6 +669,47 @@ module.exports = {
           "addressOffset": ""
       }
   ]
-  )
+  ),
 
+    testReadWithInactiveReadNode: helperExtensions.cleanFlowPositionData([
+        {
+            "id": "ce3e7080b10938bd",
+            "type": "tab",
+            "label": "Modbus Read (Test Flow Inactive Node)",
+            "disabled": false,
+            "info": "",
+            "env": []
+        },
+        {
+            "id": "01261f7bbda52bb6",
+            "type": "modbus-read",
+            "z": "ce3e7080b10938bd",
+            "d": true,
+            "name": "",
+            "topic": "",
+            "showStatusActivities": false,
+            "logIOActivities": false,
+            "showErrors": false,
+            "showWarnings": true,
+            "unitid": "",
+            "dataType": "",
+            "adr": "",
+            "quantity": "",
+            "rate": "",
+            "rateUnit": "",
+            "delayOnStart": false,
+            "startDelayTime": "",
+            "server": "",
+            "useIOFile": false,
+            "ioFile": "",
+            "useIOForPayload": false,
+            "emptyMsgOnFail": false,
+            "x": 530,
+            "y": 320,
+            "wires": [
+                [],
+                []
+            ]
+        }
+    ])
 }
