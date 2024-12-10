@@ -720,7 +720,6 @@ module.exports = function (RED) {
     }
 
     node.setStoppedState = function (clientUserNodeId, done) {
-      node.stateService.send('STOP')
       node.emit('mbderegister', clientUserNodeId)
       done()
     }
@@ -733,15 +732,19 @@ module.exports = function (RED) {
      */
 
     node.closeConnectionWithoutRegisteredNodes = function (clientUserNodeId, done) {
-      if (node.client && node.client.close && node.actualServiceState.value !== 'stopped') {
-        if (node.client.isOpen) {
-          // NOTE(Kay): This is calling out into node-modbus-serial and closes the connection
-          node.client.close(function () {
-            verboseLog('closed modbus tcp/serialport connection')
-            node.setStoppedState(clientUserNodeId, done)
-          })
+      if (Object.keys(node.registeredNodeList).length === 0) {
+        node.closingModbus = true
+        if (node.client && node.actualServiceState.value !== 'stopped') {
+          if (node.client.isOpen) {
+            node.client.close(function () {
+              node.setStoppedState(clientUserNodeId, done)
+            })
+            return
+          }
         }
       }
+
+      node.setStoppedState(clientUserNodeId, done)
     }
 
     /**
@@ -760,6 +763,7 @@ module.exports = function (RED) {
           node.emit('mbderegister', clientUserNodeId)
         } else {
           node.closeConnectionWithoutRegisteredNodes(clientUserNodeId, done)
+          node.stateService.send('STOP')
         }
       } catch (err) {
         /* istanbul ignore next */
