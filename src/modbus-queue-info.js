@@ -48,7 +48,69 @@ module.exports = function (RED) {
     if (!modbusClient) {
       return
     }
-    modbusClient.registerForModbus(node)
+
+    node.onModbusInit = async function (data) {
+      if (!node.updateOnAllUnitQueues) {
+        return
+      }
+
+      if (node.updateOnAllQueueChanges) {
+        await node.readFromAllUnitQueues()
+      } else {
+        await node.readFromQueue()
+      }
+    }
+
+    node.onModbusQueue = async function (data) {
+      if (node.updateOnAllUnitQueues) {
+        await node.readFromAllUnitQueues()
+      } else {
+        await node.readFromQueue()
+      }
+    }
+
+    node.onModbusConnect = async function (data) {
+      if (node.updateOnAllUnitQueues) {
+        await node.readFromAllUnitQueues()
+      } else {
+        await node.readFromQueue()
+      }
+    }
+
+    node.onModbusBroken = async function (data) {
+      if (node.updateOnAllUnitQueues) {
+        await node.readFromAllUnitQueues()
+      } else {
+        await node.readFromQueue()
+      }
+    }
+
+    node.onModbusActive = async function (data) {
+      if (node.updateOnAllUnitQueues) {
+        await node.readFromAllUnitQueues()
+      } else {
+        await node.readFromQueue()
+      }
+    }
+
+    node.onModbusError = async function (data) {
+      if (node.updateOnAllUnitQueues) {
+        await node.readFromAllUnitQueues()
+      } else {
+        await node.readFromQueue()
+      }
+    }
+
+    node.onModbusClose = async function (data) {
+      if (node.updateOnAllUnitQueues) {
+        await node.readFromAllUnitQueues()
+      } else {
+        await node.readFromQueue()
+      }
+    }
+
+    mbBasics.registerNode(node, modbusClient)
+    // modbusClient.registerForModbus(node)
 
     node.initUnitQueueStates = function () {
       for (let unit = 0; unit < 256; unit += 1) {
@@ -229,32 +291,8 @@ module.exports = function (RED) {
       }
     }
 
-    node.registerModbusQueueActionsToNode = function (eventCallback) {
-      if (node.updateOnAllQueueChanges) { // much more CPU-Load on many parallel requests to the client
-        modbusClient.on('mbqueue', eventCallback) // en-queue
-      }
-      modbusClient.on('mbactive', eventCallback) // de-queue
-      modbusClient.on('mbinit', eventCallback)
-      modbusClient.on('mbconnected', eventCallback)
-      modbusClient.on('mberror', eventCallback)
-      modbusClient.on('mbclosed', eventCallback)
-      node.queueReadInterval = setInterval(eventCallback, node.queueReadIntervalTime)
-    }
-
-    node.removeModbusQueueActionsFromNode = function (eventCallback) {
-      modbusClient.removeListener('mbqueue', eventCallback)
-      modbusClient.removeListener('mbactive', eventCallback)
-      modbusClient.removeListener('mbinit', eventCallback)
-      modbusClient.removeListener('mbconnected', eventCallback)
-      modbusClient.removeListener('mberror', eventCallback)
-      modbusClient.removeListener('mbclosed', eventCallback)
-    }
-
     if (node.updateOnAllUnitQueues) {
-      node.registerModbusQueueActionsToNode(node.readFromAllUnitQueues)
       mbBasics.setNodeStatusTo('active for all queues', node)
-    } else {
-      node.registerModbusQueueActionsToNode(node.readFromQueue)
     }
 
     node.on('input', function (msg) {
@@ -326,6 +364,7 @@ module.exports = function (RED) {
         clearInterval(node.queueReadInterval)
       }
       node.queueReadInterval = null
+      mbBasics.deregisterNode(node)
       modbusClient.deregisterForModbus(node.id, done)
     })
 
