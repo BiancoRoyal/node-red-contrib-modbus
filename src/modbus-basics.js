@@ -283,6 +283,83 @@ de.biancoroyal.modbus.basics.initModbusClientEvents = function (node, modbusClie
   }
 }
 
+de.biancoroyal.modbus.registeredNodeIds = {}
+de.biancoroyal.modbus.dispatchReady = false
+
+de.biancoroyal.modbus.setupDispatcherEvents = function (modbusClient) {
+  modbusClient.on('mbinit', (id, data) => { de.biancoroyal.modbus.basics.messageDispatch(id, data) })
+  modbusClient.on('mbqueue', (id, data) => { de.biancoroyal.modbus.basics.messageDispatch(id, data) })
+  modbusClient.on('mbconnected', (id, data) => { de.biancoroyal.modbus.basics.messageDispatch(id, data) })
+  modbusClient.on('mbbroken', (id, data) => { de.biancoroyal.modbus.basics.messageDispatch(id, data) })
+  modbusClient.on('mbactive', (id, data) => { de.biancoroyal.modbus.basics.messageDispatch(id, data) })
+  modbusClient.on('mberror', (id, data) => { de.biancoroyal.modbus.basics.messageDispatch(id, data) })
+  modbusClient.on('mbclosed', (id, data) => { de.biancoroyal.modbus.basics.messageDispatch(id, data) })
+}
+de.biancoroyal.modbus.basics.registerNode = function (node, modbusClient) {
+  const registeredNodes = de.biancoroyal.modbus.registeredNodeIds
+  if (Object.hasOwn(registeredNodes, node.id)) {
+    return
+  }
+
+  if (!de.biancoroyal.modbus.dispatchReady) {
+    de.biancoroyal.modbus.setupDispatcherEvents(modbusClient)
+    de.biancoroyal.modbus.dispatchReady = true
+  }
+
+  registeredNodes[node.id] = node
+  modbusClient.registerForModbus(node)
+}
+
+de.biancoroyal.modbus.basics.deregisterNode = function (node) {
+  const registeredNodes = de.biancoroyal.modbus.registeredNodeIds
+  if (!Object.hasOwn(registeredNodes, node.id)) {
+    return
+  }
+
+  // TODO: Can we remove all listeners here?! If there are no active listeners?
+  // TODO: Maybe clear the modbus client from the registered node id as well?
+  delete registeredNodes[node.id]
+}
+de.biancoroyal.modbus.basics.messageDispatch = function (nodeId, actionObj) {
+  const registeredNodes = de.biancoroyal.modbus.registeredNodeIds
+
+  if (Object.hasOwn(registeredNodes, nodeId)) {
+    switch (actionObj.type) {
+      case 'init':
+        registeredNodes[nodeId].onModbusInit(actionObj.data)
+        break
+      case 'queue':
+        registeredNodes[nodeId].onModbusQueue(actionObj.data)
+        break
+      case 'connected':
+        registeredNodes[nodeId].onModbusConnect(actionObj.data)
+        break
+      case 'broken':
+        registeredNodes[nodeId].onModbusBroken(actionObj.data)
+        break
+      case 'active':
+        registeredNodes[nodeId].onModbusActive(actionObj.data)
+        break
+      case 'error':
+        registeredNodes[nodeId].onModbusError(actionObj.data)
+        break
+      case 'closed':
+        registeredNodes[nodeId].onModbusClose(actionObj.data)
+        break
+    }
+  }
+}
+
+de.biancoroyal.modbus.basics.deinitModbusClientEvents = function (modbusClient) {
+  modbusClient.removeListener('mbinit', this.onModbusInit)
+  modbusClient.removeListener('mbqueue', this.onModbusQueue)
+  modbusClient.removeListener('mbconnected', this.onModbusConnect)
+  modbusClient.removeListener('mbbroken', this.onModbusBroken)
+  modbusClient.removeListener('mbactive', this.onModbusActive)
+  modbusClient.removeListener('mberror', this.onModbusError)
+  modbusClient.removeListener('mbclosed', this.onModbusClose)
+}
+
 de.biancoroyal.modbus.basics.invalidPayloadIn = function (msg) {
   return !(msg && Object.prototype.hasOwnProperty.call(msg, 'payload'))
 }
