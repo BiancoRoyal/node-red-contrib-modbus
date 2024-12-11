@@ -47,6 +47,7 @@ module.exports = function (RED) {
     node.INPUT_TIMEOUT_MILLISECONDS = 1000
     node.delayOccured = false
     node.inputDelayTimer = null
+    node.disabled = false
 
     mbBasics.setNodeStatusTo('waiting', node)
 
@@ -55,8 +56,35 @@ module.exports = function (RED) {
     if (!modbusClient) {
       return
     }
-    modbusClient.registerForModbus(node)
-    mbBasics.initModbusClientEvents(node, modbusClient)
+    // modbusClient.registerForModbus(node)
+
+    node.onModbusInit = function (data) {
+      mbBasics.setNodeStatusTo('init', node)
+    }
+
+    node.onModbusQueue = function (data) {
+      mbBasics.setNodeStatusTo('queue', node)
+    }
+
+    node.onModbusConnect = function (data) {
+      mbBasics.setNodeStatusTo('connected', node)
+    }
+
+    node.onModbusBroken = function (data) {
+      mbBasics.setNodeStatusTo('broken', node)
+    }
+
+    node.onModbusActive = function (data) {
+      mbBasics.setNodeStatusTo('active', node)
+    }
+
+    node.onModbusError = function (data) {
+      mbBasics.setNodeStatusTo('error')
+    }
+
+    node.onModbusClose = function (data) {
+      mbBasics.setNodeStatusTo('close', node)
+    }
 
     node.onModbusReadDone = function (resp, msg) {
       if (node.showStatusActivities) {
@@ -81,6 +109,8 @@ module.exports = function (RED) {
       mbBasics.setModbusError(node, modbusClient, err, origMsg)
       node.emit('modbusFlexGetterNodeError')
     }
+
+    mbBasics.registerNode(node, modbusClient)
 
     node.prepareMsg = function (msg) {
       if (typeof msg.payload === 'string') {
@@ -228,7 +258,13 @@ module.exports = function (RED) {
       }
       processNextMessage()
     }
-    node.on('close', function (done) {
+    node.on('close', function (removed, done) {
+      if (removed) {
+        node.disabled = true
+      }
+
+      mbBasics.deregisterNode(node)
+
       node.resetInputDelayTimer()
       mbBasics.setNodeStatusTo('closed', node)
       node.bufferMessageList.clear()
