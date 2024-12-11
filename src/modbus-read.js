@@ -29,6 +29,7 @@ module.exports = function (RED) {
     this.name = config.name
     this.topic = config.topic
     this.unitid = config.unitid
+    this.disabled = false
 
     this.dataType = config.dataType
     this.adr = config.adr
@@ -61,12 +62,14 @@ module.exports = function (RED) {
     node.delayTimerReading = false
     node.intervalTimerIdReading = false
     setNodeStatusWithTimeTo(node.statusText)
+
     /* istanbul ignore next */
     function verboseWarn (logMessage) {
       if (node.verboseLogging && node.showWarnings) {
         node.warn('Read -> ' + logMessage + ' address: ' + node.adr)
       }
     }
+
     /* istanbul ignore next */
     verboseWarn('open node ' + node.id)
     const modbusClient = RED.nodes.getNode(config.server)
@@ -117,8 +120,7 @@ module.exports = function (RED) {
 
     node.onModbusClose = function (nodeId) {
       if (nodeId === node.id) {
-        console.log(`${nodeId} === ${node.id}`)
-        node.removeNodeListenerFromModbusClient()
+        // node.removeNodeListenerFromModbusClient()
         setNodeStatusWithTimeTo('closed')
         node.resetAllReadingTimer()
       }
@@ -221,19 +223,12 @@ module.exports = function (RED) {
       }
     }
 
-    node.removeNodeListenerFromModbusClient = function () {
-      modbusClient.removeListener('mbinit', node.onModbusInit)
-      modbusClient.removeListener('mbqueue', node.onModbusQueue)
-      modbusClient.removeListener('mbconnected', node.onModbusConnect)
-      modbusClient.removeListener('mbactive', node.onModbusActive)
-      modbusClient.removeListener('mberror', node.onModbusError)
-      modbusClient.removeListener('mbclosed', node.onModbusClose)
-      modbusClient.removeListener('mbbroken', node.onModbusBroken)
-      modbusClient.removeListener('mbregister', node.onModbusRegister)
-      modbusClient.removeListener('mbderegister', node.onModbusClose)
-    }
+    node.on('close', function (removed, done) {
+      if (removed) {
+        node.disabled = true
+      }
 
-    this.on('close', function (done) {
+      mbBasics.deregisterNode(node)
       node.resetAllReadingTimer()
       setNodeStatusWithTimeTo('closed')
       /* istanbul ignore next */
@@ -242,6 +237,11 @@ module.exports = function (RED) {
     })
 
     function sendMessage (values, response, msg) {
+      if (node.disabled) {
+        mbBasics.setNodeStatusTo('closed', node)
+        return
+      }
+
       const topic = msg.topic || node.topic
       if (node.useIOFile && node.ioFile.lastUpdatedAt) {
         if (node.logIOActivities) {
@@ -330,20 +330,7 @@ module.exports = function (RED) {
       return ' ( ' + node.rate + ' ' + mbBasics.get_timeUnit_name(node.rateUnit) + ' ) '
     }
 
-    if (node.showStatusActivities) {
-      modbusClient.on('mbinit', node.onModbusInit)
-      modbusClient.on('mbqueue', node.onModbusQueue)
-    }
-
-    modbusClient.on('mbconnected', node.onModbusConnect)
-    modbusClient.on('mbactive', node.onModbusActive)
-    modbusClient.on('mberror', node.onModbusError)
-    modbusClient.on('mbclosed', node.onModbusClose)
-    modbusClient.on('mbbroken', node.onModbusBroken)
-    modbusClient.on('mbregister', node.onModbusRegister)
-    modbusClient.on('mbderegister', node.onModbusClose)
-
-    modbusClient.registerForModbus(node)
+    mbBasics.registerNode(node, modbusClient)
   }
 
   RED.nodes.registerType('modbus-read', ModbusRead)
