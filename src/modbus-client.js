@@ -756,7 +756,6 @@ module.exports = function (RED) {
     node.setStoppedState = function (clientUserNodeId, done) {
       const data = node.generateEvent('deregister', {})
       node.emit('mbderegister', clientUserNodeId, data)
-      // node.emit('mbderegister', clientUserNodeId)
       done()
     }
 
@@ -767,6 +766,9 @@ module.exports = function (RED) {
      * @param done done callback (node-red)
      */
 
+    node.deregisterClientEventListeners = function () {
+      node.removeAllListeners()
+    }
     node.closeConnectionWithoutRegisteredNodes = function (clientUserNodeId, done) {
       if (Object.keys(node.registeredNodeList).length === 0) {
         node.closingModbus = true
@@ -775,6 +777,7 @@ module.exports = function (RED) {
             node.client.close(function () {
               node.setStoppedState(clientUserNodeId, done)
             })
+            node.deregisterClientEventListeners()
             return
           }
         }
@@ -801,6 +804,7 @@ module.exports = function (RED) {
         } else {
           node.closeConnectionWithoutRegisteredNodes(clientUserNodeId, done)
           node.stateService.send('STOP')
+          done()
         }
       } catch (err) {
         /* istanbul ignore next */
