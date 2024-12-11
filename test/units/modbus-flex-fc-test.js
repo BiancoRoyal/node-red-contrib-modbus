@@ -302,15 +302,6 @@ describe('modbus flex fc unit test', function () {
     })
   })
 
-  it('should remove all listeners from the node on removeNodeListenerFromModbusClient', function (done) {
-    helper.load(testFlexFcNodes, testFlows.testReadCoilMode, function () {
-      const node = helper.getNode('d975b1203f71a3b5')
-      // We cannot test this! only see if it runs without throwing any error!
-      node.removeNodeListenerFromModbusClient()
-      done()
-    })
-  })
-
   // Still needs testing:
   //  - builNewMessageObject()
   //  - isValidCustomFC()

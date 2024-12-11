@@ -253,166 +253,136 @@ module.exports = {
   ),
   testFlowWithNoServer: helperExtensions.cleanFlowPositionData(
     [
-      {
-          "id": "ad804fafa49a7ed2",
-          "type": "tab",
-          "label": "Test Modbus Flex FC No Server",
-          "disabled": false,
-          "info": ""
-      },
-      {
-          "id": "731d4857a7f3f13c",
-          "type": "inject",
-          "z": "ad804fafa49a7ed2",
-          "name": "",
-          "props": [
-              {
-                  "p": "payload"
-              },
-              {
-                  "p": "topic",
-                  "vt": "str"
-              }
-          ],
-          "repeat": "",
-          "crontab": "",
-          "once": false,
-          "onceDelay": 0.1,
-          "topic": "",
-          "payload": "{\"unitid\":1,\"fc\":\"0x04\",\"requestCard\":[{\"name\":\"startingAddress\",\"data\":0,\"offset\":0,\"type\":\"uint16be\"},{\"name\":\"quantityInputRegisters\",\"data\":1,\"offset\":2,\"type\":\"uint16be\"}],\"responseCard\":[{\"name\":\"byteCount\",\"data\":0,\"offset\":0,\"type\":\"uint8be\"},{\"name\":\"inputRegisterValue\",\"data\":0,\"offset\":1,\"type\":\"uint16be\"}]}",
-          "payloadType": "json",
-          "x": 230,
-          "y": 660,
-          "wires": [
-              [
-                  "e096a175bb6a77ae"
-              ]
-          ]
-      },
-      {
-          "id": "e096a175bb6a77ae",
-          "type": "modbus-flex-fc",
-          "z": "ad804fafa49a7ed2",
-          "name": "",
-          "showStatusActivities": false,
-          "showErrors": true,
-          "showWarnings": true,
-          "unitid": "1",
-          "server": "189f281a16297030",
-          "emptyMsgOnFail": false,
-          "keepMsgProperties": false,
-          "mapPath": "",
-          "selectedFc": "2813f7a2-40f4-11ee-a078-f7298669a6cf",
-          "fc": "0x01",
-          "requestCard": [
-              {
-                  "name": "startingAddress",
-                  "data": 0,
-                  "offset": 0,
-                  "type": "uint16be"
-              },
-              {
-                  "name": "quantityCoils",
-                  "data": 8,
-                  "offset": 2,
-                  "type": "uint16be"
-              }
-          ],
-          "responseCard": [
-              {
-                  "name": "byteCount",
-                  "data": 0,
-                  "offset": 0,
-                  "type": "uint8be"
-              },
-              {
-                  "name": "coilStatus",
-                  "data": 0,
-                  "offset": 1,
-                  "type": "uint8be"
-              }
-          ],
-          "lastSelectedFc": "2813f7a2-40f4-11ee-a078-f7298669a6cf",
-          "x": 430,
-          "y": 660,
-          "wires": [
-              [
-                  "a937aeb9c66c2fc8"
-              ]
-          ]
-      },
-      {
-          "id": "b93407f8eef80ad9",
-          "type": "modbus-server",
-          "z": "ad804fafa49a7ed2",
-          "name": "",
-          "logEnabled": false,
-          "hostname": "127.0.0.1",
-          "serverPort": "10002",
-          "responseDelay": 100,
-          "delayUnit": "ms",
-          "coilsBufferSize": 10000,
-          "holdingBufferSize": 10000,
-          "inputBufferSize": 10000,
-          "discreteBufferSize": 10000,
-          "showErrors": false,
-          "showStatusActivities": false,
-          "x": 420,
-          "y": 440,
-          "wires": [
-              [],
-              [],
-              [],
-              [],
-              []
-          ]
-      },
-      {
-          "id": "a937aeb9c66c2fc8",
-          "type": "helper",
-          "z": "ad804fafa49a7ed2",
-          "name": "helper 2",
-          "active": true,
-          "tosidebar": true,
-          "console": false,
-          "tostatus": false,
-          "complete": "false",
-          "statusVal": "",
-          "statusType": "auto",
-          "x": 700,
-          "y": 640,
-          "wires": []
-      },
-      {
-          "id": "189f281a16297030",
-          "type": "modbus-client",
-          "name": "FC Flex Null Server",
-          "clienttype": "tcp",
-          "bufferCommands": true,
-          "stateLogEnabled": false,
-          "queueLogEnabled": false,
-          "failureLogEnabled": true,
-          "tcpHost": "127.0.0.1",
-          "tcpPort": "502",
-          "tcpType": "DEFAULT",
-          "serialPort": "/dev/ttyUSB",
-          "serialType": "RTU-BUFFERD",
-          "serialBaudrate": "9600",
-          "serialDatabits": "8",
-          "serialStopbits": "1",
-          "serialParity": "none",
-          "serialConnectionDelay": "100",
-          "serialAsciiResponseStartDelimiter": "0x3A",
-          "unit_id": "1",
-          "commandDelay": "1",
-          "clientTimeout": "1000",
-          "reconnectOnTimeout": true,
-          "reconnectTimeout": "2000",
-          "parallelUnitIdsAllowed": true,
-          "showErrors": false,
-          "showWarnings": true,
-          "showLogs": true
-      }
+        {
+            "id": "ad804fafa49a7ed2",
+            "type": "tab",
+            "label": "Test Modbus Flex FC No Server",
+            "disabled": false,
+            "info": ""
+        },
+        {
+            "id": "731d4857a7f3f13c",
+            "type": "inject",
+            "z": "ad804fafa49a7ed2",
+            "name": "",
+            "props": [
+                {
+                    "p": "payload"
+                },
+                {
+                    "p": "topic",
+                    "vt": "str"
+                }
+            ],
+            "repeat": "",
+            "crontab": "",
+            "once": false,
+            "onceDelay": 0.1,
+            "topic": "",
+            "payload": "{\"unitid\":1,\"fc\":\"0x04\",\"requestCard\":[{\"name\":\"startingAddress\",\"data\":0,\"offset\":0,\"type\":\"uint16be\"},{\"name\":\"quantityInputRegisters\",\"data\":1,\"offset\":2,\"type\":\"uint16be\"}],\"responseCard\":[{\"name\":\"byteCount\",\"data\":0,\"offset\":0,\"type\":\"uint8be\"},{\"name\":\"inputRegisterValue\",\"data\":0,\"offset\":1,\"type\":\"uint16be\"}]}",
+            "payloadType": "json",
+            "x": 230,
+            "y": 660,
+            "wires": [
+                [
+                    "e096a175bb6a77ae"
+                ]
+            ]
+        },
+        {
+            "id": "e096a175bb6a77ae",
+            "type": "modbus-flex-fc",
+            "z": "ad804fafa49a7ed2",
+            "name": "",
+            "showStatusActivities": false,
+            "showErrors": true,
+            "showWarnings": true,
+            "unitid": "1",
+            "server": "",
+            "emptyMsgOnFail": false,
+            "keepMsgProperties": false,
+            "mapPath": "",
+            "selectedFc": "2813f7a2-40f4-11ee-a078-f7298669a6cf",
+            "fc": "0x01",
+            "requestCard": [
+                {
+                    "name": "startingAddress",
+                    "data": 0,
+                    "offset": 0,
+                    "type": "uint16be"
+                },
+                {
+                    "name": "quantityCoils",
+                    "data": 8,
+                    "offset": 2,
+                    "type": "uint16be"
+                }
+            ],
+            "responseCard": [
+                {
+                    "name": "byteCount",
+                    "data": 0,
+                    "offset": 0,
+                    "type": "uint8be"
+                },
+                {
+                    "name": "coilStatus",
+                    "data": 0,
+                    "offset": 1,
+                    "type": "uint8be"
+                }
+            ],
+            "lastSelectedFc": "2813f7a2-40f4-11ee-a078-f7298669a6cf",
+            "x": 430,
+            "y": 660,
+            "wires": [
+                [
+                    "a937aeb9c66c2fc8"
+                ]
+            ]
+        },
+        {
+            "id": "b93407f8eef80ad9",
+            "type": "modbus-server",
+            "z": "ad804fafa49a7ed2",
+            "name": "",
+            "logEnabled": false,
+            "hostname": "127.0.0.1",
+            "serverPort": "10002",
+            "responseDelay": 100,
+            "delayUnit": "ms",
+            "coilsBufferSize": 10000,
+            "holdingBufferSize": 10000,
+            "inputBufferSize": 10000,
+            "discreteBufferSize": 10000,
+            "showErrors": false,
+            "showStatusActivities": false,
+            "x": 420,
+            "y": 440,
+            "wires": [
+                [],
+                [],
+                [],
+                [],
+                []
+            ]
+        },
+        {
+            "id": "a937aeb9c66c2fc8",
+            "type": "helper",
+            "z": "ad804fafa49a7ed2",
+            "name": "helper 2",
+            "active": true,
+            "tosidebar": true,
+            "console": false,
+            "tostatus": false,
+            "complete": "false",
+            "statusVal": "",
+            "statusType": "auto",
+            "x": 700,
+            "y": 640,
+            "wires": []
+        }
     ]
   ),
   testFlowForReading: helperExtensions.cleanFlowPositionData(
