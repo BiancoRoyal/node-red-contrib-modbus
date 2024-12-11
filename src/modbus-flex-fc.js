@@ -157,18 +157,6 @@ module.exports = function (RED) {
       modbusClient.emit('customModbusMessage', msg, node.onModbusReadDone, node.onModbusReadError)
     }
 
-    node.removeNodeListenerFromModbusClient = function () {
-      modbusClient.removeListener('mbinit', node.onModbusInit)
-      modbusClient.removeListener('mbqueue', node.onModbusQueue)
-      modbusClient.removeListener('mbconnected', node.onModbusConnect)
-      modbusClient.removeListener('mbactive', node.onModbusActive)
-      modbusClient.removeListener('mberror', node.onModbusError)
-      modbusClient.removeListener('mbclosed', node.onModbusClose)
-      modbusClient.removeListener('mbbroken', node.onModbusBroken)
-      modbusClient.removeListener('mbregister', node.onModbusRegister)
-      modbusClient.removeListener('mbderegister', node.onModbusClose)
-    }
-
     node.isValidCustomFc = function (origMsgInput) {
       return origMsgInput.payload &&
         origMsgInput.topic === 'customFc' &&
@@ -235,6 +223,7 @@ module.exports = function (RED) {
       setNodeStatusWithTimeTo('closed')
       /* istanbul ignore next */
       verboseWarn('close node ' + node.id)
+      mbBasics.deregisterNode(node)
       modbusClient.deregisterForModbus(node.id, done)
     })
 
@@ -264,20 +253,7 @@ module.exports = function (RED) {
       }
     }
 
-    if (node.showStatusActivities) {
-      modbusClient.on('mbinit', node.onModbusInit)
-      modbusClient.on('mbqueue', node.onModbusQueue)
-    }
-
-    modbusClient.on('mbconnected', node.onModbusConnect)
-    modbusClient.on('mbactive', node.onModbusActive)
-    modbusClient.on('mberror', node.onModbusError)
-    modbusClient.on('mbclosed', node.onModbusClose)
-    modbusClient.on('mbbroken', node.onModbusBroken)
-    modbusClient.on('mbregister', node.onModbusRegister)
-    modbusClient.on('mbderegister', node.onModbusClose)
-
-    modbusClient.registerForModbus(node)
+    mbBasics.registerNode(node, modbusClient)
   }
 
   RED.nodes.registerType('modbus-flex-fc', ModbusFlexFc)
