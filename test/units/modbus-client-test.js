@@ -19,6 +19,7 @@ const sinon = require('sinon')
 const testModbusClientNodes = [serverNode, nodeUnderTest, readNode, flexGetterNode]
 const assert = require('assert')
 const helper = require('node-red-node-test-helper')
+
 helper.init(require.resolve('node-red'))
 
 const testFlows = require('./flows/modbus-client-flows')
@@ -44,6 +45,7 @@ describe('Client node Unit Testing', function () {
       done()
     })
   })
+
   // describe('client node is Active', function () {
   //   it('should be active when it receives a message', function (done) {
   //     const flow = Array.from(testFlows.testModbusReadNodeIsActive)
@@ -239,14 +241,13 @@ describe('Client node Unit Testing', function () {
         }
         modbusClientNode.closingModbus = false
         sinon.stub(modbusClientNode, 'closeConnectionWithoutRegisteredNodes').callsFake(function (clientUserNodeId, done) {
-          done()
         })
 
         modbusClientNode.deregisterForModbus('clientUserNodeId', function () {
           sinon.assert.calledWith(modbusClientNode.closeConnectionWithoutRegisteredNodes, 'clientUserNodeId', sinon.match.func)
-
-          done()
         })
+
+        done()
       })
     })
 
@@ -787,8 +788,9 @@ describe('Client node Unit Testing', function () {
               inner()
             }
           }
-          modbusClientNode.setStoppedState = sinon.spy()
+
           modbusClientNode.client = mockClient
+          modbusClientNode.setStoppedState = sinon.spy()
           const _done = sinon.spy()
           const clientUserNodeId = sinon.spy()
 
@@ -802,6 +804,8 @@ describe('Client node Unit Testing', function () {
           modbusClientNode.actualServiceState.value = 'stopped'
           modbusClientNode.closeConnectionWithoutRegisteredNodes(clientUserNodeId, _done)
           sinon.assert.calledWith(modbusClientNode.setStoppedState, clientUserNodeId, _done)
+
+          modbusClientNode.client = null
           done()
         })
       })
