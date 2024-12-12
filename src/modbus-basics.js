@@ -312,13 +312,12 @@ de.biancoroyal.modbus.basics.registerNode = function (node, modbusClient) {
 
 de.biancoroyal.modbus.basics.deregisterNode = function (node) {
   const registeredNodes = de.biancoroyal.modbus.registeredNodeIds
-  if (!Object.hasOwn(registeredNodes, node.id)) {
-    return
+  if (Object.hasOwn(registeredNodes, node.id)) {
+    // delete registeredNodes[node.id]
   }
 
   // TODO: Can we remove all listeners here?! If there are no active listeners?
   // TODO: Maybe clear the modbus client from the registered node id as well?
-  delete registeredNodes[node.id]
 }
 de.biancoroyal.modbus.basics.messageDispatch = function (nodeId, actionObj) {
   const registeredNodes = de.biancoroyal.modbus.registeredNodeIds
