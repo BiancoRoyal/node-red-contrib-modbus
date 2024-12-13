@@ -74,6 +74,7 @@
     "build": "npm run lint && gulp",
     "changelog": "gulp changelog",
     "test": "npm run prereq && npm run mocha:parallel",
+    "test:jest": "jest",
     "test:slow": "npm run prereq && npm run mocha:slow",
     "test:verbose": "npm run prereq && mocha ./test --recursive",
     "test:withStop": "npm run prereq && mocha ./test --recursive --bail",
@@ -116,6 +117,7 @@
     "gulp-sourcemaps": "^3.0.0",
     "gulp-uglify": "^3.0.2",
     "jasmine-node": "^3.0.0",
+    "jest": "^29.7.0",
     "js-beautify": "^1.15.1",
     "mocha": "^10.4.0",
     "nock": "^13.5.4",
@@ -158,8 +160,13 @@
       "test/resources/**",
       "test/e2e/flows/**",
       "test/integrations/flows/**",
-      "test/units/flows/**"
+      "test/units/flows/**",
+      "__tests__/units/flows/**",
+      "__tests__/units/**"
     ]
+  },
+  "jest": {
+    "testMatch": [ "**/__tests__/**/*.test.js"]
   },
   "funding": {
     "type": "opencollective",
