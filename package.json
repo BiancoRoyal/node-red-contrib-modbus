@@ -15,7 +15,7 @@
   },
   "optionalDependencies": {
     "@serialport/list": "~12.0.0",
-    "serialport": "~12.0.0"
+    "serialport": "~13.0.0"
   },
   "keywords": [
     "node-red",
