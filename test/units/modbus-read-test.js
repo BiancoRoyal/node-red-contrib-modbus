@@ -22,6 +22,7 @@ helper.init(require.resolve('node-red'))
 
 const testFlows = require('./flows/modbus-read-flows')
 const mBasics = require('../../src/modbus-basics')
+const { expect } = require('chai')
 
 describe('Read node Testing', function () {
   before(function (done) {
@@ -196,6 +197,26 @@ describe('Read node Testing', function () {
         readNode.verboseLogging = true
         readNode.showWarnings = true
         readNode.delayTimerReading = true
+
+        let mockMessageOutput = ''
+        readNode.warn = function (message) { mockMessageOutput = message }
+
+        readNode.resetDelayTimerToRead(readNode)
+        mockMessageOutput.should.equal('Read -> resetDelayTimerToRead node 09846c74de630616 address: 0')
+        done()
+      })
+    })
+
+
+    it('node can be disabled and enabled', function (done) {
+      helper.load(testReadNodes, testFlows.testDisabledReadWithClientFlow, function () {
+        const readNode = helper.getNode('6b9b58549504ff46')
+
+        readNode.verboseLogging = true
+        readNode.showWarnings = true
+        readNode.delayTimerReading = true
+
+        // expect(readNode.d).should.be.true
 
         let mockMessageOutput = ''
         readNode.warn = function (message) { mockMessageOutput = message }

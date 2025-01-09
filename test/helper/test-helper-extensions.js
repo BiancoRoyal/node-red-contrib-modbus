@@ -25,6 +25,7 @@ module.exports = {
         delete newObject.x
         delete newObject.y
         delete newObject.z
+        delete newObject.d // Todo: disabled is not supported in the tester framework of node-red
         cleanFlow.push(newObject)
       }
     })
