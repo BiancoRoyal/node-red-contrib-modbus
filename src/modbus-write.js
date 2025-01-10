@@ -54,8 +54,35 @@ module.exports = function (RED) {
     if (!modbusClient) {
       return
     }
-    modbusClient.registerForModbus(node)
-    mbBasics.initModbusClientEvents(node, modbusClient)
+
+    // TODO: Interface of the Dispatcher for handling events needs a default handler!
+    node.onModbusInit = function (data) {
+      mbBasics.setNodeStatusTo('init', node)
+    }
+
+    node.onModbusQueue = function (data) {
+      mbBasics.setNodeStatusTo('queue', node)
+    }
+
+    node.onModbusConnect = function (data) {
+      mbBasics.setNodeStatusTo('connect', node)
+    }
+
+    node.onModbusBroken = function (data) {
+      mbBasics.setNodeStatusTo('broken', node)
+    }
+
+    node.onModbusActive = function (data) {
+      mbBasics.setNodeStatusTo('active', node)
+    }
+
+    node.onModbusError = function (data) {
+      mbBasics.setNodeStatusTo('error', node)
+    }
+
+    node.onModbusClose = function (data) {
+      mbBasics.setNodeStatusTo('close', node)
+    }
 
     node.onModbusWriteDone = function (resp, msg) {
       if (node.showStatusActivities) {
@@ -72,6 +99,7 @@ module.exports = function (RED) {
       }
     }
 
+    mbBasics.registerNode(node, modbusClient)
     node.onModbusWriteError = function (err, msg) {
       node.internalDebugLog(err.message)
       const origMsg = mbCore.getOriginalMessage(node.bufferMessageList, msg)
@@ -111,6 +139,7 @@ module.exports = function (RED) {
         }
       }
     }
+
     /* istanbul ignore next */
     function verboseWarn (logMessage) {
       if (RED.settings.verbose && node.showWarnings) {
@@ -184,7 +213,9 @@ module.exports = function (RED) {
       }
     })
 
-    node.on('close', function (done) {
+    node.on('close', function (removed, done) {
+      mbBasics.deregisterNode(node)
+
       mbBasics.setNodeStatusTo('closed', node)
       node.bufferMessageList.clear()
       modbusClient.deregisterForModbus(node.id, done)

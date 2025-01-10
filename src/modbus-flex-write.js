@@ -47,8 +47,41 @@ module.exports = function (RED) {
     if (!modbusClient) {
       return
     }
-    modbusClient.registerForModbus(node)
-    mbBasics.initModbusClientEvents(node, modbusClient)
+
+    node.onModbusInit = function (data) {
+      mbBasics.setNodeStatusTo('init', node)
+    }
+
+    node.onModbusQueue = function (data) {
+      mbBasics.setNodeStatusTo('queue', node)
+    }
+
+    node.onModbusConnect = function (data) {
+      mbBasics.setNodeStatusTo('connected', node)
+    }
+
+    node.onModbusBroken = function (data) {
+      mbBasics.setNodeStatusTo('broken', node)
+    }
+
+    node.onModbusActive = function (data) {
+      mbBasics.setNodeStatusTo('active', node)
+    }
+
+    node.onModbusError = function (data) {
+      mbBasics.setNodeStatusTo('error')
+    }
+
+    node.onModbusClose = function (data) {
+      mbBasics.setNodeStatusTo('close', node)
+    }
+
+    mbBasics.registerNode(node, modbusClient)
+
+    // mbBasics.initModbusClientEvents(node, modbusClient)
+
+    // modbusClient.registerForModbus(node)
+    // mbBasics.initModbusClientEvents(node, modbusClient)
 
     node.onModbusWriteDone = function (resp, msg) {
       if (node.showStatusActivities) {
@@ -226,6 +259,7 @@ module.exports = function (RED) {
     node.on('close', function (done) {
       mbBasics.setNodeStatusTo('closed', node)
       node.bufferMessageList.clear()
+      mbBasics.deregisterNode(node)
       modbusClient.deregisterForModbus(node.id, done)
     })
 

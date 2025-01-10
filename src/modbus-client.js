@@ -83,7 +83,10 @@ module.exports = function (RED) {
     const node = this
     node.isFirstInitOfConnection = true
     node.closingModbus = false
+
+    /** @type {ModbusRTU} */
     node.client = null
+
     node.bufferCommandList = new Map()
     node.sendingAllowed = new Map()
     node.unitSendingAllowed = []
@@ -131,6 +134,7 @@ module.exports = function (RED) {
       }
       node.serverInfo += ' default Unit-Id: ' + node.unit_id
     }
+
     /* istanbul ignore next */
     function verboseWarn (logMessage) {
       if (RED.settings.verbose && node.showWarnings) {
@@ -202,18 +206,21 @@ module.exports = function (RED) {
           node.error(err, { payload: 'client connection error ' + logHintText })
         }
 
-        node.emit('mbinit')
+        const data = node.generateEvent('init', {})
+        node.emitGlobalStateChange('mbinit', data)
       }
 
       if (state.matches('connected')) {
         /* istanbul ignore next */
         verboseWarn('fsm connected after state ' + node.actualServiceStateBefore.value + logHintText)
         coreModbusQueue.queueSerialUnlockCommand(node)
-        node.emit('mbconnected')
+        const data = node.generateEvent('connected', {})
+        node.emitGlobalStateChange('mbconnected', data)
       }
 
       if (state.matches('activated')) {
-        node.emit('mbactive')
+        const data = node.generateEvent('active', {})
+        node.emitGlobalStateChange('mbactive', data)
         if (node.bufferCommands && !coreModbusQueue.checkQueuesAreEmpty(node)) {
           node.stateService.send('QUEUE')
         }
@@ -241,42 +248,56 @@ module.exports = function (RED) {
         setTimeout(() => {
           coreModbusQueue.dequeueCommand(node)
         }, node.commandDelay)
-        node.emit('mbqueue')
+        const data = node.generateEvent('queue', {})
+        node.emitGlobalStateChange('mbqueue', data)
       }
 
       if (state.matches('opened')) {
         coreModbusQueue.queueSerialUnlockCommand(node)
-        node.emit('mbopen')
+        const data = node.generateEvent('open', {})
+        node.emitGlobalStateChange('mbopen', data)
+        // node.emit('mbopen', null, data)
       }
 
       if (state.matches('switch')) {
-        node.emit('mbswitch')
+        const data = node.generateEvent('switch', {})
+        node.emitGlobalStateChange('mbswitch', data)
+        // node.emit('mbswitch', null, data)
         node.stateService.send('CLOSE')
       }
 
       /* istanbul ignore next */
       if (state.matches('closed')) {
-        node.emit('mbclosed')
+        const data = node.generateEvent('closed', {})
+        node.emitGlobalStateChange('mbclosed', data)
         node.stateService.send('RECONNECT')
       }
 
       if (state.matches('stopped')) {
         /* istanbul ignore next */
         verboseWarn('stopped state without reconnecting')
-        node.emit('mbclosed')
+        const data = node.generateEvent('closed', {})
+        node.emitGlobalStateChange('mbclosed', data)
       }
 
       if (state.matches('failed')) {
         /* istanbul ignore next */
         verboseWarn('fsm failed state after ' + node.actualServiceStateBefore.value + logHintText)
-        node.emit('mberror', 'Modbus Failure On State ' + node.actualServiceStateBefore.value + logHintText)
+        const data = node.generateEvent('error', {
+          message: 'Modbus Failure On State ' + node.actualServiceStateBefore.value + logHintText
+        })
+        node.emitGlobalStateChange('mberror', data)
         node.stateService.send('BREAK')
       }
 
       if (state.matches('broken')) {
         /* istanbul ignore next */
         verboseWarn('fsm broken state after ' + node.actualServiceStateBefore.value + logHintText)
-        node.emit('mbbroken', 'Modbus Broken On State ' + node.actualServiceStateBefore.value + logHintText)
+        const data = node.generateEvent('broken', {
+          message: 'Modbus Broken On State ' + node.actualServiceStateBefore.value + logHintText
+        })
+        node.emitGlobalStateChange('mbbroken', data)
+
         if (node.reconnectOnTimeout) {
           node.stateService.send('RECONNECT')
         } else {
@@ -288,7 +309,8 @@ module.exports = function (RED) {
         /* istanbul ignore next */
         verboseWarn('fsm reconnect state after ' + node.actualServiceStateBefore.value + logHintText)
         coreModbusQueue.queueSerialLockCommand(node)
-        node.emit('mbreconnecting')
+        const data = node.generateEvent('reconnecting', {})
+        node.emitGlobalStateChange('mbreconnecting', data)
         if (node.reconnectTimeout <= 0) {
           node.reconnectTimeout = reconnectTimeMS
         }
@@ -299,6 +321,12 @@ module.exports = function (RED) {
       }
     })
 
+    node.emitGlobalStateChange = function (state, data) {
+      const registeredIds = Object.keys(node.registeredNodeList)
+      for (let i = 0; i < registeredIds.length; i++) {
+        node.emit(state, registeredIds[i], data)
+      }
+    }
     node.connectClient = function () {
       try {
         if (node.client) {
@@ -707,21 +735,40 @@ module.exports = function (RED) {
     node.registeredNodeList = {}
 
     node.registerForModbus = function (clientUserNodeId) {
-      node.registeredNodeList[clientUserNodeId] = clientUserNodeId
+      node.registeredNodeList[clientUserNodeId.id] = clientUserNodeId
       if (Object.keys(node.registeredNodeList).length === 1) {
         node.closingModbus = false
         node.stateService.send('NEW')
         node.stateService.send('INIT')
       }
-      node.emit('mbregister', clientUserNodeId)
+      const data = node.generateEvent('register', {})
+      node.emit('mbregister', clientUserNodeId, data)
+
+      // node.emit('mbregister', clientUserNodeId)
     }
 
+    node.generateEvent = function (eventName, data) {
+      return {
+        type: eventName,
+        data
+      }
+    }
     node.setStoppedState = function (clientUserNodeId, done) {
-      node.stateService.send('STOP')
-      node.emit('mbderegister', clientUserNodeId)
+      const data = node.generateEvent('deregister', {})
+      node.emit('mbderegister', clientUserNodeId, data)
       done()
     }
 
+    /**
+     * Closes the internal connection if no modbus nodes are listening on the client.
+     *
+     * @param clientUserNodeId The id of the last node that still needs to be closed down
+     * @param done done callback (node-red)
+     */
+
+    node.deregisterClientEventListeners = function () {
+      node.removeAllListeners()
+    }
     node.closeConnectionWithoutRegisteredNodes = function (clientUserNodeId, done) {
       if (Object.keys(node.registeredNodeList).length === 0) {
         node.closingModbus = true
@@ -730,28 +777,34 @@ module.exports = function (RED) {
             node.client.close(function () {
               node.setStoppedState(clientUserNodeId, done)
             })
-          } else {
-            node.setStoppedState(clientUserNodeId, done)
+            node.deregisterClientEventListeners()
+            return
           }
-        } else {
-          node.setStoppedState(clientUserNodeId, done)
         }
-      } else {
-        //  Todo: this looks wrong - client should not stop,
-        //   it should just inform the node with corresponding id,
-        //   about de-registration was done
-        node.setStoppedState(clientUserNodeId, done)
       }
+
+      node.setStoppedState(clientUserNodeId, done)
     }
 
+    /**
+     * Delete a node from the registeredNodeList the node in question will no longer receive any messages from the
+     * client
+     *
+     * __NOTE__: If there are no more listening nodes for the current connection the client will be closed permanently
+     * @param clientUserNodeId {Number} the id of the node that wants to unsubscribe.
+     * @param done {function} node-red done callback
+     */
     node.deregisterForModbus = function (clientUserNodeId, done) {
       try {
         delete node.registeredNodeList[clientUserNodeId]
-        if (node.closingModbus) {
+        if (Object.keys(node.registeredNodeList).length !== 0) {
           done()
-          node.emit('mbderegister', clientUserNodeId)
+          const data = node.generateEvent('deregister', {})
+          node.emit('mbderegister', clientUserNodeId, data)
         } else {
           node.closeConnectionWithoutRegisteredNodes(clientUserNodeId, done)
+          node.stateService.send('STOP')
+          done()
         }
       } catch (err) {
         /* istanbul ignore next */
