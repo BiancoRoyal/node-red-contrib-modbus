@@ -1,4 +1,4 @@
-const helperExtensions = require('../../helper/test-helper-extensions')
+const helperExtensions = require('../../../test/helper/test-helper-extensions')
 
 module.exports = {
     testParallelUnitIdsAllowed: helperExtensions.cleanFlowPositionData(
