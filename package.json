@@ -6,7 +6,7 @@
   "dependencies": {
     "@openp4nr/modbus-serial": "https://dl.cloudsmith.io/public/iniationware-gmbh/plus4nodered/npm/openp4nr/modbus-serial/8.2.0/modbus-serial-8.2.0.tgz",
     "@xstate/fsm": "~2.1.0",
-    "bson": "~6.9.0",
+    "bson": "~6.10.2",
     "debug": "~4.3.7",
     "jsmodbus": "~4.0.10",
     "line-by-line": "~0.1.6",
