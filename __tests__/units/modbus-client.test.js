@@ -7,8 +7,6 @@ const testModbusClientNodes = [serverNode, nodeUnderTest, readNode, flexGetterNo
 const helper = require('node-red-node-test-helper')
 const testFlows = require('./flows/modbus-client-flows.js')
 
-
-
 describe('Client Node Unit Testing', () => {
   beforeAll((done) => {
     helper.startServer(done)
@@ -25,18 +23,17 @@ describe('Client Node Unit Testing', () => {
   })
 
   test("deregister modbus get's called with the correct id", (done) => {
-    helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, () => {
+    let spy
+      helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, () => {
       jest.useFakeTimers()
       const modbusClientNode = helper.getNode('3')
       const clientUserNodeId = 'clientUserNodeId'
 
+      spy = jest.spyOn(modbusClientNode, 'closeConnectionWithoutRegisteredNodes')
       modbusClientNode.registeredNodeList[clientUserNodeId] = true
-
-      //jest.spyOn(modbusClientNode, 'closeConnectionWithoutRegisteredNodes')
-      jest.spyOn(modbusClientNode, 'deregisterForModbus').mockImplementation((innerId, data) => {
-        expect(innerId).toBe('clientUserNodeId')
-      })
-      done()
     })
+
+    expect(spy).toHaveBeenCalled()
+    done()
   })
 })

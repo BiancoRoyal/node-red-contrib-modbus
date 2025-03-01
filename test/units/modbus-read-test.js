@@ -207,7 +207,6 @@ describe('Read node Testing', function () {
       })
     })
 
-
     it('node can be disabled and enabled', function (done) {
       helper.load(testReadNodes, testFlows.testDisabledReadWithClientFlow, function () {
         const readNode = helper.getNode('6b9b58549504ff46')

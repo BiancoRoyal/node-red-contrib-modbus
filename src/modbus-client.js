@@ -769,6 +769,7 @@ module.exports = function (RED) {
     node.deregisterClientEventListeners = function () {
       node.removeAllListeners()
     }
+
     node.closeConnectionWithoutRegisteredNodes = function (clientUserNodeId, done) {
       if (Object.keys(node.registeredNodeList).length === 0) {
         node.closingModbus = true

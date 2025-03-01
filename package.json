@@ -165,9 +165,6 @@
       "__tests__/units/**"
     ]
   },
-  "jest": {
-    "testMatch": [ "**/__tests__/**/*.test.js"]
-  },
   "funding": {
     "type": "opencollective",
     "url": "https://opencollective.com/node-red-contrib-modbus"

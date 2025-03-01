@@ -1,0 +1,6 @@
+{
+  "verbose": true,
+  "bail": true,
+  "clearMocks": true,
+  "testMatch": [ "**/__tests__/**/*.test.js"]
+}
