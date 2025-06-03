@@ -115,9 +115,11 @@ module.exports = function (RED) {
       }
     }
 
-    node.onModbusClose = function () {
-      setNodeStatusWithTimeTo('closed')
-      node.resetAllReadingTimer()
+    node.onModbusClose = function (targetNodeId) {
+      if (node.id === targetNodeId) {
+        setNodeStatusWithTimeTo('closed')
+        node.resetAllReadingTimer()
+      }
     }
 
     node.onModbusBroken = function () {
