@@ -235,7 +235,7 @@ describe('Client node Unit Testing', function () {
         const modbusClientNode = helper.getNode('3')
 
         modbusClientNode.registeredNodeList = {
-          clientUserNodeId: {}
+          clientUserNodeId: 'clientUserNodeId'
         }
         modbusClientNode.closingModbus = false
         sinon.stub(modbusClientNode, 'closeConnectionWithoutRegisteredNodes').callsFake(function (clientUserNodeId, done) {
@@ -244,7 +244,6 @@ describe('Client node Unit Testing', function () {
 
         modbusClientNode.deregisterForModbus('clientUserNodeId', function () {
           sinon.assert.calledWith(modbusClientNode.closeConnectionWithoutRegisteredNodes, 'clientUserNodeId', sinon.match.func)
-
           done()
         })
       })
@@ -357,6 +356,9 @@ describe('Client node Unit Testing', function () {
     })
 
     it('should handle error during deregistration', function (done) {
+      // TODO(Kay): The test uses the done callback of the closeConnectionWithoutRegisteredNodes to test
+      //           the assertion of the test which isn't a good idea i think. To fix this we need to
+      //           remove the assertion from the callback (if even possible).
       const flow = Array.from(testFlows.testModbusReadFlow)
       getPort().then((port) => {
         flow[0].serverPort = port
@@ -770,9 +772,13 @@ describe('Client node Unit Testing', function () {
 
         helper.load(testModbusClientNodes, flow, function () {
           const modbusClientNode = helper.getNode('466860d5.3f6358')
+          modbusClientNode.isFirstInitOfConnection = false
           modbusClientNode.registeredNodeList = {}
           modbusClientNode.closingModbus = true
-          modbusClientNode.actualServiceState.value = 'started'
+          // NOTE(Kay): The next line caused some issues when testing with the value 'active', i assume that is due
+          //            to the statemachine trying to reconnect when it thinks the connection was lost and should
+          //            be reestablished.
+          modbusClientNode.actualServiceState.value = 'failed'
           const mockClient = {
             isOpen: true,
             close: function (inner) {
