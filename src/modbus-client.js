@@ -707,14 +707,6 @@ module.exports = function (RED) {
     node.registeredNodeList = {}
 
     node.registerForModbus = function (clientUserNodeId) {
-      // NOTE(Kay): Found a bug, it seems that every node is registering with the node itself
-      //           but deregistering is using the actual id the fix would be to use the id instead
-      //           of the whole object node, this might also solve some hidden cross references!
-      // NOTE(Kay): The 'closed' state seems to be a notification error as the node is definitly not
-      //            disabled!
-      // NOTE(Kay): Found the bug, on 'mbderegister' every node get's the message to deregister and disable
-      //            communication, but only the one node that got deregistered should stop all communication
-      //            not bringing the other nodes down with it.
       const nodeId = clientUserNodeId.id
       node.registeredNodeList[nodeId] = nodeId
       if (Object.keys(node.registeredNodeList).length === 1) {
