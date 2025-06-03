@@ -726,7 +726,6 @@ module.exports = function (RED) {
     }
 
     node.setStoppedState = function (clientUserNodeId, done) {
-      node.stateService.send('STOP')
       node.emit('mbderegister', clientUserNodeId)
       done()
     }
@@ -736,18 +735,15 @@ module.exports = function (RED) {
         node.closingModbus = true
         if (node.client && node.actualServiceState.value !== 'stopped') {
           if (node.client.isOpen) {
+            node.stateService.send('STOP')
             node.client.close(function () {
-              node.setStoppedState(clientUserNodeId, done)
+              verboseWarn('The modbus client is closing down')
             })
-          } else {
-            node.setStoppedState(clientUserNodeId, done)
           }
-        } else {
-          node.setStoppedState(clientUserNodeId, done)
         }
-      } else {
-        node.setStoppedState(clientUserNodeId, done)
       }
+
+      node.setStoppedState(clientUserNodeId, done)
     }
 
     node.deregisterForModbus = function (clientUserNodeId, done) {
