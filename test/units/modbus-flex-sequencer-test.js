@@ -23,6 +23,7 @@ const testFlexSequencerNodes = [injectNode, clientNode, serverNode, nodeUnderTes
 const testFlows = require('./flows/modbus-flex-sequencer-flows')
 const mBasics = require('../../src/modbus-basics')
 const _ = require('underscore')
+const { getPort } = require('../helper/test-helper-extensions')
 
 // const chai = require('chai')
 const sinon = require('sinon')
@@ -90,15 +91,20 @@ describe('Flex Sequencer node Testing', function () {
 
     it('should be inactive if message empty', function (done) {
       const flow = Array.from(testFlows.testNodeWithServerFlow)
-      flow[2].serverPort = '50201'
-      helper.load(testFlexSequencerNodes, flow, function () {
-        const modbusClientNode = helper.getNode('64e3712b9bf103da')
-        setTimeout(() => {
-          modbusClientNode.messageAllowedStates = ['']
-          const isInactive = modbusClientNode.isInactive()
-          isInactive.should.be.true()
-          done()
-        }, 1500)
+
+      getPort().then((port) => {
+        flow[2].serverPort = port
+        flow[3].tcpPort = port
+
+        helper.load(testFlexSequencerNodes, flow, function () {
+          const modbusClientNode = helper.getNode('64e3712b9bf103da')
+          setTimeout(() => {
+            modbusClientNode.messageAllowedStates = ['']
+            const isInactive = modbusClientNode.isInactive()
+            isInactive.should.be.true()
+            done()
+          }, 2500)
+        })
       })
     })
 

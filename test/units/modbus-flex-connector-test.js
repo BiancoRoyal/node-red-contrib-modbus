@@ -61,6 +61,7 @@ describe('Flex Connector node Unit Testing', function () {
 
       getPort().then((port) => {
         flow[1].serverPort = port
+        flow[3].tcpPort = port
 
         helper.load(testFlexConnectorNodes, flow, function () {
           const modbusNode = helper.getNode('4bebe20d77ae781d')
@@ -68,16 +69,18 @@ describe('Flex Connector node Unit Testing', function () {
           modbusNode.should.have.property('name', 'FlexConnector')
           modbusNode.should.have.property('emptyQueue', true)
 
+          let connected = false
           clientNode.on('mbconnected', () => {
-            if (clientNode && clientNode.tcpPort === port) {
+            if (!connected && clientNode && clientNode.tcpPort === port) {
+              connected = true
               done()
             }
           })
 
           setTimeout(function () {
             modbusNode.receive({ payload: { connectorType: 'TCP', tcpHost: '127.0.0.1', tcpPort: port } })
-            done()
-          }, 1000)
+            // Remove duplicate done() call
+          }, 1500)
         })
       })
     })

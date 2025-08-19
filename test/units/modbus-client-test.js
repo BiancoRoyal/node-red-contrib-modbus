@@ -520,14 +520,24 @@ describe('Client node Unit Testing', function () {
     })
 
     it('should be inactive if message not allowed', function (done) {
-      helper.load(testModbusClientNodes, testFlows.testShouldBeInactiveFlow, function () {
-        const modbusClientNode = helper.getNode('ee3490e8219801b9')
-        setTimeout(() => {
-          modbusClientNode.messageAllowedStates = ['']
-          const isInactive = modbusClientNode.isInactive()
-          isInactive.should.be.true()
-          done()
-        }, 1500)
+      const flow = Array.from(testFlows.testShouldBeInactiveFlow)
+
+      getPort().then((port) => {
+        // Update the client config to use dynamic port
+        const clientConfig = flow.find(n => n.type === 'modbus-client')
+        if (clientConfig) {
+          clientConfig.tcpPort = port
+        }
+
+        helper.load(testModbusClientNodes, flow, function () {
+          const modbusClientNode = helper.getNode('ee3490e8219801b9')
+          setTimeout(() => {
+            modbusClientNode.messageAllowedStates = ['']
+            const isInactive = modbusClientNode.isInactive()
+            isInactive.should.be.true()
+            done()
+          }, 500)
+        })
       })
     })
 

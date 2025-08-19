@@ -25,6 +25,7 @@ const testFlows = require('./flows/modbus-flex-sequencer-e2e-flows.js')
 const sinon = require('sinon')
 const chai = require('chai')
 const expect = chai.expect
+const { getPort } = require('../helper/test-helper-extensions')
 
 describe('Flex Sequencer node Testing', function () {
   before(function (done) {
@@ -70,29 +71,36 @@ describe('Flex Sequencer node Testing', function () {
     // })
 
     it('should process valid sequences', function (done) {
-      helper.load(testFlexSequencerNodes, testFlows.testNodeWithValidSequence, () => {
-        const flexSequencerNode = helper.getNode('2b7063dbd84388c7')
-        const msg = {
-          payload: 'test payload',
-          sequences: [
-            {
-              unitid: 1,
-              fc: 'FC3',
-              address: 0,
-              quantity: 10
-            }
-          ]
-        }
-        let setStatus = {}
+      const flow = Array.from(testFlows.testNodeWithValidSequence)
+      
+      getPort().then((port) => {
+        flow[2].serverPort = port
+        flow[5].tcpPort = port
+        
+        helper.load(testFlexSequencerNodes, flow, () => {
+          const flexSequencerNode = helper.getNode('2b7063dbd84388c7')
+          const msg = {
+            payload: 'test payload',
+            sequences: [
+              {
+                unitid: 1,
+                fc: 'FC3',
+                address: 0,
+                quantity: 10
+              }
+            ]
+          }
+          let setStatus = {}
 
-        flexSequencerNode.status = function (status) {
-          setStatus = status
-        }
-        setTimeout(function () {
-          flexSequencerNode.emit('input', msg)
-          expect(setStatus).to.deep.equal({ fill: 'green', shape: 'ring', text: 'connected' })
-          done()
-        }, 1500)
+          flexSequencerNode.status = function (status) {
+            setStatus = status
+          }
+          setTimeout(function () {
+            flexSequencerNode.emit('input', msg)
+            expect(setStatus).to.deep.equal({ fill: 'green', shape: 'ring', text: 'connected' })
+            done()
+          }, 2000)
+        })
       })
     })
 
