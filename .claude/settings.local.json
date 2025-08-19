@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "Bash(git fetch:*)",
+      "Bash(grep:*)",
+      "Bash(sed:*)",
+      "Bash(git add:*)",
+      "Bash(npm link:*)"
+    ],
+    "deny": [],
+    "ask": [],
+    "additionalDirectories": [
+      "/Users/biancode/Development/P4NR/modbus/node-modbus-serial"
+    ]
+  }
+}

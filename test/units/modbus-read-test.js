@@ -22,7 +22,7 @@ helper.init(require.resolve('node-red'))
 
 const testFlows = require('./flows/modbus-read-flows')
 const mBasics = require('../../src/modbus-basics')
-const { expect } = require('chai')
+// const { expect } = require('chai')
 
 describe('Read node Testing', function () {
   before(function (done) {

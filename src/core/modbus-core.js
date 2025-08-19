@@ -17,6 +17,16 @@ de.biancoroyal.modbus.core.getObjectId = function () {
   return new de.biancoroyal.modbus.core.ObjectID()
 }
 
+de.biancoroyal.modbus.core.cloneBuffer = function (buffer) {
+  // Node-RED 4.1.0+ compatibility: Deep clone buffers to prevent corruption
+  if (Buffer.isBuffer(buffer)) {
+    const clone = Buffer.allocUnsafe(buffer.length)
+    buffer.copy(clone)
+    return clone
+  }
+  return buffer
+}
+
 de.biancoroyal.modbus.core.getOriginalMessage = function (messageList, msg) {
   let origMsg = messageList.get(msg.payload.messageId || msg.messageId)
 
@@ -66,11 +76,11 @@ de.biancoroyal.modbus.core.buildMessage = function (messageList, values, respons
   const origMsg = this.getOriginalMessage(messageList, msg)
   origMsg.payload = values
   origMsg.topic = msg.topic
-  origMsg.responseBuffer = response
+  origMsg.responseBuffer = this.cloneBuffer(response)
   origMsg.input = Object.assign({}, msg)
 
   const rawMsg = Object.assign({}, origMsg)
-  rawMsg.payload = response
+  rawMsg.payload = this.cloneBuffer(response)
   rawMsg.values = values
   delete rawMsg.responseBuffer
 

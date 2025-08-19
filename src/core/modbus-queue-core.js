@@ -25,6 +25,18 @@ de.biancoroyal.modbus.queue.core.initQueue = function (node) {
   }
 }
 
+de.biancoroyal.modbus.queue.core.clearUnitQueue = function (node, unitId) {
+  const queue = node.bufferCommandList.get(unitId)
+  if (queue && queue.length > 0) {
+    const queueLength = queue.length
+    queue.length = 0 // Clear the array
+    node.sendingAllowed.set(unitId, true)
+    de.biancoroyal.modbus.queue.core.internalDebug(`Cleared queue for unit ${unitId}, removed ${queueLength} items`)
+    return queueLength
+  }
+  return 0
+}
+
 de.biancoroyal.modbus.queue.core.checkQueuesAreEmpty = function (node) {
   let queuesAreEmpty = true
   for (let step = 0; step <= 255; step++) {

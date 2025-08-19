@@ -114,6 +114,18 @@ de.biancoroyal.modbus.core.client.activateSendingOnSuccess = function (node, cb,
 }
 
 de.biancoroyal.modbus.core.client.activateSendingOnFailure = function (node, cberr, err, msg) {
+  // Check for Exception 11 (Gateway Target Device Failed to Respond)
+  if (err && err.modbusCode === 11 && msg && msg.queueUnitId !== undefined) {
+    const queueCore = require('./modbus-queue-core')
+    const clearedItems = queueCore.clearUnitQueue(node, msg.queueUnitId)
+    if (clearedItems > 0) {
+      de.biancoroyal.modbus.core.client.internalDebug(`Exception 11 detected - cleared ${clearedItems} items from queue for unit ${msg.queueUnitId}`)
+      if (node.warn) {
+        node.warn(`Gateway target device failed to respond (Exception 11) - cleared queue for unit ${msg.queueUnitId}`)
+      }
+    }
+  }
+
   node.activateSending(msg).then(function () {
     cberr(err, msg)
   }).catch(function (err) {

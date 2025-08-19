@@ -253,7 +253,7 @@ module.exports = function (RED) {
 
         const origMsg = {
           topic,
-          responseBuffer: response,
+          responseBuffer: mbCore.cloneBuffer(response),
           input: msg,
           sendingNodeId: node.id
         }
@@ -270,7 +270,7 @@ module.exports = function (RED) {
           origMsg,
           {
             topic,
-            payload: response,
+            payload: mbCore.cloneBuffer(response),
             values,
             input: msg,
             valueNames,
@@ -281,13 +281,13 @@ module.exports = function (RED) {
           {
             topic,
             payload: values,
-            responseBuffer: response,
+            responseBuffer: mbCore.cloneBuffer(response),
             input: msg,
             sendingNodeId: node.id
           },
           {
             topic,
-            payload: response,
+            payload: mbCore.cloneBuffer(response),
             values,
             input: msg,
             sendingNodeId: node.id
