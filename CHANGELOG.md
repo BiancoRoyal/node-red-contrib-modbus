@@ -18,6 +18,7 @@
 * **modbus-write:** fix example flow for modbus write node ([04fd17c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/04fd17c9890ce760e36b2ec9402814accfdc2459))
 * **modbus:** added a new example flow and fixed test cases ([8181fd4](https://github.com/biancoroyal/node-red-contrib-modbus/commit/8181fd4f05abff6f57a7b4de636689e890cf0ea9))
 * **modbus:** commented the test cases that are failed ([5998a5d](https://github.com/biancoroyal/node-red-contrib-modbus/commit/5998a5d2fceaaf1b8ba972ddba771b70e2a4c2a2))
+* Node-RED 4.1.0 buffer compatibility and memory leak on Exception 11 ([ac86eef](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ac86eef6c64a4828ef80e2c3b5005c7e462857f3)), closes [#540](https://github.com/biancoroyal/node-red-contrib-modbus/issues/540) [#536](https://github.com/biancoroyal/node-red-contrib-modbus/issues/536)
 * register the actual node id ([434c096](https://github.com/biancoroyal/node-red-contrib-modbus/commit/434c0961b9af938b9a610ccc069d826fb16fb5e3))
 * **test_cases:** fixed test flow of modbus queue info ([732fa9c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/732fa9c57e6b0c536bc50378f8e39081d12e11bc))
 * **test_cases:** improved test cases ([bdafa18](https://github.com/biancoroyal/node-red-contrib-modbus/commit/bdafa18508069876ca522ace6e4a73be4c272c49))

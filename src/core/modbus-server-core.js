@@ -81,8 +81,17 @@ de.biancoroyal.modbus.core.server.writeToModbusFlexBuffer = function (node, msg)
 
 de.biancoroyal.modbus.core.server.writeModbusFlexServerMemory = function (node, msg) {
   const coreServer = de.biancoroyal.modbus.core.server
-  msg.bufferSplitAddress = (parseInt(msg.payload.address) + parseInt(node.splitAddress)) * coreServer.bufferFactor
-  msg.bufferAddress = parseInt(msg.payload.address) * coreServer.bufferFactor
+  const registerTypes = ['holding', 'input']
+
+  if (registerTypes.includes(msg.payload.register)) {
+    // For registers: address * 2 because each register is 16 bits (2 bytes)
+    msg.bufferSplitAddress = (parseInt(msg.payload.address) + parseInt(node.splitAddress)) * 2
+    msg.bufferAddress = parseInt(msg.payload.address) * 2
+  } else {
+    // For coils/discrete: address * 1 because jsmodbus stores them as bytes
+    msg.bufferSplitAddress = parseInt(msg.payload.address) + parseInt(node.splitAddress)
+    msg.bufferAddress = parseInt(msg.payload.address)
+  }
 
   if (coreServer.convertInputForBufferWrite(msg)) {
     return coreServer.copyToModbusFlexBuffer(node, msg)
@@ -148,7 +157,18 @@ de.biancoroyal.modbus.core.server.writeToModbusBuffer = function (node, msg) {
 
 de.biancoroyal.modbus.core.server.writeModbusServerMemory = function (node, msg) {
   const coreServer = de.biancoroyal.modbus.core.server
-  msg.bufferAddress = parseInt(msg.payload.address) * coreServer.bufferFactor
+
+  // Modbus specification: Registers are 16-bit values at 2-byte offsets
+  // Coils/Discrete inputs are single bits (but stored as bytes in jsmodbus buffers)
+  const registerTypes = ['holding', 'input']
+
+  if (registerTypes.includes(msg.payload.register)) {
+    // For registers: address * 2 because each register is 16 bits (2 bytes)
+    msg.bufferAddress = parseInt(msg.payload.address) * 2
+  } else {
+    // For coils/discrete: address * 1 because jsmodbus stores them as bytes
+    msg.bufferAddress = parseInt(msg.payload.address)
+  }
 
   if (coreServer.convertInputForBufferWrite(msg)) {
     return coreServer.copyToModbusBuffer(node, msg)
