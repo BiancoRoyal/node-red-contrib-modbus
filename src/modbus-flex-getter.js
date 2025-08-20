@@ -105,7 +105,7 @@ module.exports = function (RED) {
       node.internalDebugLog(err.message)
       const origMsg = mbCore.getOriginalMessage(node.bufferMessageList, msg)
       node.errorProtocolMsg(err, origMsg)
-      mbBasics.sendEmptyMsgOnFail(node, err, msg)
+      mbBasics.sendEmptyMsgOnFail(node, err, origMsg)
       mbBasics.setModbusError(node, modbusClient, err, origMsg)
       node.emit('modbusFlexGetterNodeError')
     }
