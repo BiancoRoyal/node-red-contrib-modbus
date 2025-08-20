@@ -1,10 +1,10 @@
 {
   "name": "node-red-contrib-modbus",
-  "version": "5.44.0",
+  "version": "6.0.0-beta.1",
   "private": false,
   "description": "The all in one Modbus TCP, UDP and Serial contribution long term supported package for Node-RED.",
   "dependencies": {
-    "@openp4nr/modbus-serial": "https://dl.cloudsmith.io/public/iniationware-gmbh/plus4nodered/npm/openp4nr/modbus-serial/8.2.0/modbus-serial-8.2.0.tgz",
+    "@openp4nr/node-modbus": "/Users/biancode/Development/P4NR/modbus/node-modbus-serial",
     "@xstate/fsm": "~2.1.0",
     "bson": "~6.10.1",
     "debug": "~4.4.0",
