@@ -228,6 +228,21 @@ de.biancoroyal.modbus.basics.setModbusError = function (node, modbusClient, err,
   }
 }
 
+/**
+ * Set Node-RED visual status for a Modbus node
+ *
+ * Updates the visual status indicator in the Node-RED editor to reflect the current
+ * state of the Modbus operation. Only updates if showStatusActivities is enabled
+ * and the status has changed.
+ *
+ * @param {string} statusValue - Status text to display
+ * @param {Object} node - Node-RED node instance
+ * @param {boolean} node.showStatusActivities - Whether to show status updates
+ * @param {string} node.statusText - Current status text for comparison
+ * @example
+ * setNodeStatusTo('connected', node); // Green ring with "connected" text
+ * setNodeStatusTo('error', node);     // Red ring with "error" text
+ */
 de.biancoroyal.modbus.basics.setNodeStatusTo = function (statusValue, node) {
   if (node.showStatusActivities) {
     if (statusValue !== node.statusText) {
