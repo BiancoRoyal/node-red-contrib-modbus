@@ -1,4 +1,4 @@
-# [6.0.0-beta.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.41.0...v6.0.0-beta.1) (2025-08-20)
+# [6.0.0-beta.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.43.0...v6.0.0-beta.1) (2025-08-20)
 
 
 ### Bug Fixes
@@ -29,6 +29,7 @@
 * **test:** fixed port issue ([28115fe](https://github.com/biancoroyal/node-red-contrib-modbus/commit/28115fe2e5e27a5cb66a403a3d68ee65c96a241b))
 * **test:** fixed test case ([c16da3c](https://github.com/biancoroyal/node-red-contrib-modbus/commit/c16da3c4c23b06856e15de9138ae9943d5a7a0dc))
 * **tests:** some test fixes ([45c3c86](https://github.com/biancoroyal/node-red-contrib-modbus/commit/45c3c86d137a7f2dc929d0e3b189efa026df88b5))
+* update @node-red/nodes to fix util.isArray deprecation warning ([ae78fae](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ae78fae6a254484a0808e3f513cd059d36f188b0))
 
 
 ### Features
