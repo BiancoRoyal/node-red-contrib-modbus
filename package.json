@@ -168,6 +168,5 @@
   "funding": {
     "type": "opencollective",
     "url": "https://opencollective.com/node-red-contrib-modbus"
-  },
-  "packageManager": "yarn"
+  }
 }

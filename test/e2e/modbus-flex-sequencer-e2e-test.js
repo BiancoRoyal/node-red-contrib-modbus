@@ -72,11 +72,11 @@ describe('Flex Sequencer node Testing', function () {
 
     it('should process valid sequences', function (done) {
       const flow = Array.from(testFlows.testNodeWithValidSequence)
-      
+
       getPort().then((port) => {
         flow[2].serverPort = port
         flow[5].tcpPort = port
-        
+
         helper.load(testFlexSequencerNodes, flow, () => {
           const flexSequencerNode = helper.getNode('2b7063dbd84388c7')
           const msg = {

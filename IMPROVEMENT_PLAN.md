@@ -7,11 +7,11 @@ This document outlines the comprehensive improvement plan for node-red-contrib-m
 
 ### Package Information
 - **Current Version**: 5.44.0
-- **Target Version**: 5.45.0
-- **Node-RED Requirement**: >=3 (updating to >=4.0.0)
+- **Target Version**: 6.0.0
+- **Node-RED Requirement**: >=3 (updating to >=4.1.0)
 - **Node.js Requirement**: >=18.5
 - **Key Dependencies**: 
-  - @openp4nr/modbus-serial (v8.2.0 → v8.2.1)
+  - @openp4nr/modbus-serial (v8.2.0 → v8.4.0)
   - jsmodbus v4.0.10
   - @xstate/fsm v2.1.0
 
