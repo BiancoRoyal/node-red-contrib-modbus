@@ -90,7 +90,7 @@
         previous = this.value
       }).change(function () {
 
-        if (previous == null) {
+        if (previous === null || previous === undefined) {
           previous = $('#node-config-input-clienttype').val()
         }
 

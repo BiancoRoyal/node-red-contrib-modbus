@@ -79,7 +79,7 @@
       fcDataTypeSelector.on('focus', function () {
         previous = this.value
       }).change(function () {
-        if (previous == null) {
+        if (previous === null || previous === undefined) {
           previous = fcDataTypeSelector.val()
         }
 

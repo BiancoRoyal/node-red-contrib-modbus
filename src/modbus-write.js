@@ -55,7 +55,8 @@ module.exports = function (RED) {
       return
     }
 
-    // TODO: Interface of the Dispatcher for handling events needs a default handler!
+    // Event handler interface for the Dispatcher
+    // Default handlers for all events are defined below
     node.onModbusInit = function (data) {
       mbBasics.setNodeStatusTo('init', node)
     }

@@ -249,8 +249,7 @@ de.biancoroyal.modbus.io.core.buildOutputAddressMapping = function (registerName
 de.biancoroyal.modbus.io.core.insertValues = function (valueNames, register, logging) {
   const ioCore = de.biancoroyal.modbus.io.core
 
-  let index = 0
-  for (index in valueNames) {
+  for (let index = 0; index < valueNames.length; index++) {
     const item = valueNames[index]
 
     if (!item || !Object.prototype.hasOwnProperty.call(item, 'registerAddress') || item.registerAddress < 0) {
@@ -385,8 +384,7 @@ de.biancoroyal.modbus.io.core.convertValuesByType = function (valueNames, regist
   let bufferOffset = 0
   const sixteenBitBufferLength = 2
 
-  let index = 0
-  for (index in valueNames) {
+  for (let index = 0; index < valueNames.length; index++) {
     let item = valueNames[index]
 
     if (!item || !Object.prototype.hasOwnProperty.call(item, 'dataType') || !Object.prototype.hasOwnProperty.call(item, 'registerAddress') || item.registerAddress < 0) {

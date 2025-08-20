@@ -18,6 +18,16 @@ de.biancoroyal.modbus.basics.util = de.biancoroyal.modbus.basics.util || require
  * @module NodeRedModbusBasics
  */
 de.biancoroyal.modbus.basics.statusLog = false
+
+/**
+ * Check if a value is null or undefined
+ * @param value - The value to check
+ * @returns {boolean} - True if value is null or undefined
+ */
+de.biancoroyal.modbus.basics.isNullOrUndefined = function (value) {
+  return value === null || value === undefined
+}
+
 /**
  *
  * @param unit
