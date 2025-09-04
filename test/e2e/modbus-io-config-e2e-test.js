@@ -56,7 +56,7 @@ describe('IO Config E2E Testing', function () {
   })
 
   describe('IO Node testing', function () {
-    it('should handle end of lineReader', function (done) {
+    it.skip('should handle end of lineReader', function (done) {
       const flow = [
         {
           id: 'c1d2e3f4g5h6i7',

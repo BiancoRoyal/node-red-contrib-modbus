@@ -15,10 +15,315 @@ de.biancoroyal.modbus.core.client.internalDebugFSM = de.biancoroyal.modbus.core.
 de.biancoroyal.modbus.core.client.modbusSerialDebug = de.biancoroyal.modbus.core.client.modbusSerialDebug || require('debug')('modbus-serial') // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.core.client.XStateFSM = de.biancoroyal.modbus.core.client.XStateFSM || require('@xstate/fsm') // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.core.client.stateLogEnabled = de.biancoroyal.modbus.core.client.stateLogEnabled || false // eslint-disable-line no-use-before-define
+de.biancoroyal.modbus.core.client.ModbusCircuitBreaker = de.biancoroyal.modbus.core.client.ModbusCircuitBreaker || require('./modbus-circuit-breaker').ModbusCircuitBreaker // eslint-disable-line no-use-before-define
+de.biancoroyal.modbus.core.client.ModbusConnectionPool = de.biancoroyal.modbus.core.client.ModbusConnectionPool || require('./modbus-connection-pool').ModbusConnectionPool // eslint-disable-line no-use-before-define
+de.biancoroyal.modbus.core.client.ModbusRetryHandler = de.biancoroyal.modbus.core.client.ModbusRetryHandler || require('./modbus-retry-handler').ModbusRetryHandler // eslint-disable-line no-use-before-define
+de.biancoroyal.modbus.core.client.ModbusDiagnostics = de.biancoroyal.modbus.core.client.ModbusDiagnostics || require('./modbus-diagnostics').ModbusDiagnostics // eslint-disable-line no-use-before-define
 
 de.biancoroyal.modbus.core.client.networkErrors = ['ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNRESET', 'ENETRESET',
   'ECONNABORTED', 'ECONNREFUSED', 'ENETUNREACH', 'ENOTCONN',
-  'ESHUTDOWN', 'EHOSTDOWN', 'ENETDOWN', 'EWOULDBLOCK', 'EAGAIN', 'EHOSTUNREACH']
+  'ESHUTDOWN', 'EHOSTDOWN', 'ENETDOWN', 'EWOULDBLOCK', 'EAGAIN', 'EHOSTUNREACH',
+  'EPIPE', 'ECONNRESET']
+
+/**
+ * Get connection from pool or create new one
+ */
+de.biancoroyal.modbus.core.client.getPooledConnection = async function (node, config) {
+  if (!node.connectionPool) {
+    return null
+  }
+
+  try {
+    const connection = await node.connectionPool.getConnection(config, {
+      priority: config.priority || 1
+    })
+
+    return connection
+  } catch (error) {
+    const enhancedError = {
+      message: error.message || 'Failed to get pooled connection',
+      code: error.code || 'POOL_CONNECTION_ERROR',
+      context: {
+        nodeId: node.id,
+        config: {
+          host: config.tcpHost,
+          port: config.tcpPort,
+          priority: config.priority || 1
+        },
+        timestamp: new Date().toISOString()
+      },
+      originalError: error
+    }
+    this.internalDebug('Failed to get pooled connection:', enhancedError)
+    throw enhancedError
+  }
+}
+
+/**
+ * Release connection back to pool
+ */
+de.biancoroyal.modbus.core.client.releasePooledConnection = function (node, connection) {
+  if (!node.connectionPool || !connection) {
+    return
+  }
+
+  node.connectionPool.releaseConnection(connection)
+}
+
+/**
+ * Get diagnostics report
+ */
+de.biancoroyal.modbus.core.client.getDiagnosticsReport = function (node) {
+  if (!node.diagnostics) {
+    return null
+  }
+
+  return node.diagnostics.getReport()
+}
+
+/**
+ * Export metrics in specified format
+ */
+de.biancoroyal.modbus.core.client.exportMetrics = function (node, format) {
+  if (!node.diagnostics) {
+    return null
+  }
+
+  return node.diagnostics.exportMetrics(format)
+}
+
+/**
+ * Clean up resilience modules
+ */
+de.biancoroyal.modbus.core.client.cleanupResilienceModules = function (node) {
+  if (node.circuitBreaker) {
+    node.circuitBreaker.destroy()
+    node.circuitBreaker = null
+  }
+
+  if (node.connectionPool) {
+    node.connectionPool.clear()
+    node.connectionPool = null
+  }
+
+  if (node.retryHandler) {
+    node.retryHandler.clearActiveRetries()
+    node.retryHandler = null
+  }
+
+  if (node.diagnostics) {
+    node.diagnostics.clear()
+    node.diagnostics = null
+  }
+}
+
+/**
+ * Initialize all resilience modules for a client node
+ */
+de.biancoroyal.modbus.core.client.initializeResilienceModules = function (node, options = {}) {
+  // Initialize Circuit Breaker
+  if (!node.circuitBreaker && options.enableCircuitBreaker !== false) {
+    const circuitBreakerOptions = {
+      failureThreshold: options.failureThreshold || 5,
+      successThreshold: options.successThreshold || 2,
+      timeout: options.timeout || 10000,
+      resetTimeout: options.resetTimeout || 30000,
+      volumeThreshold: options.volumeThreshold || 10,
+      rollingWindow: options.rollingWindow || 10000,
+      fallbackFunction: options.fallbackFunction || null
+    }
+
+    node.circuitBreaker = new this.ModbusCircuitBreaker(circuitBreakerOptions)
+
+    // Circuit breaker event handlers
+    node.circuitBreaker.on('stateChange', (data) => {
+      const msg = `Circuit breaker state changed from ${data.from} to ${data.to}`
+      this.internalDebug(msg)
+      if (node.showStatusActivities) {
+        const statusColor = data.to === 'OPEN' ? 'red' : data.to === 'HALF_OPEN' ? 'yellow' : 'green'
+        node.status({ fill: statusColor, shape: 'ring', text: `Circuit ${data.to}` })
+      }
+    })
+
+    node.circuitBreaker.on('rejected', (data) => {
+      this.internalDebug('Request rejected by circuit breaker', data)
+    })
+
+    node.circuitBreaker.on('fallback', (data) => {
+      this.internalDebug('Circuit breaker fallback activated', data)
+    })
+  }
+
+  // Initialize Connection Pool
+  if (!node.connectionPool && options.enableConnectionPool) {
+    const poolOptions = {
+      maxConnections: options.maxConnections || 10,
+      maxConnectionsPerHost: options.maxConnectionsPerHost || 3,
+      connectionTimeout: options.connectionTimeout || 30000,
+      idleTimeout: options.idleTimeout || 120000,
+      healthCheckInterval: options.healthCheckInterval || 30000,
+      connectionFactory: options.connectionFactory || null
+    }
+
+    node.connectionPool = new this.ModbusConnectionPool(poolOptions)
+
+    node.connectionPool.on('connectionCreated', (data) => {
+      this.internalDebug('Connection pool: connection created', data)
+    })
+
+    node.connectionPool.on('connectionError', (data) => {
+      this.internalDebug('Connection pool: connection error', data)
+    })
+  }
+
+  // Initialize Retry Handler
+  if (!node.retryHandler && options.enableRetryHandler !== false) {
+    const retryOptions = {
+      maxRetries: options.maxRetries || 3,
+      initialDelay: options.initialDelay || 1000,
+      maxDelay: options.maxDelay || 30000,
+      backoffMultiplier: options.backoffMultiplier || 2,
+      circuitBreaker: node.circuitBreaker || null
+    }
+
+    node.retryHandler = new this.ModbusRetryHandler(retryOptions)
+
+    node.retryHandler.on('retrying', (data) => {
+      this.internalDebug('Retry handler: retrying operation', data)
+    })
+
+    node.retryHandler.on('failed', (data) => {
+      this.internalDebug('Retry handler: operation failed after retries', data)
+    })
+  }
+
+  // Initialize Diagnostics
+  if (!node.diagnostics && options.enableDiagnostics !== false) {
+    const diagnosticsOptions = {
+      enableMetrics: options.enableMetrics !== false,
+      enableTracing: options.enableTracing || false,
+      metricsInterval: options.metricsInterval || 10000,
+      alertThresholds: options.alertThresholds || {}
+    }
+
+    node.diagnostics = new this.ModbusDiagnostics(diagnosticsOptions)
+
+    // Set integrations
+    node.diagnostics.setIntegrations({
+      circuitBreaker: node.circuitBreaker,
+      connectionPool: node.connectionPool,
+      retryHandler: node.retryHandler
+    })
+
+    node.diagnostics.on('alert', (alert) => {
+      this.internalDebug('Diagnostics alert:', alert)
+      if (node.showStatusActivities) {
+        const color = alert.severity === 'critical' ? 'red' : alert.severity === 'warning' ? 'yellow' : 'blue'
+        node.status({ fill: color, shape: 'dot', text: alert.message })
+      }
+    })
+
+    node.diagnostics.on('metrics', (metrics) => {
+      this.internalDebugFSM('Diagnostics metrics update', metrics)
+    })
+  }
+
+  return {
+    circuitBreaker: node.circuitBreaker,
+    connectionPool: node.connectionPool,
+    retryHandler: node.retryHandler,
+    diagnostics: node.diagnostics
+  }
+}
+
+/**
+ * Initialize circuit breaker for a client node (legacy compatibility)
+ */
+de.biancoroyal.modbus.core.client.initializeCircuitBreaker = function (node, options = {}) {
+  const modules = this.initializeResilienceModules(node, options)
+  return modules.circuitBreaker
+}
+
+/**
+ * Execute Modbus operation with full resilience stack
+ */
+de.biancoroyal.modbus.core.client.executeWithResilience = async function (node, operation, options = {}) {
+  const startTime = Date.now()
+  let traceId = null
+
+  // Record request in diagnostics
+  if (node.diagnostics) {
+    traceId = node.diagnostics.recordRequest({
+      device: options.device || node.name,
+      functionCode: options.functionCode,
+      address: options.address,
+      quantity: options.quantity,
+      unitId: options.unitId || node.unit_id
+    })
+  }
+
+  try {
+    let result
+
+    // Execute through retry handler if available
+    if (node.retryHandler && options.enableRetry !== false) {
+      result = await node.retryHandler.executeWithRetry(
+        async () => {
+          // Execute through circuit breaker if available
+          if (node.circuitBreaker && options.enableCircuitBreaker !== false) {
+            return await node.circuitBreaker.execute(operation)
+          } else {
+            return await operation()
+          }
+        },
+        options.context || {},
+        options.retryOptions || {}
+      )
+    } else if (node.circuitBreaker && options.enableCircuitBreaker !== false) {
+      // Execute through circuit breaker only
+      result = await node.circuitBreaker.execute(operation)
+    } else {
+      // Execute directly
+      result = await operation()
+    }
+
+    // Record successful response
+    if (node.diagnostics && traceId) {
+      node.diagnostics.recordResponse(traceId, {
+        success: true,
+        responseTime: Date.now() - startTime,
+        result
+      })
+    }
+
+    return result
+  } catch (error) {
+    // Record failed response
+    if (node.diagnostics && traceId) {
+      node.diagnostics.recordResponse(traceId, {
+        success: false,
+        responseTime: Date.now() - startTime,
+        error
+      })
+    }
+
+    // Log specific error types
+    if (error.name === 'CircuitBreakerError') {
+      this.internalDebug('Circuit breaker prevented operation:', error.message)
+    } else if (error.name === 'RetryError') {
+      this.internalDebug('Operation failed after retries:', error.message)
+    }
+
+    throw error
+  }
+}
+
+/**
+ * Execute Modbus operation through circuit breaker (legacy compatibility)
+ */
+de.biancoroyal.modbus.core.client.executeWithCircuitBreaker = async function (node, operation) {
+  return this.executeWithResilience(node, operation, { enableRetry: false })
+}
 
 /**
  * Creates a state machine service specifically for handling Modbus states.

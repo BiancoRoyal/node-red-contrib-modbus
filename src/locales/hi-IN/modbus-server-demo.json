@@ -1,0 +1,43 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "गतिविधियाँ दिखाएं",
+      "showErrors": "त्रुटियाँ दिखाएं",
+      "hostname": "होस्ट नाम",
+      "port": "पोर्ट",
+      "responseDelay": "प्रतिक्रिया विलंब",
+      "coils": "कॉइल्स",
+      "holdings": "होल्डिंग रजिस्टर",
+      "inputs": "इनपुट रजिस्टर",
+      "discretes": "डिस्क्रीट इनपुट",
+      "logEnabled": "लॉगिंग सक्षम",
+      "demoDataPattern": "डेटा पैटर्न",
+      "demoUpdateInterval": "अपडेट अंतराल",
+      "demoAutoStart": "ऑटो स्टार्ट डेमो",
+      "demoRandomSeed": "रैंडम सीड",
+      "demoValueMin": "न्यूनतम मान",
+      "demoValueMax": "अधिकतम मान",
+      "demoRealisticMode": "वास्तविक मोड",
+      "demoDeviceSimulation": "उपकरण प्रकार",
+      "demoErrorRate": "त्रुटि दर",
+      "sequential": "क्रमिक",
+      "random": "यादृच्छिक",
+      "sine": "साइन वेव",
+      "square": "स्क्वेयर वेव",
+      "sawtooth": "सॉटूथ वेव",
+      "mixed": "मिश्रित पैटर्न",
+      "generic": "सामान्य उपकरण",
+      "temperature": "तापमान सेंसर",
+      "pressure": "दबाव सेंसर",
+      "flowmeter": "फ्लो मीटर",
+      "motor": "मोटर नियंत्रक",
+      "plc": "PLC सिमुलेशन"
+    },
+    "text": {
+      "server": "डेमो सर्वर",
+      "demoGeneration": "स्वचालित डेमो डेटा जेनरेशन",
+      "realisticSimulation": "वास्तविक उपकरण सिमुलेशन",
+      "testingDevelopment": "परीक्षण और विकास के लिए"
+    }
+  }
+}

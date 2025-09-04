@@ -1,0 +1,43 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "عرض الأنشطة",
+      "showErrors": "عرض الأخطاء",
+      "hostname": "اسم المضيف",
+      "port": "المنفذ",
+      "responseDelay": "تأخير الاستجابة",
+      "coils": "الملفات",
+      "holdings": "سجلات الاحتفاظ",
+      "inputs": "سجلات الإدخال",
+      "discretes": "المدخلات المنفصلة",
+      "logEnabled": "تفعيل التسجيل",
+      "demoDataPattern": "نمط البيانات",
+      "demoUpdateInterval": "فترة التحديث",
+      "demoAutoStart": "بدء تلقائي للعرض",
+      "demoRandomSeed": "البذرة العشوائية",
+      "demoValueMin": "الحد الأدنى للقيمة",
+      "demoValueMax": "الحد الأقصى للقيمة",
+      "demoRealisticMode": "الوضع الواقعي",
+      "demoDeviceSimulation": "نوع الجهاز",
+      "demoErrorRate": "معدل الخطأ",
+      "sequential": "متسلسل",
+      "random": "عشوائي",
+      "sine": "موجة جيبية",
+      "square": "موجة مربعة",
+      "sawtooth": "موجة منشارية",
+      "mixed": "أنماط مختلطة",
+      "generic": "جهاز عام",
+      "temperature": "مستشعر الحرارة",
+      "pressure": "مستشعر الضغط",
+      "flowmeter": "مقياس التدفق",
+      "motor": "وحدة تحكم المحرك",
+      "plc": "محاكاة PLC"
+    },
+    "text": {
+      "server": "خادم العرض التوضيحي",
+      "demoGeneration": "توليد بيانات العرض التلقائي",
+      "realisticSimulation": "محاكاة واقعية للأجهزة",
+      "testingDevelopment": "للاختبار والتطوير"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "recursive": true,
+  "exit": true,
+  "timeout": 10000,
+  "slow": 5000,
+  "bail": false,
+  "reporter": "spec",
+  "retries": 2,
+  "require": [
+    "test/helper/test-helper-extensions.js"
+  ],
+  "spec": [
+    "test/units/**/*.js",
+    "test/core/**/*.js"
+  ],
+  "ignore": [
+    "test/**/flows/*.js",
+    "test/resources/**/*.js",
+    "test/helpers/*.js",
+    "test/helper/*.js",
+    "test/e2e/**/*.js"
+  ],
+  "parallel": false,
+  "jobs": 1,
+  "ui": "bdd",
+  "colors": true
+}

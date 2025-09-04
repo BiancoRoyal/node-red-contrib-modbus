@@ -1,0 +1,203 @@
+<!--
+ Copyright (c) since the year 2016 Klaus Landsdorf (http://plus4nodered.com/)
+ All rights reserved.
+ node-red-contrib-modbus - The BSD 3-Clause License
+
+ @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
+-->
+<script type="text/javascript">
+  RED.nodes.registerType('modbus-server-tls', {
+    category: 'modbus',
+    color: '#E9967A',
+    defaults: {
+      name: {value: ''},
+      logEnabled: {value: false},
+      hostname: {value: '0.0.0.0'},
+      serverPort: {value: 8502, validate: RED.validators.number()},
+      responseDelay: {value: 100, validate: RED.validators.number()},
+      delayUnit: {value: 'ms'},
+      showStatusActivities: {value: false},
+      showErrors: {value: false},
+      // Buffer sizes
+      coilsBufferSize: {value: 10000, validate: RED.validators.number()},
+      holdingBufferSize: {value: 10000, validate: RED.validators.number()},
+      inputBufferSize: {value: 10000, validate: RED.validators.number()},
+      discreteBufferSize: {value: 10000, validate: RED.validators.number()},
+      // TLS Configuration
+      privateKey: {value: '', type: 'text'},
+      certificate: {value: '', type: 'text'},
+      ca: {value: '', type: 'text'},
+      rejectUnauthorized: {value: false},
+      requestCert: {value: false},
+      secureProtocol: {value: 'TLSv1_2_method'},
+      // Demo mode settings
+      demoMode: {value: true},
+      demoDataPattern: {value: 'sequential'},
+      demoUpdateInterval: {value: 1000, validate: RED.validators.number()}
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "modbus.png",
+    paletteLabel: "Modbus-TLS-Server",
+    label: function () {
+      return this.name || "Modbus TLS Demo Server " + this.serverPort
+    },
+    info: function () {
+      return "Modbus TLS Demo Server with automatic data generation for testing and demonstration."
+    }
+  })
+</script>
+
+<script type="text/x-red" data-template-name="modbus-server-tls">
+  <div class="form-row">
+    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  
+  <h4>Server Configuration</h4>
+  <div class="form-row">
+    <label for="node-input-hostname"><i class="icon-globe"></i> Host</label>
+    <input type="text" id="node-input-hostname" placeholder="0.0.0.0">
+  </div>
+  <div class="form-row">
+    <label for="node-input-serverPort"><i class="icon-bookmark"></i> Port</label>
+    <input type="text" id="node-input-serverPort" placeholder="8502">
+  </div>
+  
+  <h4>TLS Configuration</h4>
+  <div class="form-row">
+    <label for="node-input-privateKey"><i class="fa fa-key"></i> Private Key</label>
+    <input type="text" id="node-input-privateKey" placeholder="Path to private key or PEM content">
+  </div>
+  <div class="form-row">
+    <label for="node-input-certificate"><i class="fa fa-certificate"></i> Certificate</label>
+    <input type="text" id="node-input-certificate" placeholder="Path to certificate or PEM content">
+  </div>
+  <div class="form-row">
+    <label for="node-input-ca"><i class="fa fa-shield"></i> CA Certificate</label>
+    <input type="text" id="node-input-ca" placeholder="Path to CA certificate or PEM content (optional)">
+  </div>
+  <div class="form-row">
+    <label for="node-input-secureProtocol"><i class="fa fa-lock"></i> Protocol</label>
+    <select id="node-input-secureProtocol">
+      <option value="TLSv1_2_method">TLS v1.2</option>
+      <option value="TLSv1_3_method">TLS v1.3</option>
+      <option value="TLS_method">TLS (auto)</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-input-rejectUnauthorized" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-input-rejectUnauthorized" style="width: auto;">Reject Unauthorized</label>
+  </div>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-input-requestCert" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-input-requestCert" style="width: auto;">Request Client Certificate</label>
+  </div>
+  
+  <h4>Demo Mode Configuration</h4>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-input-demoMode" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-input-demoMode" style="width: auto;">Enable Demo Mode</label>
+  </div>
+  <div class="form-row">
+    <label for="node-input-demoDataPattern"><i class="fa fa-line-chart"></i> Data Pattern</label>
+    <select id="node-input-demoDataPattern">
+      <option value="sequential">Sequential</option>
+      <option value="random">Random</option>
+      <option value="sine">Sine Wave</option>
+      <option value="square">Square Wave</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-demoUpdateInterval"><i class="fa fa-clock-o"></i> Update Interval</label>
+    <input type="text" id="node-input-demoUpdateInterval" placeholder="1000"> ms
+  </div>
+  
+  <h4>Buffer Sizes</h4>
+  <div class="form-row">
+    <label for="node-input-coilsBufferSize"><i class="icon-bookmark"></i> Coils</label>
+    <input type="text" id="node-input-coilsBufferSize" placeholder="10000">
+  </div>
+  <div class="form-row">
+    <label for="node-input-holdingBufferSize"><i class="icon-bookmark"></i> Holding</label>
+    <input type="text" id="node-input-holdingBufferSize" placeholder="10000">
+  </div>
+  <div class="form-row">
+    <label for="node-input-inputBufferSize"><i class="icon-bookmark"></i> Input</label>
+    <input type="text" id="node-input-inputBufferSize" placeholder="10000">
+  </div>
+  <div class="form-row">
+    <label for="node-input-discreteBufferSize"><i class="icon-bookmark"></i> Discrete</label>
+    <input type="text" id="node-input-discreteBufferSize" placeholder="10000">
+  </div>
+  
+  <h4>Options</h4>
+  <div class="form-row">
+    <label for="node-input-responseDelay"><i class="fa fa-clock-o"></i> Response Delay</label>
+    <input type="text" id="node-input-responseDelay" placeholder="100">
+    <select id="node-input-delayUnit" style="width:110px">
+      <option value="ms">Milliseconds</option>
+      <option value="s">Seconds</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-input-logEnabled" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-input-logEnabled" style="width: auto;">Enable Logging</label>
+  </div>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-input-showStatusActivities" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-input-showStatusActivities" style="width: auto;">Show Status Activities</label>
+  </div>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-input-showErrors" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-input-showErrors" style="width: auto;">Show Errors</label>
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="modbus-server-tls">
+  <p>Modbus TLS Demo Server with automatic data generation for testing and demonstration.</p>
+  
+  <h3>Features</h3>
+  <ul>
+    <li>TLS/SSL encryption for secure Modbus communication</li>
+    <li>Self-signed certificate generation in demo mode</li>
+    <li>Automatic demo data generation with various patterns</li>
+    <li>Support for all Modbus function codes</li>
+    <li>Configurable buffer sizes for all register types</li>
+  </ul>
+  
+  <h3>Demo Mode</h3>
+  <p>When demo mode is enabled, the server will:</p>
+  <ul>
+    <li>Generate a self-signed certificate if none is provided</li>
+    <li>Automatically populate registers with demo data</li>
+    <li>Update data periodically based on the selected pattern</li>
+  </ul>
+  
+  <h3>Data Patterns</h3>
+  <ul>
+    <li><b>Sequential</b>: Incrementing values</li>
+    <li><b>Random</b>: Random values within range</li>
+    <li><b>Sine Wave</b>: Sinusoidal pattern</li>
+    <li><b>Square Wave</b>: Alternating high/low values</li>
+  </ul>
+  
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt>payload <span class="property-type">string | object</span></dt>
+    <dd>Control commands: "start", "stop", "restart", or configuration object</dd>
+  </dl>
+  
+  <h3>Configuration Update</h3>
+  <p>Send an object with the following properties to update configuration:</p>
+  <ul>
+    <li><code>pattern</code>: Data pattern ("sequential", "random", "sine", "square")</li>
+    <li><code>interval</code>: Update interval in milliseconds</li>
+  </ul>
+</script>

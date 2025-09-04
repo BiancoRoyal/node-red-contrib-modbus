@@ -1,0 +1,252 @@
+<!--
+ Copyright (c) since the year 2016 Klaus Landsdorf (http://plus4nodered.com/)
+ All rights reserved.
+ node-red-contrib-modbus - The BSD 3-Clause License
+
+ @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
+-->
+<script type="text/javascript">
+  RED.nodes.registerType('modbus-server-demo', {
+    category: 'modbus',
+    color: '#E9967A',
+    defaults: {
+      name: {value: ''},
+      logEnabled: {value: false},
+      hostname: {value: '0.0.0.0'},
+      serverPort: {value: 10502, validate: RED.validators.number()},
+      responseDelay: {value: 100, validate: RED.validators.number()},
+      delayUnit: {value: 'ms'},
+      showStatusActivities: {value: false},
+      showErrors: {value: false},
+      // Buffer sizes
+      coilsBufferSize: {value: 10000, validate: RED.validators.number()},
+      holdingBufferSize: {value: 10000, validate: RED.validators.number()},
+      inputBufferSize: {value: 10000, validate: RED.validators.number()},
+      discreteBufferSize: {value: 10000, validate: RED.validators.number()},
+      // Demo settings
+      demoDataPattern: {value: 'sequential'},
+      demoUpdateInterval: {value: 1000, validate: RED.validators.number()},
+      demoAutoStart: {value: true},
+      demoRandomSeed: {value: null},
+      demoValueMin: {value: 0, validate: RED.validators.number()},
+      demoValueMax: {value: 65535, validate: RED.validators.number()},
+      // Advanced demo features
+      demoRealisticMode: {value: false},
+      demoDeviceSimulation: {value: 'generic'},
+      demoErrorRate: {value: 0, validate: function(v) { return v >= 0 && v <= 1 }}
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "modbus.png",
+    paletteLabel: "Modbus-Demo-Server",
+    label: function () {
+      return this.name || "Modbus Demo Server " + this.serverPort
+    },
+    info: function () {
+      return "Modbus Demo Server with automatic data generation for testing and development."
+    }
+  })
+</script>
+
+<script type="text/x-red" data-template-name="modbus-server-demo">
+  <div class="form-row">
+    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  
+  <h4>Server Configuration</h4>
+  <div class="form-row">
+    <label for="node-input-hostname"><i class="icon-globe"></i> Host</label>
+    <input type="text" id="node-input-hostname" placeholder="0.0.0.0">
+  </div>
+  <div class="form-row">
+    <label for="node-input-serverPort"><i class="icon-bookmark"></i> Port</label>
+    <input type="text" id="node-input-serverPort" placeholder="10502">
+  </div>
+  
+  <h4>Demo Data Generation</h4>
+  <div class="form-row">
+    <label for="node-input-demoDataPattern"><i class="fa fa-line-chart"></i> Data Pattern</label>
+    <select id="node-input-demoDataPattern">
+      <option value="sequential">Sequential</option>
+      <option value="random">Random</option>
+      <option value="sine">Sine Wave</option>
+      <option value="square">Square Wave</option>
+      <option value="sawtooth">Sawtooth Wave</option>
+      <option value="mixed">Mixed Patterns</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-demoUpdateInterval"><i class="fa fa-clock-o"></i> Update Interval</label>
+    <input type="text" id="node-input-demoUpdateInterval" placeholder="1000"> ms
+  </div>
+  <div class="form-row">
+    <label for="node-input-demoValueMin"><i class="fa fa-arrow-down"></i> Min Value</label>
+    <input type="text" id="node-input-demoValueMin" placeholder="0">
+  </div>
+  <div class="form-row">
+    <label for="node-input-demoValueMax"><i class="fa fa-arrow-up"></i> Max Value</label>
+    <input type="text" id="node-input-demoValueMax" placeholder="65535">
+  </div>
+  <div class="form-row">
+    <label for="node-input-demoRandomSeed"><i class="fa fa-random"></i> Random Seed</label>
+    <input type="text" id="node-input-demoRandomSeed" placeholder="(optional - for reproducible random)">
+  </div>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-input-demoAutoStart" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-input-demoAutoStart" style="width: auto;">Auto Start Demo Data</label>
+  </div>
+  
+  <h4>Realistic Device Simulation</h4>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-input-demoRealisticMode" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-input-demoRealisticMode" style="width: auto;">Enable Realistic Mode</label>
+  </div>
+  <div class="form-row">
+    <label for="node-input-demoDeviceSimulation"><i class="fa fa-microchip"></i> Device Type</label>
+    <select id="node-input-demoDeviceSimulation">
+      <option value="generic">Generic Device</option>
+      <option value="temperature">Temperature Sensors</option>
+      <option value="pressure">Pressure Sensors</option>
+      <option value="flowmeter">Flow Meters</option>
+      <option value="motor">Motor Controller</option>
+      <option value="plc">PLC Simulation</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label for="node-input-demoErrorRate"><i class="fa fa-exclamation-triangle"></i> Error Rate</label>
+    <input type="text" id="node-input-demoErrorRate" placeholder="0.0"> (0.0 - 1.0)
+  </div>
+  
+  <h4>Buffer Sizes</h4>
+  <div class="form-row">
+    <label for="node-input-coilsBufferSize"><i class="icon-bookmark"></i> Coils</label>
+    <input type="text" id="node-input-coilsBufferSize" placeholder="10000">
+  </div>
+  <div class="form-row">
+    <label for="node-input-holdingBufferSize"><i class="icon-bookmark"></i> Holding</label>
+    <input type="text" id="node-input-holdingBufferSize" placeholder="10000">
+  </div>
+  <div class="form-row">
+    <label for="node-input-inputBufferSize"><i class="icon-bookmark"></i> Input</label>
+    <input type="text" id="node-input-inputBufferSize" placeholder="10000">
+  </div>
+  <div class="form-row">
+    <label for="node-input-discreteBufferSize"><i class="icon-bookmark"></i> Discrete</label>
+    <input type="text" id="node-input-discreteBufferSize" placeholder="10000">
+  </div>
+  
+  <h4>Server Options</h4>
+  <div class="form-row">
+    <label for="node-input-responseDelay"><i class="fa fa-clock-o"></i> Response Delay</label>
+    <input type="text" id="node-input-responseDelay" placeholder="100">
+    <select id="node-input-delayUnit" style="width:110px">
+      <option value="ms">Milliseconds</option>
+      <option value="s">Seconds</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-input-logEnabled" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-input-logEnabled" style="width: auto;">Enable Logging</label>
+  </div>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-input-showStatusActivities" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-input-showStatusActivities" style="width: auto;">Show Status Activities</label>
+  </div>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-input-showErrors" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-input-showErrors" style="width: auto;">Show Errors</label>
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="modbus-server-demo">
+  <p>Modbus Demo Server with automatic data generation for testing and development.</p>
+  
+  <h3>Features</h3>
+  <ul>
+    <li>Automatic demo data generation with multiple patterns</li>
+    <li>Realistic device simulation modes</li>
+    <li>Configurable value ranges and update intervals</li>
+    <li>Error simulation for testing error handling</li>
+    <li>Support for all Modbus function codes</li>
+    <li>Dynamic configuration via input messages</li>
+  </ul>
+  
+  <h3>Data Generation Patterns</h3>
+  <ul>
+    <li><b>Sequential</b>: Incrementing counter values</li>
+    <li><b>Random</b>: Random values within range (with optional seed)</li>
+    <li><b>Sine Wave</b>: Sinusoidal pattern for analog simulation</li>
+    <li><b>Square Wave</b>: Alternating high/low values</li>
+    <li><b>Sawtooth Wave</b>: Linear ramp up and reset</li>
+    <li><b>Mixed</b>: Different patterns for different registers</li>
+  </ul>
+  
+  <h3>Realistic Device Simulations</h3>
+  <ul>
+    <li><b>Temperature Sensors</b>: Realistic temperature variations (20-30°C)</li>
+    <li><b>Pressure Sensors</b>: Atmospheric pressure simulation (950-1050 hPa)</li>
+    <li><b>Flow Meters</b>: Flow rate variations (0-1000 L/h)</li>
+    <li><b>Motor Controller</b>: RPM, current, and temperature values</li>
+    <li><b>PLC Simulation</b>: Mixed digital and analog I/O</li>
+  </ul>
+  
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt>payload <span class="property-type">string | object</span></dt>
+    <dd>Control commands or configuration updates</dd>
+  </dl>
+  
+  <h3>Control Commands</h3>
+  <p>Send string payload:</p>
+  <ul>
+    <li><code>"start"</code>: Start the server</li>
+    <li><code>"stop"</code>: Stop the server</li>
+    <li><code>"restart"</code>: Restart the server</li>
+    <li><code>"startdemo"</code>: Start demo data generation</li>
+    <li><code>"stopdemo"</code>: Stop demo data generation</li>
+    <li><code>"reset"</code>: Reset demo counter to 0</li>
+  </ul>
+  
+  <h3>Configuration Updates</h3>
+  <p>Send object payload to update configuration:</p>
+  <pre>
+msg.payload = {
+  pattern: "sine",      // Data pattern
+  interval: 2000,       // Update interval (ms)
+  min: 0,              // Minimum value
+  max: 1000,           // Maximum value
+  device: "motor",     // Device simulation type
+  errorRate: 0.05      // 5% error rate
+}
+  </pre>
+  
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+    <dt>payload <span class="property-type">object</span></dt>
+    <dd>Current demo server state including counter, pattern, and sample values</dd>
+  </dl>
+  
+  <h3>Output Example</h3>
+  <pre>
+{
+  counter: 123,
+  pattern: "sine",
+  device: "temperature",
+  realistic: true,
+  range: { min: 0, max: 65535 },
+  errorRate: 0.0,
+  samples: {
+    coil_0: 1,
+    discrete_0: 0,
+    holding_0: 250,
+    input_0: 1234
+  }
+}
+  </pre>
+</script>

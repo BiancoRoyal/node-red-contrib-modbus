@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Temperature",
+    "address": 0,
+    "type": "HoldingRegister",
+    "unit": "°C",
+    "description": "Temperature sensor value"
+  },
+  {
+    "name": "Pressure", 
+    "address": 1,
+    "type": "HoldingRegister",
+    "unit": "bar",
+    "description": "Pressure sensor value"
+  },
+  {
+    "name": "FlowRate",
+    "address": 2,
+    "type": "HoldingRegister", 
+    "unit": "L/min",
+    "description": "Flow rate sensor value"
+  },
+  {
+    "name": "Status",
+    "address": 3,
+    "type": "HoldingRegister",
+    "unit": "",
+    "description": "System status register"
+  },
+  {
+    "name": "Alarm",
+    "address": 4,
+    "type": "HoldingRegister",
+    "unit": "",
+    "description": "Alarm status register"
+  }
+]

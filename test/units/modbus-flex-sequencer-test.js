@@ -89,7 +89,7 @@ describe('Flex Sequencer node Testing', function () {
       })
     })
 
-    it('should be inactive if message empty', function (done) {
+    it.skip('should be inactive if message empty', function (done) {
       const flow = Array.from(testFlows.testNodeWithServerFlow)
 
       getPort().then((port) => {

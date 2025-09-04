@@ -527,18 +527,20 @@ describe('Client node Unit Testing', function () {
         const clientConfig = flow.find(n => n.type === 'modbus-client')
         if (clientConfig) {
           clientConfig.tcpPort = port
+          // Set reconnectOnTimeout to false to avoid connection attempts
+          clientConfig.reconnectOnTimeout = false
+          clientConfig.clientTimeout = 100
         }
 
         helper.load(testModbusClientNodes, flow, function () {
           const modbusClientNode = helper.getNode('ee3490e8219801b9')
-          setTimeout(() => {
-            modbusClientNode.messageAllowedStates = ['']
-            const isInactive = modbusClientNode.isInactive()
-            isInactive.should.be.true()
-            done()
-          }, 500)
+          // Don't wait for connection, just test the state
+          modbusClientNode.messageAllowedStates = ['']
+          const isInactive = modbusClientNode.isInactive()
+          isInactive.should.be.true()
+          done()
         })
-      })
+      }).catch(done)
     })
 
     it('should be inactive when first loaded', function (done) {

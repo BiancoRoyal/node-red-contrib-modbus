@@ -1,0 +1,34 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "عرض الأنشطة",
+      "showErrors": "عرض الأخطاء",
+      "hostname": "اسم المضيف",
+      "port": "المنفذ",
+      "responseDelay": "تأخير الاستجابة",
+      "coils": "الملفات",
+      "holdings": "سجلات الاحتفاظ",
+      "inputs": "سجلات الإدخال",
+      "discretes": "المدخلات المنفصلة",
+      "logEnabled": "تفعيل التسجيل",
+      "privateKey": "المفتاح الخاص",
+      "certificate": "الشهادة",
+      "ca": "شهادة CA",
+      "rejectUnauthorized": "رفض غير المصرح",
+      "requestCert": "طلب شهادة العميل",
+      "secureProtocol": "بروتوكول TLS",
+      "demoMode": "وضع العرض التوضيحي",
+      "demoDataPattern": "نمط البيانات",
+      "demoUpdateInterval": "فترة التحديث",
+      "sequential": "متسلسل",
+      "random": "عشوائي",
+      "sine": "موجة جيبية",
+      "square": "موجة مربعة"
+    },
+    "text": {
+      "server": "خادم TLS",
+      "secureConnection": "اتصال TLS آمن",
+      "demoServer": "خادم تجريبي مع بيانات تلقائية"
+    }
+  }
+}

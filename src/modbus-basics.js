@@ -320,6 +320,17 @@ de.biancoroyal.modbus.setupDispatcherEvents = function (modbusClient) {
   modbusClient.on('mberror', (id, data) => { de.biancoroyal.modbus.basics.messageDispatch(id, data) })
   modbusClient.on('mbclosed', (id, data) => { de.biancoroyal.modbus.basics.messageDispatch(id, data) })
 }
+
+de.biancoroyal.modbus.cleanupDispatcherEvents = function (modbusClient) {
+  modbusClient.removeAllListeners('mbinit')
+  modbusClient.removeAllListeners('mbqueue')
+  modbusClient.removeAllListeners('mbconnected')
+  modbusClient.removeAllListeners('mbbroken')
+  modbusClient.removeAllListeners('mbactive')
+  modbusClient.removeAllListeners('mberror')
+  modbusClient.removeAllListeners('mbclosed')
+}
+
 de.biancoroyal.modbus.basics.registerNode = function (node, modbusClient) {
   const registeredNodes = de.biancoroyal.modbus.registeredNodeIds
   if (Object.hasOwn(registeredNodes, node.id)) {
@@ -335,14 +346,27 @@ de.biancoroyal.modbus.basics.registerNode = function (node, modbusClient) {
   modbusClient.registerForModbus(node)
 }
 
-de.biancoroyal.modbus.basics.deregisterNode = function (node) {
+de.biancoroyal.modbus.basics.deregisterNode = function (node, modbusClient) {
   const registeredNodes = de.biancoroyal.modbus.registeredNodeIds
   if (Object.hasOwn(registeredNodes, node.id)) {
-    // delete registeredNodes[node.id]
-  }
+    // Clean up the registered node
+    delete registeredNodes[node.id]
 
-  // TODO: Can we remove all listeners here?! If there are no active listeners?
-  // TODO: Maybe clear the modbus client from the registered node id as well?
+    // If no more nodes are registered, clean up event listeners
+    if (Object.keys(registeredNodes).length === 0) {
+      de.biancoroyal.modbus.dispatchReady = false
+
+      // Remove dispatcher events if modbusClient is provided
+      if (modbusClient && modbusClient.removeAllListeners) {
+        de.biancoroyal.modbus.cleanupDispatcherEvents(modbusClient)
+      }
+    }
+
+    // Unregister the node from the modbus client if available
+    if (modbusClient && modbusClient.deregisterForModbus) {
+      modbusClient.deregisterForModbus(node)
+    }
+  }
 }
 de.biancoroyal.modbus.basics.messageDispatch = function (nodeId, actionObj) {
   const registeredNodes = de.biancoroyal.modbus.registeredNodeIds

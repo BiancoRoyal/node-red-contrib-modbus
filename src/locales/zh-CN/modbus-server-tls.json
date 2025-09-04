@@ -1,0 +1,34 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "显示活动",
+      "showErrors": "显示错误",
+      "hostname": "主机名",
+      "port": "端口",
+      "responseDelay": "响应延迟",
+      "coils": "线圈",
+      "holdings": "保持寄存器",
+      "inputs": "输入寄存器",
+      "discretes": "离散输入",
+      "logEnabled": "启用日志",
+      "privateKey": "私钥",
+      "certificate": "证书",
+      "ca": "CA证书",
+      "rejectUnauthorized": "拒绝未授权",
+      "requestCert": "请求客户端证书",
+      "secureProtocol": "TLS协议",
+      "demoMode": "演示模式",
+      "demoDataPattern": "数据模式",
+      "demoUpdateInterval": "更新间隔",
+      "sequential": "顺序",
+      "random": "随机",
+      "sine": "正弦波",
+      "square": "方波"
+    },
+    "text": {
+      "server": "TLS服务器",
+      "secureConnection": "安全TLS连接",
+      "demoServer": "带自动生成数据的演示服务器"
+    }
+  }
+}

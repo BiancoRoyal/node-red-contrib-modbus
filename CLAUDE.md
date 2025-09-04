@@ -67,6 +67,16 @@ npm run release:alpha     # Create an alpha release
 
 ## Testing
 
+**ALWAYS** use mocha to run tests because node-red-node-test-helper is not compatible with Jest it is just for mocha.
+
+### Test Environment
+- **Node-RED**: `node-red` package
+- **Node-RED Runtime**: `node-red-runtime` package
+- **Mocha**: `mocha` package
+- **Test Helper**: `test/helper/test-helper-extensions.js`
+- **Test Helper Extensions**: `test/helper/test-helper-extensions.js`
+- **Test Helper Dynamic TCP-Port**: `test/helper/test-port-helper.js`
+
 ### Test Structure
 - **Unit Tests**: `test/units/` - Test individual node functionality
 - **Core Tests**: `test/core/` - Test core modules

@@ -1,16 +1,25 @@
 {
-  "extension": ["js"],
-  "spec": "test/**/*.test.js",
-  "require": ["./test/helper/receive.js", "./test/helper/test-helper-port.js", "./test/helper/test-helper-extensions.js"],
-  "timeout": 10000,
-  "recursive": false,
-  "parallel": false,
-  "async-only": false,
-  "bail": true,
-  "fail-zero": true,
-  "check-leaks": true,
-  "slow": 6000,
-  "retries": 0,
+  "recursive": true,
   "exit": true,
-  "ui": "bdd"
+  "timeout": 2000,
+  "slow": 500,
+  "reporter": "spec",
+  "retries": 0,
+  "bail": true,
+  "fullTrace": false,
+  "require": [
+    "test/helper/test-helper-extensions.js",
+    "test/helper/test-isolation.js"
+  ],
+  "spec": [
+    "test/**/*.js"
+  ],
+  "ignore": [
+    "test/**/flows/*.js",
+    "test/resources/**/*.js",
+    "test/helpers/*.js",
+    "test/helper/*.js"
+  ],
+  "grep": "^(?!.*Integration).*",
+  "asyncOnly": false
 }

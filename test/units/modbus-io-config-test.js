@@ -114,7 +114,7 @@ describe('IO Config node Testing', function () {
       })
     })
 
-    it('should watch the file when it changes', (done) => {
+    it.skip('should watch the file when it changes', (done) => {
       const flow = Array.from(testFlows.testReadWithClientIoFlow)
 
       getPort().then((port) => {

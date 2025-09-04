@@ -22,6 +22,8 @@ module.exports = function (RED) {
   const coreModbusQueue = require('./core/modbus-queue-core')
   const internalDebugLog = require('debug')('contribModbus:config:client')
   const _ = require('underscore')
+  const { ModbusStateValidator } = require('./core/modbus-state-validator')
+  const { ModbusTimerManager } = require('./core/modbus-timer-manager')
 
   function ModbusClientNode (config) {
     RED.nodes.createNode(this, config)
@@ -54,6 +56,42 @@ module.exports = function (RED) {
     this.tcpHost = config.tcpHost
     this.tcpPort = parseInt(config.tcpPort) || 502
     this.tcpType = config.tcpType
+
+    // TLS Configuration with enhanced security
+    this.tlsEnabled = config.tlsEnabled || false
+
+    // Security: Use Node-RED credential management for sensitive TLS data
+    const getTlsCredential = (key) => {
+      // First try to get from Node-RED credentials
+      if (this.credentials && this.credentials[key]) {
+        return this.credentials[key]
+      }
+      // Fallback to environment variables for security
+      const envKey = `MODBUS_TLS_${key.toUpperCase()}`
+      if (process.env[envKey]) {
+        internalDebugLog('Using environment variable for TLS:', envKey)
+        return process.env[envKey]
+      }
+      // Finally fallback to config (with security warning)
+      if (config[key]) {
+        if (node.showWarnings) {
+          node.warn('TLS credentials should use Node-RED credential management or environment variables')
+        }
+        return config[key]
+      }
+      return ''
+    }
+
+    this.tlsOptions = {
+      key: getTlsCredential('tlsPrivateKey'),
+      cert: getTlsCredential('tlsCertificate'),
+      ca: getTlsCredential('tlsCa'),
+      rejectUnauthorized: config.tlsRejectUnauthorized !== false, // Default to secure
+      servername: config.tlsServername || this.tcpHost,
+      secureProtocol: config.tlsSecureProtocol || 'TLSv1_3_method', // Upgrade to TLS 1.3
+      checkServerIdentity: config.tlsCheckServerIdentity !== false ? undefined : () => undefined,
+      minVersion: 'TLSv1.2' // Enforce minimum TLS version
+    }
 
     this.serialPort = config.serialPort
     this.serialBaudrate = config.serialBaudrate
@@ -103,6 +141,35 @@ module.exports = function (RED) {
     node.serialSendingAllowed = false
     node.internalDebugLog = internalDebugLog
 
+    // Initialize resilience modules
+    const resilienceOptions = {
+      enableCircuitBreaker: config.enableCircuitBreaker !== false,
+      enableConnectionPool: config.enableConnectionPool || false,
+      enableRetryHandler: config.enableRetryHandler !== false,
+      enableDiagnostics: config.enableDiagnostics !== false,
+      failureThreshold: config.failureThreshold || 5,
+      successThreshold: config.successThreshold || 2,
+      maxRetries: config.maxRetries || 3,
+      initialDelay: config.initialDelay || 1000,
+      alertThresholds: {
+        errorRate: config.errorRateThreshold || 10,
+        responseTime: config.responseTimeThreshold || 5000,
+        connectionFailure: config.connectionFailureThreshold || 20
+      }
+    }
+
+    coreModbusClient.initializeResilienceModules(node, resilienceOptions)
+
+    // Initialize state validator for deadlock detection
+    node.stateValidator = new ModbusStateValidator()
+
+    // Initialize timer manager for leak prevention
+    node.timerManager = new ModbusTimerManager({
+      enableTracking: config.enableTimerTracking !== false,
+      warningThreshold: 30,
+      maxTimersPerNode: 15
+    })
+
     coreModbusQueue.queueSerialLockCommand(node)
 
     node.setDefaultUnitId = function () {
@@ -128,7 +195,7 @@ module.exports = function (RED) {
 
     node.updateServerinfo = function () {
       if (node.clienttype === 'tcp') {
-        node.serverInfo = ' TCP@' + node.tcpHost + ':' + node.tcpPort
+        node.serverInfo = (node.tlsEnabled ? ' TLS@' : ' TCP@') + node.tcpHost + ':' + node.tcpPort
       } else {
         node.serverInfo = ' Serial@' + node.serialPort + ':' + node.serialBaudrate + 'bit/s'
       }
@@ -183,6 +250,14 @@ module.exports = function (RED) {
         return
       }
 
+      // Track state for deadlock detection
+      if (node.stateValidator) {
+        const validationResult = node.stateValidator.recordStateChange(state.value)
+        if (validationResult.hasDeadlock) {
+          verboseWarn('Potential deadlock detected: ' + validationResult.warnings.join(', '))
+        }
+      }
+
       if (state.matches('init')) {
         /* istanbul ignore next */
         verboseWarn('fsm init state after ' + node.actualServiceStateBefore.value)
@@ -195,11 +270,19 @@ module.exports = function (RED) {
             node.isFirstInitOfConnection = false
             /* istanbul ignore next */
             verboseWarn('first fsm init in ' + serialConnectionDelayTimeMS + ' ms')
-            setTimeout(node.connectClient, serialConnectionDelayTimeMS)
+            if (node.timerManager) {
+              node.timerManager.setTimeout(node.connectClient, serialConnectionDelayTimeMS, node.id, 'initial-connection')
+            } else {
+              setTimeout(node.connectClient, serialConnectionDelayTimeMS)
+            }
           } else {
             /* istanbul ignore next */
             verboseWarn('fsm init in ' + node.reconnectTimeout + ' ms')
-            setTimeout(node.connectClient, node.reconnectTimeout)
+            if (node.timerManager) {
+              node.timerManager.setTimeout(node.connectClient, node.reconnectTimeout, node.id, 'reconnection')
+            } else {
+              setTimeout(node.connectClient, node.reconnectTimeout)
+            }
           }
         } catch (err) {
           /* istanbul ignore next */
@@ -365,41 +448,56 @@ module.exports = function (RED) {
 
           try {
             switch (node.tcpType) {
-              case 'C701':
-                verboseLog('C701 port UDP bridge')
-                node.client.connectC701(node.tcpHost, {
+              case 'C701': {
+                verboseLog('C701 port UDP bridge' + (node.tlsEnabled ? ' with TLS' : ''))
+                const c701Options = {
                   port: node.tcpPort,
                   autoOpen: true
-                }).then(node.setTCPConnectionOptions)
+                }
+                if (node.tlsEnabled && node.tlsOptions) {
+                  Object.assign(c701Options, node.tlsOptions)
+                }
+                node.client.connectC701(node.tcpHost, c701Options).then(node.setTCPConnectionOptions)
                   .then(node.setTCPConnected)
                   .catch((err) => {
                     node.modbusTcpErrorHandling(err)
                     return false
                   })
                 break
-              case 'TELNET':
-                verboseLog('Telnet port')
-                node.client.connectTelnet(node.tcpHost, {
+              }
+              case 'TELNET': {
+                verboseLog('Telnet port' + (node.tlsEnabled ? ' with TLS' : ''))
+                const telnetOptions = {
                   port: node.tcpPort,
                   autoOpen: true
-                }).then(node.setTCPConnectionOptions)
+                }
+                if (node.tlsEnabled && node.tlsOptions) {
+                  Object.assign(telnetOptions, node.tlsOptions)
+                }
+                node.client.connectTelnet(node.tcpHost, telnetOptions).then(node.setTCPConnectionOptions)
                   .catch((err) => {
                     node.modbusTcpErrorHandling(err)
                     return false
                   })
                 break
+              }
               /* istanbul ignore next */
-              case 'TCP-RTU-BUFFERED':
-                verboseLog('TCP RTU buffered port')
-                node.client.connectTcpRTUBuffered(node.tcpHost, {
+              case 'TCP-RTU-BUFFERED': {
+                verboseLog('TCP RTU buffered port' + (node.tlsEnabled ? ' with TLS' : ''))
+                const tcpRtuOptions = {
                   port: node.tcpPort,
                   autoOpen: true
-                }).then(node.setTCPConnectionOptions)
+                }
+                if (node.tlsEnabled && node.tlsOptions) {
+                  Object.assign(tcpRtuOptions, node.tlsOptions)
+                }
+                node.client.connectTcpRTUBuffered(node.tcpHost, tcpRtuOptions).then(node.setTCPConnectionOptions)
                   .catch((err) => {
                     node.modbusTcpErrorHandling(err)
                     return false
                   })
                 break
+              }
               case 'UDP':
                 verboseLog('UDP port')
                 node.client.connectUDP(node.tcpHost, {
@@ -411,16 +509,21 @@ module.exports = function (RED) {
                     return false
                   })
                 break
-              default:
-                verboseLog('TCP port')
-                node.client.connectTCP(node.tcpHost, {
+              default: {
+                verboseLog('TCP port' + (node.tlsEnabled ? ' with TLS' : ''))
+                const tcpOptions = {
                   port: node.tcpPort,
                   autoOpen: true
-                }).then(node.setTCPConnectionOptions)
+                }
+                if (node.tlsEnabled && node.tlsOptions) {
+                  Object.assign(tcpOptions, node.tlsOptions)
+                }
+                node.client.connectTCP(node.tcpHost, tcpOptions).then(node.setTCPConnectionOptions)
                   .catch((err) => {
                     node.modbusTcpErrorHandling(err)
                     return false
                   })
+              }
             }
           } /* istanbul ignore next */ catch (e) {
             node.modbusTcpErrorHandling(e)
@@ -703,6 +806,23 @@ module.exports = function (RED) {
       verboseLog('close node ' + nodeIdentifierName)
       node.internalDebugLog('close node ' + nodeIdentifierName)
 
+      // Clean up timer manager
+      if (node.timerManager) {
+        node.timerManager.clearNodeTimers(node.id)
+        node.timerManager.destroy()
+        node.timerManager = null
+      }
+
+      // Clean up state validator
+      if (node.stateValidator) {
+        const healthReport = node.stateValidator.getHealthReport()
+        if (healthReport.deadlockCheck.hasDeadlock) {
+          verboseWarn('State machine had potential deadlock issues: ' + JSON.stringify(healthReport))
+        }
+        node.stateValidator.reset()
+        node.stateValidator = null
+      }
+
       if (node.client) {
         if (node.client.isOpen) {
           node.client.close(function (err) {
@@ -721,14 +841,18 @@ module.exports = function (RED) {
           done()
         }
 
-        node.client.removeAllListeners()
+        if (node.client && typeof node.client.removeAllListeners === 'function') {
+          node.client.removeAllListeners()
+        }
       } else {
         /* istanbul ignore next */
         verboseLog('Connection closed simple ' + nodeIdentifierName)
         done()
       }
 
-      node.removeAllListeners()
+      if (node && typeof node.removeAllListeners === 'function') {
+        node.removeAllListeners()
+      }
     })
 
     // handle using as config node

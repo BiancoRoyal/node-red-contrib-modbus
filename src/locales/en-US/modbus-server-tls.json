@@ -1,0 +1,34 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "Show Activities",
+      "showErrors": "Show Errors",
+      "hostname": "Hostname",
+      "port": "Port",
+      "responseDelay": "Response Delay",
+      "coils": "Coils",
+      "holdings": "Holdings",
+      "inputs": "Inputs",
+      "discretes": "Discretes",
+      "logEnabled": "Logging",
+      "privateKey": "Private Key",
+      "certificate": "Certificate",
+      "ca": "CA Certificate",
+      "rejectUnauthorized": "Reject Unauthorized",
+      "requestCert": "Request Client Certificate",
+      "secureProtocol": "TLS Protocol",
+      "demoMode": "Demo Mode",
+      "demoDataPattern": "Data Pattern",
+      "demoUpdateInterval": "Update Interval",
+      "sequential": "Sequential",
+      "random": "Random",
+      "sine": "Sine Wave",
+      "square": "Square Wave"
+    },
+    "text": {
+      "server": "TLS Server",
+      "secureConnection": "Secure TLS Connection",
+      "demoServer": "Demo Server with Auto-Generated Data"
+    }
+  }
+}

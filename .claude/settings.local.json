@@ -6,12 +6,40 @@
       "Bash(grep:*)",
       "Bash(sed:*)",
       "Bash(git add:*)",
-      "Bash(npm link:*)"
+      "Bash(npm link:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:link:*)",
+      "Bash(node:*)",
+      "Bash(chmod:*)",
+      "Bash(npm ls:*)",
+      "Bash(npx gulp build:*)",
+      "Bash(npm test:*)",
+      "Bash(npx mocha test:*)",
+      "Bash(npm run mocha:base:*)",
+      "Bash(npx nyc:*)",
+      "Bash(git checkout:*)",
+      "Bash(touch:*)",
+      "Bash(cat:*)",
+      "WebSearch",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(npm run coverage:*)",
+      "Bash(npm run test:units:*)",
+      "Bash(npx standard:*)",
+      "Bash(npm run lint)",
+      "Bash(npx mocha:*)",
+      "Bash(npm run clean:*)",
+      "Bash(timeout 30 npm test -- --grep \"Client node Unit Testing\")",
+      "Bash(gtimeout 30 npm test -- --grep \"Client node Unit Testing\")",
+      "Bash(kill:*)",
+      "Bash(killall:*)"
     ],
     "deny": [],
     "ask": [],
     "additionalDirectories": [
-      "/Users/biancode/Development/P4NR/modbus/node-modbus-serial"
+      "/Users/biancode/Development/P4NR/modbus/node-modbus-serial",
+      "/Users/biancode/Development/P4NR/Node-RED/node-red-node-test-helper",
+      "/Users/biancode/Development/P4NR/Node-RED/contributions/node-red-contrib-helper"
     ]
   }
 }

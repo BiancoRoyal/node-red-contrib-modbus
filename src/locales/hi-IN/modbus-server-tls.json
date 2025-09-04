@@ -1,0 +1,34 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "गतिविधियाँ दिखाएं",
+      "showErrors": "त्रुटियाँ दिखाएं",
+      "hostname": "होस्ट नाम",
+      "port": "पोर्ट",
+      "responseDelay": "प्रतिक्रिया विलंब",
+      "coils": "कॉइल्स",
+      "holdings": "होल्डिंग रजिस्टर",
+      "inputs": "इनपुट रजिस्टर",
+      "discretes": "डिस्क्रीट इनपुट",
+      "logEnabled": "लॉगिंग सक्षम",
+      "privateKey": "निजी कुंजी",
+      "certificate": "प्रमाणपत्र",
+      "ca": "CA प्रमाणपत्र",
+      "rejectUnauthorized": "अनधिकृत को अस्वीकार करें",
+      "requestCert": "क्लाइंट प्रमाणपत्र का अनुरोध करें",
+      "secureProtocol": "TLS प्रोटोकॉल",
+      "demoMode": "डेमो मोड",
+      "demoDataPattern": "डेटा पैटर्न",
+      "demoUpdateInterval": "अपडेट अंतराल",
+      "sequential": "क्रमिक",
+      "random": "यादृच्छिक",
+      "sine": "साइन वेव",
+      "square": "स्क्वेयर वेव"
+    },
+    "text": {
+      "server": "TLS सर्वर",
+      "secureConnection": "सुरक्षित TLS कनेक्शन",
+      "demoServer": "स्वचालित डेटा के साथ डेमो सर्वर"
+    }
+  }
+}

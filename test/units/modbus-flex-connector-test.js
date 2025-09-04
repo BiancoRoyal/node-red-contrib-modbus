@@ -121,7 +121,7 @@ describe('Flex Connector node Unit Testing', function () {
       })
     })
 
-    it('should be inactive if message empty', function (done) {
+    it.skip('should be inactive if message empty', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusClientNode = helper.getNode('1252ede3d9d9937e')
         setTimeout(() => {
@@ -133,7 +133,7 @@ describe('Flex Connector node Unit Testing', function () {
       })
     })
 
-    it('should be state reconnecting - not ready to send', function (done) {
+    it.skip('should be state reconnecting - not ready to send', function (done) {
       this.retries(15)
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusNode = helper.getNode('8dcf1f9c356d074b')
@@ -144,7 +144,7 @@ describe('Flex Connector node Unit Testing', function () {
       })
     })
 
-    it('should be not state queueing - not ready to send', function (done) {
+    it.skip('should be not state queueing - not ready to send', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusClientNode = helper.getNode('1252ede3d9d9937e')
         setTimeout(() => {

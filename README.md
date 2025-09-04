@@ -116,6 +116,18 @@ This is a first step to v6 of the package.
 * use the [Flow example][3] to see how it works ...
 * see [YouTube Playlist][9]
 
+## 📚 Documentation
+
+Comprehensive documentation is available in the [`docs/`](./docs/) directory:
+
+* **[API Documentation](./docs/api/)** - Complete API reference for all nodes
+* **[Architecture Guide](./docs/architecture/)** - System design and structure
+* **[Development Guide](./docs/development/)** - Implementation guides and roadmap
+* **[Security Guide](./docs/security/)** - Security best practices and TLS configuration
+* **[Testing Documentation](./docs/testing/)** - Test plans and coverage reports
+
+See the [Documentation Index](./docs/README.md) for complete navigation.
+
 ![Flow Example](images/Screenshot01V210.png)
 
 ## Errors

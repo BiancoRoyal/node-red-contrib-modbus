@@ -1,0 +1,43 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "Show Activities",
+      "showErrors": "Show Errors",
+      "hostname": "Hostname",
+      "port": "Port",
+      "responseDelay": "Response Delay",
+      "coils": "Coils",
+      "holdings": "Holdings",
+      "inputs": "Inputs",
+      "discretes": "Discretes",
+      "logEnabled": "Logging",
+      "demoDataPattern": "Data Pattern",
+      "demoUpdateInterval": "Update Interval",
+      "demoAutoStart": "Auto Start Demo",
+      "demoRandomSeed": "Random Seed",
+      "demoValueMin": "Min Value",
+      "demoValueMax": "Max Value",
+      "demoRealisticMode": "Realistic Mode",
+      "demoDeviceSimulation": "Device Type",
+      "demoErrorRate": "Error Rate",
+      "sequential": "Sequential",
+      "random": "Random",
+      "sine": "Sine Wave",
+      "square": "Square Wave",
+      "sawtooth": "Sawtooth Wave",
+      "mixed": "Mixed Patterns",
+      "generic": "Generic Device",
+      "temperature": "Temperature Sensors",
+      "pressure": "Pressure Sensors",
+      "flowmeter": "Flow Meters",
+      "motor": "Motor Controller",
+      "plc": "PLC Simulation"
+    },
+    "text": {
+      "server": "Demo Server",
+      "demoGeneration": "Automatic Demo Data Generation",
+      "realisticSimulation": "Realistic Device Simulation",
+      "testingDevelopment": "For Testing and Development"
+    }
+  }
+}

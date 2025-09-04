@@ -1,0 +1,43 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "Mostrar Actividades",
+      "showErrors": "Mostrar Errores",
+      "hostname": "Nombre de Host",
+      "port": "Puerto",
+      "responseDelay": "Retraso de Respuesta",
+      "coils": "Bobinas",
+      "holdings": "Registros de Retención",
+      "inputs": "Registros de Entrada",
+      "discretes": "Entradas Discretas",
+      "logEnabled": "Registro Habilitado",
+      "demoDataPattern": "Patrón de Datos",
+      "demoUpdateInterval": "Intervalo de Actualización",
+      "demoAutoStart": "Inicio Automático de Demo",
+      "demoRandomSeed": "Semilla Aleatoria",
+      "demoValueMin": "Valor Mínimo",
+      "demoValueMax": "Valor Máximo",
+      "demoRealisticMode": "Modo Realista",
+      "demoDeviceSimulation": "Tipo de Dispositivo",
+      "demoErrorRate": "Tasa de Error",
+      "sequential": "Secuencial",
+      "random": "Aleatorio",
+      "sine": "Onda Sinusoidal",
+      "square": "Onda Cuadrada",
+      "sawtooth": "Onda Diente de Sierra",
+      "mixed": "Patrones Mixtos",
+      "generic": "Dispositivo Genérico",
+      "temperature": "Sensores de Temperatura",
+      "pressure": "Sensores de Presión",
+      "flowmeter": "Medidores de Flujo",
+      "motor": "Controlador de Motor",
+      "plc": "Simulación PLC"
+    },
+    "text": {
+      "server": "Servidor de Demostración",
+      "demoGeneration": "Generación Automática de Datos de Demo",
+      "realisticSimulation": "Simulación Realista de Dispositivos",
+      "testingDevelopment": "Para Pruebas y Desarrollo"
+    }
+  }
+}

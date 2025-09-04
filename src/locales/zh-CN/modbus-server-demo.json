@@ -1,0 +1,43 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "显示活动",
+      "showErrors": "显示错误",
+      "hostname": "主机名",
+      "port": "端口",
+      "responseDelay": "响应延迟",
+      "coils": "线圈",
+      "holdings": "保持寄存器",
+      "inputs": "输入寄存器",
+      "discretes": "离散输入",
+      "logEnabled": "启用日志",
+      "demoDataPattern": "数据模式",
+      "demoUpdateInterval": "更新间隔",
+      "demoAutoStart": "自动启动演示",
+      "demoRandomSeed": "随机种子",
+      "demoValueMin": "最小值",
+      "demoValueMax": "最大值",
+      "demoRealisticMode": "真实模式",
+      "demoDeviceSimulation": "设备类型",
+      "demoErrorRate": "错误率",
+      "sequential": "顺序",
+      "random": "随机",
+      "sine": "正弦波",
+      "square": "方波",
+      "sawtooth": "锯齿波",
+      "mixed": "混合模式",
+      "generic": "通用设备",
+      "temperature": "温度传感器",
+      "pressure": "压力传感器",
+      "flowmeter": "流量计",
+      "motor": "电机控制器",
+      "plc": "PLC模拟"
+    },
+    "text": {
+      "server": "演示服务器",
+      "demoGeneration": "自动演示数据生成",
+      "realisticSimulation": "真实设备模拟",
+      "testingDevelopment": "用于测试和开发"
+    }
+  }
+}

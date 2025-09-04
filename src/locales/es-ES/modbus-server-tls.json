@@ -1,0 +1,34 @@
+{
+  "modbus-contrib": {
+    "label": {
+      "showActivities": "Mostrar Actividades",
+      "showErrors": "Mostrar Errores",
+      "hostname": "Nombre de Host",
+      "port": "Puerto",
+      "responseDelay": "Retraso de Respuesta",
+      "coils": "Bobinas",
+      "holdings": "Registros de Retención",
+      "inputs": "Registros de Entrada",
+      "discretes": "Entradas Discretas",
+      "logEnabled": "Registro Habilitado",
+      "privateKey": "Clave Privada",
+      "certificate": "Certificado",
+      "ca": "Certificado CA",
+      "rejectUnauthorized": "Rechazar No Autorizado",
+      "requestCert": "Solicitar Certificado del Cliente",
+      "secureProtocol": "Protocolo TLS",
+      "demoMode": "Modo Demo",
+      "demoDataPattern": "Patrón de Datos",
+      "demoUpdateInterval": "Intervalo de Actualización",
+      "sequential": "Secuencial",
+      "random": "Aleatorio",
+      "sine": "Onda Sinusoidal",
+      "square": "Onda Cuadrada"
+    },
+    "text": {
+      "server": "Servidor TLS",
+      "secureConnection": "Conexión TLS Segura",
+      "demoServer": "Servidor Demo con Datos Auto-Generados"
+    }
+  }
+}

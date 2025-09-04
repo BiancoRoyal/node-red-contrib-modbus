@@ -1,0 +1,252 @@
+<!--
+ Copyright (c) since the year 2016 Klaus Landsdorf (http://plus4nodered.com/)
+ All rights reserved.
+ node-red-contrib-modbus - The BSD 3-Clause License
+
+ @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
+-->
+<script type="text/javascript">
+  RED.nodes.registerType('modbus-client-tls', {
+    category: 'config',
+    defaults: {
+      name: {value: ''},
+      tcpHost: {value: 'localhost', required: true},
+      tcpPort: {value: 8502, required: true, validate: RED.validators.number()},
+      unit_id: {value: 0, validate: RED.validators.number()},
+      commandDelay: {value: 1, validate: RED.validators.number()},
+      clientTimeout: {value: 1000, validate: RED.validators.number()},
+      reconnectTimeout: {value: 2000, validate: RED.validators.number()},
+      reconnectOnTimeout: {value: true},
+      bufferCommands: {value: true},
+      parallelUnitIdsAllowed: {value: true},
+      // TLS Configuration
+      privateKey: {value: '', type: 'text'},
+      certificate: {value: '', type: 'text'},
+      ca: {value: '', type: 'text'},
+      rejectUnauthorized: {value: false},
+      servername: {value: ''},
+      secureProtocol: {value: 'TLSv1_2_method'},
+      checkServerIdentity: {value: true},
+      autoConnect: {value: true},
+      // Advanced features
+      circuitBreakerEnabled: {value: true},
+      circuitBreakerFailureThreshold: {value: 5, validate: RED.validators.number()},
+      circuitBreakerSuccessThreshold: {value: 2, validate: RED.validators.number()},
+      circuitBreakerTimeout: {value: 60000, validate: RED.validators.number()},
+      circuitBreakerResetTimeout: {value: 30000, validate: RED.validators.number()},
+      connectionPoolEnabled: {value: false},
+      connectionPoolMaxConnections: {value: 10, validate: RED.validators.number()},
+      connectionPoolMaxPerHost: {value: 3, validate: RED.validators.number()},
+      diagnosticsEnabled: {value: false},
+      diagnosticsMetricsInterval: {value: 60000, validate: RED.validators.number()},
+      diagnosticsAlerting: {value: false},
+      retryHandlerEnabled: {value: true},
+      retryHandlerMaxRetries: {value: 3, validate: RED.validators.number()},
+      retryHandlerInitialDelay: {value: 1000, validate: RED.validators.number()},
+      retryHandlerMaxDelay: {value: 30000, validate: RED.validators.number()},
+      retryHandlerBackoffMultiplier: {value: 2, validate: RED.validators.number()},
+      // Logging
+      queueLogEnabled: {value: false},
+      stateLogEnabled: {value: false},
+      failureLogEnabled: {value: false},
+      showErrors: {value: false},
+      showWarnings: {value: false},
+      showLogs: {value: false}
+    },
+    label: function () {
+      return this.name || "Modbus TLS " + this.tcpHost + ":" + this.tcpPort
+    },
+    info: function () {
+      return "Modbus TLS Client with secure encrypted connection and advanced features."
+    }
+  })
+</script>
+
+<script type="text/x-red" data-template-name="modbus-client-tls">
+  <div class="form-row">
+    <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="node-config-input-name" placeholder="Name">
+  </div>
+  
+  <h4>Connection</h4>
+  <div class="form-row">
+    <label for="node-config-input-tcpHost"><i class="icon-globe"></i> Host</label>
+    <input type="text" id="node-config-input-tcpHost" placeholder="localhost">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-tcpPort"><i class="icon-bookmark"></i> Port</label>
+    <input type="text" id="node-config-input-tcpPort" placeholder="8502">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-unit_id"><i class="icon-bookmark"></i> Unit ID</label>
+    <input type="text" id="node-config-input-unit_id" placeholder="0">
+  </div>
+  
+  <h4>TLS Configuration</h4>
+  <div class="form-row">
+    <label for="node-config-input-privateKey"><i class="fa fa-key"></i> Client Key</label>
+    <input type="text" id="node-config-input-privateKey" placeholder="Path to private key or PEM (optional)">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-certificate"><i class="fa fa-certificate"></i> Client Cert</label>
+    <input type="text" id="node-config-input-certificate" placeholder="Path to certificate or PEM (optional)">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-ca"><i class="fa fa-shield"></i> CA Certificate</label>
+    <input type="text" id="node-config-input-ca" placeholder="Path to CA certificate or PEM (optional)">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-servername"><i class="fa fa-server"></i> Server Name</label>
+    <input type="text" id="node-config-input-servername" placeholder="Server name for SNI (optional)">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-secureProtocol"><i class="fa fa-lock"></i> Protocol</label>
+    <select id="node-config-input-secureProtocol">
+      <option value="TLSv1_2_method">TLS v1.2</option>
+      <option value="TLSv1_3_method">TLS v1.3</option>
+      <option value="TLS_method">TLS (auto)</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-config-input-rejectUnauthorized" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-config-input-rejectUnauthorized" style="width: auto;">Reject Unauthorized Certificates</label>
+  </div>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-config-input-checkServerIdentity" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-config-input-checkServerIdentity" style="width: auto;">Check Server Identity</label>
+  </div>
+  
+  <h4>Timing</h4>
+  <div class="form-row">
+    <label for="node-config-input-commandDelay"><i class="fa fa-clock-o"></i> Command Delay</label>
+    <input type="text" id="node-config-input-commandDelay" placeholder="1"> ms
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-clientTimeout"><i class="fa fa-clock-o"></i> Timeout</label>
+    <input type="text" id="node-config-input-clientTimeout" placeholder="1000"> ms
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-reconnectTimeout"><i class="fa fa-clock-o"></i> Reconnect</label>
+    <input type="text" id="node-config-input-reconnectTimeout" placeholder="2000"> ms
+  </div>
+  
+  <h4>Options</h4>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-config-input-autoConnect" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-config-input-autoConnect" style="width: auto;">Auto Connect on Deploy</label>
+  </div>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-config-input-reconnectOnTimeout" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-config-input-reconnectOnTimeout" style="width: auto;">Reconnect on Timeout</label>
+  </div>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-config-input-bufferCommands" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-config-input-bufferCommands" style="width: auto;">Buffer Commands</label>
+  </div>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-config-input-parallelUnitIdsAllowed" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-config-input-parallelUnitIdsAllowed" style="width: auto;">Allow Parallel Unit IDs</label>
+  </div>
+  
+  <h4>Circuit Breaker</h4>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-config-input-circuitBreakerEnabled" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-config-input-circuitBreakerEnabled" style="width: auto;">Enable Circuit Breaker</label>
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-circuitBreakerFailureThreshold"><i class="fa fa-exclamation"></i> Failure Threshold</label>
+    <input type="text" id="node-config-input-circuitBreakerFailureThreshold" placeholder="5">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-circuitBreakerSuccessThreshold"><i class="fa fa-check"></i> Success Threshold</label>
+    <input type="text" id="node-config-input-circuitBreakerSuccessThreshold" placeholder="2">
+  </div>
+  
+  <h4>Retry Handler</h4>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-config-input-retryHandlerEnabled" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-config-input-retryHandlerEnabled" style="width: auto;">Enable Retry Handler</label>
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-retryHandlerMaxRetries"><i class="fa fa-repeat"></i> Max Retries</label>
+    <input type="text" id="node-config-input-retryHandlerMaxRetries" placeholder="3">
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-retryHandlerInitialDelay"><i class="fa fa-clock-o"></i> Initial Delay</label>
+    <input type="text" id="node-config-input-retryHandlerInitialDelay" placeholder="1000"> ms
+  </div>
+  
+  <h4>Diagnostics</h4>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-config-input-diagnosticsEnabled" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-config-input-diagnosticsEnabled" style="width: auto;">Enable Diagnostics</label>
+  </div>
+  
+  <h4>Logging</h4>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-config-input-showErrors" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-config-input-showErrors" style="width: auto;">Show Errors</label>
+  </div>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-config-input-showWarnings" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-config-input-showWarnings" style="width: auto;">Show Warnings</label>
+  </div>
+  <div class="form-row">
+    <label>&nbsp;</label>
+    <input type="checkbox" id="node-config-input-stateLogEnabled" style="display: inline-block; width: auto; vertical-align: top;">
+    <label for="node-config-input-stateLogEnabled" style="width: auto;">State Logging</label>
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="modbus-client-tls">
+  <p>Modbus TLS Client for secure encrypted Modbus TCP communication.</p>
+  
+  <h3>Features</h3>
+  <ul>
+    <li>TLS/SSL encryption for secure communication</li>
+    <li>Client certificate authentication support</li>
+    <li>Circuit breaker for failure protection</li>
+    <li>Automatic retry with exponential backoff</li>
+    <li>Connection pooling (optional)</li>
+    <li>Comprehensive diagnostics and monitoring</li>
+  </ul>
+  
+  <h3>TLS Configuration</h3>
+  <p>The TLS client supports various security configurations:</p>
+  <ul>
+    <li><b>Server Verification Only</b>: Provide CA certificate to verify server</li>
+    <li><b>Mutual TLS</b>: Provide client certificate and key for authentication</li>
+    <li><b>Self-Signed Certificates</b>: Disable "Reject Unauthorized" for testing</li>
+  </ul>
+  
+  <h3>Circuit Breaker</h3>
+  <p>Protects against cascading failures by temporarily blocking connections after repeated failures.</p>
+  
+  <h3>Retry Handler</h3>
+  <p>Automatically retries failed operations with configurable exponential backoff.</p>
+  
+  <h3>Input Messages</h3>
+  <dl class="message-properties">
+    <dt>payload <span class="property-type">string</span></dt>
+    <dd>Control commands: "connect", "disconnect", "reconnect"</dd>
+  </dl>
+  
+  <h3>Status</h3>
+  <p>The node shows connection status:</p>
+  <ul>
+    <li><b>Green</b>: Connected</li>
+    <li><b>Yellow</b>: Connecting or circuit breaker half-open</li>
+    <li><b>Red</b>: Disconnected, error, or circuit breaker open</li>
+  </ul>
+</script>

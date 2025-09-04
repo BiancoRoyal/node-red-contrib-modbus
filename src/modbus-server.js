@@ -133,12 +133,18 @@ module.exports = function (RED) {
         node.netServer.close(() => {
           internalDebugLog('Modbus Server closed')
           done()
-          node.removeAllListeners()
-          node.netServer.removeAllListeners()
+          if (node && typeof node.removeAllListeners === 'function') {
+            node.removeAllListeners()
+          }
+          if (node.netServer && typeof node.netServer.removeAllListeners === 'function') {
+            node.netServer.removeAllListeners()
+          }
         })
       } else {
         done()
-        node.removeAllListeners()
+        if (node && typeof node.removeAllListeners === 'function') {
+          node.removeAllListeners()
+        }
       }
 
       node.modbusServer = null
