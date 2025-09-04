@@ -10,6 +10,11 @@
 <script type="text/javascript">
   RED.nodes.registerType('modbus-client', {
     category: 'config',
+    credentials: {
+      tlsPrivateKey: {type: 'text'},
+      tlsCertificate: {type: 'text'},
+      tlsCa: {type: 'text'}
+    },
     defaults: {
 
       name: {value: ''},
@@ -22,6 +27,12 @@
       tcpHost: {value: '127.0.0.1', required: true},
       tcpPort: {value: 502, required: true, validate: RED.validators.number()},
       tcpType: {value: 'DEFAULT', required: true},
+      
+      tlsEnabled: {value: false},
+      tlsRejectUnauthorized: {value: true},
+      tlsServername: {value: ''},
+      tlsSecureProtocol: {value: 'TLSv1_3_method'},
+      tlsCheckServerIdentity: {value: true},
 
       serialPort: {value: '/dev/ttyUSB', required: true},
       serialType: {value: 'RTU-BUFFERD', required: true},
@@ -46,7 +57,8 @@
     label: function () {
       let node = this
       if (node.clienttype == 'tcp') {
-        return node.name || 'modbus-tcp@' + node.tcpHost + ':' + node.tcpPort
+        let prefix = node.tlsEnabled ? 'modbus-tls@' : 'modbus-tcp@'
+        return node.name || prefix + node.tcpHost + ':' + node.tcpPort
       } else {
         return node.name || 'modbus-serial@' + node.serialPort + ':' + node.serialBaudrate
       }
@@ -85,6 +97,7 @@
       let inputsSerialExtras = $('#node-inputs-modbus-serial-extras')
       let inputsAsciiExtras = $('#node-inputs-ascii-extras')
       let inputsTCP = $('#node-inputs-modbus-tcp')
+      let inputsTLS = $('#node-inputs-modbus-tls')
 
       clientTypeSelector.on('focus', function () {
         previous = this.value
@@ -190,6 +203,22 @@
           inputsAsciiExtras.hide()
         }
       })
+      
+      // TLS checkbox toggle handler
+      $('#node-config-input-tlsEnabled').change(function() {
+        if ($(this).is(':checked')) {
+          inputsTLS.show()
+        } else {
+          inputsTLS.hide()
+        }
+      })
+      
+      // Initialize TLS options visibility
+      if (node.tlsEnabled) {
+        inputsTLS.show()
+      } else {
+        inputsTLS.hide()
+      }
 
       try {
         $('#node-config-input-serialPort').autocomplete('destroy')
@@ -258,6 +287,44 @@
                         <option value="C701">C701</option>
                         <option value="UDP">UDP</option>
                     </select>
+                </div>
+                <div class="form-row">
+                    <label style="min-width:190px" for="node-config-input-tlsEnabled">
+                        <i class="fa fa-lock"></i> <span data-i18n="modbus-contrib.label.enableTls">Enable TLS/SSL</span>
+                    </label>
+                    <input type="checkbox" id="node-config-input-tlsEnabled" style="max-width:30px">
+                </div>
+                <div id="node-inputs-modbus-tls" style="display:none">
+                    <div class="form-row">
+                        <label for="node-config-input-tlsPrivateKey">
+                            <i class="fa fa-key"></i> <span data-i18n="modbus-contrib.label.tlsPrivateKey">Private Key</span>
+                        </label>
+                        <input type="text" id="node-config-input-tlsPrivateKey" placeholder="/path/to/client-key.pem or paste PEM content">
+                    </div>
+                    <div class="form-row">
+                        <label for="node-config-input-tlsCertificate">
+                            <i class="fa fa-certificate"></i> <span data-i18n="modbus-contrib.label.tlsCertificate">Certificate</span>
+                        </label>
+                        <input type="text" id="node-config-input-tlsCertificate" placeholder="/path/to/client-cert.pem or paste PEM content">
+                    </div>
+                    <div class="form-row">
+                        <label for="node-config-input-tlsCa">
+                            <i class="fa fa-shield"></i> <span data-i18n="modbus-contrib.label.tlsCa">CA Certificate</span>
+                        </label>
+                        <input type="text" id="node-config-input-tlsCa" placeholder="/path/to/ca-cert.pem or paste PEM content">
+                    </div>
+                    <div class="form-row">
+                        <label style="min-width:190px" for="node-config-input-tlsRejectUnauthorized">
+                            <i class="fa fa-check"></i> <span data-i18n="modbus-contrib.label.tlsRejectUnauthorized">Reject Unauthorized</span>
+                        </label>
+                        <input type="checkbox" id="node-config-input-tlsRejectUnauthorized" style="max-width:30px" checked>
+                    </div>
+                    <div class="form-row">
+                        <label for="node-config-input-tlsServername">
+                            <i class="fa fa-server"></i> <span data-i18n="modbus-contrib.label.tlsServername">Server Name</span>
+                        </label>
+                        <input type="text" id="node-config-input-tlsServername" placeholder="Leave empty to use host">
+                    </div>
                 </div>
             </div>
             <div id="node-inputs-modbus-serial">

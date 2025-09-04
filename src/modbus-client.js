@@ -27,6 +27,7 @@ module.exports = function (RED) {
 
   function ModbusClientNode (config) {
     RED.nodes.createNode(this, config)
+    const node = this
 
     // create an empty modbus client
     const ModbusRTU = require('@openp4nr/node-modbus')
@@ -59,38 +60,59 @@ module.exports = function (RED) {
 
     // TLS Configuration with enhanced security
     this.tlsEnabled = config.tlsEnabled || false
+    const fs = require('fs')
 
-    // Security: Use Node-RED credential management for sensitive TLS data
-    const getTlsCredential = (key) => {
+    // Helper function to load certificate content
+    const loadCertificate = (credentialKey) => {
+      let content = ''
+
       // First try to get from Node-RED credentials
-      if (this.credentials && this.credentials[key]) {
-        return this.credentials[key]
+      if (this.credentials && this.credentials[credentialKey]) {
+        content = this.credentials[credentialKey]
       }
       // Fallback to environment variables for security
-      const envKey = `MODBUS_TLS_${key.toUpperCase()}`
-      if (process.env[envKey]) {
+      const envKey = `MODBUS_TLS_${credentialKey.toUpperCase().replace('TLS', '')}`
+      if (!content && process.env[envKey]) {
         internalDebugLog('Using environment variable for TLS:', envKey)
-        return process.env[envKey]
+        content = process.env[envKey]
       }
-      // Finally fallback to config (with security warning)
-      if (config[key]) {
-        if (node.showWarnings) {
-          node.warn('TLS credentials should use Node-RED credential management or environment variables')
+
+      // If content looks like a file path, try to read the file
+      if (content && !content.includes('BEGIN') && fs.existsSync(content)) {
+        try {
+          content = fs.readFileSync(content, 'utf8')
+        } catch (err) {
+          if (node.showErrors) {
+            node.error(`Failed to read TLS certificate file: ${content}`)
+          }
+          content = ''
         }
-        return config[key]
       }
-      return ''
+
+      return content
     }
 
-    this.tlsOptions = {
-      key: getTlsCredential('tlsPrivateKey'),
-      cert: getTlsCredential('tlsCertificate'),
-      ca: getTlsCredential('tlsCa'),
-      rejectUnauthorized: config.tlsRejectUnauthorized !== false, // Default to secure
-      servername: config.tlsServername || this.tcpHost,
-      secureProtocol: config.tlsSecureProtocol || 'TLSv1_3_method', // Upgrade to TLS 1.3
-      checkServerIdentity: config.tlsCheckServerIdentity !== false ? undefined : () => undefined,
-      minVersion: 'TLSv1.2' // Enforce minimum TLS version
+    // Only build TLS options if TLS is enabled
+    if (this.tlsEnabled) {
+      this.tlsOptions = {
+        key: loadCertificate('tlsPrivateKey'),
+        cert: loadCertificate('tlsCertificate'),
+        ca: loadCertificate('tlsCa'),
+        rejectUnauthorized: config.tlsRejectUnauthorized !== false, // Default to secure
+        servername: config.tlsServername || this.tcpHost,
+        secureProtocol: config.tlsSecureProtocol || 'TLSv1_3_method',
+        checkServerIdentity: config.tlsCheckServerIdentity !== false ? undefined : () => undefined,
+        minVersion: 'TLSv1.2' // Enforce minimum TLS version
+      }
+
+      // Remove empty certificate fields
+      Object.keys(this.tlsOptions).forEach(key => {
+        if (this.tlsOptions[key] === '') {
+          delete this.tlsOptions[key]
+        }
+      })
+
+      internalDebugLog('TLS enabled with options:', Object.keys(this.tlsOptions))
     }
 
     this.serialPort = config.serialPort
@@ -118,7 +140,6 @@ module.exports = function (RED) {
     this.showWarnings = config.showWarnings
     this.showLogs = config.showLogs
 
-    const node = this
     node.isFirstInitOfConnection = true
     node.closingModbus = false
 
@@ -957,7 +978,13 @@ module.exports = function (RED) {
     }
   }
 
-  RED.nodes.registerType('modbus-client', ModbusClientNode)
+  RED.nodes.registerType('modbus-client', ModbusClientNode, {
+    credentials: {
+      tlsPrivateKey: { type: 'text' },
+      tlsCertificate: { type: 'text' },
+      tlsCa: { type: 'text' }
+    }
+  })
 
   /* istanbul ignore next */
   RED.httpAdmin.get('/modbus/serial/ports', RED.auth.needsPermission('serial.read'), function (req, res) {
