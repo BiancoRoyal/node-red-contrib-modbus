@@ -22,6 +22,7 @@
       emptyMsgOnFail: {value: false},
       keepMsgProperties: {value: false},
       delayOnStart: {value: false},
+      enableDeformedMessages: {value: false},
       startDelayTime: {value: ''},
     },
     inputs: 1,
@@ -101,6 +102,10 @@
                 <label for="node-input-delayOnStart" style="width:160px">
                 <i class="fa fa-power-off"></i> <span data-i18n="modbus-contrib.label.delayOnStart"></span></label>
                 <input type="checkbox" id="node-input-delayOnStart" style="width:40px">
+            </div>
+            <div class="form-row" id="node-enabledeformedmessages">
+                <label for="node-input-enableDeformedMessages" style="width:160px"><span data-i18n="modbus-contrib.label.enableDeformedMessages"></span></label>
+                <input type="checkbox" id="node-input-enableDeformedMessages" style="width:40px">
             </div>
             <div class="form-row" id="node-delay">
                 <label for="node-input-startDelayTime"><i class="fa fa-clock-o"></i> <span data-i18n="modbus-contrib.label.startDelayTime"></span></label>
