@@ -34,6 +34,7 @@
         }
       },
       delayOnStart: {value: false},
+      enableDeformedMessages: { value: false },
       startDelayTime: {value: ''},
       server: {type: 'modbus-client', required: true},
       useIOFile: {value: false},
@@ -184,8 +185,12 @@
                 <input type="checkbox" id="node-input-delayOnStart" style="width:40px">
             </div>
             <div class="form-row" id="node-delay">
-                <label for="node-input-startDelayTime"><i class="fa fa-clock-o"></i> <span data-i18n="modbus-contrib.label.startDelayTime"></span></label>
+                <label for="node-input-startDelayTime"><i class="fa fa-clock-o"></i><span data-i18n="modbus-contrib.label.startDelayTime"></span></label>
                 <input type="text" id="node-input-startDelayTime" placeholder="10" style="width:80px">
+            </div>
+            <div class="form-row" id="node-enabledeformedmessages">
+                <label for="node-input-enableDeformedMessages" style="width:160px"><span data-i18n="modbus-contrib.label.enableDeformedMessages"></span></label>
+                <input type="checkbox" id="node-input-enableDeformedMessages" style="width:40px">
             </div>
             <div class="form-row">
                 <label for="node-input-server"><i class="icon-globe"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
