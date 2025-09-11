@@ -162,6 +162,7 @@ module.exports = function (RED) {
           fc: mbCore.functionCodeModbusRead(node.dataType),
           address: node.adr,
           quantity: node.quantity,
+          enableDeformedMessages: config.enableDeformedMessages,
           messageId: mbCore.getObjectId()
         }
       }
