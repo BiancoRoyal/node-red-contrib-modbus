@@ -40,6 +40,7 @@ module.exports = function (RED) {
     this.verboseLogging = RED.settings.verbose
 
     this.delayOnStart = config.delayOnStart
+    this.enableDeformedMessages = config.enableDeformedMessages
     this.startDelayTime = parseInt(config.startDelayTime) || 10
 
     const node = this
@@ -77,7 +78,7 @@ module.exports = function (RED) {
       node.internalDebugLog(err.message)
       const origMsg = mbCore.getOriginalMessage(node.bufferMessageList, msg)
       node.errorProtocolMsg(err, origMsg)
-      mbBasics.sendEmptyMsgOnFail(node, err, msg)
+      mbBasics.sendEmptyMsgOnFail(node, err, origMsg)
       mbBasics.setModbusError(node, modbusClient, err, origMsg)
       node.emit('modbusFlexGetterNodeError')
     }
@@ -120,7 +121,6 @@ module.exports = function (RED) {
         node.error('Quantity Not Valid', msg)
         isValid &= false
       }
-
       return isValid
     }
 
@@ -137,6 +137,7 @@ module.exports = function (RED) {
           quantity: msg.payload.quantity,
           emptyMsgOnFail: node.emptyMsgOnFail,
           keepMsgProperties: node.keepMsgProperties,
+          enableDeformedMessages: node.enableDeformedMessages,
           messageId
         }
       }
