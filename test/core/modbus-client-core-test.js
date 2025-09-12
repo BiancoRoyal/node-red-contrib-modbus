@@ -33,6 +33,99 @@ describe('Core Client Testing', function () {
 
       coreClientUnderTest.readModbusByFunctionCodeOne.restore()
     })
+
+    it('should call readCoils_deformedReadEnabled and use the deformed path if the option is enabled', async () => {
+      let isSuccess = false
+      const node = {
+        warn () {},
+        client: {
+          async readCoils_deformedReadEnabled () {
+            isSuccess = true
+            return 'success'
+          }
+        },
+        activateSending: async function () {
+          return 'success'
+        }
+      }
+
+      const msg = { payload: { fc: '1', enableDeformedMessages: true } }
+      const cb = sinon.spy()
+      const cberr = sinon.spy()
+
+      coreClientUnderTest.readModbusByFunctionCode(node, msg, cb, cberr)
+      assert.equal(isSuccess, true)
+    })
+
+    it('should call read readDiscreteInputs_deformedReadEnabled and use the deformed path if the option is enabled', async () => {
+      let isSuccess = false
+      const node = {
+        warn () {},
+        client: {
+          async readDiscreteInputs_deformedReadEnabled () {
+            isSuccess = true
+            return 'success'
+          }
+        },
+        activateSending: async function () {
+          return 'success'
+        }
+      }
+
+      const msg = { payload: { fc: '2', enableDeformedMessages: true } }
+      const cb = sinon.spy()
+      const cberr = sinon.spy()
+
+      coreClientUnderTest.readModbusByFunctionCode(node, msg, cb, cberr)
+      assert.equal(isSuccess, true)
+    })
+
+    it('should call read readHoldingRegisters_deformedReadEnabled and use the deformed path if the option is enabled', async () => {
+      let isSuccess = false
+      const node = {
+        warn () {},
+        client: {
+          async readHoldingRegisters_deformedReadEnabled () {
+            isSuccess = true
+            return 'success'
+          }
+        },
+        activateSending: async function () {
+          return 'success'
+        }
+      }
+
+      const msg = { payload: { fc: '3', enableDeformedMessages: true } }
+      const cb = sinon.spy()
+      const cberr = sinon.spy()
+
+      coreClientUnderTest.readModbusByFunctionCode(node, msg, cb, cberr)
+      assert.equal(isSuccess, true)
+    })
+
+    it('should call read readInputRegisters_deformedReadEnabled and use the deformed path if the option is enabled', async () => {
+      let isSuccess = false
+      const node = {
+        warn () {},
+        client: {
+          async readInputRegisters_deformedReadEnabled () {
+            isSuccess = true
+            return 'success'
+          }
+        },
+        activateSending: async function () {
+          return 'success'
+        }
+      }
+
+      const msg = { payload: { fc: '4', enableDeformedMessages: true } }
+      const cb = sinon.spy()
+      const cberr = sinon.spy()
+
+      coreClientUnderTest.readModbusByFunctionCode(node, msg, cb, cberr)
+      assert.equal(isSuccess, true)
+    })
+
     it('should handle msg.payload.fc as a string representation of a number', () => {
       const node = {}
       const msg = { payload: { fc: '2' } }

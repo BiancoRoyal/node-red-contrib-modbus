@@ -99,42 +99,82 @@ de.biancoroyal.modbus.core.client.activateSendingOnFailure = function (node, cbe
 
 de.biancoroyal.modbus.core.client.readModbusByFunctionCodeOne = function (node, msg, cb, cberr) {
   const coreClient = de.biancoroyal.modbus.core.client
-  node.client.readCoils(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-    coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
-  }).catch(function (err) {
-    coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
-    node.modbusErrorHandling(err)
-  })
+  if (msg.payload.enableDeformedMessages) {
+    node.warn('Deformed Message support is enabled')
+    node.client.readCoils_deformedReadEnabled(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+      coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+    }).catch(function (err) {
+      coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
+      node.modbusErrorHandling(err)
+    })
+  } else {
+    node.client.readCoils(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+      coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+    }).catch(function (err) {
+      coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
+      node.modbusErrorHandling(err)
+    })
+  }
 }
 
 de.biancoroyal.modbus.core.client.readModbusByFunctionCodeTwo = function (node, msg, cb, cberr) {
   const coreClient = de.biancoroyal.modbus.core.client
-  node.client.readDiscreteInputs(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-    coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
-  }).catch(function (err) {
-    coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
-    node.modbusErrorHandling(err)
-  })
+  if (msg.payload.enableDeformedMessages) {
+    node.warn('Deformed Message support is enabled')
+    node.client.readDiscreteInputs_deformedReadEnabled(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+      coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+    }).catch(function (err) {
+      coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
+      node.modbusErrorHandling(err)
+    })
+  } else {
+    node.client.readDiscreteInputs(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+      coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+    }).catch(function (err) {
+      coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
+      node.modbusErrorHandling(err)
+    })
+  }
 }
 
 de.biancoroyal.modbus.core.client.readModbusByFunctionCodeThree = function (node, msg, cb, cberr) {
   const coreClient = de.biancoroyal.modbus.core.client
-  node.client.readHoldingRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-    coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
-  }).catch(function (err) {
-    coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
-    node.modbusErrorHandling(err)
-  })
+  if (msg.payload.enableDeformedMessages) {
+    node.warn('Deformed Message support is enabled')
+    node.client.readHoldingRegisters_deformedReadEnabled(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+      coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+    }).catch(function (err) {
+      coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
+      node.modbusErrorHandling(err)
+    })
+  } else {
+    node.client.readHoldingRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+      coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+    }).catch(function (err) {
+      coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
+      node.modbusErrorHandling(err)
+    })
+  }
 }
 
 de.biancoroyal.modbus.core.client.readModbusByFunctionCodeFour = function (node, msg, cb, cberr) {
   const coreClient = de.biancoroyal.modbus.core.client
-  node.client.readInputRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
-    coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
-  }).catch(function (err) {
-    coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
-    node.modbusErrorHandling(err)
-  })
+  if (msg.payload.enableDeformedMessages) {
+    node.warn('Deformed Message support is enabled')
+    node.client.readInputRegisters_deformedReadEnabled(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+      coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+    }).catch(function (err) {
+      coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
+      node.modbusErrorHandling(err)
+    })
+  } else {
+    node.client.readInputRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+      coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+    }).catch(function (err) {
+      coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
+      node.modbusErrorHandling(err)
+    })
+  }
 }
 
 de.biancoroyal.modbus.core.client.sendCustomFunctionCode = function (node, msg, cb, cberr) {
@@ -152,7 +192,6 @@ de.biancoroyal.modbus.core.client.sendCustomFunctionCode = function (node, msg, 
 de.biancoroyal.modbus.core.client.readModbusByFunctionCode = function (node, msg, cb, cberr) {
   const coreClient = de.biancoroyal.modbus.core.client
   const nodeLog = de.biancoroyal.modbus.core.client.getLogFunction(node)
-
   switch (parseInt(msg.payload.fc)) {
     case 1:
       coreClient.readModbusByFunctionCodeOne(node, msg, cb, cberr)

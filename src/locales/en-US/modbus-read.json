@@ -16,7 +16,8 @@
       "useIOFile": "Using IO-File",
       "ioFile": "IO-File",
       "useIOForPayload": "IO's As Payload",
-      "emptyMsgOnFail": "Empty msg on Modbus fail"
+      "emptyMsgOnFail": "Empty msg on Modbus fail",
+      "enableDeformedMessages": "Allow oversized messages"
     },
     "tabs-label": {
       "settings": "Settings",

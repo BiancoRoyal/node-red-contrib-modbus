@@ -26,6 +26,7 @@
       emptyMsgOnFail: {value: false},
       keepMsgProperties: {value: false},
       delayOnStart: {value: false},
+      enableDeformedMessages: {value: false, required: false},
       startDelayTime: {value: ''},
     },
     inputs: 1,
@@ -123,6 +124,10 @@
                 <i class="fa fa-power-off"></i> <span data-i18n="modbus-contrib.label.delayOnStart"></span></label>
                 <input type="checkbox" id="node-input-delayOnStart" style="width:40px">
             </div>
+            <div class="form-row" id="node-enabledeformedmessages">
+                <label for="node-input-enableDeformedMessages" style="width:160px"><span data-i18n="modbus-contrib.label.enableDeformedMessages"></span></label>
+                <input type="checkbox" id="node-input-enableDeformedMessages" style="width:40px">
+            </div>
             <div class="form-row" id="node-delay">
                 <label for="node-input-startDelayTime"><i class="fa fa-clock-o"></i> <span data-i18n="modbus-contrib.label.startDelayTime"></span></label>
                 <input type="text" id="node-input-startDelayTime" placeholder="10" style="width:80px">
@@ -211,6 +216,9 @@
 
      <p>Unit-Id (0..255 tcp | 0..247 serial) - leave empty, otherwise it overrides the default Unit-ID of client
      config</p>
+
+     <p>If the device you are communicating with sends data that is longer than expected for one of the following Functioncodes 1,2,3 or 4, you can enable allow oversized
+     messages in the options. <strong>NOTE: This is a last resort option and could deliver potential faulty data please use this option with care</strong>
 
      <p>Output 1: data Array (PDU), modbus response Buffer, input message</p>
      <p>Output 2: modbus response Buffer, data Array (PDU), input message</p>
