@@ -273,6 +273,9 @@
      <p>Unit-Id (0..255 tcp | 0..247 serial) - leave empty, otherwise it overrides the default Unit-ID of client
      config</p>
 
+     <p>If the device you are communicating with sends data that is longer than expected for one of the following Functioncodes 1,2,3 or 4, you can enable allow oversized
+     messages in the options. <strong>NOTE: This is a last resort option and could deliver potential faulty data please use this option with care</strong>
+     </p>
      <p>
          Setup a polling rate (greater than zero) and the time unit.
          Choose or edit the Modbus connection configuration.
