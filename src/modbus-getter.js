@@ -88,6 +88,10 @@ module.exports = function (RED) {
       node.emit('modbusGetterNodeError')
     }
 
+    if (node.showWarnings && node.enableDeformedMessages) {
+      node.warn('Deformed Message support is enabled')
+    }
+
     node.buildNewMessageObject = function (node, msg) {
       const messageId = mbCore.getObjectId()
       return {
