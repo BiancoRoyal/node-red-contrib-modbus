@@ -154,6 +154,10 @@ module.exports = function (RED) {
         return
       }
 
+      if (node.showWarnings && config.enableDeformedMessages) {
+        verboseWarn('Deformed Message support is enabled')
+      }
+
       const msg = {
         topic: node.topic || 'polling',
         from: node.name,
