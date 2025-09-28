@@ -1,22 +1,22 @@
 ![Platform Node-RED](https://img.shields.io/badge/Platform-Node--RED-red.png)
 ![Contribution Modbus](https://img.shields.io/badge/Contribution-Modbus-orange.png)
-[![Financial Contributors on Open Collective](https://opencollective.com/node-red-contrib-modbus/all/badge.svg?label=financial+contributors)](https://opencollective.com/node-red-contrib-modbus)
-[![NPM version](https://badge.fury.io/js/node-red-contrib-modbus.png)](https://www.npmjs.com/package/node-red-contrib-modbus)
+[![Financial Contributors on Open Collective](https://opencollective.com/plus4nodered-node-red-contrib-modbus/all/badge.svg?label=financial+contributors)](https://opencollective.com/plus4nodered-node-red-contrib-modbus)
+[![NPM version](https://badge.fury.io/js/@plus4nodered%2Fnode-red-contrib-modbus.png)](https://www.npmjs.com/package/@plus4nodered/node-red-contrib-modbus)
 ![ES_Sourdce_Version](https://img.shields.io/badge/JS_Source-ES2019-yellow.png)
 ![ES_Deploy_Version](https://img.shields.io/badge/JS_Deploy-ES2015-yellow.png)
 ![NodeJS_Version](https://img.shields.io/badge/NodeJS-LTS-green.png)
 [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
-[![NPM download](https://img.shields.io/npm/dm/node-red-contrib-modbus.svg)](https://npm-stat.com/charts.html?package=node-red-contrib-modbus)
+[![NPM download](https://img.shields.io/npm/dm/@plus4nodered%2Fnode-red-contrib-modbus.svg)](https://npm-stat.com/charts.html?package=@plus4nodered/node-red-contrib-modbus)
 [![Build and publish](https://github.com/BiancoRoyal/node-red-contrib-modbus/actions/workflows/build.yml/badge.svg)](https://github.com/BiancoRoyal/node-red-contrib-modbus/actions/workflows/build.yml)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6cbeb40ab5604b3ab99e6badc9469e8a)](https://www.codacy.com/gh/BiancoRoyal/node-red-contrib-modbus?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=BiancoRoyal/node-red-contrib-modbus&amp;utm_campaign=Badge_Grade)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/BiancoRoyal/node-red-contrib-modbus)
 
 
-# node-red-contrib-modbus
+# @plus4nodered/node-red-contrib-modbus
 
 ### The all-in-one Modbus TCP and Serial contribution package for Node-RED
 
-[![nodemodbus64](images/modbus-icon64.png)](https://www.npmjs.com/package/node-red-contrib-modbus)
+[![nodemodbus64](images/modbus-icon64.png)](https://www.npmjs.com/package/@plus4nodered/node-red-contrib-modbus)
 
 If you like that contributor's package for Modbus, then please **give us your star at [GitHub][12]** !
 
@@ -63,11 +63,11 @@ If you like that contributor's package for Modbus, then please **give us your st
 
 Run the following command in the root directory of your Node-RED install
 
-    npm install node-red-contrib-modbus
+    npm install @plus4nodered/node-red-contrib-modbus
 
 Run the following command for global install
 
-    npm install -g node-red-contrib-modbus
+    npm install -g @plus4nodered/node-red-contrib-modbus
 
 try these options on npm install to build if you have problems to install
 
@@ -91,15 +91,15 @@ If you get in trouble *with Serial* connections, then check with just [serialpor
 
 To update the dependencies or the whole package, you have just to install again.
 
-    npm show node-red-contrib-modbus@* version
+    npm show @plus4nodered/node-red-contrib-modbus@* version
 
 To get a special version, please set the version with @M.M.F:
 
-    npm install node-red-contrib-modbus@3.6.1
+    npm install @plus4nodered/node-red-contrib-modbus@6.0.0
 
 or global by
 
-    npm install -g node-red-contrib-modbus@3.6.1
+    npm install -g @plus4nodered/node-red-contrib-modbus@6.0.0
 
 ## Modbus Flex Server
 

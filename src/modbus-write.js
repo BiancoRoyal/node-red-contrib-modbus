@@ -19,7 +19,7 @@ module.exports = function (RED) {
   // SOURCE-MAP-REQUIRED
   const mbBasics = require('./modbus-basics')
   const mbCore = require('./core/modbus-core')
-  const internalDebugLog = require('debug')('contribModbus:write')
+  const internalDebugLog = require('./core/modbus-logger').getDebugLogger('contribModbus:write')
 
   function ModbusWrite (config) {
     RED.nodes.createNode(this, config)

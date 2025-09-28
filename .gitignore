@@ -15,3 +15,24 @@ pki/
 *.tgz
 
 .DS_Store
+
+# Node-RED test directory
+.node-red-test/
+!.node-red-test/settings.js
+!.node-red-test/test-flow.json
+
+# TLS certificates (except generation scripts)
+examples/4-security/tls-secure-modbus/certs/*.pem
+examples/4-security/tls-secure-modbus/certs/*.key
+examples/4-security/tls-secure-modbus/certs/*.crt
+examples/4-security/tls-secure-modbus/certs/*.csr
+examples/4-security/tls-secure-modbus/certs/*.srl
+example/modbus-tls-docker/certs/*.pem
+example/modbus-tls-docker/certs/*.key
+example/modbus-tls-docker/certs/*.crt
+example/modbus-tls-docker/certs/*.csr
+example/modbus-tls-docker/certs/*.srl
+
+# Docker volumes
+example/modbus-tls-docker/server-data/
+example/modbus-tls-docker/client-data/

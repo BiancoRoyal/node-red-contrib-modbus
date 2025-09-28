@@ -17,7 +17,7 @@ module.exports = function (RED) {
   // SOURCE-MAP-REQUIRED
   const mbBasics = require('./modbus-basics')
   const coreModbusQueue = require('./core/modbus-queue-core')
-  const internalDebugLog = require('debug')('contribModbus:queue')
+  const internalDebugLog = require('./core/modbus-logger').getDebugLogger('contribModbus:queue')
 
   function ModbusQueueInfo (config) {
     RED.nodes.createNode(this, config)

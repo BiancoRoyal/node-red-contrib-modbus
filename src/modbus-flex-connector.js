@@ -16,7 +16,7 @@ module.exports = function (RED) {
   'use strict'
   // SOURCE-MAP-REQUIRED
   const mbBasics = require('./modbus-basics')
-  const internalDebugLog = require('debug')('contribModbus:flex:connector')
+  const internalDebugLog = require('./core/modbus-logger').getDebugLogger('contribModbus:flex:connector')
 
   function ModbusFlexConnector (config) {
     RED.nodes.createNode(this, config)

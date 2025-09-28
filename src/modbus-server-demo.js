@@ -19,7 +19,7 @@ module.exports = function (RED) {
   const net = require('net')
   // const coreServer = require('./core/modbus-server-core')
   const mbBasics = require('./modbus-basics')
-  const internalDebugLog = require('debug')('contribModbus:server:demo')
+  const internalDebugLog = require('./core/modbus-logger').getDebugLogger('contribModbus:server:demo')
 
   function ModbusDemoServer (config) {
     RED.nodes.createNode(this, config)

@@ -18,7 +18,7 @@ module.exports = function (RED) {
   const mbBasics = require('./modbus-basics')
   const coreModbusClient = require('./core/modbus-client-core')
   const coreModbusQueue = require('./core/modbus-queue-core')
-  const internalDebugLog = require('debug')('contribModbus:config:tls:client')
+  const internalDebugLog = require('./core/modbus-logger').getDebugLogger('contribModbus:config:tls:client')
   // const _ = require('underscore')
   const fs = require('fs')
 

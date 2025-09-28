@@ -18,7 +18,7 @@ module.exports = function (RED) {
   const mbBasics = require('./modbus-basics')
   const mbCore = require('./core/modbus-core')
   const mbIOCore = require('./core/modbus-io-core')
-  const internalDebugLog = require('debug')('contribModbus:flex:getter')
+  const internalDebugLog = require('./core/modbus-logger').getDebugLogger('contribModbus:flex:getter')
 
   function ModbusFlexGetter (config) {
     RED.nodes.createNode(this, config)

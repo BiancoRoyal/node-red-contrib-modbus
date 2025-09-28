@@ -1,4 +1,4 @@
-# [6.0.0-beta.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.43.0...v6.0.0-beta.1) (2025-09-04)
+# [6.0.0-beta.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.43.0...v6.0.0-beta.1) (2025-09-28)
 
 
 ### Bug Fixes
@@ -50,6 +50,7 @@
 * **flex-wrt:** add event handler interface, use the new dispatch system ([7410cc5](https://github.com/biancoroyal/node-red-contrib-modbus/commit/7410cc5b033a9d60945245280c97d296a940c1ef))
 * **getter-unit:** reexported flows, fixed ids ([48d77df](https://github.com/biancoroyal/node-red-contrib-modbus/commit/48d77dfd0d52bf1b0b2b3f18ef307fb45b99f310))
 * **getter:** add event handler interface, use the new dispatch system ([2c2b85b](https://github.com/biancoroyal/node-red-contrib-modbus/commit/2c2b85bb5f54f73375686c1affc78270a566702d))
+* integrate TLS support directly into modbus-client node ([7a359bb](https://github.com/biancoroyal/node-red-contrib-modbus/commit/7a359bb53932b058e9148be859b14f62f09cdc21))
 * **io-config-unit:** reexported all flows, changed timeout values ([0617684](https://github.com/biancoroyal/node-red-contrib-modbus/commit/0617684b96b7f5ee5a1a5c5b43328b543ee2bbb7))
 * **modbus-client-core:** Improve code in modbus-client-core.js file ([f0691e2](https://github.com/biancoroyal/node-red-contrib-modbus/commit/f0691e2cdf8e0986912d60d31432a592de264769))
 * **modbus-flex-getter-unit:** reexported flows, replaced id's ([ac625b3](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ac625b3e79601575bba13769801bcefcfdfdbcad))
@@ -62,6 +63,11 @@
 * slowly moving tests to jest. ([27d971e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/27d971eb97f415ea9d8c646e85dbd4191601d635))
 * **test-flow:** added tets flow for github issue 473 ([6130171](https://github.com/biancoroyal/node-red-contrib-modbus/commit/6130171e2542dc5c8a2c900b4f6b81d5f07367cf))
 * **write:** add event handler interface, use the new dispatch system ([986f9d1](https://github.com/biancoroyal/node-red-contrib-modbus/commit/986f9d1116cfcdaddf76e48d12662593e075b518))
+
+
+### BREAKING CHANGES
+
+* Separate TLS nodes removed, use Enable TLS checkbox in modbus-client instead
 
 
 

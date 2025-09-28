@@ -1,5 +1,5 @@
 {
-  "name": "node-red-contrib-modbus",
+  "name": "@plus4nodered/node-red-contrib-modbus",
   "version": "6.0.0-beta.1",
   "private": false,
   "description": "The all in one Modbus TCP, TLS, UDP and Serial contribution long term supported package for Node-RED.",
@@ -7,12 +7,12 @@
     "@openp4nr/node-modbus": "/Users/biancode/Development/P4NR/modbus/node-modbus-serial",
     "@xstate/fsm": "~2.1.0",
     "bson": "~6.10.1",
-    "debug": "~4.4.0",
     "jsmodbus": "~4.0.10",
     "line-by-line": "~0.1.6",
     "node-forge": "~1.3.1",
     "source-map-support": "~0.5.21",
-    "underscore": "~1.13.7"
+    "underscore": "~1.13.7",
+    "winston": "~3.17.0"
   },
   "optionalDependencies": {
     "@serialport/list": "~12.0.0",
@@ -92,8 +92,15 @@
     "release:beta": "standard-version --prerelease beta",
     "release:alpha": "standard-version --prerelease alpha",
     "dev:link": "npm i && npm run build && npm link",
-    "dev:unlink": "npm unlink node-red-contrib-modbus -g",
-    "dev:link-local": "npm run build && npm link"
+    "dev:unlink": "npm unlink @plus4nodered/node-red-contrib-modbus -g",
+    "dev:link-local": "npm run build && npm link",
+    "node-red": "npm run build && cd .node-red-test && npx node-red -u .",
+    "node-red:debug": "npm run build && cd .node-red-test && DEBUG=contribModbus* npx node-red -u .",
+    "node-red:init": "./scripts/setup-node-red-test.sh",
+    "node-red:clean": "rm -rf .node-red-test",
+    "node-red:start": "npm run node-red:init && npm run node-red",
+    "node-red:update": "npm run build && cd .node-red-test && npm update @plus4nodered/node-red-contrib-modbus",
+    "node-red:watch": "npm run build && nodemon --watch src --exec 'npm run build && npm run node-red:update && cd .node-red-test && npx node-red -u .'"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.5",
@@ -122,6 +129,7 @@
     "nock": "^13.5.4",
     "node-red": "^4.1.0",
     "node-red-node-test-helper": "/Users/biancode/Development/P4NR/Node-RED/node-red-node-test-helper",
+    "nodemon": "^3.0.0",
     "nyc": "^15.1.0",
     "pump": "^3.0.0",
     "should": "^13.2.3",
@@ -162,7 +170,8 @@
       "test/integrations/flows/**",
       "test/units/flows/**",
       "__tests__/units/flows/**",
-      "__tests__/units/**"
+      "__tests__/units/**",
+      ".node-red-test"
     ]
   },
   "funding": {

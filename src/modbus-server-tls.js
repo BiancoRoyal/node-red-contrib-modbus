@@ -21,7 +21,7 @@ module.exports = function (RED) {
   // const path = require('path')
   // const coreServer = require('./core/modbus-server-core')
   const mbBasics = require('./modbus-basics')
-  const internalDebugLog = require('debug')('contribModbus:server:tls')
+  const internalDebugLog = require('./core/modbus-logger').getDebugLogger('contribModbus:server:tls')
 
   function ModbusTLSServer (config) {
     RED.nodes.createNode(this, config)

@@ -1,35 +1,96 @@
 # Node-RED Modbus Examples
 
-This directory contains comprehensive example flows demonstrating various features and capabilities of the node-red-contrib-modbus package.
+Welcome to the node-red-contrib-modbus examples! These examples are organized by complexity to help you learn Modbus communication in Node-RED.
 
-## 📚 Example Flows
+## 📚 Example Categories
 
-### 1. Basic Examples
+### 1️⃣ [Getting Started](./1-getting-started/)
+Perfect for beginners learning Modbus basics:
+- **simple-modbus-read.json** - Basic reading of holding registers
+- **simple-modbus-write.json** - Writing values to registers
 
-#### Simple-Modbus-Demo.json
-Basic Modbus operations including reading and writing to servers.
-- **Features**: Read coils, read registers, write registers, server setup
-- **Use Case**: Getting started with Modbus in Node-RED
-- **Difficulty**: Beginner
+### 2️⃣ [Basic Operations](./2-basic-operations/)
+Learn different Modbus data types and operations:
+- **read-coils-and-inputs.json** - Working with all Modbus data types (FC01-FC04)
 
-#### Simple-Modbus-IO-Demo.json
-Input/Output operations with Modbus devices.
-- **Features**: IO configuration, data mapping, register management
-- **Use Case**: Industrial IO operations
-- **Difficulty**: Beginner
+### 3️⃣ [Advanced Features](./3-advanced-features/)
+Explore powerful features for complex scenarios:
+- **flex-operations.json** - Dynamic addressing and custom function codes
 
-### 2. Security Examples
+### 4️⃣ [Security](./4-security/)
+Implement secure Modbus communication:
+- **[tls-secure-modbus/](./4-security/tls-secure-modbus/)** - Encrypted Modbus TCP with TLS/SSL
+  - modbus-tls-server-flow.json - TLS-enabled server example
+  - modbus-tls-client-flow.json - TLS-enabled client example
+  - certs/generate-certificates.sh - Certificate generation script
 
-#### Modbus-TLS-Security.json ⭐ NEW
-Secure Modbus communication using TLS/SSL encryption.
-- **Features**: 
-  - TLS client and server configuration
-  - Certificate-based authentication
-  - Encrypted data transmission
-  - Security best practices
-- **Use Case**: Secure industrial communications
-- **Difficulty**: Advanced
-- **Requirements**: TLS certificates (generation guide included)
+## 🚀 How to Use These Examples
+
+### Method 1: Import from Node-RED Menu (Recommended)
+1. Open Node-RED in your browser
+2. Click the menu (☰) in the top-right corner
+3. Select **Import → Examples → node-red-contrib-modbus**
+4. Navigate through the numbered categories
+5. Select an example and click **Import**
+
+### Method 2: Manual Import
+1. Navigate to the desired category folder (1-getting-started, 2-basic-operations, etc.)
+2. Open any `.json` file
+3. Copy the entire content
+4. In Node-RED, go to **Menu → Import → Clipboard**
+5. Paste the content and click **Import**
+
+## 🎯 Learning Path
+
+### Beginner Journey
+Start with **[1-getting-started](./1-getting-started/)** examples:
+1. **simple-modbus-read.json** - Understand basic communication
+2. **simple-modbus-write.json** - Learn sending data
+
+### Intermediate Path
+Progress to **[2-basic-operations](./2-basic-operations/)**:
+1. **read-coils-and-inputs.json** - Master all Modbus data types
+2. Understand function codes FC01-FC04
+
+### Advanced Mastery
+Explore **[3-advanced-features](./3-advanced-features/)**:
+1. **flex-operations.json** - Dynamic operations with flex nodes
+2. Custom function codes and runtime configuration
+
+### Security Implementation
+Implement **[4-security](./4-security/)** features:
+1. Navigate to **[tls-secure-modbus/](./4-security/tls-secure-modbus/)**
+2. Generate certificates using the provided script
+3. Deploy server and client flows with TLS encryption
+
+## 📋 Common Setup Steps
+
+### For All Examples:
+1. **TCP Examples**: Configure the Modbus client node with your server's IP (default: 127.0.0.1:502)
+2. **TLS Examples**: Use port 8502 and configure certificates
+3. **Serial Examples**: Set correct port and baud rate
+
+### Quick Test Setup:
+- Use `Modbus-Demo-Server-Showcase.json` as a test server
+- Provides simulated data for all client examples
+
+## 🛠️ Troubleshooting
+
+### Connection Issues
+- Verify IP address and port
+- Check firewall settings
+- For TLS: Ensure certificates are generated
+
+### Enable Debug Output
+```bash
+DEBUG=contribModbus* node-red
+```
+
+---
+
+## 📚 Legacy Example Flows
+
+The following examples are maintained for backwards compatibility:
 
 ### 3. Server Examples
 
