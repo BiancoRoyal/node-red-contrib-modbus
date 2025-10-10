@@ -10,9 +10,11 @@
 
 'use strict'
 
+const functionNode = require('@node-red/nodes/core/function/10-function.js')
+const globalConfig = require('@node-red/nodes/core/common/91-global-config')
 const injectNode = require('@node-red/nodes/core/common/20-inject.js')
 const serverNode = require('../../src/modbus-server.js')
-const testServerNodes = [injectNode, serverNode]
+const testServerNodes = [injectNode, functionNode, globalConfig, serverNode]
 const chai = require('chai')
 const expect = chai.expect
 const sinon = require('sinon')
@@ -246,6 +248,15 @@ describe('Server node Testing', function () {
       })
     })
 
+    it('should not crash when an rst package is received', function (done) {
+      const flow = Array.from(testFlows.testRstCrash)
+
+      expect(() => helper.load(testServerNodes, flow, function () {
+        const injectNode = helper.getNode('41ecdcf0b87dac45')
+        injectNode.emit('input', {})
+        done()
+      })).to.not.throw()
+    })
     it('should send data on input', function (done) {
       const flow = Array.from(testFlows.testShouldSendDataOnInputFlow)
 
