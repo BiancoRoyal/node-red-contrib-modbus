@@ -18,6 +18,8 @@ de.biancoroyal.modbus.queue.core.initQueue = function (node) {
   node.bufferCommandList.clear()
   node.sendingAllowed.clear()
   node.unitSendingAllowed = []
+  // Track currently in-flight command per unit id (at most one)
+  node.inflightByUnitId = new Map()
 
   for (let step = 0; step <= 255; step++) {
     node.bufferCommandList.set(step, [])
@@ -111,7 +113,18 @@ de.biancoroyal.modbus.queue.core.sendQueueDataToModbus = function (node, unitId)
     const command = node.bufferCommandList.get(unitId).shift()
     if (command) {
       node.sendingAllowed.set(unitId, false)
-      command.callModbus(node, command.msg, command.cb, command.cberr)
+
+      // mark as in-flight and wrap callbacks to auto-clear the inflight registry
+      if (!node.inflightByUnitId) { node.inflightByUnitId = new Map() }
+      node.inflightByUnitId.set(unitId, command)
+      const wrappedCb = (resp, msg) => {
+        try { command.cb(resp, msg) } finally { node.inflightByUnitId.delete(unitId) }
+      }
+      const wrappedErr = (err, msg) => {
+        try { command.cberr(err, msg) } finally { node.inflightByUnitId.delete(unitId) }
+      }
+
+      command.callModbus(node, command.msg, wrappedCb, wrappedErr)
     } else {
       throw new Error('Command On Send Not Valid')
     }
