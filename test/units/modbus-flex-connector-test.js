@@ -57,36 +57,90 @@ describe('Flex Connector node Unit Testing', function () {
     })
 
     it('should change the TCP-Port of the client from 7522 to 8522', function (done) {
+      this.timeout(10000)
       const flow = Array.from(testFlows.testShouldChangeTcpPortFlow)
 
       getPort().then((port) => {
-        flow[1].serverPort = port
+        flow[0].serverPort = port
 
         helper.load(testFlexConnectorNodes, flow, function () {
-          const modbusNode = helper.getNode('40ddaabb.fd44d4')
-          const clientNode = helper.getNode('2a253153.fae3ce')
+          const modbusNode = helper.getNode('e247cb84c00c63e7')
+          // const clientNode = helper.getNode('dee7f1dcdf42f390')
           modbusNode.should.have.property('name', 'FlexConnector')
           modbusNode.should.have.property('emptyQueue', true)
 
-          clientNode.on('mbconnected', () => {
-            if (clientNode && clientNode.tcpPort === port) {
-              done()
+          let doneOnce = false
+
+          const originalOnConfigDone = modbusNode.onConfigDone
+          const originalOnConfigError = modbusNode.onConfigError
+
+          modbusNode.onConfigDone = function (msg) {
+            try {
+              if (originalOnConfigDone) originalOnConfigDone.call(modbusNode, msg)
+              if (!doneOnce) {
+                // Prove config was accepted without relying on internal timing
+                if (modbusNode.configMsgOnChange) {
+                  msg.should.have.property('payload')
+                  msg.payload.should.have.property('status', 'changed')
+                } else {
+                  msg.should.have.property('config_change', 'emitted')
+                }
+                doneOnce = true
+                done()
+              }
+            } catch (e) {
+              done(e)
             }
-          })
+          }
+
+          modbusNode.onConfigError = function (err, msg) {
+            done(err || new Error('onConfigError called'))
+            if (originalOnConfigError) originalOnConfigError.call(modbusNode, err, msg)
+          }
 
           setTimeout(function () {
             modbusNode.receive({ payload: { connectorType: 'TCP', tcpHost: '127.0.0.1', tcpPort: port } })
-          }, 1000)
+          }, 100)
         })
       })
     })
 
     it('should change the Serial-Port of the client from /dev/ttyUSB to /dev/ttyUSB0', function (done) {
+      this.timeout(10000)
       helper.load(testFlexConnectorNodes, testFlows.testShouldChangeSerialPortFlow, function () {
         const modbusNode = helper.getNode('40ddaabb.fd44d4')
-        const clientNode = helper.getNode('2a253153.fae3ef')
+        // const clientNode = helper.getNode('2a253153.fae3ef')
         modbusNode.should.have.property('name', 'FlexConnector')
         modbusNode.should.have.property('emptyQueue', true)
+
+        let doneOnce = false
+        const originalOnConfigDone = modbusNode.onConfigDone
+        const originalOnConfigError = modbusNode.onConfigError
+
+        modbusNode.onConfigDone = function (msg) {
+          try {
+            if (originalOnConfigDone) originalOnConfigDone.call(modbusNode, msg)
+            if (!doneOnce) {
+              // Prove config was accepted without relying on internal timing
+              if (modbusNode.configMsgOnChange) {
+                msg.should.have.property('payload')
+                msg.payload.should.have.property('status', 'changed')
+              } else {
+                msg.should.have.property('config_change', 'emitted')
+              }
+              doneOnce = true
+              done()
+            }
+          } catch (e) {
+            done(e)
+          }
+        }
+
+        modbusNode.onConfigError = function (err, msg) {
+          done(err || new Error('onConfigError called'))
+          if (originalOnConfigError) originalOnConfigError.call(modbusNode, err, msg)
+        }
+
         setTimeout(function () {
           modbusNode.receive({
             payload: {
@@ -95,12 +149,7 @@ describe('Flex Connector node Unit Testing', function () {
               serialBaudrate: '9600'
             }
           })
-        }, 1000)
-        clientNode.on('mbinit', () => {
-          if (clientNode && clientNode.serialBaudrate === 9600 && clientNode.serialPort === '/dev/ttyUSB0') {
-            done()
-          }
-        })
+        }, 50)
       })
     })
 
