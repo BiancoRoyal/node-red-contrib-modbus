@@ -220,7 +220,6 @@ module.exports = function (RED) {
           processNextMessage()
         } else {
           processing = false
-          node.emit('modbusFlexGetterNodeDone')
         }
       })
     }
@@ -228,7 +227,6 @@ module.exports = function (RED) {
     function processNextMessage () {
       if (messageQueue.length === 0) {
         processing = false
-        node.emit('modbusFlexGetterNodeDone')
         return
       }
       const msg = messageQueue.shift()
@@ -255,9 +253,7 @@ module.exports = function (RED) {
           scheduleNext()
         }
       } catch (err) {
-        node.errorProtocolMsg(err, origMsgInput)
-        mbBasics.sendEmptyMsgOnFail(node, err, origMsgInput)
-        scheduleNext()
+        try { node.onModbusReadError(err, origMsgInput) } finally { scheduleNext() }
       }
     }
     node.on('close', function (done) {
