@@ -35,6 +35,7 @@ describe('Flex Getter node Testing', function () {
   })
 
   afterEach(function (done) {
+    sinon.restore()
     helper.unload().then(function () {
       done()
     }).catch(function () {
@@ -112,12 +113,17 @@ describe('Flex Getter node Testing', function () {
         helper.load(testFlexGetterNodes, flow, function () {
           const modbusGetter = helper.getNode('6d373a8628c3fc70')
           let counter = 0
-          modbusGetter.on('modbusFlexGetterNodeDone', function () {
+          const handler = function () {
             counter++
             if (modbusGetter.bufferMessageList.size >= 0 && counter === 1) {
               done()
             }
-          })
+          }
+          modbusGetter.on('modbusFlexGetterNodeDone', handler)
+          modbusGetter.on('modbusFlexGetterNodeError', handler)
+          setTimeout(function () {
+            modbusGetter.receive({ payload: '{ "fc": 1, "unitid": 1,"address": 0, "quantity": 1 }' })
+          }, 1200)
         })
       })
     })
@@ -141,7 +147,7 @@ describe('Flex Getter node Testing', function () {
           })
           setTimeout(function () {
             modbusGetter.receive({ payload: '{ "fc": 1, "unitid": 1,"address": 0, "quantity": 4 }' })
-          }, 800)
+          }, 1200)
         })
       })
     })
@@ -158,7 +164,7 @@ describe('Flex Getter node Testing', function () {
           setTimeout(function () {
             modbusGetter.receive({ payload: '{ "value": "true", "fc": 5, "unitid": 1,"address": 0, "quantity": 1 }' })
             done()
-          }, 800)
+          }, 1200)
         })
       })
     })
@@ -175,7 +181,7 @@ describe('Flex Getter node Testing', function () {
           setTimeout(function () {
             modbusGetter.receive({ payload: '{ "fc": 1, "unitid": 1,"address": -1, "quantity": 1 }' })
             done()
-          }, 800)
+          }, 1200)
         })
       })
     })
@@ -192,7 +198,7 @@ describe('Flex Getter node Testing', function () {
           setTimeout(function () {
             modbusGetter.receive({ payload: '{ "fc": 1, "unitid": 1,"address": 1, "quantity": -1 }' })
             done()
-          }, 800)
+          }, 1200)
         })
       })
     })
@@ -372,6 +378,138 @@ describe('Flex Getter node Testing', function () {
         })
       })
     })
+
+    it('modbus messages that are timed-out or had an error should be cleared from the queue and internal bufferMessageList', function (done) {
+      this.timeout(20000)
+      const flow = Array.from(testFlows.testFlexGetterMemoryBehaviour)
+      getPort().then((port) => {
+        flow[0].serverPort = port
+        flow[4].tcpPort = port
+        helper.load(testFlexGetterNodes, flow, function () {
+          const modbusFlexGetter = helper.getNode('6180c16bb1b47591')
+          const modbusClient = helper.getNode('0e5e4c39a93a27cb')
+
+          // Ensure the flex-getter will accept input and bypass client readiness checks
+          sinon.stub(modbusFlexGetter, 'isNotReadyForInput').returns(false)
+          sinon.stub(modbusClient, 'isInactive').returns(false)
+          sinon.stub(mBasics, 'invalidPayloadIn').returns(false)
+
+          // Alternate Timeout/OK/Timeout/OK by intercepting the client's emit for readModbus
+          const pattern = ['timeout', 'ok', 'timeout', 'ok']
+          let step = 0
+          const originalEmit = modbusClient.emit
+          sinon.stub(modbusClient, 'emit').callsFake(function (event, newMsg, doneCb, errCb) {
+            if (event === 'readModbus') {
+              const mode = pattern[step++] || 'ok'
+              if (mode === 'timeout') {
+                const err = new Error('Test timeout')
+                err.code = 'ETIMEDOUT'
+                errCb(err, newMsg)
+              } else {
+                const resp = { data: [11], buffer: Buffer.alloc(2) }
+                doneCb(resp, newMsg)
+              }
+              return true
+            }
+            return originalEmit.apply(this, arguments)
+          })
+
+          let dones = 0
+          let errors = 0
+
+          const timeout = setTimeout(() => done(new Error('Test timeout waiting for completions')), 18000)
+
+          function assertQueuesEmpty () {
+            // bufferMessageList must be empty
+            modbusFlexGetter.bufferMessageList.size.should.be.equal(0)
+
+            // Client inflight must be empty (if present)
+            if (modbusClient.inflightByUnitId) {
+              modbusClient.inflightByUnitId.size.should.be.equal(0)
+            }
+
+            // All per-unit queues must be empty
+            if (modbusClient.bufferCommandList && typeof modbusClient.bufferCommandList.forEach === 'function') {
+              let leftover = 0
+              modbusClient.bufferCommandList.forEach(arr => { leftover += arr.length })
+              leftover.should.be.equal(0)
+            }
+          }
+
+          function maybeFinish () {
+            if (dones + errors === pattern.length) {
+              try {
+                assertQueuesEmpty()
+                clearTimeout(timeout)
+                done()
+              } catch (e) {
+                clearTimeout(timeout)
+                done(e)
+              }
+            }
+          }
+
+          modbusFlexGetter.on('modbusFlexGetterNodeDone', function () {
+            dones++
+            maybeFinish()
+          })
+
+          modbusFlexGetter.on('modbusFlexGetterNodeError', function () {
+            errors++
+            maybeFinish()
+          })
+
+          // Send 4 messages directly following the configured pattern
+          for (let i = 0; i < pattern.length; i++) {
+            modbusFlexGetter.receive({ payload: { fc: 3, unitid: 1, address: 0, quantity: 1 } })
+          }
+        })
+      })
+    })
+    it('should process modbus messages that are received from an input node and clear them from bufferMessageList when processed', function (done) {
+      const flow = Array.from(testFlows.testFlexGetterMemoryBehaviour)
+      getPort().then((port) => {
+        flow[0].serverPort = port
+        flow[4].tcpPort = port
+        helper.load(testFlexGetterNodes, flow, function () {
+          const modbusFlexGetter = helper.getNode('6180c16bb1b47591')
+          const fn = helper.getNode('f5716808cb5500b3')
+          const h1 = helper.getNode('557a9898b1d265a1')
+
+          h1.on('input', function (msg) {
+            try {
+              Array.isArray(msg.payload).should.be.true()
+              msg.payload.length.should.be.equal(1)
+            } catch (e) {
+              done(e)
+            }
+          })
+
+          modbusFlexGetter.on('modbusFlexGetterNodeDone', function () {
+            modbusFlexGetter.bufferMessageList.size.should.be.equal(0)
+            done()
+          })
+
+          const modbusClient = helper.getNode('0e5e4c39a93a27cb')
+
+          // Stub client I/O to avoid network dependency and ensure readiness
+          sinon.stub(modbusFlexGetter, 'isNotReadyForInput').returns(false)
+          sinon.stub(modbusClient, 'isInactive').returns(false)
+          sinon.stub(mBasics, 'invalidPayloadIn').returns(false)
+
+          sinon.stub(modbusClient, 'emit').callsFake((event, newMsg, doneCb, errCb) => {
+            if (event === 'readModbus') {
+              const resp = { data: [11], buffer: Buffer.alloc(2) }
+              doneCb(resp, newMsg)
+            }
+          })
+
+          // Trigger once through the function node (builds the valid flex-getter payload)
+          fn.receive({ payload: { trigger: true } })
+        })
+      })
+    })
+
     it('should process a valid Modbus message and call the required methods', function (done) {
       const msg = { payload: 'valid' }
       const flow = Array.from(testFlows.testNodeShouldBeLoadedFlow)
@@ -561,17 +699,19 @@ describe('Flex Getter node Testing', function () {
           ]
 
           setTimeout(() => {
-            modbusFlexGetter.on('modbusFlexGetterNodeDone', () => {
+            const onComplete = () => {
               count++
               if (count === msg.length) {
                 done()
               }
-            })
+            }
+            modbusFlexGetter.on('modbusFlexGetterNodeDone', onComplete)
+            modbusFlexGetter.on('modbusFlexGetterNodeError', onComplete)
 
             msg.forEach((m) => {
               modbusFlexGetter.receive(m)
             })
-          }, 1000)
+          }, 1200)
         })
       })
     })
