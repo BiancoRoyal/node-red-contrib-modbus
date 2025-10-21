@@ -18,6 +18,7 @@ module.exports = function (RED) {
   const mbCore = require('./core/modbus-core')
   const mbBasics = require('./modbus-basics')
   let modbusIOFileValuNames = []
+  let lastIOFileNode = null
 
   function ModbusResponseFilter (config) {
     RED.nodes.createNode(this, config)
@@ -38,7 +39,8 @@ module.exports = function (RED) {
 
     const node = this
 
-    modbusIOFileValuNames = node.ioFile.configData
+    lastIOFileNode = node.ioFile
+    modbusIOFileValuNames = node.ioFile && typeof node.ioFile.configData !== 'undefined' ? node.ioFile.configData : modbusIOFileValuNames
 
     mbBasics.setNodeStatusTo('active', node)
 
@@ -96,6 +98,9 @@ module.exports = function (RED) {
   RED.nodes.registerType('modbus-response-filter', ModbusResponseFilter)
 
   RED.httpAdmin.get('/modbus/iofile/valuenames', RED.auth.needsPermission('iofile.read'), function (req, res) {
+    if (lastIOFileNode && typeof lastIOFileNode.configData !== 'undefined') {
+      return res.json(lastIOFileNode.configData)
+    }
     res.json(modbusIOFileValuNames)
   })
 }
