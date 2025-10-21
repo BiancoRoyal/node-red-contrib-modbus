@@ -16,13 +16,14 @@ const clientNode = require('../../src/modbus-client.js')
 const serverNode = require('../../src/modbus-server.js')
 const nodeUnderTest = require('../../src/modbus-write.js')
 const functionNode = require('@node-red/nodes/core/function/10-function')
+const triggerNode = require('@node-red/nodes/core/function/89-trigger')
 
 const sinon = require('sinon')
 const helper = require('node-red-node-test-helper')
 helper.init(require.resolve('node-red'))
 const expect = require('chai').expect
 
-const testSimpleWriteParametersNodes = [injectNode, clientNode, serverNode, nodeUnderTest, functionNode]
+const testSimpleWriteParametersNodes = [injectNode, clientNode, serverNode, nodeUnderTest, functionNode, triggerNode]
 
 const testFlows = require('./flows/modbus-write-flows')
 const { getPort } = require('../helper/test-helper-extensions')
@@ -35,6 +36,7 @@ describe('Write node Testing', function () {
   })
 
   afterEach(function (done) {
+    sinon.restore()
     helper.unload().then(function () {
       done()
     }).catch(function () {
@@ -43,6 +45,7 @@ describe('Write node Testing', function () {
   })
 
   after(function (done) {
+    sinon.restore()
     helper.stopServer(function () {
       done()
     })
@@ -137,13 +140,35 @@ describe('Write node Testing', function () {
     })
 
     it('simple flow with boolean injects and write should be loaded', function (done) {
-      helper.load(testSimpleWriteParametersNodes, testFlows.testWriteCycleFlow, function () {
-        const modbusWrite = helper.getNode('1ed908da.427ecf')
-        const h1 = helper.getNode('h1')
-        h1.on('input', function () {
-          if (modbusWrite.bufferMessageList.size === 0) {
-            done()
+      getPort().then(port => {
+        testFlows.testWriteCycleFlow[1].serverPort = port
+        testFlows.testWriteCycleFlow[5].tcpPort = port
+
+        helper.load(testSimpleWriteParametersNodes, testFlows.testWriteCycleFlow, function () {
+          // const modbusServer = helper.getNode('e4a26e824bebfc95')
+          const modbusWrite = helper.getNode('4755980e9977ba8f')
+          const modbusClient = helper.getNode('dd286d4c903267a8')
+          const helperServerOutput = helper.getNode('2c2ea8ab6070675f')
+          const mockMsg = {
+            payload: {
+              value: 1
+              /* fc: 5,
+              unitid: 1,
+              address: 1,
+              quantity: 8 */
+            }
           }
+          modbusClient.on('mbconnected', function () {
+            modbusWrite.receive(mockMsg)
+          })
+
+          helperServerOutput.on('input', function (msg) {
+            console.log('The helperServerOutput server node triggered')
+          })
+
+          modbusWrite.on('modbusWriteNodeDone', function () {
+            done()
+          })
         })
       })
     })
