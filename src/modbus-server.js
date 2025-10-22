@@ -74,9 +74,9 @@ module.exports = function (RED) {
           internalDebugLog('Modbus Server client to ' + JSON.stringify(client.socket.address()) + ' from ' + client.socket.remoteAddress + ' ' + client.socket.remotePort)
         }
 
-        //NOTE(Kay): Get the underlying socket of the client connection
+        // NOTE(Kay): Get the underlying socket of the client connection
         const socket = client.socket
-        //NOTE(Kay): This event listener is making sure that node-RED does not crash, as jsmodbus isn't handling
+        // NOTE(Kay): This event listener is making sure that node-RED does not crash, as jsmodbus isn't handling
         //           the error internally we need to handle the exception here!
         socket.on('error', function (err) {
           internalDebugLog('client connection failure' + err.code)
