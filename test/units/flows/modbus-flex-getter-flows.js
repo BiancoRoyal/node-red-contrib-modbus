@@ -1,6 +1,127 @@
 const helperExtensions = require('../../helper/test-helper-extensions')
 
 module.exports = {
+  testFlexGetterMemoryBehaviour: helperExtensions.cleanFlowPositionData([
+    {
+      "id": "40a766446d840ea5",
+      "type": "modbus-server",
+      "z": "f47db3d9710322df",
+      "name": "",
+      "logEnabled": false,
+      "hostname": "0.0.0.0",
+      "serverPort": "8666",
+      "responseDelay": 25,
+      "delayUnit": "ms",
+      "coilsBufferSize": 10000,
+      "holdingBufferSize": 10000,
+      "inputBufferSize": 10000,
+      "discreteBufferSize": 10000,
+      "showErrors": false,
+      "showStatusActivities": false,
+      "x": 660,
+      "y": 140,
+      "wires": [
+        [],
+        [],
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "id": "6180c16bb1b47591",
+      "type": "modbus-flex-getter",
+      "z": "f47db3d9710322df",
+      "name": "",
+      "showStatusActivities": false,
+      "showErrors": false,
+      "showWarnings": true,
+      "logIOActivities": false,
+      "server": "0e5e4c39a93a27cb",
+      "useIOFile": false,
+      "ioFile": "",
+      "useIOForPayload": false,
+      "emptyMsgOnFail": false,
+      "keepMsgProperties": false,
+      "delayOnStart": false,
+      "enableDeformedMessages": false,
+      "startDelayTime": "",
+      "x": 670,
+      "y": 280,
+      "wires": [
+        [
+          "557a9898b1d265a1"
+        ],
+        []
+      ]
+    },
+    {
+      "id": "f5716808cb5500b3",
+      "type": "function",
+      "z": "f47db3d9710322df",
+      "name": "function 1",
+      "func": "msg.payload = {fc:3,unitid:1,address:0,quantity:1}\nreturn msg;",
+      "outputs": 1,
+      "timeout": 0,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 440,
+      "y": 280,
+      "wires": [
+        [
+          "6180c16bb1b47591"
+        ]
+      ]
+    },
+    {
+      "id": "557a9898b1d265a1",
+      "type": "helper",
+      "z": "f47db3d9710322df",
+      "name": "helper 1",
+      "active": true,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "false",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 920,
+      "y": 280,
+      "wires": []
+    },
+    {
+      "id": "0e5e4c39a93a27cb",
+      "type": "modbus-client",
+      "name": "",
+      "clienttype": "tcp",
+      "bufferCommands": true,
+      "stateLogEnabled": false,
+      "queueLogEnabled": false,
+      "failureLogEnabled": true,
+      "tcpHost": "127.0.0.1",
+      "tcpPort": "8666",
+      "tcpType": "DEFAULT",
+      "serialPort": "/dev/ttyUSB",
+      "serialType": "RTU-BUFFERD",
+      "serialBaudrate": 9600,
+      "serialDatabits": 8,
+      "serialStopbits": 1,
+      "serialParity": "none",
+      "serialConnectionDelay": 100,
+      "serialAsciiResponseStartDelimiter": "0x3A",
+      "unit_id": 1,
+      "commandDelay": 1,
+      "clientTimeout": 1000,
+      "reconnectOnTimeout": true,
+      "reconnectTimeout": 2000,
+      "parallelUnitIdsAllowed": true,
+      "showErrors": false,
+      "showWarnings": true,
+      "showLogs": true
+    }
+  ]),
   testFlexGetterRequest: helperExtensions.cleanFlowPositionData(
     [
       {
@@ -770,7 +891,7 @@ module.exports = {
       "serialAsciiResponseStartDelimiter": "",
       "unit_id": "1",
       "commandDelay": "1",
-      "clientTimeout": "100",
+      "clientTimeout": "300",
       "reconnectOnTimeout": false,
       "reconnectTimeout": "200",
       "parallelUnitIdsAllowed": true
