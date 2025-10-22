@@ -466,6 +466,209 @@ describe('Flex Getter node Testing', function () {
         })
       })
     })
+
+    it('Parallel unit-ids should arrive without deadlocks', function (done) {
+      const flow = Array.from(testFlows.testFlexGetterMemoryBehaviour)
+      getPort().then((port) => {
+        flow[0].serverPort = port
+        flow[4].tcpPort = port
+
+        helper.load(testFlexGetterNodes, flow, function () {
+          const modbusFlexGetter = helper.getNode('6180c16bb1b47591')
+          const modbusClient = helper.getNode('0e5e4c39a93a27cb')
+          const helperOut = helper.getNode('557a9898b1d265a1')
+
+          // allow parallel by unit ids on the client
+          modbusClient.parallelUnitIdsAllowed = true
+
+          // Ensure readiness and valid payload acceptance
+          sinon.stub(modbusFlexGetter, 'isNotReadyForInput').returns(false)
+          sinon.stub(modbusClient, 'isInactive').returns(false)
+          sinon.stub(mBasics, 'invalidPayloadIn').returns(false)
+
+          // Stub client read path to complete with small, unit-dependent delays to create interleaving
+          const expectedUnitsByCall = [1, 2, 1, 2]
+          const perUnitSeq = { 1: 0, 2: 0 }
+          let callCount = 0
+          sinon.stub(modbusClient, 'emit').callsFake((event, newMsg, doneCb, errCb) => {
+            if (event === 'readModbus') {
+              const idx = callCount++
+              const unit = expectedUnitsByCall[idx]
+              const seq = perUnitSeq[unit]++
+              // annotate msg so we can assert ordering on helper output
+              newMsg._unit = unit
+              newMsg._seq = seq
+
+              const delay = unit === 1 ? 30 : 5
+              setTimeout(() => {
+                const resp = { data: [idx + 1], buffer: Buffer.alloc(2) }
+                doneCb(resp, newMsg)
+              }, delay)
+              return true
+            }
+            return false
+          })
+
+          const received = []
+          let doneEvents = 0
+          let errorEvents = 0
+
+          const safety = setTimeout(() => done(new Error('Timeout waiting for parallel unit-ids completions')), 12000)
+
+          function assertQueuesEmpty () {
+            // flex-getter internal buffer must be empty
+            modbusFlexGetter.bufferMessageList.size.should.be.equal(0)
+            // client inflight (if used) must be empty
+            if (modbusClient.inflightByUnitId) {
+              modbusClient.inflightByUnitId.size.should.be.equal(0)
+            }
+            // client per-unit queues must be empty
+            if (modbusClient.bufferCommandList && typeof modbusClient.bufferCommandList.forEach === 'function') {
+              let leftover = 0
+              modbusClient.bufferCommandList.forEach(arr => { leftover += arr.length })
+              leftover.should.be.equal(0)
+            }
+          }
+
+          function maybeFinish () {
+            if (doneEvents === 4 && received.length === 4) {
+              try {
+                // both units should have preserved FIFO order individually
+                const unit1Seqs = received.filter(r => r.unit === 1).map(r => r.seq)
+                const unit2Seqs = received.filter(r => r.unit === 2).map(r => r.seq)
+                unit1Seqs.should.eql([0, 1])
+                unit2Seqs.should.eql([0, 1])
+                // and there should be no errors
+                errorEvents.should.be.equal(0)
+                assertQueuesEmpty()
+                clearTimeout(safety)
+                done()
+              } catch (e) {
+                clearTimeout(safety)
+                done(e)
+              }
+            }
+          }
+
+          helperOut.on('input', (msg) => {
+            // capture annotated info
+            received.push({ unit: msg._unit, seq: msg._seq })
+            maybeFinish()
+          })
+
+          modbusFlexGetter.on('modbusFlexGetterNodeDone', function () {
+            doneEvents++
+            maybeFinish()
+          })
+
+          modbusFlexGetter.on('modbusFlexGetterNodeError', function () {
+            errorEvents++
+          })
+
+          // Enqueue four reads: two for unit 1 and two for unit 2, interleaved
+          const inputs = [
+            { fc: 3, unitid: 1, address: 0, quantity: 1 },
+            { fc: 3, unitid: 2, address: 0, quantity: 1 },
+            { fc: 3, unitid: 1, address: 1, quantity: 1 },
+            { fc: 3, unitid: 2, address: 1, quantity: 1 }
+          ]
+          inputs.forEach(p => modbusFlexGetter.receive({ payload: p }))
+        })
+      })
+    })
+
+    it('FIFO ordering with multiple reads is kept', function (done) {
+      const flow = Array.from(testFlows.testFlexGetterMemoryBehaviour)
+      getPort().then((port) => {
+        flow[0].serverPort = port
+        flow[4].tcpPort = port
+
+        helper.load(testFlexGetterNodes, flow, function () {
+          const modbusFlexGetter = helper.getNode('6180c16bb1b47591')
+          const modbusClient = helper.getNode('0e5e4c39a93a27cb')
+          const helperOut = helper.getNode('557a9898b1d265a1')
+
+          // Ensure readiness and valid payload acceptance
+          sinon.stub(modbusFlexGetter, 'isNotReadyForInput').returns(false)
+          sinon.stub(modbusClient, 'isInactive').returns(false)
+          sinon.stub(mBasics, 'invalidPayloadIn').returns(false)
+
+          // Stub client read to immediately succeed and echo an increment so we can assert order
+          let callCount = 0
+          sinon.stub(modbusClient, 'emit').callsFake((event, newMsg, doneCb, errCb) => {
+            if (event === 'readModbus') {
+              const idx = ++callCount
+              const resp = { data: [idx], buffer: Buffer.alloc(2) }
+              doneCb(resp, newMsg)
+              return true
+            }
+            return false
+          })
+
+          const expectedOrder = [1, 2, 3]
+          const received = []
+          let doneEvents = 0
+          let errorEvents = 0
+
+          const safety = setTimeout(() => done(new Error('Timeout waiting for FIFO sequence')), 12000)
+
+          function assertQueuesEmpty () {
+            // flex-getter internal buffer must be empty
+            modbusFlexGetter.bufferMessageList.size.should.be.equal(0)
+            // client inflight (if used) must be empty
+            if (modbusClient.inflightByUnitId) {
+              modbusClient.inflightByUnitId.size.should.be.equal(0)
+            }
+            // client per-unit queues must be empty
+            if (modbusClient.bufferCommandList && typeof modbusClient.bufferCommandList.forEach === 'function') {
+              let leftover = 0
+              modbusClient.bufferCommandList.forEach(arr => { leftover += arr.length })
+              leftover.should.be.equal(0)
+            }
+          }
+
+          function maybeFinish () {
+            if (doneEvents === expectedOrder.length && received.length === expectedOrder.length) {
+              try {
+                // We expect exactly 3 messages on the first output in the same order
+                received.length.should.be.equal(expectedOrder.length)
+                for (let i = 0; i < expectedOrder.length; i++) {
+                  Array.isArray(received[i]).should.be.true()
+                  received[i][0].should.be.equal(expectedOrder[i])
+                }
+                errorEvents.should.be.equal(0)
+                assertQueuesEmpty()
+                clearTimeout(safety)
+                done()
+              } catch (e) {
+                clearTimeout(safety)
+                done(e)
+              }
+            }
+          }
+
+          helperOut.on('input', (msg) => {
+            received.push(msg.payload)
+            maybeFinish()
+          })
+
+          modbusFlexGetter.on('modbusFlexGetterNodeDone', function () {
+            doneEvents++
+            maybeFinish()
+          })
+
+          modbusFlexGetter.on('modbusFlexGetterNodeError', function () {
+            errorEvents++
+          })
+
+          // Enqueue three reads with different addresses (order must be preserved for same unitid)
+          const addresses = [0, 1, 2]
+          addresses.forEach(addr => {
+            modbusFlexGetter.receive({ payload: { fc: 3, unitid: 1, address: addr, quantity: 1 } })
+          })
+        })
+      })
+    })
     it('should process modbus messages that are received from an input node and clear them from bufferMessageList when processed', function (done) {
       const flow = Array.from(testFlows.testFlexGetterMemoryBehaviour)
       getPort().then((port) => {
