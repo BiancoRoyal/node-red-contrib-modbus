@@ -982,6 +982,103 @@ describe('Flex Getter node Testing', function () {
       })
     })
 
+    it('should keep all queues clear even when flooded with messages', function (done) {
+      this.timeout(25000)
+      const flow = Array.from(testFlows.testFlexGetterMemoryBehaviour)
+      getPort().then((port) => {
+        flow[0].serverPort = port
+        flow[4].tcpPort = port
+
+        helper.load(testFlexGetterNodes, flow, function () {
+          const modbusFlexGetter = helper.getNode('6180c16bb1b47591')
+          const modbusClient = helper.getNode('0e5e4c39a93a27cb')
+          const helperOut = helper.getNode('557a9898b1d265a1')
+
+          // Ensure readiness and valid payload acceptance
+          sinon.stub(modbusFlexGetter, 'isNotReadyForInput').returns(false)
+          sinon.stub(modbusClient, 'isInactive').returns(false)
+          sinon.stub(mBasics, 'invalidPayloadIn').returns(false)
+
+          // Stub client read to complete asynchronously and succeed for all reads
+          let calls = 0
+          sinon.stub(modbusClient, 'emit').callsFake((event, newMsg, doneCb, errCb) => {
+            if (event === 'readModbus') {
+              const idx = ++calls
+              // respond on next tick to mimic async IO and allow scheduling
+              setImmediate(() => {
+                const resp = { data: [idx], buffer: Buffer.alloc(2) }
+                doneCb(resp, newMsg)
+              })
+              return true
+            }
+            return false
+          })
+
+          const TOTAL = 100
+          let doneEvents = 0
+          let errorEvents = 0
+          let outputs = 0
+
+          const safety = setTimeout(() => done(new Error('Timeout waiting for flood drain')), 20000)
+
+          function assertQueuesEmpty () {
+            // flex-getter internal buffer must be empty
+            modbusFlexGetter.bufferMessageList.size.should.be.equal(0)
+            // client inflight (if used) must be empty
+            if (modbusClient.inflightByUnitId) {
+              modbusClient.inflightByUnitId.size.should.be.equal(0)
+            }
+            // client per-unit queues must be empty
+            if (modbusClient.bufferCommandList && typeof modbusClient.bufferCommandList.forEach === 'function') {
+              let leftover = 0
+              modbusClient.bufferCommandList.forEach(arr => { leftover += arr.length })
+              leftover.should.be.equal(0)
+            }
+          }
+
+          function maybeFinish () {
+            if (doneEvents === TOTAL && outputs === TOTAL) {
+              try {
+                errorEvents.should.be.equal(0)
+                assertQueuesEmpty()
+                clearTimeout(safety)
+                done()
+              } catch (e) {
+                clearTimeout(safety)
+                done(e)
+              }
+            }
+          }
+
+          helperOut.on('input', (msg) => {
+            try {
+              Array.isArray(msg.payload).should.be.true()
+              msg.payload.length.should.be.equal(1)
+              outputs++
+              maybeFinish()
+            } catch (e) {
+              clearTimeout(safety)
+              done(e)
+            }
+          })
+
+          modbusFlexGetter.on('modbusFlexGetterNodeDone', function () {
+            doneEvents++
+            maybeFinish()
+          })
+
+          modbusFlexGetter.on('modbusFlexGetterNodeError', function () {
+            errorEvents++
+          })
+
+          // Burst 100 small reads very quickly
+          for (let i = 0; i < TOTAL; i++) {
+            modbusFlexGetter.receive({ payload: { fc: 3, unitid: 1, address: i, quantity: 1 } })
+          }
+        })
+      })
+    })
+
     it('FIFO ordering with multiple reads is kept', function (done) {
       const flow = Array.from(testFlows.testFlexGetterMemoryBehaviour)
       getPort().then((port) => {
