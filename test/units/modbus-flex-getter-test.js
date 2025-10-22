@@ -577,6 +577,215 @@ describe('Flex Getter node Testing', function () {
       })
     })
 
+    it('should continue normally after receiving a time-out', function (done) {
+      const flow = Array.from(testFlows.testFlexGetterMemoryBehaviour)
+      getPort().then((port) => {
+        flow[0].serverPort = port
+        flow[4].tcpPort = port
+
+        helper.load(testFlexGetterNodes, flow, function () {
+          const modbusFlexGetter = helper.getNode('6180c16bb1b47591')
+          const modbusClient = helper.getNode('0e5e4c39a93a27cb')
+          const helperOut = helper.getNode('557a9898b1d265a1')
+
+          // Ensure readiness and valid payload acceptance
+          sinon.stub(modbusFlexGetter, 'isNotReadyForInput').returns(false)
+          sinon.stub(modbusClient, 'isInactive').returns(false)
+          sinon.stub(mBasics, 'invalidPayloadIn').returns(false)
+
+          // First call: timeout via error callback; Second call: success via done callback
+          let call = 0
+          const originalEmit = modbusClient.emit
+          sinon.stub(modbusClient, 'emit').callsFake(function (event, newMsg, doneCb, errCb) {
+            if (event === 'readModbus') {
+              call++
+              if (call === 1) {
+                const err = new Error('Simulated timeout')
+                err.code = 'ETIMEDOUT'
+                // call error callback, simulating a timeout
+                errCb(err, newMsg)
+              } else {
+                const resp = { data: [42], buffer: Buffer.alloc(2) }
+                doneCb(resp, newMsg)
+              }
+              return true
+            }
+            return originalEmit.apply(this, arguments)
+          })
+
+          let doneEvents = 0
+          let errorEvents = 0
+          const received = []
+
+          const safety = setTimeout(() => done(new Error('Timeout waiting for timeout-then-continue sequence')), 18000)
+
+          function assertQueuesEmpty () {
+            // flex-getter internal buffer must be empty
+            modbusFlexGetter.bufferMessageList.size.should.be.equal(0)
+            // client inflight (if used) must be empty
+            if (modbusClient.inflightByUnitId) {
+              modbusClient.inflightByUnitId.size.should.be.equal(0)
+            }
+            // client per-unit queues must be empty
+            if (modbusClient.bufferCommandList && typeof modbusClient.bufferCommandList.forEach === 'function') {
+              let leftover = 0
+              modbusClient.bufferCommandList.forEach(arr => { leftover += arr.length })
+              leftover.should.be.equal(0)
+            }
+          }
+
+          function maybeFinish () {
+            // Expect exactly one error and one success
+            if (errorEvents === 1 && doneEvents === 1 && received.length === 1) {
+              try {
+                Array.isArray(received[0]).should.be.true()
+                received[0].length.should.be.equal(1)
+                // ensure no additional unexpected events
+                assertQueuesEmpty()
+                clearTimeout(safety)
+                done()
+              } catch (e) {
+                clearTimeout(safety)
+                done(e)
+              }
+            }
+          }
+
+          helperOut.on('input', (msg) => {
+            received.push(msg.payload)
+            maybeFinish()
+          })
+
+          modbusFlexGetter.on('modbusFlexGetterNodeDone', function () {
+            doneEvents++
+            maybeFinish()
+          })
+
+          modbusFlexGetter.on('modbusFlexGetterNodeError', function () {
+            errorEvents++
+            maybeFinish()
+          })
+
+          // Enqueue two reads for the same unit id. First will time out, second should succeed automatically
+          const inputs = [
+            { fc: 3, unitid: 1, address: 0, quantity: 1 },
+            { fc: 3, unitid: 1, address: 1, quantity: 1 }
+          ]
+          inputs.forEach(p => modbusFlexGetter.receive({ payload: p }))
+        })
+      })
+    })
+
+    it('should never leave traces of messages that were canceled mid-flight', function (done) {
+      this.timeout(20000)
+      const flow = Array.from(testFlows.testFlexGetterMemoryBehaviour)
+      getPort().then((port) => {
+        flow[0].serverPort = port
+        flow[4].tcpPort = port
+        helper.load(testFlexGetterNodes, flow, function () {
+          const modbusFlexGetter = helper.getNode('6180c16bb1b47591')
+          const modbusClient = helper.getNode('0e5e4c39a93a27cb')
+          const helperOut = helper.getNode('557a9898b1d265a1')
+          const modbusServer = helper.getNode('40a766446d840ea5')
+
+          // Ensure readiness and valid payload acceptance
+          sinon.stub(modbusFlexGetter, 'isNotReadyForInput').returns(false)
+          sinon.stub(modbusClient, 'isInactive').returns(false)
+          sinon.stub(mBasics, 'invalidPayloadIn').returns(false)
+
+          // Simulate server-closed mid-flight by causing the first read to error like a socket reset,
+          // then the second read to succeed after a short delay. This verifies: no leaks + queue advances.
+          let call = 0
+          const originalEmit = modbusClient.emit
+          sinon.stub(modbusClient, 'emit').callsFake(function (event, newMsg, doneCb, errCb) {
+            if (event === 'readModbus') {
+              call++
+              if (call === 1) {
+                // Close server socket in the background to better mirror CLOSED path (best-effort)
+                try {
+                  if (modbusServer && modbusServer.netServer && typeof modbusServer.netServer.close === 'function') {
+                    // closing shortly after scheduling the error helps simulate mid-flight cancel
+                    setTimeout(() => modbusServer.netServer.close(() => {}), 0)
+                  }
+                } catch (e) { /* ignore in tests */ }
+                // Emit a connection-closed style error
+                setImmediate(() => {
+                  const err = new Error('Connection closed mid-flight')
+                  err.code = 'ECONNRESET'
+                  errCb(err, newMsg)
+                })
+              } else {
+                setImmediate(() => {
+                  const resp = { data: [7], buffer: Buffer.alloc(2) }
+                  doneCb(resp, newMsg)
+                })
+              }
+              return true
+            }
+            return originalEmit.apply(this, arguments)
+          })
+
+          let doneEvents = 0
+          let errorEvents = 0
+          const received = []
+
+          const safety = setTimeout(() => done(new Error('Timeout waiting for mid-flight cancel handling')), 18000)
+
+          function assertQueuesEmpty () {
+            // flex-getter internal buffer must be empty
+            modbusFlexGetter.bufferMessageList.size.should.be.equal(0)
+            // client inflight (if used) must be empty
+            if (modbusClient.inflightByUnitId) {
+              modbusClient.inflightByUnitId.size.should.be.equal(0)
+            }
+            // client per-unit queues must be empty
+            if (modbusClient.bufferCommandList && typeof modbusClient.bufferCommandList.forEach === 'function') {
+              let leftover = 0
+              modbusClient.bufferCommandList.forEach(arr => { leftover += arr.length })
+              leftover.should.be.equal(0)
+            }
+          }
+
+          function maybeFinish () {
+            if (errorEvents === 1 && doneEvents === 1 && received.length === 1) {
+              try {
+                Array.isArray(received[0]).should.be.true()
+                received[0].length.should.be.equal(1)
+                assertQueuesEmpty()
+                clearTimeout(safety)
+                done()
+              } catch (e) {
+                clearTimeout(safety)
+                done(e)
+              }
+            }
+          }
+
+          helperOut.on('input', (msg) => {
+            received.push(msg.payload)
+            maybeFinish()
+          })
+
+          modbusFlexGetter.on('modbusFlexGetterNodeDone', function () {
+            doneEvents++
+            maybeFinish()
+          })
+
+          modbusFlexGetter.on('modbusFlexGetterNodeError', function () {
+            errorEvents++
+            maybeFinish()
+          })
+
+          // Enqueue two reads for the same unit id. First will be canceled mid-flight (simulated), second should complete.
+          const inputs = [
+            { fc: 3, unitid: 1, address: 0, quantity: 1 },
+            { fc: 3, unitid: 1, address: 1, quantity: 1 }
+          ]
+          inputs.forEach(p => modbusFlexGetter.receive({ payload: p }))
+        })
+      })
+    })
+
     it('FIFO ordering with multiple reads is kept', function (done) {
       const flow = Array.from(testFlows.testFlexGetterMemoryBehaviour)
       getPort().then((port) => {
