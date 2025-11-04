@@ -186,8 +186,8 @@ module.exports = function (RED) {
 
     node.initializeInputDelayTimer()
 
+    // Add a queue to store incoming messages
     const messageQueue = []
-    let processing = false
 
     node.on('input', function (msg) {
       if (mbBasics.invalidPayloadIn(msg)) {
@@ -207,25 +207,12 @@ module.exports = function (RED) {
       }
 
       messageQueue.push(msg)
-      if (!processing) {
-        processing = true
-        processNextMessage()
-      }
+      processNextMessage()
     })
-
-    function scheduleNext () {
-      setImmediate(() => {
-        if (messageQueue.length > 0) {
-          processNextMessage()
-        } else {
-          processing = false
-        }
-      })
-    }
 
     function processNextMessage () {
       if (messageQueue.length === 0) {
-        processing = false
+        node.emit('modbusFlexGetterNodeDone')
         return
       }
       const msg = messageQueue.shift()
@@ -234,35 +221,23 @@ module.exports = function (RED) {
         const inputMsg = node.prepareMsg(origMsgInput)
         if (node.isValidModbusMsg(inputMsg)) {
           const newMsg = node.buildNewMessageObject(node, inputMsg)
-
           node.bufferMessageList.set(newMsg.messageId, mbBasics.buildNewMessage(node.keepMsgProperties, inputMsg, newMsg))
-
-          // Wrap callbacks to ensure we always advance
-          const doneCb = (resp, doneMsg) => {
-            try { node.onModbusReadDone(resp, doneMsg) } finally { scheduleNext() }
-          }
-          const errCb = (err, errMsg) => {
-            try { node.onModbusReadError(err, errMsg) } finally { scheduleNext() }
-          }
-
-          modbusClient.emit('readModbus', newMsg, doneCb, errCb)
+          modbusClient.emit('readModbus', newMsg, node.onModbusReadDone, node.onModbusReadError)
         } else {
           node.errorProtocolMsg(new Error('Invalid Modbus message'), origMsgInput)
           mbBasics.sendEmptyMsgOnFail(node, new Error('Invalid Modbus message'), origMsgInput)
-          scheduleNext()
         }
       } catch (err) {
-        try { node.onModbusReadError(err, origMsgInput) } finally { scheduleNext() }
+        node.errorProtocolMsg(err, origMsgInput)
+        mbBasics.sendEmptyMsgOnFail(node, err, origMsgInput)
       }
+      processNextMessage()
     }
     node.on('close', function (done) {
       node.resetInputDelayTimer()
       mbBasics.setNodeStatusTo('closed', node)
       node.bufferMessageList.clear()
-      messageQueue.length = 0
-      processing = false
       modbusClient.deregisterForModbus(node.id, done)
-      clearInterval(node.cleanTimer)
     })
 
     if (!node.showStatusActivities) {

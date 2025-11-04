@@ -163,18 +163,6 @@ module.exports = function (RED) {
       }
     }
 
-    // Cancel only the currently running command(s) and keep the rest of the queue intact.
-    function cancelInflightCommands (err) {
-      try {
-        if (!node.inflightByUnitId || node.inflightByUnitId.size === 0) return
-
-        for (const [, cmd] of node.inflightByUnitId.entries()) {
-          coreModbusClient.activateSendingOnFailure(node, cmd.cberr, err, cmd.msg)
-        }
-        node.inflightByUnitId.clear()
-      } catch (_) { /* ignore */ }
-    }
-
     node.stateService.subscribe(state => {
       node.actualServiceStateBefore = node.actualServiceState
       node.actualServiceState = state
@@ -269,7 +257,6 @@ module.exports = function (RED) {
       /* istanbul ignore next */
       if (state.matches('closed')) {
         node.emit('mbclosed')
-        cancelInflightCommands(new Error('Modbus client closed'))
         node.stateService.send('RECONNECT')
       }
 
@@ -282,7 +269,6 @@ module.exports = function (RED) {
       if (state.matches('failed')) {
         /* istanbul ignore next */
         verboseWarn('fsm failed state after ' + node.actualServiceStateBefore.value + logHintText)
-        cancelInflightCommands(new Error('Modbus client failed'))
         node.emit('mberror', 'Modbus Failure On State ' + node.actualServiceStateBefore.value + logHintText)
         node.stateService.send('BREAK')
       }
@@ -290,7 +276,6 @@ module.exports = function (RED) {
       if (state.matches('broken')) {
         /* istanbul ignore next */
         verboseWarn('fsm broken state after ' + node.actualServiceStateBefore.value + logHintText)
-        cancelInflightCommands(new Error('Modbus client broken'))
         node.emit('mbbroken', 'Modbus Broken On State ' + node.actualServiceStateBefore.value + logHintText)
         if (node.reconnectOnTimeout) {
           node.stateService.send('RECONNECT')
@@ -340,15 +325,6 @@ module.exports = function (RED) {
 
         if (!node.reconnectTimeout) {
           node.reconnectTimeout = reconnectTimeMS
-        }
-
-        // Ensure per-request timeouts are enforced by the underlying client
-        try {
-          if (typeof node.client.setTimeout === 'function') {
-            node.client.setTimeout(node.clientTimeout)
-          }
-        } catch (err) {
-          verboseLog('setTimeout unsupported: ' + err.message)
         }
 
         if (node.clienttype === 'tcp') {
