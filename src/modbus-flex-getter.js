@@ -60,6 +60,7 @@ module.exports = function (RED) {
     mbBasics.initModbusClientEvents(node, modbusClient)
 
     node.onModbusReadDone = function (resp, msg) {
+      mbCore.getOriginalMessage(node.bufferMessageList, msg)
       if (node.showStatusActivities) {
         mbBasics.setNodeStatusTo('reading done', node)
       }
