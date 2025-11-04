@@ -17,13 +17,6 @@ const chai = require('chai')
 const expect = chai.expect
 
 describe('Core Client Testing', function () {
-  afterEach(function () {
-    sinon.restore()
-  })
-
-  after(function () {
-    sinon.restore()
-  })
   describe('readModbusByFunctionCode', () => {
     it('should call readModbusByFunctionCodeOne when msg.payload.fc is 1', () => {
       const node = {}
@@ -51,7 +44,9 @@ describe('Core Client Testing', function () {
             return 'success'
           }
         },
-        activateSending: sinon.stub().resolves(true)
+        activateSending: async function () {
+          return 'success'
+        }
       }
 
       const msg = { payload: { fc: '1', enableDeformedMessages: true } }
@@ -72,7 +67,9 @@ describe('Core Client Testing', function () {
             return 'success'
           }
         },
-        activateSending: sinon.stub().resolves(true)
+        activateSending: async function () {
+          return 'success'
+        }
       }
 
       const msg = { payload: { fc: '2', enableDeformedMessages: true } }
@@ -93,7 +90,9 @@ describe('Core Client Testing', function () {
             return 'success'
           }
         },
-        activateSending: sinon.stub().resolves()
+        activateSending: async function () {
+          return 'success'
+        }
       }
 
       const msg = { payload: { fc: '3', enableDeformedMessages: true } }
@@ -114,7 +113,9 @@ describe('Core Client Testing', function () {
             return 'success'
           }
         },
-        activateSending: sinon.stub().resolves()
+        activateSending: async function () {
+          return 'success'
+        }
       }
 
       const msg = { payload: { fc: '4', enableDeformedMessages: true } }
@@ -126,9 +127,7 @@ describe('Core Client Testing', function () {
     })
 
     it('should handle msg.payload.fc as a string representation of a number', () => {
-      const node = {
-        activateSending: sinon.stub().resolves(true)
-      }
+      const node = {}
       const msg = { payload: { fc: '2' } }
       const cb = sinon.spy()
       const cberr = sinon.spy()
@@ -195,8 +194,7 @@ describe('Core Client Testing', function () {
           writeRegisters: sinon.stub().rejects(new Error('some error')),
           getID: sinon.stub().returns(0)
         },
-        modbusErrorHandling: sinon.spy(),
-        activateSending: sinon.stub().resolves(true)
+        modbusErrorHandling: sinon.spy()
       }
       const msg = {
         payload: {
@@ -221,8 +219,7 @@ describe('Core Client Testing', function () {
           writeRegisters: sinon.stub().resolves({}),
           getID: sinon.stub().returns(1)
         },
-        modbusErrorHandling: sinon.spy(),
-        activateSending: sinon.stub().resolves(true)
+        modbusErrorHandling: sinon.spy()
       }
       const msg = {
         payload: {
@@ -263,8 +260,8 @@ describe('Core Client Testing', function () {
       const cb = sinon.stub()
       const cberr = sinon.stub()
 
-      sinon.stub(coreClientUnderTest, 'activateSendingOnSuccess')
-      sinon.stub(coreClientUnderTest, 'activateSendingOnFailure')
+      coreClientUnderTest.activateSendingOnSuccess = sinon.stub()
+      coreClientUnderTest.activateSendingOnFailure = sinon.stub()
       node.modbusErrorHandling = sinon.stub()
       coreClientUnderTest.writeModbusByFunctionCodeSixteen(node, msg, cb, cberr)
       sinon.assert.notCalled(node.client.writeRegisters)
@@ -279,8 +276,7 @@ describe('Core Client Testing', function () {
           writeRegisters: sinon.stub().resolves({}),
           getID: sinon.stub().returns(1)
         },
-        modbusErrorHandling: sinon.stub(),
-        activateSending: sinon.stub().resolves(true)
+        modbusErrorHandling: sinon.stub()
       }
       const msg = {
         payload: {
@@ -447,7 +443,7 @@ describe('Core Client Testing', function () {
 
     it('should call callback cb with resp and msg when activateSending resolves', async () => {
       const node = {
-        activateSending: sinon.stub().resolves(true),
+        activateSending: sinon.stub(),
         stateService: { send: sinon.spy() }
       }
       const cb = sinon.spy()
@@ -467,8 +463,7 @@ describe('Core Client Testing', function () {
         client: {
           writeRegister: sinon.stub().resolves({ success: true }),
           getID: sinon.stub().returns(0)
-        },
-        activateSending: sinon.stub().resolves(true)
+        }
       }
       const msg = { payload: { address: '123', value: '456' } }
       const cb = sinon.spy()
@@ -487,8 +482,7 @@ describe('Core Client Testing', function () {
           writeRegister: sinon.stub().rejects(errorMessage),
           getID: sinon.stub().returns(1),
           modbusErrorHandling: sinon.spy()
-        },
-        activateSending: sinon.stub().resolves(true)
+        }
       }
       const msg = { payload: { address: '123', value: '456' } }
       const cb = sinon.spy()
@@ -526,8 +520,7 @@ describe('Core Client Testing', function () {
         client: {
           readDiscreteInputs: sinon.stub().rejects(errorMessage)
         },
-        modbusErrorHandling: sinon.spy(),
-        activateSending: sinon.stub().resolves(true)
+        modbusErrorHandling: sinon.spy()
       }
 
       const msg = { payload: { address: 255, quantity: 2 } }
@@ -540,7 +533,7 @@ describe('Core Client Testing', function () {
     })
 
     it('should call activateSendingOnSuccess when sendCustomFc resolves', async () => {
-      const node = { client: { sendCustomFc: sinon.stub().resolves('response') }, activateSending: sinon.stub().resolves(true) }
+      const node = { client: { sendCustomFc: sinon.stub().resolves('response') } }
       const msg = { payload: { unitid: 1, fc: 2, requestCard: {}, responseCard: {} } }
       const cb = sinon.spy()
       const cberr = sinon.spy()
@@ -555,8 +548,7 @@ describe('Core Client Testing', function () {
         client: {
           sendCustomFc: sinon.stub().rejects(new Error(errorMessage))
         },
-        modbusErrorHandling: sinon.spy(),
-        activateSending: sinon.stub().resolves(true)
+        modbusErrorHandling: sinon.spy()
       }
       const msg = { payload: { unitid: 2, fc: 4, requestCard: {}, responseCard: {} } }
       const cb = sinon.spy()
@@ -581,7 +573,7 @@ describe('Core Client Testing', function () {
       }
       const cb = sinon.stub()
       const cberr = sinon.stub()
-      sinon.stub(coreClientUnderTest, 'activateSendingOnSuccess')
+      coreClientUnderTest.activateSendingOnSuccess = sinon.stub()
       coreClientUnderTest.writeModbusByFunctionCodeSix(node, msg, cb, cberr)
       sinon.assert.notCalled(coreClientUnderTest.activateSendingOnSuccess)
     })
@@ -601,8 +593,7 @@ describe('Core Client Testing', function () {
         stateService: { send: sinon.stub() },
         clienttype: 'tcp',
         setUnitIdFromPayload: sinon.stub(),
-        clientTimeout: 500,
-        activateSending: sinon.stub().returns(Promise.resolve(true))
+        clientTimeout: 500
       }
 
       const msg = {}
@@ -636,8 +627,7 @@ describe('Core Client Testing', function () {
         bufferCommands: false,
         clienttype: 'serial',
         modbusErrorHandling: sinon.spy(),
-        actualServiceState: { value: 'connected' },
-        activateSending: sinon.stub().resolves(true)
+        actualServiceState: { value: 'connected' }
         // stateService: {
         //   send: function (state) {
         //     assert.strictEqual(state, 'READ');
@@ -649,7 +639,7 @@ describe('Core Client Testing', function () {
       let msg = {}
       let cb = sinon.spy()
       let cberr = sinon.spy()
-      sinon.spy(coreClientUnderTest, 'activateSendingOnFailure')
+      coreClientUnderTest.activateSendingOnFailure = sinon.spy()
       const clock3 = sinon.useFakeTimers()
 
       coreClientUnderTest.customModbusMessage(node, msg, cb, cberr)
@@ -682,8 +672,7 @@ describe('Core Client Testing', function () {
         bufferCommands: true,
         actualServiceState: { value: 'connected' },
         setUnitIdFromPayload: sinon.spy(),
-        modbusErrorHandling: sinon.spy(),
-        activateSending: sinon.stub().resolves(true)
+        modbusErrorHandling: sinon.spy()
 
       }
       msg = {
@@ -720,8 +709,7 @@ describe('Core Client Testing', function () {
         },
         stateService: { send: sinon.spy() },
         connectClient: sinon.spy(),
-        setUnitIdFromPayload: sinon.spy(),
-        activateSending: sinon.stub().resolves(true)
+        setUnitIdFromPayload: sinon.spy()
       }
       const msg = { payload: { fc: 1 } }
       const cb = sinon.spy()
@@ -749,8 +737,7 @@ describe('Core Client Testing', function () {
         },
         stateService: { send: sinon.spy() },
         connectClient: sinon.spy(),
-        setUnitIdFromPayload: sinon.spy(),
-        activateSending: sinon.stub().resolves(true)
+        setUnitIdFromPayload: sinon.spy()
       }
       const msg = { payload: { fc: 16, address: 123, quantity: 1 } }
       const cb = sinon.spy()
@@ -778,8 +765,7 @@ describe('Core Client Testing', function () {
         setUnitIdFromPayload: sinon.spy(),
         clientTimeout: 1000,
         bufferCommands: false,
-        clienttype: 'tcp',
-        activateSending: sinon.stub().resolves(true)
+        clienttype: 'tcp'
       }
       const msg = { payload: { fc: 6, unitId: 1 } }
       const cb = sinon.spy()
@@ -808,8 +794,7 @@ describe('Core Client Testing', function () {
           send: function (state) {
             assert.strictEqual(state, 'WRITE')
           }
-        },
-        activateSending: sinon.stub().resolves(true)
+        }
       }
 
       const clock = sinon.useFakeTimers()
@@ -817,8 +802,8 @@ describe('Core Client Testing', function () {
       const cb = sinon.spy()
       const cberr = sinon.spy()
       const nodeLog = sinon.spy()
-      sinon.stub(coreClientUnderTest, 'getLogFunction').returns(nodeLog)
-      sinon.spy(coreClientUnderTest, 'activateSendingOnFailure')
+      coreClientUnderTest.getLogFunction = sinon.stub().returns(nodeLog)
+      coreClientUnderTest.activateSendingOnFailure = sinon.spy()
 
       coreClientUnderTest.writeModbus(node, msg, cb, cberr)
       clock.tick(1)
@@ -839,7 +824,7 @@ describe('Core Client Testing', function () {
       const node = { serialPort: '/dev/ttyUSB0', serialBaudrate: 9600, serialType: 'RTU' }
       const msg = { payload: { connectorType: 'SERIAL' } }
       const nodeLog = sinon.spy()
-      sinon.stub(coreClientUnderTest, 'getLogFunction').returns(nodeLog)
+      coreClientUnderTest.getLogFunction = sinon.stub().returns(nodeLog)
       coreClientUnderTest.setNewNodeSettings(node, msg)
       sinon.assert.calledWith(nodeLog, 'New Connection Serial Settings /dev/ttyUSB0 9600 RTU')
     })
@@ -848,7 +833,7 @@ describe('Core Client Testing', function () {
       const node = { tcpHost: '127.0.0.1', tcpPort: 502, tcpType: 'MODBUS-TCP' }
       const msg = { payload: { connectorType: 'UNKNOWN' } }
       const nodeLog = sinon.spy()
-      sinon.stub(coreClientUnderTest, 'getLogFunction').returns(nodeLog)
+      coreClientUnderTest.getLogFunction = sinon.stub().returns(nodeLog)
       coreClientUnderTest.setNewNodeSettings(node, msg)
       sinon.assert.calledWith(nodeLog, 'Unknown Dynamic Reconnect Type UNKNOWN')
     })
@@ -867,14 +852,13 @@ describe('Core Client Testing', function () {
         queueLog: sinon.spy(),
         setUnitIdFromPayload: sinon.spy(),
         clientTimeout: 1000,
-        writeModbusByFunctionCodeSixteen: sinon.spy(),
-        activateSending: sinon.stub().resolves(true)
+        writeModbusByFunctionCodeSixteen: sinon.spy()
       }
       const msg = { payload: { fc: 16 } }
       const cb = sinon.spy()
       const cberr = sinon.spy()
       const clock = sinon.useFakeTimers()
-      sinon.spy(coreClientUnderTest, 'activateSendingOnFailure')
+      coreClientUnderTest.activateSendingOnFailure = sinon.spy()
 
       coreClientUnderTest.writeModbus(node, msg, cb, cberr)
 
@@ -890,7 +874,7 @@ describe('Core Client Testing', function () {
       const msg = null
       const nodeLog = sinon.spy()
 
-      sinon.stub(coreClientUnderTest, 'getLogFunction').returns(nodeLog)
+      coreClientUnderTest.getLogFunction = sinon.stub().returns(nodeLog)
 
       coreClientUnderTest.setNewNodeSettings(node, msg)
 
@@ -935,8 +919,7 @@ describe('Core Client Testing', function () {
           writeCoil: sinon.stub().resolves({ address: 123, value: true }),
           getID: sinon.stub().returns(0)
         },
-        modbusErrorHandling: sinon.spy(),
-        activateSending: sinon.stub().resolves(true)
+        modbusErrorHandling: sinon.spy()
       }
 
       const msg = {
@@ -1006,7 +989,7 @@ describe('Core Client Testing', function () {
       const msg = { payload: { unitId: '123' } }
       const nodeLog = sinon.spy()
 
-      sinon.stub(coreClientUnderTest, 'getLogFunction').returns(nodeLog)
+      coreClientUnderTest.getLogFunction = sinon.stub().returns(nodeLog)
 
       coreClientUnderTest.setNewNodeOptionalSettings(node, msg)
 
@@ -1084,8 +1067,7 @@ describe('Core Client Testing', function () {
         queueLog: sinon.stub(),
         setUnitIdFromPayload: sinon.stub(),
         actualServiceState: { value: 'someState' },
-        clientTimeout: 1000,
-        activateSending: sinon.stub().resolves(true)
+        clientTimeout: 1000
       }
       const msg = {
         payload: {
@@ -1094,9 +1076,9 @@ describe('Core Client Testing', function () {
       }
       const cb = sinon.stub()
       const cberr = sinon.stub()
-      sinon.stub(coreClientUnderTest, 'activateSendingOnFailure')
+      coreClientUnderTest.activateSendingOnFailure = sinon.stub()
       const mockNodeLog = sinon.stub()
-      sinon.stub(coreClientUnderTest, 'getLogFunction').returns(mockNodeLog)
+      coreClientUnderTest.getLogFunction = sinon.stub().returns(mockNodeLog)
 
       coreClientUnderTest.writeModbus(node, msg, cb, cberr)
       sinon.assert.calledOnce(mockNodeLog)
@@ -1125,8 +1107,7 @@ describe('Core Client Testing', function () {
         queueLog: sinon.stub(),
         setUnitIdFromPayload: sinon.stub(),
         actualServiceState: { value: 'someState' },
-        clientTimeout: 1000,
-        activateSending: sinon.stub().resolves(true)
+        clientTimeout: 1000
       }
       const msg = {
         payload: {
@@ -1135,10 +1116,10 @@ describe('Core Client Testing', function () {
       }
       const cb = sinon.stub()
       const cberr = sinon.stub()
-      sinon.stub(coreClientUnderTest, 'writeModbusByFunctionCodeFifteen')
-      sinon.stub(coreClientUnderTest, 'activateSendingOnFailure')
+      coreClientUnderTest.writeModbusByFunctionCodeFifteen = sinon.stub()
+      coreClientUnderTest.activateSendingOnFailure = sinon.stub()
       const mockNodeLog = sinon.stub()
-      sinon.stub(coreClientUnderTest, 'getLogFunction').returns(mockNodeLog)
+      coreClientUnderTest.getLogFunction = sinon.stub().returns(mockNodeLog)
       coreClientUnderTest.writeModbus(node, msg, cb, cberr)
       sinon.assert.notCalled(coreClientUnderTest.activateSendingOnFailure)
       sinon.assert.notCalled(mockNodeLog)
@@ -1164,8 +1145,7 @@ describe('Core Client Testing', function () {
         queueLog: sinon.stub(),
         setUnitIdFromPayload: sinon.stub(),
         actualServiceState: { value: 'someState' },
-        clientTimeout: 1000,
-        activateSending: sinon.stub().resolves(true)
+        clientTimeout: 1000
       }
       const msg = {
         payload: {
@@ -1175,10 +1155,10 @@ describe('Core Client Testing', function () {
       const cb = sinon.stub()
       const cberr = sinon.stub()
 
-      sinon.stub(coreClientUnderTest, 'writeModbusByFunctionCodeFive').throws(new Error('Test Error'))
-      sinon.stub(coreClientUnderTest, 'activateSendingOnFailure')
+      coreClientUnderTest.writeModbusByFunctionCodeFive = sinon.stub().throws(new Error('Test Error'))
+      coreClientUnderTest.activateSendingOnFailure = sinon.stub()
       const mockNodeLog = sinon.stub()
-      sinon.stub(coreClientUnderTest, 'getLogFunction').returns(mockNodeLog)
+      coreClientUnderTest.getLogFunction = sinon.stub().returns(mockNodeLog)
 
       coreClientUnderTest.writeModbus(node, msg, cb, cberr)
 
@@ -1186,17 +1166,10 @@ describe('Core Client Testing', function () {
     })
   })
   describe('setNewSerialNodeSettings', function () {
-    afterEach(function () {
-      sinon.restore()
-    })
-    after(function () {
-      sinon.restore()
-    })
-    it('should parse serialAsciiResponseStartDelimiter from hex string if provided', function (done) {
+    it('should parse serialAsciiResponseStartDelimiter from hex string if provided', function () {
       const node = {
         serialAsciiResponseStartDelimiter: 0x00,
-        clienttype: 'someType',
-        activateSending: sinon.stub().resolves(true)
+        clienttype: 'someType'
       }
       const msg = {
         payload: {
@@ -1206,13 +1179,11 @@ describe('Core Client Testing', function () {
       coreClientUnderTest.setNewSerialNodeSettings(node, msg)
 
       expect(node.serialAsciiResponseStartDelimiter).to.equal(0x1A)
-      done()
     })
-    it('should set serialConnectionDelay if provided in msg.payload', function (done) {
+    it('should set serialConnectionDelay if provided in msg.payload', function () {
       const node = {
         serialConnectionDelay: 1000,
-        clienttype: 'someType',
-        activateSending: sinon.stub().resolves(true)
+        clienttype: 'someType'
       }
       const msg = {
         payload: {
@@ -1222,10 +1193,9 @@ describe('Core Client Testing', function () {
 
       coreClientUnderTest.setNewSerialNodeSettings(node, msg)
       expect(node.serialConnectionDelay).to.equal(2000)
-      done()
     })
   })
-  it('should call activateSendingOnFailure when client connection fails', (done) => {
+  it('should call activateSendingOnFailure when client connection fails', () => {
     const node = {
       client: {
         _port: {
@@ -1244,6 +1214,5 @@ describe('Core Client Testing', function () {
     coreClientUnderTest.readModbus(node, msg, cb, cberr)
     sinon.assert.calledWith(coreClientUnderTest.activateSendingOnFailure, node, cberr, sinon.match.instanceOf(Error), msg)
     coreClientUnderTest.activateSendingOnFailure.restore()
-    done()
   })
 })
