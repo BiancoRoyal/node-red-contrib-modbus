@@ -366,7 +366,7 @@ de.biancoroyal.modbus.core.client.writeModbusByFunctionCodeSix = function (node,
 
 de.biancoroyal.modbus.core.client.writeModbusByFunctionCodeSixteen = function (node, msg, cb, cberr) {
   const coreClient = de.biancoroyal.modbus.core.client
-  if (parseInt(msg.payload.value.length) !== parseInt(msg.payload.quantity)) {
+  if (parseInt(msg.payload.value.length) / 2 > parseInt(msg.payload.quantity)) {
     coreClient.activateSendingOnFailure(node, cberr, new Error('Quantity should be less or equal to register payload array length: ' +
       msg.payload.value.length + ' Addr: ' + msg.payload.address + ' Q: ' + msg.payload.quantity), msg)
   } else {
