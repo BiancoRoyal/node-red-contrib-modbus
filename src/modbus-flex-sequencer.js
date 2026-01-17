@@ -86,8 +86,12 @@ module.exports = function (RED) {
 
     node.prepareMsg = (msg) => {
       if (typeof msg === 'string') {
-        // NOTE: The operation can fail!
-        msg = JSON.parse(msg)
+        try {
+          msg = JSON.parse(msg)
+        } catch (err) {
+          node.error('Invalid JSON in message: ' + err.message)
+          return null
+        }
       }
 
       switch (msg.fc) {
@@ -220,7 +224,9 @@ module.exports = function (RED) {
       try {
         sequences.forEach(msg => {
           const inputMsg = node.prepareMsg(msg)
-          if (node.isValidModbusMsg(inputMsg)) {
+          if (!inputMsg) {
+            mbBasics.sendEmptyMsgOnFail(node, new Error('Invalid JSON in sequence message'), origMsgInput)
+          } else if (node.isValidModbusMsg(inputMsg)) {
             const newMsg = node.buildNewMessageObject(node, inputMsg)
             node.bufferMessageList.set(newMsg.messageId, mbBasics.buildNewMessage(node.keepMsgProperties, inputMsg, newMsg))
             modbusClient.emit('readModbus', newMsg, node.onModbusReadDone, node.onModbusReadError)

@@ -85,7 +85,12 @@ module.exports = function (RED) {
 
     node.prepareMsg = function (msg) {
       if (typeof msg.payload === 'string') {
-        msg.payload = JSON.parse(msg.payload)
+        try {
+          msg.payload = JSON.parse(msg.payload)
+        } catch (err) {
+          node.error('Invalid JSON in payload: ' + err.message, msg)
+          return null
+        }
       }
 
       msg.payload.fc = parseInt(msg.payload.fc) || 3
@@ -219,7 +224,9 @@ module.exports = function (RED) {
       const origMsgInput = Object.assign({}, msg)
       try {
         const inputMsg = node.prepareMsg(origMsgInput)
-        if (node.isValidModbusMsg(inputMsg)) {
+        if (!inputMsg) {
+          mbBasics.sendEmptyMsgOnFail(node, new Error('Invalid JSON in payload'), origMsgInput)
+        } else if (node.isValidModbusMsg(inputMsg)) {
           const newMsg = node.buildNewMessageObject(node, inputMsg)
           node.bufferMessageList.set(newMsg.messageId, mbBasics.buildNewMessage(node.keepMsgProperties, inputMsg, newMsg))
           modbusClient.emit('readModbus', newMsg, node.onModbusReadDone, node.onModbusReadError)

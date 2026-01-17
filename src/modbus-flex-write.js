@@ -76,7 +76,12 @@ module.exports = function (RED) {
 
     node.prepareMsg = function (msg) {
       if (typeof msg.payload === 'string') {
-        msg.payload = JSON.parse(msg.payload)
+        try {
+          msg.payload = JSON.parse(msg.payload)
+        } catch (err) {
+          node.error('Invalid JSON in payload: ' + err.message, msg)
+          return null
+        }
       }
 
       msg.payload.fc = parseInt(msg.payload.fc)
@@ -124,7 +129,12 @@ module.exports = function (RED) {
           msg.payload.value = (msg.payload.value === 'true')
         } else {
           if (msg.payload.value.indexOf(',') > -1) {
-            msg.payload.value = JSON.parse(msg.payload.value)
+            try {
+              msg.payload.value = JSON.parse(msg.payload.value)
+            } catch (err) {
+              node.error('Invalid JSON in payload.value: ' + err.message, msg)
+              return null
+            }
           }
         }
       }
@@ -207,11 +217,17 @@ module.exports = function (RED) {
       const origMsgInput = Object.assign({}, msg)
       try {
         const inputMsg = node.prepareMsg(origMsgInput)
-        if (node.isValidModbusMsg(inputMsg)) {
+        if (!inputMsg) {
+          mbBasics.sendEmptyMsgOnFail(node, new Error('Invalid JSON in payload'), origMsgInput)
+        } else if (node.isValidModbusMsg(inputMsg)) {
           const httpMsg = node.setMsgPayloadFromHTTPRequests(inputMsg)
-          const newMsg = node.buildNewMessageObject(node, httpMsg)
-          node.bufferMessageList.set(newMsg.messageId, mbBasics.buildNewMessage(node.keepMsgProperties, httpMsg, newMsg))
-          modbusClient.emit('writeModbus', newMsg, node.onModbusWriteDone, node.onModbusWriteError)
+          if (!httpMsg) {
+            mbBasics.sendEmptyMsgOnFail(node, new Error('Invalid JSON in payload.value'), origMsgInput)
+          } else {
+            const newMsg = node.buildNewMessageObject(node, httpMsg)
+            node.bufferMessageList.set(newMsg.messageId, mbBasics.buildNewMessage(node.keepMsgProperties, httpMsg, newMsg))
+            modbusClient.emit('writeModbus', newMsg, node.onModbusWriteDone, node.onModbusWriteError)
+          }
         }
       } catch (err) {
         node.errorProtocolMsg(err, origMsgInput)

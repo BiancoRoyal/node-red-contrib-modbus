@@ -89,7 +89,12 @@ module.exports = function (RED) {
           msg.payload.value = (msg.payload.value === 'true')
         } else {
           if (msg.payload.value.indexOf(',') > -1) {
-            msg.payload.value = JSON.parse(msg.payload.value)
+            try {
+              msg.payload.value = JSON.parse(msg.payload.value)
+            } catch (err) {
+              node.error('Invalid JSON in payload.value: ' + err.message, msg)
+              return null
+            }
           }
         }
       }
@@ -171,6 +176,10 @@ module.exports = function (RED) {
       const origMsgInput = Object.assign({}, msg)
       try {
         const httpMsg = node.setMsgPayloadFromHTTPRequests(origMsgInput)
+        if (!httpMsg) {
+          mbBasics.sendEmptyMsgOnFail(node, new Error('Invalid JSON in payload.value'), origMsgInput)
+          return
+        }
         const newMsg = node.buildNewMessageObject(node, httpMsg)
         node.bufferMessageList.set(newMsg.messageId, mbBasics.buildNewMessage(node.keepMsgProperties, httpMsg, newMsg))
         modbusClient.emit('writeModbus', newMsg, node.onModbusWriteDone, node.onModbusWriteError)
