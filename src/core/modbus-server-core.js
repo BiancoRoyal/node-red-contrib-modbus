@@ -166,7 +166,7 @@ de.biancoroyal.modbus.core.server.writeToServerMemory = function (node, msg) {
     }
   } catch (err) {
     msg.error = err
-    node.error(err)
+    node.error(err.message || err.toString() || 'Unknown error', { error: err })
   }
 }
 
@@ -178,7 +178,7 @@ de.biancoroyal.modbus.core.server.writeToFlexServerMemory = function (node, msg)
     }
   } catch (err) {
     msg.error = err
-    node.error(err)
+    node.error(err.message || err.toString() || 'Unknown error', { error: err })
   }
 }
 

@@ -489,11 +489,7 @@ module.exports = function (RED) {
 
     node.modbusErrorHandling = function (err) {
       coreModbusQueue.queueSerialUnlockCommand(node)
-      if (err.message) {
-        coreModbusClient.modbusSerialDebug('modbusErrorHandling:' + err.message)
-      } else {
-        coreModbusClient.modbusSerialDebug('modbusErrorHandling:' + JSON.stringify(err))
-      }
+      coreModbusClient.modbusSerialDebug('modbusErrorHandling:' + (err.message || err.toString() || 'Unknown error'))
       if (err.errno && coreModbusClient.networkErrors.includes(err.errno)) {
         node.stateService.send('FAILURE')
       }
@@ -501,16 +497,13 @@ module.exports = function (RED) {
 
     node.modbusTcpErrorHandling = function (err) {
       coreModbusQueue.queueSerialUnlockCommand(node)
+      const errorMessage = err.message || err.toString() || 'Unknown error'
       if (node.showErrors) {
-        node.error(err)
+        node.error(errorMessage, { error: err })
       }
 
       if (node.failureLogEnabled) {
-        if (err.message) {
-          coreModbusClient.modbusSerialDebug('modbusTcpErrorHandling:' + err.message)
-        } else {
-          coreModbusClient.modbusSerialDebug('modbusTcpErrorHandling:' + JSON.stringify(err))
-        }
+        coreModbusClient.modbusSerialDebug('modbusTcpErrorHandling:' + errorMessage)
       }
 
       if ((err.errno && coreModbusClient.networkErrors.includes(err.errno)) ||
@@ -521,16 +514,13 @@ module.exports = function (RED) {
 
     node.modbusSerialErrorHandling = function (err) {
       coreModbusQueue.queueSerialUnlockCommand(node)
+      const errorMessage = err.message || err.toString() || 'Unknown error'
       if (node.showErrors) {
-        node.error(err)
+        node.error(errorMessage, { error: err })
       }
 
       if (node.failureLogEnabled) {
-        if (err.message) {
-          coreModbusClient.modbusSerialDebug('modbusSerialErrorHandling:' + err.message)
-        } else {
-          coreModbusClient.modbusSerialDebug('modbusSerialErrorHandling:' + JSON.stringify(err))
-        }
+        coreModbusClient.modbusSerialDebug('modbusSerialErrorHandling:' + errorMessage)
       }
 
       node.stateService.send('BREAK')
@@ -752,8 +742,9 @@ module.exports = function (RED) {
         }
       } catch (err) {
         /* istanbul ignore next */
-        verboseWarn(err.message + ' on de-register node ' + clientUserNodeId)
-        node.error(err)
+        const errorMessage = err.message || err.toString() || 'Unknown error'
+        verboseWarn(errorMessage + ' on de-register node ' + clientUserNodeId)
+        node.error(errorMessage, { error: err })
         done()
       }
     }

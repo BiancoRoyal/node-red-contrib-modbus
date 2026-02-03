@@ -102,9 +102,10 @@ module.exports = function (RED) {
     }
 
     node.netServer.on('error', function (err) {
-      internalDebugLog(err.message)
+      const errorMessage = err.message || err.toString() || 'Unknown error'
+      internalDebugLog(errorMessage)
       if (node.showErrors) {
-        node.error(err)
+        node.error(errorMessage, { error: err })
       }
       mbBasics.setNodeStatusTo('error', node)
     })
