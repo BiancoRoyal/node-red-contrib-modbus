@@ -183,7 +183,10 @@ de.biancoroyal.modbus.core.client.customModbusMessage = function (node, msg, cb,
     return
   }
 
-  if (node.client._port && node.client._port._client && !node.client._port._client.readable) {
+  if (node.clienttype === 'tcp' && node.tcpType === 'UDP') {
+    // UDP: No need to check connection status
+    delayTime = 1
+  } else if (node.client._port && node.client._port._client && !node.client._port._client.readable) {
     if (!node.connectClient()) {
       coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg)
       return
@@ -229,7 +232,11 @@ de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
     return
   }
 
-  if (node.client._port && node.client._port._client && !node.client._port._client.readable) {
+  if (node.clienttype === 'tcp' && node.tcpType === 'UDP') {
+    // UDP: No need to check connection status
+    delayTime = 1
+  } else if (node.client._port && node.client._port._client && !node.client._port._client.readable) {
+    // TCP/Serial
     if (!node.connectClient()) {
       coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg)
       return
@@ -362,7 +369,10 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
     return
   }
 
-  if (node.client._port && node.client._port._client && !node.client._port._client.writable) {
+  if (node.clienttype === 'tcp' && node.tcpType === 'UDP') {
+    // UDP: No need to check connection status
+    delayTime = 1
+  } else if (node.client._port && node.client._port._client && !node.client._port._client.writable) {
     if (!node.connectClient()) {
       coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg)
       return
