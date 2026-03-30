@@ -34,6 +34,7 @@
         }
       },
       delayOnStart: {value: false},
+      enableDeformedMessages: { value: false },
       startDelayTime: {value: ''},
       server: {type: 'modbus-client', required: true},
       useIOFile: {value: false},
@@ -184,8 +185,12 @@
                 <input type="checkbox" id="node-input-delayOnStart" style="width:40px">
             </div>
             <div class="form-row" id="node-delay">
-                <label for="node-input-startDelayTime"><i class="fa fa-clock-o"></i> <span data-i18n="modbus-contrib.label.startDelayTime"></span></label>
+                <label for="node-input-startDelayTime"><i class="fa fa-clock-o"></i><span data-i18n="modbus-contrib.label.startDelayTime"></span></label>
                 <input type="text" id="node-input-startDelayTime" placeholder="10" style="width:80px">
+            </div>
+            <div class="form-row" id="node-enabledeformedmessages">
+                <label for="node-input-enableDeformedMessages" style="width:160px"><span data-i18n="modbus-contrib.label.enableDeformedMessages"></span></label>
+                <input type="checkbox" id="node-input-enableDeformedMessages" style="width:40px">
             </div>
             <div class="form-row">
                 <label for="node-input-server"><i class="icon-globe"></i> <span data-i18n="modbus-contrib.label.server"></span></label>
@@ -268,6 +273,9 @@
      <p>Unit-Id (0..255 tcp | 0..247 serial) - leave empty, otherwise it overrides the default Unit-ID of client
      config</p>
 
+     <p>If the device you are communicating with sends data that is longer than expected for one of the following Functioncodes 1,2,3 or 4, you can enable allow oversized
+     messages in the options. <strong>NOTE: This is a last resort option and could deliver potential faulty data please use this option with care</strong>
+     </p>
      <p>
          Setup a polling rate (greater than zero) and the time unit.
          Choose or edit the Modbus connection configuration.

@@ -47,6 +47,7 @@ module.exports = function (RED) {
     this.verboseLogging = RED.settings.verbose
 
     this.delayOnStart = config.delayOnStart
+    this.enableDeformedMessages = config.enableDeformedMessages
     this.startDelayTime = parseInt(config.startDelayTime) || 10
 
     const node = this
@@ -87,6 +88,10 @@ module.exports = function (RED) {
       node.emit('modbusGetterNodeError')
     }
 
+    if (node.showWarnings && node.enableDeformedMessages) {
+      node.warn('Deformed Message support is enabled')
+    }
+
     node.buildNewMessageObject = function (node, msg) {
       const messageId = mbCore.getObjectId()
       return {
@@ -98,6 +103,7 @@ module.exports = function (RED) {
           fc: mbCore.functionCodeModbusRead(node.dataType),
           address: node.adr,
           quantity: node.quantity,
+          enableDeformedMessages: node.enableDeformedMessages,
           messageId
         }
       }

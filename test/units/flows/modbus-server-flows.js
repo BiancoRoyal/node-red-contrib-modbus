@@ -350,5 +350,112 @@ module.exports = {
         ]
       }
     ]
-  )
+  ),
+  testRstCrash: helperExtensions.cleanFlowPositionData([
+    {
+      "id": "d0c2e5f88a42664a",
+      "type": "modbus-server",
+      "z": "df50a2f7f7a92823",
+      "name": "",
+      "logEnabled": true,
+      "hostname": "127.0.0.1",
+      "serverPort": "25039",
+      "responseDelay": 100,
+      "delayUnit": "ms",
+      "coilsBufferSize": 10000,
+      "holdingBufferSize": 10000,
+      "inputBufferSize": 10000,
+      "discreteBufferSize": 10000,
+      "showErrors": true,
+      "showStatusActivities": true,
+      "x": 600,
+      "y": 360,
+      "wires": [
+        [],
+        [],
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "id": "64b6fe3b72fc4d1a",
+      "type": "function",
+      "z": "df50a2f7f7a92823",
+      "name": "function 1",
+      "func": "// ----------------------------------------------------\n// Function node: tcp‑reset‑sender\n// ----------------------------------------------------\n\n// ----- configuration -------------------------------------------------\nconst HOST = \"127.0.0.1\";   // target address\nconst PORT = 25039;        // target port\nconst DATA = Buffer.isBuffer(msg.payload)\n    ? msg.payload\n    : Buffer.from(String(msg.payload || \"hello\")); // default payload\n// ---------------------------------------------------------------------\n\n// Create the socket\nlet socket = new net.Socket();\n\n// Error handling (optional but useful)\nsocket.on('error', err => {\n    node.error(`TCP error: ${err.message}`, msg);\n    // make sure we clean up the status\n    node.status({ fill: \"red\", shape: \"ring\", text: \"error\" });\n});\n\n// When the connection is established, send the data\nsocket.connect(PORT, HOST, () => {\n    node.status({ fill: \"green\", shape: \"dot\", text: \"connected\" });\n    socket.write(DATA, () => {\n        // Data has been flushed – now destroy the socket to generate RST\n        socket.resetAndDestroy();               // forces an immediate reset\n        node.status({ fill: \"red\", shape: \"ring\", text: \"RST sent\" });\n    });\n});\n\n// No output message is needed; return null\nreturn null;\n",
+      "outputs": 1,
+      "timeout": 0,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [
+        {
+          "var": "net",
+          "module": "net"
+        }
+      ],
+      "x": 610,
+      "y": 500,
+      "wires": [
+        [
+          "465a4e4014a9c336"
+        ]
+      ]
+    },
+    {
+      "id": "41ecdcf0b87dac45",
+      "type": "inject",
+      "z": "df50a2f7f7a92823",
+      "name": "",
+      "props": [
+        {
+          "p": "payload"
+        },
+        {
+          "p": "topic",
+          "vt": "str"
+        }
+      ],
+      "repeat": "",
+      "crontab": "",
+      "once": true,
+      "onceDelay": 0.1,
+      "topic": "",
+      "payload": "",
+      "payloadType": "date",
+      "x": 430,
+      "y": 500,
+      "wires": [
+        [
+          "64b6fe3b72fc4d1a"
+        ]
+      ]
+    },
+    {
+      "id": "465a4e4014a9c336",
+      "type": "helper",
+      "z": "df50a2f7f7a92823",
+      "name": "helper 1",
+      "active": true,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "false",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 780,
+      "y": 500,
+      "wires": []
+    },
+    {
+      "id": "ae59733953521df9",
+      "type": "global-config",
+      "env": [],
+      "modules": {
+        "node-red-contrib-modbus": "5.44.1",
+        "node-red-contrib-helper": "1.2.3"
+      }
+    }
+  ])
 }

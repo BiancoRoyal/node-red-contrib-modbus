@@ -11,7 +11,8 @@
       "useIOForPayload": "IO's As Payload",
       "emptyMsgOnFail": "Empty msg on Modbus fail",
       "keepMsgProperties": "Keep Msg Properties",
-      "delayOnStart": "Delay to activate input"
+      "delayOnStart": "Delay to activate input",
+      "enableDeformedMessages": "Allow oversized messages"
     },
     "tabs-label": {
       "settings": "Settings",

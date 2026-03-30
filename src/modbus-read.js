@@ -154,6 +154,10 @@ module.exports = function (RED) {
         return
       }
 
+      if (node.showWarnings && config.enableDeformedMessages) {
+        verboseWarn('Deformed Message support is enabled')
+      }
+
       const msg = {
         topic: node.topic || 'polling',
         from: node.name,
@@ -162,6 +166,7 @@ module.exports = function (RED) {
           fc: mbCore.functionCodeModbusRead(node.dataType),
           address: node.adr,
           quantity: node.quantity,
+          enableDeformedMessages: config.enableDeformedMessages,
           messageId: mbCore.getObjectId()
         }
       }
