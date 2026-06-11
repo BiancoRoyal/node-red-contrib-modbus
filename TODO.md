@@ -1,5 +1,10 @@
 # TODO
 
+> A curated, actionable summary of the **currently-open issues**, bugs grouped by root
+> cause, and the **Node-RED v4 vs v5 compatibility test results / branching
+> recommendation** lives in [`ISSUES-TODO.md`](ISSUES-TODO.md). The notes below remain
+> the maintainer's longer-term brainstorm.
+
 - closed Issues
   - excel list
   - work on tcp first
