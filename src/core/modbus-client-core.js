@@ -48,13 +48,24 @@ de.biancoroyal.modbus.core.client.createStateMachineService = function () {
 }
 
 de.biancoroyal.modbus.core.client.getActualUnitId = function (node, msg) {
-  if (msg.payload && Number.isInteger(msg.payload.unitid)) {
-    return parseInt(msg.payload.unitid)
-  } else if (Number.isInteger(msg.queueUnitId)) {
-    return parseInt(msg.queueUnitId)
-  } else {
-    return parseInt(node.unit_id) || 0
+  // Accept both the documented 'unitid' and the 'unitId' spelling that some
+  // nodes/gateways emit (see issue #568). Number.isInteger is used on purpose so
+  // that the valid Modbus unit address 0 is not treated as missing/falsy.
+  if (msg.payload) {
+    if (Number.isInteger(msg.payload.unitid)) {
+      return parseInt(msg.payload.unitid)
+    }
+    if (Number.isInteger(msg.payload.unitId)) {
+      return parseInt(msg.payload.unitId)
+    }
   }
+
+  if (Number.isInteger(msg.queueUnitId)) {
+    return parseInt(msg.queueUnitId)
+  }
+
+  const nodeUnitId = parseInt(node.unit_id)
+  return Number.isInteger(nodeUnitId) ? nodeUnitId : 0
 }
 
 de.biancoroyal.modbus.core.client.startStateService = function (toggleMachine) {

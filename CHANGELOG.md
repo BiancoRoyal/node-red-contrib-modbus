@@ -1,3 +1,11 @@
+# [5.46.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.45.2...v5.46.0) (2026-06-11)
+
+
+### Bug Fixes
+
+* **client:** [#568](https://github.com/biancoroyal/node-red-contrib-modbus/issues/568) `getActualUnitId()` now accepts both the documented `msg.payload.unitid` and the `msg.payload.unitId` spelling emitted by some nodes/gateways. Unit address `0` stays valid (uses `Number.isInteger`, no falsy `||` fallback). No Function node is needed anymore to translate the property name when chaining nodes.
+
+
 # [5.43.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.41.0...v5.43.0) (2024-11-02)
 
 

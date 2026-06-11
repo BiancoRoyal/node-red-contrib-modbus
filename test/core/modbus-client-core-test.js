@@ -350,6 +350,30 @@ describe('Core Client Testing', function () {
         done()
       })
 
+      it('should check with success the TCP UnitId 1 from payload unitId spelling', function (done) {
+        assert.strict.equal(coreClientUnderTest.getActualUnitId({
+          clienttype: 'tcp',
+          unit_id: 0
+        }, { payload: { unitId: 1 } }), 1)
+        done()
+      })
+
+      it('should check with success the TCP UnitId 0 from payload unitId spelling', function (done) {
+        assert.strict.equal(coreClientUnderTest.getActualUnitId({
+          clienttype: 'tcp',
+          unit_id: 5
+        }, { payload: { unitId: 0 } }), 0)
+        done()
+      })
+
+      it('should prefer payload unitid over unitId when both are present', function (done) {
+        assert.strict.equal(coreClientUnderTest.getActualUnitId({
+          clienttype: 'tcp',
+          unit_id: 0
+        }, { payload: { unitid: 3, unitId: 7 } }), 3)
+        done()
+      })
+
       it('should check with success the TCP UnitId 1 from queueid', function (done) {
         assert.strict.equal(coreClientUnderTest.getActualUnitId({ clienttype: 'tcp', unit_id: 0 }, {
           payload: {},
