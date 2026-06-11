@@ -13,6 +13,50 @@ test results** with a branching recommendation.
 
 ---
 
+## 0. Implementation status (2026-06-11)
+
+One release was cut per *fixable* priority, with the minor version growing per fix.
+
+| Prio | Status | Version | Notes |
+|------|--------|---------|-------|
+| **P2** unitId/unitid (#568) | ✅ **Fixed & verified** | **5.46.0** | `getActualUnitId()` accepts both spellings; `0` stays valid. Unit tests added; full suite `441 passing`. |
+| **P1** reconnect/timeout FSM | ⚠️ **Not fixed (unsafe)** | — | See findings below. |
+| **P3** serial/RTU | ⚠️ **Not fixed (not verifiable here)** | — | Needs real serial hardware / RTU slaves. |
+
+### P1 — reproduction findings (why no blind fix was shipped)
+
+Built two real harnesses (real `modbus-client` node + a controllable TCP/Modbus
+stub) to reproduce the reported "node silently dies / cannot reconnect":
+
+1. **ECONNRESET, `reconnectOnTimeout: true`** → FSM cycles
+   `activated → reconnecting → init → …` and **recovers** when the server returns.
+2. **Read timeout, socket kept open, `reconnectOnTimeout: true`** → **recovers**.
+3. **ECONNRESET, `reconnectOnTimeout: false`** → **degraded/stuck** in `sending`
+   (2 reads vs ~11 healthy); the dead socket is never rebuilt. This matches the
+   "silent death" class (#553/#564/#549).
+
+A targeted fix (reconnect on `broken` when the socket is provably `destroyed`,
+keeping `reconnectOnTimeout` for live-socket timeouts) **did** repair case 3, but
+**broke 8 existing tests** in `modbus-flex-getter` / `modbus-write` regardless of
+how narrow the socket-dead check was. The FSM and its tests are too tightly
+coupled to change the `broken`-handler safely without a dedicated FSM/test
+refactor. Shipping it would risk exactly the regressions this package has suffered
+from. **Recommendation:** treat P1 as an FSM-rework task (rebuild a reconnect
+regression harness like the one above, decide `reconnectOnTimeout` semantics —
+a broken connection should always reconnect — then refactor handler + tests
+together), not a one-line patch.
+
+### Release / publish mechanics
+
+`.github/workflows/build.yml` publishes to npm automatically on **push to
+`master`** (job `publish`, `JS-DevTools/npm-publish@v1` with `NPM_TOKEN`). The
+agent prepared the release (version bump + CHANGELOG on the PR branch) but does
+**not** publish or merge to `master`. To release 5.46.0: review/merge the PR into
+`master`; GitHub Actions then runs `npm test` + publish. (`npm run release` /
+`standard-version` is the alternative local tag-based flow.)
+
+---
+
 ## 1. Open issues (live)
 
 | # | Type | Title | Notes |
