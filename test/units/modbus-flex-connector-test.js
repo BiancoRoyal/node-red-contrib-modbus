@@ -11,7 +11,7 @@
 'use strict'
 
 const nodeUnderTest = require('../../src/modbus-flex-connector.js')
-const serverNode = require('../../src/modbus-server.js')
+const serverNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')
 const nodeClient = require('../../src/modbus-client.js')
 const injectNode = require('@node-red/nodes/core/common/20-inject.js')
 

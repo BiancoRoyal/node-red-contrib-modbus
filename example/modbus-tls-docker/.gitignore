@@ -1,0 +1,30 @@
+# TLS Certificates (except the generation script)
+certs/*.pem
+certs/*.key
+certs/*.crt
+certs/*.csr
+certs/*.srl
+
+# Docker volumes
+server-data/
+client-data/
+
+# Environment files
+.env
+
+# Node-RED runtime files
+*.backup
+.config.json
+.flows.json.backup
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*

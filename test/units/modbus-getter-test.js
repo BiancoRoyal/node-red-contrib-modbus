@@ -13,7 +13,7 @@
 const injectNode = require('@node-red/nodes/core/common/20-inject')
 
 const clientNode = require('../../src/modbus-client')
-const serverNode = require('../../src/modbus-server')
+const serverNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')
 const getterNode = require('../../src/modbus-getter')
 const ioConfigNode = require('../../src/modbus-io-config')
 const sinon = require('sinon')

@@ -10,7 +10,7 @@ const helper = require('node-red-node-test-helper')
 // Load all required nodes
 const flexWriteNode = require('../../src/modbus-flex-write')
 const clientNode = require('../../src/modbus-client')
-const serverNode = require('../../src/modbus-server')
+const serverNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')
 
 const testFlows = require('./flows/modbus-flex-write-e2e-flows')
 

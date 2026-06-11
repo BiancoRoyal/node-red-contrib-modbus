@@ -9,7 +9,7 @@ const { beforeEachTest, afterEachTest, loadNodesWithTimeout } = require('../help
 const helper = require('node-red-node-test-helper')
 
 // Test modules
-const serverNode = require('../../src/modbus-server.js')
+const serverNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')
 const clientNode = require('../../src/modbus-client.js')
 const readNode = require('../../src/modbus-read.js')
 const flexGetterNode = require('../../src/modbus-flex-getter.js')

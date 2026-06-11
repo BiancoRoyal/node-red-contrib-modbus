@@ -12,7 +12,7 @@
 
 const injectNode = require('@node-red/nodes/core/common/20-inject')
 
-const modbusServerNode = require('../../src/modbus-server.js')
+const modbusServerNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')
 const modbusClientNode = require('../../src/modbus-client.js')
 const modbusFlexFc = require('../../src/modbus-flex-fc.js')
 

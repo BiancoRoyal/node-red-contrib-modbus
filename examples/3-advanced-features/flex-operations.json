@@ -1,0 +1,361 @@
+[
+    {
+        "id": "example-flex-ops",
+        "type": "tab",
+        "label": "Flex Operations",
+        "disabled": false,
+        "info": "# Flexible Modbus Operations\n\nThis example demonstrates dynamic Modbus operations using flex nodes:\n- **Flex Getter**: Dynamic read operations\n- **Flex Write**: Dynamic write operations\n- **Flex Connector**: Dynamic connection management\n- **Flex FC**: Custom function codes\n\n## Use Cases:\n- Dynamic addressing based on input\n- Runtime configuration changes\n- Multi-device communication\n- Custom Modbus operations"
+    },
+    {
+        "id": "modbus-client-flex",
+        "type": "modbus-client",
+        "name": "Modbus Flex Server",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "failureLogEnabled": false,
+        "tcpHost": "127.0.0.1",
+        "tcpPort": "502",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERED",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": "1",
+        "commandDelay": "1",
+        "clientTimeout": "1000",
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": "2000",
+        "parallelUnitIdsAllowed": true
+    },
+    {
+        "id": "prepare-flex-read",
+        "type": "function",
+        "z": "example-flex-ops",
+        "name": "Prepare Dynamic Read",
+        "func": "// Dynamically configure read operation\nlet config = {\n    fc: 3,  // Function Code 3: Read Holding Registers\n    unitid: msg.unitid || 1,\n    address: msg.address || 0,\n    quantity: msg.quantity || 10\n};\n\nmsg.payload = config;\nmsg.topic = 'dynamic/read';\n\nnode.status({fill:\"blue\", shape:\"dot\", text:`Read addr:${config.address} qty:${config.quantity}`});\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 120,
+        "wires": [["flex-getter"]]
+    },
+    {
+        "id": "flex-getter",
+        "type": "modbus-flex-getter",
+        "z": "example-flex-ops",
+        "name": "Flex Read",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "server": "modbus-client-flex",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 580,
+        "y": 120,
+        "wires": [
+            ["format-flex-read"],
+            []
+        ]
+    },
+    {
+        "id": "format-flex-read",
+        "type": "function",
+        "z": "example-flex-ops",
+        "name": "Format Read Result",
+        "func": "// Format the flexible read result\nif (msg.payload && Array.isArray(msg.payload)) {\n    msg.payload = {\n        operation: 'Flexible Read',\n        unitId: msg.modbusRequest?.unitid || 1,\n        address: msg.modbusRequest?.address || 0,\n        quantity: msg.modbusRequest?.quantity || msg.payload.length,\n        values: msg.payload,\n        timestamp: new Date().toISOString()\n    };\n    \n    return msg;\n}\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 770,
+        "y": 120,
+        "wires": [["display-flex-read"]]
+    },
+    {
+        "id": "display-flex-read",
+        "type": "debug",
+        "z": "example-flex-ops",
+        "name": "Flex Read Result",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload.operation",
+        "statusType": "msg",
+        "x": 980,
+        "y": 120
+    },
+    {
+        "id": "inject-dynamic-read",
+        "type": "inject",
+        "z": "example-flex-ops",
+        "name": "Read Address 100",
+        "props": [
+            {
+                "p": "address",
+                "v": "100",
+                "vt": "num"
+            },
+            {
+                "p": "quantity",
+                "v": "5",
+                "vt": "num"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 150,
+        "y": 100,
+        "wires": [["prepare-flex-read"]]
+    },
+    {
+        "id": "inject-dynamic-read2",
+        "type": "inject",
+        "z": "example-flex-ops",
+        "name": "Read Address 200",
+        "props": [
+            {
+                "p": "address",
+                "v": "200",
+                "vt": "num"
+            },
+            {
+                "p": "quantity",
+                "v": "20",
+                "vt": "num"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 150,
+        "y": 140,
+        "wires": [["prepare-flex-read"]]
+    },
+    {
+        "id": "prepare-flex-write",
+        "type": "function",
+        "z": "example-flex-ops",
+        "name": "Prepare Dynamic Write",
+        "func": "// Dynamically configure write operation\nlet config = {\n    fc: 16,  // Function Code 16: Write Multiple Registers\n    unitid: msg.unitid || 1,\n    address: msg.address || 0,\n    value: msg.payload  // Array of values to write\n};\n\nmsg.payload = config;\nmsg.topic = 'dynamic/write';\n\nnode.status({fill:\"green\", shape:\"dot\", text:`Write addr:${config.address} values:${config.value.length}`});\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 240,
+        "wires": [["flex-write"]]
+    },
+    {
+        "id": "flex-write",
+        "type": "modbus-flex-write",
+        "z": "example-flex-ops",
+        "name": "Flex Write",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "server": "modbus-client-flex",
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 580,
+        "y": 240,
+        "wires": [
+            ["format-flex-write"],
+            []
+        ]
+    },
+    {
+        "id": "format-flex-write",
+        "type": "function",
+        "z": "example-flex-ops",
+        "name": "Format Write Result",
+        "func": "// Format the flexible write result\nmsg.payload = {\n    operation: 'Flexible Write',\n    success: true,\n    unitId: msg.modbusRequest?.unitid || 1,\n    address: msg.modbusRequest?.address || 0,\n    valuesWritten: msg.modbusRequest?.value?.length || 0,\n    timestamp: new Date().toISOString()\n};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 770,
+        "y": 240,
+        "wires": [["display-flex-write"]]
+    },
+    {
+        "id": "display-flex-write",
+        "type": "debug",
+        "z": "example-flex-ops",
+        "name": "Flex Write Result",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload.operation",
+        "statusType": "msg",
+        "x": 980,
+        "y": 240
+    },
+    {
+        "id": "inject-write-50",
+        "type": "inject",
+        "z": "example-flex-ops",
+        "name": "Write to Address 50",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "address",
+                "v": "50",
+                "vt": "num"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "[100, 200, 300]",
+        "payloadType": "json",
+        "x": 150,
+        "y": 220,
+        "wires": [["prepare-flex-write"]]
+    },
+    {
+        "id": "inject-write-100",
+        "type": "inject",
+        "z": "example-flex-ops",
+        "name": "Write to Address 100",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "address",
+                "v": "100",
+                "vt": "num"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "[111, 222, 333, 444, 555]",
+        "payloadType": "json",
+        "x": 160,
+        "y": 260,
+        "wires": [["prepare-flex-write"]]
+    },
+    {
+        "id": "flex-fc-example",
+        "type": "modbus-flex-fc",
+        "z": "example-flex-ops",
+        "name": "Custom FC",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "unitid": "1",
+        "server": "modbus-client-flex",
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 590,
+        "y": 360,
+        "wires": [
+            ["display-custom-fc"],
+            []
+        ]
+    },
+    {
+        "id": "prepare-custom-fc",
+        "type": "function",
+        "z": "example-flex-ops",
+        "name": "Prepare Custom FC",
+        "func": "// Example: Read Device Identification (FC 43)\n// This is a custom Modbus function code\nmsg.payload = {\n    fc: 43,  // Read Device Identification\n    unitid: 1,\n    address: 0,\n    quantity: 1,\n    // Custom data for FC 43\n    mei: 14,  // MEI type\n    id: 0,    // Device ID code\n    objects: 3 // Number of objects\n};\n\nmsg.topic = 'custom/fc43';\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 360,
+        "wires": [["flex-fc-example"]]
+    },
+    {
+        "id": "inject-custom-fc",
+        "type": "inject",
+        "z": "example-flex-ops",
+        "name": "Custom Function Code",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 160,
+        "y": 360,
+        "wires": [["prepare-custom-fc"]]
+    },
+    {
+        "id": "display-custom-fc",
+        "type": "debug",
+        "z": "example-flex-ops",
+        "name": "Custom FC Result",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 790,
+        "y": 360
+    },
+    {
+        "id": "comment-flex",
+        "type": "comment",
+        "z": "example-flex-ops",
+        "name": "Flex Operations Explained",
+        "info": "## Flex Nodes Advantages:\n\n### Dynamic Configuration:\n- Change addresses at runtime\n- Modify function codes dynamically\n- Adjust quantity based on conditions\n\n### Use Cases:\n1. **Multi-device polling**: Different addresses for different devices\n2. **Conditional reads**: Read different registers based on state\n3. **Variable writes**: Write different values based on input\n4. **Custom protocols**: Implement vendor-specific function codes\n\n### Message Format:\n```javascript\nmsg.payload = {\n    fc: 3,        // Function code\n    unitid: 1,    // Unit/Slave ID\n    address: 100, // Starting address\n    quantity: 10, // Number of registers\n    value: []     // For write operations\n}\n```",
+        "x": 190,
+        "y": 40
+    }
+]

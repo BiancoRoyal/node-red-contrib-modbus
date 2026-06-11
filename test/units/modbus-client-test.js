@@ -10,13 +10,13 @@
 
 'use strict'
 const coreModbusClient = require('../../src/core/modbus-client-core')
-const serverNode = require('../../src/modbus-server.js')
+// const serverNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server') // Server moved to separate package
 const nodeUnderTest = require('../../src/modbus-client.js')
 const readNode = require('../../src/modbus-read.js')
 const flexGetterNode = require('../../src/modbus-flex-getter.js')
 // const mBasics = require('../../src/modbus-basics.js')
 const sinon = require('sinon')
-const testModbusClientNodes = [serverNode, nodeUnderTest, readNode, flexGetterNode]
+const testModbusClientNodes = [nodeUnderTest, readNode, flexGetterNode] // serverNode removed - moved to separate package
 const assert = require('assert')
 const helper = require('node-red-node-test-helper')
 

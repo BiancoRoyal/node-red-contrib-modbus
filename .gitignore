@@ -36,3 +36,4 @@ example/modbus-tls-docker/certs/*.srl
 # Docker volumes
 example/modbus-tls-docker/server-data/
 example/modbus-tls-docker/client-data/
+.backup*/

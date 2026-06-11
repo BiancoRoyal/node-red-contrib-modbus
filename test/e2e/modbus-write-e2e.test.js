@@ -9,7 +9,7 @@ const helper = require('node-red-node-test-helper')
 
 const writeNode = require('../../src/modbus-write')
 const clientNode = require('../../src/modbus-client')
-const serverNode = require('../../src/modbus-server')
+const serverNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')
 
 helper.init(require.resolve('node-red'))
 

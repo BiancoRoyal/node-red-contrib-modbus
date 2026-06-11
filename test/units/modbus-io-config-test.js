@@ -16,7 +16,7 @@ const catchNode = require('@node-red/nodes/core/common/25-catch')
 const injectNode = require('@node-red/nodes/core/common/20-inject')
 const functionNode = require('@node-red/nodes/core/function/10-function')
 const clientNode = require('../../src/modbus-client')
-const serverNode = require('../../src/modbus-server')
+const serverNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')
 
 const fs = require('fs')
 

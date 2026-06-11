@@ -12,7 +12,7 @@
 
 const injectNode = require('@node-red/nodes/core/common/20-inject.js')
 const clientNode = require('../../src/modbus-client.js')
-const serverNode = require('../../src/modbus-server.js')
+const serverNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')
 const nodeUnderTest = require('../../src/modbus-flex-sequencer.js')
 
 const helper = require('node-red-node-test-helper')

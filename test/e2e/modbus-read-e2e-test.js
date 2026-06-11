@@ -3,7 +3,7 @@ helper.init(require.resolve('node-red'))
 const testFlow = require('../e2e/flows/modbus-read-e2e-flows')
 const nodeUnderTest = require('../../src/modbus-read')
 const clientNode = require('../../src/modbus-client.js')
-const serverNode = require('../../src/modbus-server.js')
+const serverNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')
 // const mbIOCore = require('../../src/core/modbus-io-core.js')
 // const EventEmitter = require('events').EventEmitter
 const sinon = require('sinon')

@@ -1,0 +1,362 @@
+[
+  {
+    "id": "example-coils-inputs",
+    "type": "tab",
+    "label": "Read Coils & Inputs",
+    "disabled": false,
+    "info": "# Reading Coils and Input Registers\n\nThis example demonstrates reading different Modbus data types:\n- **Coils**: Digital outputs (read/write)\n- **Discrete Inputs**: Digital inputs (read-only)\n- **Input Registers**: Analog inputs (read-only)\n- **Holding Registers**: Analog values (read/write)\n\n## Modbus Function Codes:\n- FC01: Read Coils\n- FC02: Read Discrete Inputs\n- FC03: Read Holding Registers\n- FC04: Read Input Registers"
+  },
+  {
+    "id": "read-coils",
+    "type": "modbus-read",
+    "z": "example-coils-inputs",
+    "name": "Read Coils (FC01)",
+    "topic": "",
+    "showStatusActivities": true,
+    "logIOActivities": false,
+    "showErrors": true,
+    "showWarnings": true,
+    "unitid": "1",
+    "dataType": "Coil",
+    "adr": "0",
+    "quantity": "16",
+    "rate": "5",
+    "rateUnit": "s",
+    "delayOnStart": false,
+    "startDelayTime": "",
+    "server": "modbus-client-datatypes",
+    "useIOFile": false,
+    "ioFile": "",
+    "useIOForPayload": false,
+    "emptyMsgOnFail": false,
+    "x": 190,
+    "y": 120,
+    "wires": [
+      [
+        "format-coils"
+      ],
+      []
+    ]
+  },
+  {
+    "id": "format-coils",
+    "type": "function",
+    "z": "example-coils-inputs",
+    "name": "Format Coils",
+    "func": "// Format coil data (digital outputs)\nif (msg.payload && Array.isArray(msg.payload)) {\n    let coilStates = {};\n    msg.payload.forEach((state, index) => {\n        coilStates[`Coil_${index}`] = state ? 'ON' : 'OFF';\n    });\n    \n    msg.payload = {\n        type: 'Coils (Digital Outputs)',\n        functionCode: 'FC01',\n        startAddress: 0,\n        count: msg.payload.length,\n        states: coilStates,\n        timestamp: new Date().toISOString()\n    };\n    \n    return msg;\n}\nreturn null;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 450,
+    "y": 120,
+    "wires": [
+      [
+        "display-coils"
+      ]
+    ]
+  },
+  {
+    "id": "display-coils",
+    "type": "debug",
+    "z": "example-coils-inputs",
+    "name": "Coils",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": true,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "payload.type",
+    "statusType": "msg",
+    "x": 690,
+    "y": 120,
+    "wires": []
+  },
+  {
+    "id": "read-discrete",
+    "type": "modbus-read",
+    "z": "example-coils-inputs",
+    "name": "Read Discrete Inputs (FC02)",
+    "topic": "",
+    "showStatusActivities": true,
+    "logIOActivities": false,
+    "showErrors": true,
+    "showWarnings": true,
+    "unitid": "1",
+    "dataType": "Input",
+    "adr": "0",
+    "quantity": "16",
+    "rate": "5",
+    "rateUnit": "s",
+    "delayOnStart": false,
+    "startDelayTime": "",
+    "server": "modbus-client-datatypes",
+    "useIOFile": false,
+    "ioFile": "",
+    "useIOForPayload": false,
+    "emptyMsgOnFail": false,
+    "x": 220,
+    "y": 200,
+    "wires": [
+      [
+        "format-discrete"
+      ],
+      []
+    ]
+  },
+  {
+    "id": "format-discrete",
+    "type": "function",
+    "z": "example-coils-inputs",
+    "name": "Format Discrete",
+    "func": "// Format discrete input data (digital inputs)\nif (msg.payload && Array.isArray(msg.payload)) {\n    let inputStates = {};\n    msg.payload.forEach((state, index) => {\n        inputStates[`Input_${index}`] = state ? 'HIGH' : 'LOW';\n    });\n    \n    msg.payload = {\n        type: 'Discrete Inputs (Digital Inputs)',\n        functionCode: 'FC02',\n        startAddress: 0,\n        count: msg.payload.length,\n        states: inputStates,\n        timestamp: new Date().toISOString()\n    };\n    \n    return msg;\n}\nreturn null;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 520,
+    "y": 200,
+    "wires": [
+      [
+        "display-discrete"
+      ]
+    ]
+  },
+  {
+    "id": "display-discrete",
+    "type": "debug",
+    "z": "example-coils-inputs",
+    "name": "Discrete Inputs",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": true,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "payload.type",
+    "statusType": "msg",
+    "x": 760,
+    "y": 200,
+    "wires": []
+  },
+  {
+    "id": "read-input-registers",
+    "type": "modbus-read",
+    "z": "example-coils-inputs",
+    "name": "Read Input Registers (FC04)",
+    "topic": "",
+    "showStatusActivities": true,
+    "logIOActivities": false,
+    "showErrors": true,
+    "showWarnings": true,
+    "unitid": "1",
+    "dataType": "InputRegister",
+    "adr": "0",
+    "quantity": "10",
+    "rate": "5",
+    "rateUnit": "s",
+    "delayOnStart": false,
+    "startDelayTime": "",
+    "server": "modbus-client-datatypes",
+    "useIOFile": false,
+    "ioFile": "",
+    "useIOForPayload": false,
+    "emptyMsgOnFail": false,
+    "x": 220,
+    "y": 280,
+    "wires": [
+      [
+        "format-input-regs"
+      ],
+      []
+    ]
+  },
+  {
+    "id": "format-input-regs",
+    "type": "function",
+    "z": "example-coils-inputs",
+    "name": "Format Input Regs",
+    "func": "// Format input register data (analog inputs)\nif (msg.payload && Array.isArray(msg.payload)) {\n    let registers = {};\n    msg.payload.forEach((value, index) => {\n        registers[`InputReg_${index}`] = {\n            decimal: value,\n            hex: '0x' + value.toString(16).toUpperCase().padStart(4, '0')\n        };\n    });\n    \n    msg.payload = {\n        type: 'Input Registers (Analog Inputs)',\n        functionCode: 'FC04',\n        startAddress: 0,\n        count: msg.payload.length,\n        registers: registers,\n        timestamp: new Date().toISOString()\n    };\n    \n    return msg;\n}\nreturn null;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 510,
+    "y": 280,
+    "wires": [
+      [
+        "display-input-regs"
+      ]
+    ]
+  },
+  {
+    "id": "display-input-regs",
+    "type": "debug",
+    "z": "example-coils-inputs",
+    "name": "Input Registers",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": true,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "payload.type",
+    "statusType": "msg",
+    "x": 720,
+    "y": 280,
+    "wires": []
+  },
+  {
+    "id": "read-holding",
+    "type": "modbus-read",
+    "z": "example-coils-inputs",
+    "name": "Read Holding Registers (FC03)",
+    "topic": "",
+    "showStatusActivities": true,
+    "logIOActivities": false,
+    "showErrors": true,
+    "showWarnings": true,
+    "unitid": "1",
+    "dataType": "HoldingRegister",
+    "adr": "0",
+    "quantity": "10",
+    "rate": "5",
+    "rateUnit": "s",
+    "delayOnStart": false,
+    "startDelayTime": "",
+    "server": "modbus-client-datatypes",
+    "useIOFile": false,
+    "ioFile": "",
+    "useIOForPayload": false,
+    "emptyMsgOnFail": false,
+    "x": 230,
+    "y": 360,
+    "wires": [
+      [
+        "format-holding"
+      ],
+      []
+    ]
+  },
+  {
+    "id": "format-holding",
+    "type": "function",
+    "z": "example-coils-inputs",
+    "name": "Format Holding",
+    "func": "// Format holding register data (read/write analog)\nif (msg.payload && Array.isArray(msg.payload)) {\n    let registers = {};\n    msg.payload.forEach((value, index) => {\n        registers[`HoldingReg_${index}`] = {\n            decimal: value,\n            hex: '0x' + value.toString(16).toUpperCase().padStart(4, '0'),\n            binary: '0b' + value.toString(2).padStart(16, '0')\n        };\n    });\n    \n    msg.payload = {\n        type: 'Holding Registers (Read/Write)',\n        functionCode: 'FC03',\n        startAddress: 0,\n        count: msg.payload.length,\n        registers: registers,\n        timestamp: new Date().toISOString()\n    };\n    \n    return msg;\n}\nreturn null;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 540,
+    "y": 360,
+    "wires": [
+      [
+        "display-holding"
+      ]
+    ]
+  },
+  {
+    "id": "display-holding",
+    "type": "debug",
+    "z": "example-coils-inputs",
+    "name": "Holding Registers",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": true,
+    "complete": "payload",
+    "targetType": "msg",
+    "statusVal": "payload.type",
+    "statusType": "msg",
+    "x": 770,
+    "y": 360,
+    "wires": []
+  },
+  {
+    "id": "comment-datatypes",
+    "type": "comment",
+    "z": "example-coils-inputs",
+    "name": "Modbus Data Types",
+    "info": "## Modbus Data Types Explained:\n\n### Digital Data:\n- **Coils (FC01/FC05/FC15)**: Digital outputs, can be read and written\n- **Discrete Inputs (FC02)**: Digital inputs, read-only\n\n### Analog Data:\n- **Input Registers (FC04)**: 16-bit analog inputs, read-only\n- **Holding Registers (FC03/FC06/FC16)**: 16-bit analog values, can be read and written\n\n### Common Uses:\n- Coils: Relays, valves, lights\n- Discrete Inputs: Switches, sensors, buttons\n- Input Registers: Temperature sensors, analog inputs\n- Holding Registers: Setpoints, configuration values",
+    "x": 170,
+    "y": 40,
+    "wires": []
+  },
+  {
+    "id": "1a58f2de8d974a46",
+    "type": "modbus-server",
+    "z": "example-coils-inputs",
+    "name": "",
+    "logEnabled": true,
+    "hostname": "0.0.0.0",
+    "serverPort": 10502,
+    "responseDelay": 100,
+    "delayUnit": "ms",
+    "coilsBufferSize": 10000,
+    "holdingBufferSize": 10000,
+    "inputBufferSize": 10000,
+    "discreteBufferSize": 10000,
+    "showErrors": true,
+    "showStatusActivities": false,
+    "x": 520,
+    "y": 500,
+    "wires": [
+      [],
+      [],
+      [],
+      [],
+      []
+    ]
+  },
+  {
+    "id": "modbus-client-datatypes",
+    "type": "modbus-client",
+    "name": "Modbus Server",
+    "clienttype": "tcp",
+    "bufferCommands": true,
+    "stateLogEnabled": false,
+    "queueLogEnabled": false,
+    "failureLogEnabled": true,
+    "tcpHost": "127.0.0.1",
+    "tcpPort": "10502",
+    "tcpType": "TCP-RTU-BUFFERED",
+    "tlsEnabled": false,
+    "tlsRejectUnauthorized": true,
+    "tlsServername": "",
+    "serialPort": "/dev/ttyUSB",
+    "serialType": "RTU-BUFFERED",
+    "serialBaudrate": "9600",
+    "serialDatabits": "8",
+    "serialStopbits": "1",
+    "serialParity": "none",
+    "serialConnectionDelay": "100",
+    "serialAsciiResponseStartDelimiter": "0x3A",
+    "unit_id": 1,
+    "commandDelay": 1,
+    "clientTimeout": 1000,
+    "reconnectOnTimeout": true,
+    "reconnectTimeout": 2000,
+    "parallelUnitIdsAllowed": true,
+    "showErrors": true,
+    "showWarnings": true,
+    "showLogs": true
+  },
+  {
+    "id": "30437eb599138525",
+    "type": "global-config",
+    "env": [],
+    "modules": {
+      "@plus4nodered/node-red-contrib-modbus": "6.0.0-beta.1"
+    }
+  }
+]

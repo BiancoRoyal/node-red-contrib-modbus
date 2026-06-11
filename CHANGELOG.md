@@ -1,4 +1,4 @@
-# [6.0.0-beta.1](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.43.0...v6.0.0-beta.1) (2025-09-28)
+# [6.0.0-beta.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.43.0...v6.0.0-beta.2) (2025-09-28)
 
 
 ### Bug Fixes
@@ -65,8 +65,14 @@
 * **write:** add event handler interface, use the new dispatch system ([986f9d1](https://github.com/biancoroyal/node-red-contrib-modbus/commit/986f9d1116cfcdaddf76e48d12662593e075b518))
 
 
+### security
+
+* migrate from debug to winston logger for enhanced security ([f6814db](https://github.com/biancoroyal/node-red-contrib-modbus/commit/f6814db2f16b2aff4fdc0b46f0e381ffcf394bc1))
+
+
 ### BREAKING CHANGES
 
+* None - Full backward compatibility maintained
 * Separate TLS nodes removed, use Enable TLS checkbox in modbus-client instead
 
 

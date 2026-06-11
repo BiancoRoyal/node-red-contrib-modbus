@@ -10,7 +10,7 @@ const { ModbusFlowTester, createMockRED } = require('../helper/modbus-test-helpe
 // Load nodes
 const flexWriteNode = require('../../src/modbus-flex-write')
 // const clientNode = require('../../src/modbus-client') - unused
-// const serverNode = require('../../src/modbus-server') - unused
+// const serverNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server') - unused
 
 describe('Modbus Flex Write Async Tests', function () {
   this.timeout(5000)

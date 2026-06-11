@@ -1,0 +1,118 @@
+version: '3.8'
+
+services:
+  # Node-RED with Modbus TLS Server
+  node-red-server:
+    image: nodered/node-red:latest
+    container_name: modbus-tls-server
+    restart: unless-stopped
+    environment:
+      - TZ=UTC
+      - NODE_RED_ENABLE_PROJECTS=false
+      - NODE_RED_CREDENTIAL_SECRET=modbus-tls-secret
+      - DEBUG=contribModbus*
+    ports:
+      - "1880:1880"    # Node-RED UI
+      - "8502:8502"    # Modbus TLS port
+    volumes:
+      - ./server-data:/data
+      - ./certs:/data/certs:ro
+      - ../../:/data/node_modules/node-red-contrib-modbus:ro
+    networks:
+      - modbus-network
+    command: >
+      bash -c "
+        cd /data &&
+        npm install /data/node_modules/node-red-contrib-modbus &&
+        npm start -- --userDir /data
+      "
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1880"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Node-RED with Modbus TLS Client
+  node-red-client:
+    image: nodered/node-red:latest
+    container_name: modbus-tls-client
+    restart: unless-stopped
+    environment:
+      - TZ=UTC
+      - NODE_RED_ENABLE_PROJECTS=false
+      - NODE_RED_CREDENTIAL_SECRET=modbus-tls-secret
+      - DEBUG=contribModbus*
+    ports:
+      - "1881:1880"    # Node-RED UI (different port)
+    volumes:
+      - ./client-data:/data
+      - ./certs:/data/certs:ro
+      - ../../:/data/node_modules/node-red-contrib-modbus:ro
+    networks:
+      - modbus-network
+    depends_on:
+      - node-red-server
+    command: >
+      bash -c "
+        cd /data &&
+        npm install /data/node_modules/node-red-contrib-modbus &&
+        npm start -- --userDir /data
+      "
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1880"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Optional: Modbus simulator for additional testing
+  modbus-simulator:
+    image: oitc/modbus-server:latest
+    container_name: modbus-simulator
+    restart: unless-stopped
+    environment:
+      - VERBOSE=true
+    ports:
+      - "5020:5020"    # Standard Modbus TCP (non-TLS)
+    networks:
+      - modbus-network
+    command: >
+      -v
+      --tcp-port 5020
+      --tcp-host 0.0.0.0
+      --holding-registers 0:100
+      --input-registers 0:100
+      --coils 0:100
+      --discrete-inputs 0:100
+
+  # Optional: Certificate generator service
+  cert-generator:
+    image: alpine:latest
+    container_name: cert-generator
+    volumes:
+      - ./certs:/certs
+    working_dir: /certs
+    entrypoint: >
+      sh -c "
+        if [ ! -f /certs/ca-cert.pem ]; then
+          echo 'Generating TLS certificates...' &&
+          apk add --no-cache openssl bash &&
+          chmod +x /certs/generate-certificates.sh &&
+          /certs/generate-certificates.sh &&
+          echo 'Certificates generated successfully!'
+        else
+          echo 'Certificates already exist, skipping generation.'
+        fi
+      "
+    networks:
+      - modbus-network
+
+networks:
+  modbus-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
+
+volumes:
+  server-data:
+  client-data:

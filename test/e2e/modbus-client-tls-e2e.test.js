@@ -11,7 +11,7 @@ const helper = require('node-red-node-test-helper')
 
 // Load all required nodes
 const clientTlsNode = require('../../src/modbus-client-tls')
-const serverTlsNode = require('../../src/modbus-server-tls')
+const serverTlsNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server-tls') // Server from separate package
 const readNode = require('../../src/modbus-read')
 const writeNode = require('../../src/modbus-write')
 

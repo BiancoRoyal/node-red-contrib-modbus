@@ -10,7 +10,7 @@ const { getPort } = require('../helper/test-helper-extensions')
 
 // Load all required nodes
 const clientNode = require('../../src/modbus-client')
-const serverNode = require('../../src/modbus-server')
+const serverNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')
 const readNode = require('../../src/modbus-read')
 const writeNode = require('../../src/modbus-write')
 const getterNode = require('../../src/modbus-getter')

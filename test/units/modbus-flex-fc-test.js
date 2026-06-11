@@ -13,7 +13,7 @@
 const nodeUnderTest = require('../../src/modbus-flex-fc.js')
 const clientNode = require('../../src/modbus-client.js')
 const readNode = require('../../src/modbus-read.js')
-const serverNode = require('../../src/modbus-server.js')
+const serverNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')
 const functionNode = require('@node-red/nodes/core/function/10-function')
 
 const testFlexFcNodes = [nodeUnderTest, clientNode, readNode, serverNode, functionNode]

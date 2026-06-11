@@ -10,7 +10,7 @@ const helper = require('node-red-node-test-helper')
 // Load all required nodes
 const getterNode = require('../../src/modbus-getter')
 const clientNode = require('../../src/modbus-client')
-const serverNode = require('../../src/modbus-server')
+const serverNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')
 const ioConfigNode = require('../../src/modbus-io-config')
 
 const testFlows = require('./flows/modbus-getter-e2e-flows')

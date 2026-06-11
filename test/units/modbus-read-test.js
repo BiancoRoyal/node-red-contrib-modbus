@@ -11,7 +11,7 @@
 'use strict'
 
 const clientNode = require('../../src/modbus-client.js')
-const serverNode = require('../../src/modbus-server.js')
+const serverNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')
 const readNode = require('../../src/modbus-read.js')
 const ioConfigNode = require('../../src/modbus-io-config')
 
