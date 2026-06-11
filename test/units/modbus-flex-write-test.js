@@ -379,11 +379,20 @@ describe('Flex Write node Testing', function () {
         helper.load(testWriteParametersNodes, flow, function () {
           const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
           setTimeout(() => {
-            mBasics.setNodeStatusTo('queueing', modbusClientNode)
+            // Drive the real state machine deterministically into the "queueing"
+            // state instead of relying on live-connection timing (which made this
+            // test flaky). isReadyToSend() reads the FSM state, not the display
+            // status set by setNodeStatusTo().
+            const sm = modbusClientNode.stateMachine
+            let state = sm.transition(sm.initialState, 'INIT')
+            state = sm.transition(state, 'CONNECT')
+            state = sm.transition(state, 'ACTIVATE')
+            state = sm.transition(state, 'QUEUE')
+            modbusClientNode.actualServiceState = state
             const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-            isReady.should.be.false()
+            isReady.should.be.true()
             done()
-          }, 1500)
+          }, 500)
         })
       })
     })
@@ -398,11 +407,14 @@ describe('Flex Write node Testing', function () {
         helper.load(testWriteParametersNodes, flow, function () {
           const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
           setTimeout(() => {
-            mBasics.setNodeStatusTo('stopped', modbusClientNode)
+            // Deterministically put the state machine into a non-ready ("stopped")
+            // state so the readiness check no longer races the live connection.
+            const sm = modbusClientNode.stateMachine
+            modbusClientNode.actualServiceState = sm.transition(sm.initialState, 'STOP')
             const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
             isReady.should.be.false()
             done()
-          }, 1500)
+          }, 500)
         })
       })
     })

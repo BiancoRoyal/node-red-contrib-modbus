@@ -20,11 +20,16 @@ Non-obvious caveats:
   `--parallel`). Running mocha non-parallel (e.g. with a single long timeout) makes
   timing-sensitive specs in `test/units/modbus-write-test.js` time out. That is an artifact
   of the test design, not a real failure.
-- **Known flaky spec:** `test/units/modbus-response-filter-test.js` occasionally fails under
-  `--parallel` with `done() called multiple times ... EISDIR: illegal operation on a
-  directory, read`. It passes when run in isolation
-  (`npx mocha ./test/units/modbus-response-filter-test.js`). Treat an isolated single-spec
-  failure here as flakiness, not a regression.
+- **Suite should be fully green** (`438 passing`) under `npm test`. Two historical
+  parallel-only flaky races were fixed; keep them from regressing:
+  - Test fixtures for `modbus-io-config` must point `path` at a **real file**
+    (e.g. `./test/resources/device.json`), never at a directory like `test` — the IO
+    line-reader does an async read that throws `EISDIR` and surfaces as
+    `done() called multiple times` once `unload()` removes its listeners.
+  - Do not assert on `modbus-client` readiness/FSM by calling `setNodeStatusTo(...)`
+    (that only changes the cosmetic status). `isReadyToSend()` reads the real
+    `actualServiceState`; drive it deterministically via
+    `node.stateMachine.transition(...)` instead of waiting on a live connection.
 - **Lint and build mutate files.** `standard --fix` may auto-edit sources, and `gulp`
   rewrites `CHANGELOG.md` and regenerates the (gitignored) `modbus/` output. `git checkout --`
   any unintended generated changes before committing.

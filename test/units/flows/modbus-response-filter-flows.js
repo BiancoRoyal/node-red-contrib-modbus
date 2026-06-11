@@ -199,7 +199,7 @@ module.exports = {
       id: '2f5a90d.bcaa1f',
       type: 'modbus-io-config',
       name: 'ModbusIOConfig',
-      path: 'test',
+      path: './test/resources/device.json',
       format: 'utf8',
       addressOffset: ''
     }
@@ -237,7 +237,7 @@ module.exports = {
       id: '2f5a90d.bcaa1f',
       type: 'modbus-io-config',
       name: 'ModbusIOConfig',
-      path: 'test',
+      path: './test/resources/device.json',
       format: 'utf8',
       addressOffset: ''
     }
@@ -275,7 +275,7 @@ module.exports = {
       id: '2f5a90d.bcaa1f',
       type: 'modbus-io-config',
       name: 'ModbusIOConfig',
-      path: 'test',
+      path: './test/resources/device.json',
       format: 'utf8',
       addressOffset: ''
     }
@@ -313,7 +313,7 @@ module.exports = {
       id: '2f5a90d.bcaa1f',
       type: 'modbus-io-config',
       name: 'ModbusIOConfig',
-      path: 'test',
+      path: './test/resources/device.json',
       format: 'utf8',
       addressOffset: ''
     }
