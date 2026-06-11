@@ -1,3 +1,17 @@
+# [5.47.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.46.0...v5.47.0) (2026-06-11)
+
+
+### Bug Fixes
+
+* **client:** P1 safe reconnect after a real connection loss (closes the "node silently dies / cannot reconnect" class [#569](https://github.com/biancoroyal/node-red-contrib-modbus/issues/569) [#564](https://github.com/biancoroyal/node-red-contrib-modbus/issues/564) [#553](https://github.com/biancoroyal/node-red-contrib-modbus/issues/553) [#549](https://github.com/biancoroyal/node-red-contrib-modbus/issues/549)). Once a client has connected, a later `broken` state always rebuilds a clean connection (`reconnect → init → initQueue`) instead of going to `activated` with a dead socket, which left the command queue and sending flags inconsistent and stalled the node. The `reconnectOnTimeout` option still governs the first connect attempt.
+* **client:** `modbusErrorHandling` now checks `err.code` as well as `err.errno`, so a real transport error (e.g. `ECONNRESET`, where modern Node sets a numeric `errno`) reliably triggers the failed/reconnect path (consistent with `modbusTcpErrorHandling`).
+
+
+### Safety
+
+* **queue:** on a connection loss, queued Modbus commands are rejected with a clear error instead of being silently dropped or replayed on the new connection. An unanswered write is undefined per the Modbus specification and must not be auto-retried; the flow decides whether to re-issue it. This keeps messages/queues clean so a reconnect cannot drive a machine twice.
+
+
 # [5.46.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.45.2...v5.46.0) (2026-06-11)
 
 

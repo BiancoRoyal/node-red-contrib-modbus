@@ -397,6 +397,45 @@ describe('Client node Unit Testing', function () {
       })
     })
 
+    it('should initialize hasConnectedOnce as false before any connection', function (done) {
+      const flow = Array.from(testFlows.testModbusReadFlow)
+
+      getPort().then((port) => {
+        flow[0].serverPort = port
+        flow[3].tcpPort = port
+
+        helper.load(testModbusClientNodes, flow, function () {
+          const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
+          modbusClientNode.hasConnectedOnce.should.be.false()
+          done()
+        })
+      })
+    })
+
+    it('should reconnect (not activate) on broken once it has connected, for a safe clean reconnect', function (done) {
+      const flow = Array.from(testFlows.testModbusReadFlow)
+
+      getPort().then((port) => {
+        flow[0].serverPort = port
+        flow[3].tcpPort = port
+
+        helper.load(testModbusClientNodes, flow, function () {
+          const modbusClientNode = helper.getNode('80aeec4c.0cb9e8')
+          // simulate a node that had a working connection and disabled timeout reconnect
+          modbusClientNode.reconnectOnTimeout = false
+          modbusClientNode.hasConnectedOnce = true
+          const stateServiceSendSpy = sinon.spy(modbusClientNode.stateService, 'send')
+          // drive the fsm into 'broken' from the current state
+          modbusClientNode.stateService.send('BREAK')
+          setTimeout(function () {
+            sinon.assert.calledWith(stateServiceSendSpy, 'RECONNECT')
+            stateServiceSendSpy.restore()
+            done()
+          }, 200)
+        })
+      })
+    })
+
     it('should handle Modbus close event and call appropriate functions', function (done) {
       const flow = Array.from(testFlows.testModbusReadFlow)
 

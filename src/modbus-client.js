@@ -95,6 +95,7 @@ module.exports = function (RED) {
     node.stateMachine = coreModbusClient.createStateMachineService()
     node.actualServiceState = node.stateMachine.initialState
     node.actualServiceStateBefore = node.actualServiceState
+    node.hasConnectedOnce = false
     node.stateService = coreModbusClient.startStateService(node.stateMachine)
     node.reconnectTimeoutId = 0
     node.serialSendingAllowed = false
@@ -208,6 +209,9 @@ module.exports = function (RED) {
       if (state.matches('connected')) {
         /* istanbul ignore next */
         verboseWarn('fsm connected after state ' + node.actualServiceStateBefore.value + logHintText)
+        // Remember that a real connection was established so a later transport
+        // loss is always recovered with a clean reconnect (see broken handler).
+        node.hasConnectedOnce = true
         coreModbusQueue.queueSerialUnlockCommand(node)
         node.emit('mbconnected')
       }
@@ -277,7 +281,15 @@ module.exports = function (RED) {
         /* istanbul ignore next */
         verboseWarn('fsm broken state after ' + node.actualServiceStateBefore.value + logHintText)
         node.emit('mbbroken', 'Modbus Broken On State ' + node.actualServiceStateBefore.value + logHintText)
-        if (node.reconnectOnTimeout) {
+        // Safety: once a connection has been established, a later 'broken' is a
+        // real transport loss (reset / refused / port closed). It must always
+        // rebuild a clean connection via reconnect -> init -> initQueue, never go
+        // to 'activated' with a dead socket - that left the command queue and
+        // sending flags inconsistent and silently stalled the node (#553/#564/
+        // #549). The reconnectOnTimeout flag still governs the very first connect
+        // attempt (before any successful connection) to preserve existing
+        // start-up/queueing behaviour.
+        if (node.reconnectOnTimeout || node.hasConnectedOnce) {
           node.stateService.send('RECONNECT')
         } else {
           node.stateService.send('ACTIVATE')
@@ -287,6 +299,10 @@ module.exports = function (RED) {
       if (state.matches('reconnecting')) {
         /* istanbul ignore next */
         verboseWarn('fsm reconnect state after ' + node.actualServiceStateBefore.value + logHintText)
+        // Safety: reject any commands still waiting in the queue with a clear
+        // error before the connection is rebuilt. They must not be replayed on
+        // the new connection (an unanswered write is undefined per Modbus spec).
+        coreModbusQueue.failQueuedCommandsOnReconnect(node, 'Modbus connection lost - queued command not sent' + logHintText)
         coreModbusQueue.queueSerialLockCommand(node)
         node.emit('mbreconnecting')
         if (node.reconnectTimeout <= 0) {
@@ -494,7 +510,13 @@ module.exports = function (RED) {
       } else {
         coreModbusClient.modbusSerialDebug('modbusErrorHandling:' + JSON.stringify(err))
       }
-      if (err.errno && coreModbusClient.networkErrors.includes(err.errno)) {
+      // A real connection loss must reliably move the FSM to 'failed' so a clean
+      // reconnect happens. Check err.code as well as err.errno: modern Node sets
+      // err.errno to a numeric value (e.g. -104) while networkErrors holds string
+      // codes like 'ECONNRESET', so an errno-only check silently misses resets
+      // (consistent with modbusTcpErrorHandling).
+      if ((err.errno && coreModbusClient.networkErrors.includes(err.errno)) ||
+        (err.code && coreModbusClient.networkErrors.includes(err.code))) {
         node.stateService.send('FAILURE')
       }
     }

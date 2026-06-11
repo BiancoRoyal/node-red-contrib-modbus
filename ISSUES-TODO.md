@@ -19,39 +19,65 @@ One release was cut per *fixable* priority, with the minor version growing per f
 
 | Prio | Status | Version | Notes |
 |------|--------|---------|-------|
-| **P2** unitId/unitid (#568) | ✅ **Fixed & verified** | **5.46.0** | `getActualUnitId()` accepts both spellings; `0` stays valid. Unit tests added; full suite `441 passing`. |
-| **P1** reconnect/timeout FSM | ⚠️ **Not fixed (unsafe)** | — | See findings below. |
+| **P2** unitId/unitid (#568) | ✅ **Fixed & verified** | **5.46.0** | `getActualUnitId()` accepts both spellings; `0` stays valid. Unit tests added. |
+| **P1** reconnect/timeout FSM | ✅ **Fixed & verified** | **5.47.0** | Safe clean reconnect after a real connection loss + queue safety. See below. |
 | **P3** serial/RTU | ⚠️ **Not fixed (not verifiable here)** | — | Needs real serial hardware / RTU slaves. |
 
-### P1 — reproduction findings (why no blind fix was shipped)
+### P1 — the safe fix that shipped (5.47.0)
 
-Built two real harnesses (real `modbus-client` node + a controllable TCP/Modbus
-stub) to reproduce the reported "node silently dies / cannot reconnect":
+Root cause (reproduced with an instrumented harness): on a real connection loss
+with `reconnectOnTimeout: false`, `broken → activated` ran **without** `initQueue`,
+so `bufferCommandList` / `sendingAllowed` / `unitSendingAllowed` stayed inconsistent
+and the FSM got stuck in `sending` while the queue grew unbounded (also the
+`#536` memory-leak shape). The healthy `true` path recovers because it goes through
+`init → initQueue`, which resets everything.
 
-1. **ECONNRESET, `reconnectOnTimeout: true`** → FSM cycles
-   `activated → reconnecting → init → …` and **recovers** when the server returns.
-2. **Read timeout, socket kept open, `reconnectOnTimeout: true`** → **recovers**.
-3. **ECONNRESET, `reconnectOnTimeout: false`** → **degraded/stuck** in `sending`
-   (2 reads vs ~11 healthy); the dead socket is never rebuilt. This matches the
-   "silent death" class (#553/#564/#549).
+The fix (Modbus-spec aware, FSM-guarded, queue-safe):
+1. **Clean reconnect on real loss.** A `modbus-client` now remembers
+   `hasConnectedOnce`. Once it has connected, a later `broken` **always** goes
+   `RECONNECT → init → initQueue → connectClient` (never `activated` on a dead
+   socket). `reconnectOnTimeout` still governs only the very first connect attempt,
+   so start-up/queueing behaviour is preserved (no test churn, no behaviour change
+   for never-connected clients).
+2. **Reliable failure detection.** `modbusErrorHandling` checks `err.code` as well
+   as `err.errno` (modern Node sets a numeric `errno`), so `ECONNRESET` & friends
+   reliably reach `failed → broken → reconnect`.
+3. **Queue safety (no harm on reconnect).** `failQueuedCommandsOnReconnect()`
+   rejects every still-queued command with a clear error before the new
+   connection is built. An unanswered write is undefined per the Modbus spec and
+   is **not** auto-retried — the flow is told and decides. This keeps messages and
+   queues clean so a reconnect can never silently replay a command and drive a
+   machine twice.
 
-A targeted fix (reconnect on `broken` when the socket is provably `destroyed`,
-keeping `reconnectOnTimeout` for live-socket timeouts) **did** repair case 3, but
-**broke 8 existing tests** in `modbus-flex-getter` / `modbus-write` regardless of
-how narrow the socket-dead check was. The FSM and its tests are too tightly
-coupled to change the `broken`-handler safely without a dedicated FSM/test
-refactor. Shipping it would risk exactly the regressions this package has suffered
-from. **Recommendation:** treat P1 as an FSM-rework task (rebuild a reconnect
-regression harness like the one above, decide `reconnectOnTimeout` semantics —
-a broken connection should always reconnect — then refactor handler + tests
-together), not a one-line patch.
+Verified: instrumented harness shows full recovery with `reconnectOnTimeout: false`
+(queue drains to 0, state returns to `activated`, reads resume); full suite
+`446 passing` across repeated parallel runs; new regression tests for
+`hasConnectedOnce`/broken→reconnect and `failQueuedCommandsOnReconnect`.
+
+### P1 — how it was diagnosed (harness)
+
+The fix was driven by an instrumented harness (real `modbus-client` node + a
+controllable TCP/Modbus stub) reproducing "node silently dies / cannot reconnect":
+
+1. **ECONNRESET, `reconnectOnTimeout: true`** → recovers (goes through
+   `init → initQueue`).
+2. **Read timeout, socket kept open, `reconnectOnTimeout: true`** → recovers.
+3. **ECONNRESET, `reconnectOnTimeout: false`** → previously **stuck in `sending`**
+   (queue grew 10→30, ~2 reads); now **fully recovers** (queue drains to 0, state
+   returns to `activated`, ~11 reads) with the 5.47.0 fix.
+
+An early one-line attempt (reconnect when the socket is `destroyed`) broke 8 tests
+because a *failed first connect* also leaves a destroyed socket. The shipped fix
+instead keys off `hasConnectedOnce`, which cleanly separates "real loss after a
+working connection" (always reconnect) from "initial connect attempt" (unchanged),
+so no test churn and no behaviour change for never-connected clients.
 
 ### Release / publish mechanics
 
 `.github/workflows/build.yml` publishes to npm automatically on **push to
 `master`** (job `publish`, `JS-DevTools/npm-publish@v1` with `NPM_TOKEN`). The
-agent prepared the release (version bump + CHANGELOG on the PR branch) but does
-**not** publish or merge to `master`. To release 5.46.0: review/merge the PR into
+agent prepared the releases (version bump + CHANGELOG on the PR branch) but does
+**not** publish or merge to `master`. To release: review/merge the PR into
 `master`; GitHub Actions then runs `npm test` + publish. (`npm run release` /
 `standard-version` is the alternative local tag-based flow.)
 

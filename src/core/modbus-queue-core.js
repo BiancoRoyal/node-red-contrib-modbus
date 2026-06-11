@@ -25,6 +25,41 @@ de.biancoroyal.modbus.queue.core.initQueue = function (node) {
   }
 }
 
+// On a connection loss / reconnect, reject every still-queued command with a
+// clear error instead of silently dropping it or replaying it on the fresh
+// connection. This is intentional and Modbus-safe: a write whose response was
+// never received is in an undefined state, so it must NOT be auto-retried
+// (that could drive a machine twice). The flow author is told via the error
+// output and decides whether to re-issue the command.
+de.biancoroyal.modbus.queue.core.failQueuedCommandsOnReconnect = function (node, reason) {
+  const coreQueue = de.biancoroyal.modbus.queue.core
+  let failedCommands = 0
+
+  for (let unitId = 0; unitId <= 255; unitId += 1) {
+    const queue = node.bufferCommandList.get(unitId)
+    if (!queue || queue.length === 0) {
+      continue
+    }
+    while (queue.length) {
+      const command = queue.shift()
+      failedCommands += 1
+      try {
+        if (command && typeof command.cberr === 'function') {
+          command.cberr(new Error(reason), command.msg)
+        }
+      } catch (err) {
+        coreQueue.internalDebug('failQueuedCommandsOnReconnect callback error: ' + err.message)
+      }
+    }
+  }
+
+  if (failedCommands > 0) {
+    coreQueue.internalDebug(reason + ' - dropped ' + failedCommands + ' queued command(s) for node ' + (node.name || node.id))
+  }
+
+  return failedCommands
+}
+
 de.biancoroyal.modbus.queue.core.checkQueuesAreEmpty = function (node) {
   let queuesAreEmpty = true
   for (let step = 0; step <= 255; step++) {

@@ -32,6 +32,51 @@ describe('Core IO Testing', function () {
       expect(() => coreQueueUnderTest.sendQueueDataToModbus(node, unitId)).to.throw('Command On Send Not Valid')
     })
 
+    it('should fail and clear all queued commands on reconnect with a clear error', function () {
+      const node = { bufferCommandList: new Map(), name: 'reconnectNode' }
+      for (let i = 0; i <= 255; i += 1) {
+        node.bufferCommandList.set(i, [])
+      }
+      const cberrWrite = sinon.spy()
+      const cberrRead = sinon.spy()
+      const writeMsg = { payload: { fc: 6, address: 0, value: 1 } }
+      const readMsg = { payload: { fc: 3, address: 0, quantity: 2 } }
+      node.bufferCommandList.get(1).push({ callModbus: sinon.spy(), msg: writeMsg, cb: sinon.spy(), cberr: cberrWrite })
+      node.bufferCommandList.get(5).push({ callModbus: sinon.spy(), msg: readMsg, cb: sinon.spy(), cberr: cberrRead })
+
+      const failed = coreQueueUnderTest.failQueuedCommandsOnReconnect(node, 'Modbus connection lost')
+
+      expect(failed).to.equal(2)
+      expect(node.bufferCommandList.get(1).length).to.equal(0)
+      expect(node.bufferCommandList.get(5).length).to.equal(0)
+      sinon.assert.calledOnce(cberrWrite)
+      sinon.assert.calledOnce(cberrRead)
+      sinon.assert.calledWithMatch(cberrWrite, sinon.match.instanceOf(Error), writeMsg)
+    })
+
+    it('should return 0 and not throw when no commands are queued on reconnect', function () {
+      const node = { bufferCommandList: new Map(), name: 'emptyNode' }
+      for (let i = 0; i <= 255; i += 1) {
+        node.bufferCommandList.set(i, [])
+      }
+      expect(coreQueueUnderTest.failQueuedCommandsOnReconnect(node, 'reason')).to.equal(0)
+    })
+
+    it('should swallow a throwing command callback while failing the queue on reconnect', function () {
+      const node = { bufferCommandList: new Map(), name: 'throwNode' }
+      for (let i = 0; i <= 255; i += 1) {
+        node.bufferCommandList.set(i, [])
+      }
+      node.bufferCommandList.get(2).push({
+        callModbus: sinon.spy(),
+        msg: { payload: { fc: 3 } },
+        cb: sinon.spy(),
+        cberr: function () { throw new Error('callback boom') }
+      })
+      expect(() => coreQueueUnderTest.failQueuedCommandsOnReconnect(node, 'reason')).to.not.throw()
+      expect(node.bufferCommandList.get(2).length).to.equal(0)
+    })
+
     it('should log an error when sequential dequeue command fails', function (done) {
       const node = {
         actualServiceState: {
