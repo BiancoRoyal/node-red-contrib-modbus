@@ -39,12 +39,6 @@ describe('Read node Testing', function () {
     })
   })
 
-  after(function (done) {
-    helper.stopServer(function () {
-      done()
-    })
-  })
-
   describe('Node', function () {
     it('simple Node should be loaded without client config', function (done) {
       helper.load(testReadNodes, testFlows.testReadWithoutClientFlow, function () {
@@ -207,7 +201,7 @@ describe('Read node Testing', function () {
       })
     })
 
-    it.skip('node can be disabled and enabled', function (done) {
+    it('node can be disabled and enabled', function (done) {
       helper.load(testReadNodes, testFlows.testDisabledReadWithClientFlow, function () {
         const readNode = helper.getNode('6b9b58549504ff46')
 
@@ -215,13 +209,11 @@ describe('Read node Testing', function () {
         readNode.showWarnings = true
         readNode.delayTimerReading = true
 
-        // expect(readNode.d).should.be.true
-
         let mockMessageOutput = ''
         readNode.warn = function (message) { mockMessageOutput = message }
 
         readNode.resetDelayTimerToRead(readNode)
-        mockMessageOutput.should.equal('Read -> resetDelayTimerToRead node 09846c74de630616 address: 0')
+        mockMessageOutput.should.equal('Read -> resetDelayTimerToRead node 6b9b58549504ff46 address: 0')
         done()
       })
     })

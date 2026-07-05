@@ -210,16 +210,23 @@ describe('Modbus Complete Coverage Tests', function () {
   })
 
   describe('modbus-flex-sequencer node', function () {
-    it.skip('should load', function (done) {
-      const timeout = setTimeout(() => {
-        done()
-      }, 2000)
-
+    it('should load with client node', function (done) {
       const flow = [
-        { id: 'n1', type: 'modbus-flex-sequencer', name: 'test', wires: [[]] }
+        {
+          id: 'seq-client',
+          type: 'modbus-client',
+          name: 'client',
+          clienttype: 'tcp',
+          tcpHost: '127.0.0.1',
+          tcpPort: '502',
+          bufferCommands: true,
+          stateLogEnabled: false,
+          reconnectOnTimeout: false,
+          wires: []
+        },
+        { id: 'n1', type: 'modbus-flex-sequencer', name: 'test', server: 'seq-client', wires: [[]] }
       ]
-      helper.load(flexSequencerNode, flow, function () {
-        clearTimeout(timeout)
+      helper.load([flexSequencerNode, clientNode], flow, function () {
         const n1 = helper.getNode('n1')
         assert(n1 !== null && n1 !== undefined)
         done()
@@ -254,7 +261,7 @@ describe('Modbus Complete Coverage Tests', function () {
   })
 
   describe('modbus-response-filter node', function () {
-    it.skip('should load', function (done) {
+    it('should load', function (done) {
       const flow = [
         { id: 'n1', type: 'modbus-response-filter', name: 'test', wires: [[]] }
       ]

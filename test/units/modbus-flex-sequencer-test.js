@@ -44,12 +44,6 @@ describe('Flex Sequencer node Testing', function () {
     })
   })
 
-  after(function (done) {
-    helper.stopServer(function () {
-      done()
-    })
-  })
-
   describe('Node', function () {
     // it('simple Node should be loaded without client config', function (done) {
     //   helper.load(testFlexSequencerNodes,testFlows.testNodeWithoutClientFlow , function () {
@@ -89,22 +83,13 @@ describe('Flex Sequencer node Testing', function () {
       })
     })
 
-    it.skip('should be inactive if message empty', function (done) {
-      const flow = Array.from(testFlows.testNodeWithServerFlow)
-
-      getPort().then((port) => {
-        flow[2].serverPort = port
-        flow[3].tcpPort = port
-
-        helper.load(testFlexSequencerNodes, flow, function () {
-          const modbusClientNode = helper.getNode('64e3712b9bf103da')
-          setTimeout(() => {
-            modbusClientNode.messageAllowedStates = ['']
-            const isInactive = modbusClientNode.isInactive()
-            isInactive.should.be.true()
-            done()
-          }, 2500)
-        })
+    it('should be inactive if message empty', function (done) {
+      helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
+        const modbusClientNode = helper.getNode('64e3712b9bf103da')
+        modbusClientNode.messageAllowedStates = ['']
+        const isInactive = modbusClientNode.isInactive()
+        isInactive.should.be.true()
+        done()
       })
     })
 
@@ -123,12 +108,14 @@ describe('Flex Sequencer node Testing', function () {
     it('should be not state queueing - not ready to send', function (done) {
       helper.load(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
         const modbusClientNode = helper.getNode('64e3712b9bf103da')
-        setTimeout(() => {
-          mBasics.setNodeStatusTo('stopped', modbusClientNode)
-          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.false()
-          done()
-        }, 1500)
+        if (modbusClientNode.stateService) {
+          modbusClientNode.stateService.send('STOP')
+        } else {
+          modbusClientNode.actualServiceState = { value: 'stopped' }
+        }
+        const isReady = modbusClientNode.isReadyToSend()
+        isReady.should.be.false()
+        done()
       })
     })
 

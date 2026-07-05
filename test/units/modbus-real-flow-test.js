@@ -1,6 +1,7 @@
 /**
- * Real Flow Tests for Modbus using node-red-node-test-helper
- * No mocking - using actual Node-RED runtime with test flows
+ * Real Flow Smoke Tests for Modbus using node-red-node-test-helper
+ * Verifies that all node types load correctly in a combined flow.
+ * Full read/write integration is covered by test/e2e/modbus-complete-e2e.test.js.
  */
 
 'use strict'
@@ -33,13 +34,12 @@ describe('Modbus Real Flow Tests', function () {
       .catch(() => helper.stopServer(done))
   })
 
-  it.skip('should read coils from server using real flow', async function () {
+  it('should load read-coils flow without crash', async function () {
     const port = await getPort()
 
     const flow = [
-      // Modbus Server
       {
-        id: 'modbus-server',
+        id: 'srv-read-coils',
         type: 'modbus-server',
         name: 'Test Server',
         serverPort: port,
@@ -51,13 +51,10 @@ describe('Modbus Real Flow Tests', function () {
         inputBufferSize: 1024,
         discreteBufferSize: 1024,
         showErrors: false,
-        x: 100,
-        y: 100,
         wires: []
       },
-      // Modbus Client
       {
-        id: 'modbus-client',
+        id: 'cli-read-coils',
         type: 'modbus-client',
         name: 'Test Client',
         clienttype: 'tcp',
@@ -79,13 +76,10 @@ describe('Modbus Real Flow Tests', function () {
         clientTimeout: '1000',
         reconnectOnTimeout: false,
         reconnectTimeout: '200',
-        x: 100,
-        y: 200,
         wires: []
       },
-      // Modbus Read
       {
-        id: 'modbus-read',
+        id: 'rd-read-coils',
         type: 'modbus-read',
         name: 'Read Coils',
         topic: '',
@@ -96,64 +90,41 @@ describe('Modbus Real Flow Tests', function () {
         dataType: 'Coil',
         adr: '0',
         quantity: '8',
-        rate: '1',
+        rate: '10',
         rateUnit: 's',
         delayOnStart: false,
         startDelayTime: '',
-        server: 'modbus-client',
+        server: 'cli-read-coils',
         useIOFile: false,
         ioFile: '',
         useIOForPayload: false,
         emptyMsgOnFail: false,
-        x: 300,
-        y: 200,
-        wires: [['helper-node'], []]
+        wires: [['hlp-read-coils'], []]
       },
-      // Helper Node to receive output
       {
-        id: 'helper-node',
+        id: 'hlp-read-coils',
         type: 'helper',
-        x: 500,
-        y: 200,
         wires: []
       }
     ]
 
     await helper.load(testNodes, flow)
 
-    const helperNode = helper.getNode('helper-node')
+    const serverN = helper.getNode('srv-read-coils')
+    const clientN = helper.getNode('cli-read-coils')
+    const readN = helper.getNode('rd-read-coils')
+    const helperN = helper.getNode('hlp-read-coils')
 
-    return new Promise((resolve, reject) => {
-      let messageReceived = false
-
-      helperNode.on('input', function (msg) {
-        messageReceived = true
-        try {
-          msg.should.have.property('payload')
-          msg.payload.should.be.an.Array()
-          msg.payload.length.should.be.greaterThan(0)
-          resolve()
-        } catch (err) {
-          reject(err)
-        }
-      })
-
-      // Wait for server and client to connect, then trigger read
-      setTimeout(() => {
-        if (!messageReceived) {
-          // If no message received after reasonable time, still pass
-          // as the connection was established without crash
-          resolve()
-        }
-      }, 2000)
-    })
+    serverN.should.have.property('type', 'modbus-server')
+    clientN.should.have.property('type', 'modbus-client')
+    readN.should.have.property('type', 'modbus-read')
+    helperN.should.not.be.null()
   })
 
-  it.skip('should write and read holding registers', async function () {
+  it('should load write-and-read-registers flow without crash', async function () {
     const port = await getPort()
 
     const flow = [
-      // Server
       {
         id: 'server2',
         type: 'modbus-server',
@@ -169,7 +140,6 @@ describe('Modbus Real Flow Tests', function () {
         showErrors: false,
         wires: []
       },
-      // Client
       {
         id: 'client2',
         type: 'modbus-client',
@@ -195,14 +165,6 @@ describe('Modbus Real Flow Tests', function () {
         reconnectTimeout: '200',
         wires: []
       },
-      // Inject node to trigger write
-      {
-        id: 'inject1',
-        type: 'helper',
-        name: 'Inject',
-        wires: [['write1']]
-      },
-      // Write node
       {
         id: 'write1',
         type: 'modbus-write',
@@ -216,11 +178,8 @@ describe('Modbus Real Flow Tests', function () {
         server: 'client2',
         emptyMsgOnFail: false,
         keepMsgProperties: false,
-        x: 300,
-        y: 100,
         wires: [['read1'], []]
       },
-      // Read node
       {
         id: 'read1',
         type: 'modbus-read',
@@ -233,7 +192,7 @@ describe('Modbus Real Flow Tests', function () {
         dataType: 'HoldingRegister',
         adr: '0',
         quantity: '4',
-        rate: '1',
+        rate: '10',
         rateUnit: 's',
         delayOnStart: false,
         startDelayTime: '',
@@ -242,59 +201,32 @@ describe('Modbus Real Flow Tests', function () {
         ioFile: '',
         useIOForPayload: false,
         emptyMsgOnFail: false,
-        x: 500,
-        y: 100,
         wires: [['helper1'], []]
       },
-      // Helper to check output
       {
         id: 'helper1',
         type: 'helper',
-        x: 700,
-        y: 100,
         wires: []
       }
     ]
 
     await helper.load(testNodes, flow)
 
-    const injectNode = helper.getNode('inject1')
-    const helperNode = helper.getNode('helper1')
+    const serverN = helper.getNode('server2')
+    const clientN = helper.getNode('client2')
+    const writeN = helper.getNode('write1')
+    const readN = helper.getNode('read1')
 
-    return new Promise((resolve, reject) => {
-      let messageReceived = false
-
-      helperNode.on('input', function (msg) {
-        messageReceived = true
-        try {
-          msg.should.have.property('payload')
-          msg.payload.should.be.an.Array()
-          msg.payload.should.deepEqual([100, 200, 300, 400])
-          resolve()
-        } catch (err) {
-          reject(err)
-        }
-      })
-
-      // Wait for connection, then send write command
-      setTimeout(() => {
-        injectNode.send({ payload: [100, 200, 300, 400] })
-      }, 500)
-
-      // Timeout fallback
-      setTimeout(() => {
-        if (!messageReceived) {
-          resolve() // Pass even if no message to avoid crash
-        }
-      }, 3000)
-    })
+    serverN.should.have.property('type', 'modbus-server')
+    clientN.should.have.property('type', 'modbus-client')
+    writeN.should.have.property('type', 'modbus-write')
+    readN.should.have.property('type', 'modbus-read')
   })
 
-  it.skip('should handle flex write operations', async function () {
+  it('should load flex-write flow without crash', async function () {
     const port = await getPort()
 
     const flow = [
-      // Server
       {
         id: 'server3',
         type: 'modbus-server',
@@ -310,7 +242,6 @@ describe('Modbus Real Flow Tests', function () {
         showErrors: false,
         wires: []
       },
-      // Client
       {
         id: 'client3',
         type: 'modbus-client',
@@ -336,13 +267,6 @@ describe('Modbus Real Flow Tests', function () {
         reconnectTimeout: '200',
         wires: []
       },
-      // Inject
-      {
-        id: 'inject2',
-        type: 'helper',
-        wires: [['flexwrite1']]
-      },
-      // Flex Write
       {
         id: 'flexwrite1',
         type: 'modbus-flex-write',
@@ -352,66 +276,30 @@ describe('Modbus Real Flow Tests', function () {
         server: 'client3',
         emptyMsgOnFail: false,
         keepMsgProperties: false,
-        x: 300,
-        y: 100,
         wires: [['helper2'], []]
       },
-      // Helper
       {
         id: 'helper2',
         type: 'helper',
-        x: 500,
-        y: 100,
         wires: []
       }
     ]
 
     await helper.load(testNodes, flow)
 
-    const injectNode = helper.getNode('inject2')
-    const helperNode = helper.getNode('helper2')
+    const serverN = helper.getNode('server3')
+    const clientN = helper.getNode('client3')
+    const flexWriteN = helper.getNode('flexwrite1')
 
-    return new Promise((resolve, reject) => {
-      let messageReceived = false
-
-      helperNode.on('input', function (msg) {
-        messageReceived = true
-        try {
-          msg.should.have.property('payload')
-          msg.should.have.property('modbusRequest')
-          resolve()
-        } catch (err) {
-          reject(err)
-        }
-      })
-
-      // Send flex write message
-      setTimeout(() => {
-        injectNode.send({
-          payload: {
-            value: [1234, 5678],
-            fc: 16,
-            unitid: 1,
-            address: 0,
-            quantity: 2
-          }
-        })
-      }, 500)
-
-      // Timeout fallback
-      setTimeout(() => {
-        if (!messageReceived) {
-          resolve()
-        }
-      }, 3000)
-    })
+    serverN.should.have.property('type', 'modbus-server')
+    clientN.should.have.property('type', 'modbus-client')
+    flexWriteN.should.have.property('type', 'modbus-flex-write')
   })
 
-  it.skip('should handle getter node operations', async function () {
+  it('should load getter flow without crash', async function () {
     const port = await getPort()
 
     const flow = [
-      // Server
       {
         id: 'server4',
         type: 'modbus-server',
@@ -427,7 +315,6 @@ describe('Modbus Real Flow Tests', function () {
         showErrors: false,
         wires: []
       },
-      // Client
       {
         id: 'client4',
         type: 'modbus-client',
@@ -453,13 +340,6 @@ describe('Modbus Real Flow Tests', function () {
         reconnectTimeout: '200',
         wires: []
       },
-      // Inject
-      {
-        id: 'inject3',
-        type: 'helper',
-        wires: [['getter1']]
-      },
-      // Getter
       {
         id: 'getter1',
         type: 'modbus-getter',
@@ -477,51 +357,23 @@ describe('Modbus Real Flow Tests', function () {
         useIOForPayload: false,
         emptyMsgOnFail: false,
         keepMsgProperties: false,
-        x: 300,
-        y: 100,
         wires: [['helper3'], []]
       },
-      // Helper
       {
         id: 'helper3',
         type: 'helper',
-        x: 500,
-        y: 100,
         wires: []
       }
     ]
 
     await helper.load(testNodes, flow)
 
-    const injectNode = helper.getNode('inject3')
-    const helperNode = helper.getNode('helper3')
+    const serverN = helper.getNode('server4')
+    const clientN = helper.getNode('client4')
+    const getterN = helper.getNode('getter1')
 
-    return new Promise((resolve, reject) => {
-      let messageReceived = false
-
-      helperNode.on('input', function (msg) {
-        messageReceived = true
-        try {
-          msg.should.have.property('payload')
-          msg.payload.should.be.an.Array()
-          msg.should.have.property('modbusRequest')
-          resolve()
-        } catch (err) {
-          reject(err)
-        }
-      })
-
-      // Trigger getter
-      setTimeout(() => {
-        injectNode.send({ payload: true })
-      }, 500)
-
-      // Timeout fallback
-      setTimeout(() => {
-        if (!messageReceived) {
-          resolve()
-        }
-      }, 3000)
-    })
+    serverN.should.have.property('type', 'modbus-server')
+    clientN.should.have.property('type', 'modbus-client')
+    getterN.should.have.property('type', 'modbus-getter')
   })
 })

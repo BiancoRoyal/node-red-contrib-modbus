@@ -49,14 +49,8 @@ describe('IO Config E2E Testing', function () {
     })
   })
 
-  after(function (done) {
-    helper.stopServer(function () {
-      done()
-    })
-  })
-
   describe('IO Node testing', function () {
-    it.skip('should handle end of lineReader', function (done) {
+    it('should handle end of lineReader', function (done) {
       const flow = [
         {
           id: 'c1d2e3f4g5h6i7',
@@ -106,7 +100,6 @@ describe('IO Config E2E Testing', function () {
           done(err)
         } finally {
           coreIO.LineByLineReader.restore()
-          coreIO.internalDebug.restore()
         }
       })
     })

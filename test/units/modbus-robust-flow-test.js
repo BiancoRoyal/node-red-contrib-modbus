@@ -132,7 +132,7 @@ describe('Robust Modbus Flow Tests', function () {
     }
   })
 
-  it.skip('should handle connection lifecycle properly', async function () {
+    it('should handle connection lifecycle properly', async function () {
     return runSimpleTest('connection-lifecycle', async (runner) => {
       const port = await runner.getPort()
       const flow = createModbusFlow(port, { includeHelper: false })
@@ -159,7 +159,7 @@ describe('Robust Modbus Flow Tests', function () {
 
 // Example using the createTestSuite helper
 createTestSuite('Modbus Test Suite Example', function (getRunner) {
-  it.skip('should work with suite helper', async function () {
+  it('should work with suite helper', async function () {
     const runner = getRunner()
 
     const port = await runner.getPort()
