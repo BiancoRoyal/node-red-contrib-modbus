@@ -1,235 +1,113 @@
 /**
- * E2E Tests for modbus-write node
+ * E2E Tests for modbus-write node — FC5, FC6, FC15, FC16
  */
 
 'use strict'
 
 const assert = require('assert')
 const helper = require('node-red-node-test-helper')
-
-const writeNode = require('../../src/modbus-write')
-const clientNode = require('../../src/modbus-client')
-const serverNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')
+const allModbusTestNodes = require('../helper/all-modbus-test-nodes')
+const { globalTestHelper } = require('../helper/mocha-global-setup')
+const {
+  deployFcFlow,
+  waitForHelper,
+  assertWriteFc,
+  buildServerClientFlow,
+  getTestNode
+} = require('../helper/fc-e2e-helper')
 
 helper.init(require.resolve('node-red'))
 
+const coreModbusNodes = allModbusTestNodes.filter((n) =>
+  n !== require('../../src/modbus-client-tls') &&
+  n !== require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server-tls'))
+
 describe('Modbus Write E2E Tests', function () {
-  this.timeout(10000)
+  this.timeout(20000)
 
   before(function (done) {
     helper.startServer(done)
   })
 
-  afterEach(function (done) {
-    helper.unload(done)
+  afterEach(async function () {
+    await helper.setFlows([])
   })
 
-  after(function (done) {
-    helper.stopServer(done)
-  })
+  async function runWriteTest (writeConfig, payload, assertFn) {
+    const { flow } = await buildServerClientFlow({
+      id: 'fc-write',
+      type: 'modbus-write',
+      server: 'fc-client',
+      emptyMsgOnFail: false,
+      delayOnStart: false,
+      wires: [['fc-helper'], []],
+      ...writeConfig
+    })
+
+    await deployFcFlow(helper, coreModbusNodes, globalTestHelper, flow)
+
+    const writeNode = getTestNode(helper, 'fc-write')
+    const pending = waitForHelper(helper, 'fc-helper', assertFn)
+
+    setTimeout(() => writeNode.receive({ payload }), 300)
+    await pending
+  }
 
   describe('Write Single Coil (FC5)', function () {
-    it.skip('should write single coil and verify response', function (done) {
-      const flow = [
-        {
-          id: 'server',
-          type: 'modbus-server',
-          hostname: '127.0.0.1',
-          serverPort: 28510
-        },
-        {
-          id: 'client',
-          type: 'modbus-client',
-          clienttype: 'tcp',
-          tcpHost: '127.0.0.1',
-          tcpPort: 28510
-        },
-        {
-          id: 'write-coil',
-          type: 'modbus-write',
-          name: 'Write Single Coil',
-          dataType: 'Coil',
-          adr: '10',
-          quantity: '1',
-          server: 'client',
-          wires: [['helper'], ['helper2']]
-        },
-        { id: 'helper', type: 'helper' },
-        { id: 'helper2', type: 'helper' }
-      ]
-
-      helper.load([writeNode, clientNode, serverNode], flow, function () {
-        const write = helper.getNode('write-coil')
-        const helperNode = helper.getNode('helper')
-
-        helperNode.on('input', function (msg) {
-          try {
-            assert.strictEqual(msg.payload.fc, 5)
-            assert.strictEqual(msg.payload.address, 10)
-            assert.strictEqual(msg.payload.value, true)
-            done()
-          } catch (err) {
-            done(err)
-          }
-        })
-
-        setTimeout(function () {
-          write.receive({ payload: true })
-        }, 500)
-      })
+    it('should write single coil and verify response', function () {
+      return runWriteTest(
+        { name: 'Write Coil', dataType: 'Coil', adr: '10', quantity: '1' },
+        true,
+        (msg) => {
+          assertWriteFc(msg, 5)
+          assert.strictEqual(msg.input.payload.address, 10)
+          assert.strictEqual(msg.input.payload.value, true)
+        }
+      )
     })
   })
 
   describe('Write Single Register (FC6)', function () {
-    it.skip('should write single register and verify response', function (done) {
-      const flow = [
-        {
-          id: 'server',
-          type: 'modbus-server',
-          hostname: '127.0.0.1',
-          serverPort: 28511
-        },
-        {
-          id: 'client',
-          type: 'modbus-client',
-          clienttype: 'tcp',
-          tcpHost: '127.0.0.1',
-          tcpPort: 28511
-        },
-        {
-          id: 'write-register',
-          type: 'modbus-write',
-          name: 'Write Single Register',
-          dataType: 'HoldingRegister',
-          adr: '100',
-          quantity: '1',
-          server: 'client',
-          wires: [['helper']]
-        },
-        { id: 'helper', type: 'helper' }
-      ]
-
-      helper.load([writeNode, clientNode, serverNode], flow, function () {
-        const write = helper.getNode('write-register')
-        const helperNode = helper.getNode('helper')
-
-        helperNode.on('input', function (msg) {
-          try {
-            assert.strictEqual(msg.payload.fc, 6)
-            assert.strictEqual(msg.payload.address, 100)
-            assert.strictEqual(msg.payload.value, 12345)
-            done()
-          } catch (err) {
-            done(err)
-          }
-        })
-
-        setTimeout(function () {
-          write.receive({ payload: 12345 })
-        }, 500)
-      })
+    it('should write single register and verify response', function () {
+      return runWriteTest(
+        { name: 'Write Register', dataType: 'HoldingRegister', adr: '100', quantity: '1' },
+        12345,
+        (msg) => {
+          assertWriteFc(msg, 6)
+          assert.strictEqual(msg.input.payload.address, 100)
+          assert.strictEqual(msg.input.payload.value, 12345)
+        }
+      )
     })
   })
 
   describe('Write Multiple Coils (FC15)', function () {
-    it.skip('should write multiple coils and verify response', function (done) {
-      const flow = [
-        {
-          id: 'server',
-          type: 'modbus-server',
-          hostname: '127.0.0.1',
-          serverPort: 28512
-        },
-        {
-          id: 'client',
-          type: 'modbus-client',
-          clienttype: 'tcp',
-          tcpHost: '127.0.0.1',
-          tcpPort: 28512
-        },
-        {
-          id: 'write-coils',
-          type: 'modbus-write',
-          name: 'Write Multiple Coils',
-          dataType: 'MCoils',
-          adr: '20',
-          quantity: '8',
-          server: 'client',
-          wires: [['helper']]
-        },
-        { id: 'helper', type: 'helper' }
-      ]
-
-      helper.load([writeNode, clientNode, serverNode], flow, function () {
-        const write = helper.getNode('write-coils')
-        const helperNode = helper.getNode('helper')
-
-        helperNode.on('input', function (msg) {
-          try {
-            assert.strictEqual(msg.payload.fc, 15)
-            assert.strictEqual(msg.payload.address, 20)
-            assert.strictEqual(msg.payload.valuesAsArray.length, 8)
-            done()
-          } catch (err) {
-            done(err)
-          }
-        })
-
-        setTimeout(function () {
-          write.receive({ payload: [true, false, true, false, true, false, true, false] })
-        }, 500)
-      })
+    it('should write multiple coils and verify response', function () {
+      return runWriteTest(
+        { name: 'Write Coils', dataType: 'MCoils', adr: '20', quantity: '8' },
+        [true, false, true, false, true, false, true, false],
+        (msg) => {
+          assertWriteFc(msg, 15)
+          assert.strictEqual(msg.input.payload.address, 20)
+          assert(Array.isArray(msg.input.payload.value))
+          assert.strictEqual(msg.input.payload.value.length, 8)
+        }
+      )
     })
   })
 
   describe('Write Multiple Registers (FC16)', function () {
-    it.skip('should write multiple registers and verify response', function (done) {
-      const flow = [
-        {
-          id: 'server',
-          type: 'modbus-server',
-          hostname: '127.0.0.1',
-          serverPort: 28513
-        },
-        {
-          id: 'client',
-          type: 'modbus-client',
-          clienttype: 'tcp',
-          tcpHost: '127.0.0.1',
-          tcpPort: 28513
-        },
-        {
-          id: 'write-registers',
-          type: 'modbus-write',
-          name: 'Write Multiple Registers',
-          dataType: 'MHoldingRegisters',
-          adr: '200',
-          quantity: '4',
-          server: 'client',
-          wires: [['helper']]
-        },
-        { id: 'helper', type: 'helper' }
-      ]
-
-      helper.load([writeNode, clientNode, serverNode], flow, function () {
-        const write = helper.getNode('write-registers')
-        const helperNode = helper.getNode('helper')
-
-        helperNode.on('input', function (msg) {
-          try {
-            assert.strictEqual(msg.payload.fc, 16)
-            assert.strictEqual(msg.payload.address, 200)
-            assert.strictEqual(msg.payload.valuesAsArray.length, 4)
-            done()
-          } catch (err) {
-            done(err)
-          }
-        })
-
-        setTimeout(function () {
-          write.receive({ payload: [1000, 2000, 3000, 4000] })
-        }, 500)
-      })
+    it('should write multiple registers and verify response', function () {
+      return runWriteTest(
+        { name: 'Write Registers', dataType: 'MHoldingRegisters', adr: '200', quantity: '4' },
+        [1000, 2000, 3000, 4000],
+        (msg) => {
+          assertWriteFc(msg, 16)
+          assert.strictEqual(msg.input.payload.address, 200)
+          assert(Array.isArray(msg.input.payload.value))
+          assert.strictEqual(msg.input.payload.value.length, 4)
+        }
+      )
     })
   })
 })

@@ -40,57 +40,96 @@ class ModbusTestHelper {
       const createMockClient = () => {
         const mockClient = new EventEmitter()
 
-        // Connection methods that succeed immediately
-        mockClient.connectTCP = sinon.stub().callsFake((host, port, callback) => {
-          process.nextTick(() => {
-            mockClient.isOpen = true
-            if (callback) callback(null)
-            mockClient.emit('connect')
-          })
+        const connectSuccess = (callback) => {
+          mockClient.isOpen = true
+          mockClient.emit('connect')
+          if (typeof callback === 'function') {
+            process.nextTick(() => callback(null))
+          }
+          return Promise.resolve()
+        }
+
+        const resolveConnectCallback = (args) => {
+          const last = args[args.length - 1]
+          return typeof last === 'function' ? last : undefined
+        }
+
+        // Connection methods — Promise API used by modbus-client v6
+        mockClient.connectTCP = sinon.stub().callsFake(function (...args) {
+          return connectSuccess(resolveConnectCallback(args))
         })
 
-        mockClient.connectRTUBuffered = sinon.stub().callsFake((path, options, callback) => {
-          process.nextTick(() => {
-            mockClient.isOpen = true
-            if (callback) callback(null)
-            mockClient.emit('connect')
-          })
+        mockClient.connectTelnet = sinon.stub().callsFake(function (...args) {
+          return connectSuccess(resolveConnectCallback(args))
         })
 
-        mockClient.connectSerial = sinon.stub().callsFake((path, options, callback) => {
-          process.nextTick(() => {
-            mockClient.isOpen = true
-            if (callback) callback(null)
-            mockClient.emit('connect')
-          })
+        mockClient.connectTcpRTUBuffered = sinon.stub().callsFake(function (...args) {
+          return connectSuccess(resolveConnectCallback(args))
         })
 
-        // Read operations return mock data
-        mockClient.readCoils = sinon.stub().callsArgWith(2, null, {
-          data: new Array(16).fill(false),
-          buffer: Buffer.alloc(2)
+        mockClient.connectUDP = sinon.stub().callsFake(function (...args) {
+          return connectSuccess(resolveConnectCallback(args))
         })
 
-        mockClient.readDiscreteInputs = sinon.stub().callsArgWith(2, null, {
-          data: new Array(10).fill(false),
-          buffer: Buffer.alloc(2)
+        mockClient.connectC701 = sinon.stub().callsFake(function (...args) {
+          return connectSuccess(resolveConnectCallback(args))
         })
 
-        mockClient.readHoldingRegisters = sinon.stub().callsArgWith(2, null, {
-          data: new Array(10).fill(0),
-          buffer: Buffer.alloc(20)
+        mockClient.connectRTUBuffered = sinon.stub().callsFake(function (...args) {
+          return connectSuccess(resolveConnectCallback(args))
         })
 
-        mockClient.readInputRegisters = sinon.stub().callsArgWith(2, null, {
-          data: new Array(10).fill(0),
-          buffer: Buffer.alloc(20)
+        mockClient.connectSerial = sinon.stub().callsFake(function (...args) {
+          return connectSuccess(resolveConnectCallback(args))
         })
 
-        // Write operations succeed
-        mockClient.writeCoil = sinon.stub().callsArgWith(2, null, { address: 0, state: true })
-        mockClient.writeRegister = sinon.stub().callsArgWith(2, null, { address: 0, value: 123 })
-        mockClient.writeCoils = sinon.stub().callsArgWith(2, null, { address: 0, length: 4 })
-        mockClient.writeRegisters = sinon.stub().callsArgWith(2, null, { address: 0, length: 2 })
+        // Read operations return mock data (Promise API used by v6 client core)
+        mockClient.readCoils = sinon.stub().callsFake(function (address, quantity) {
+          const data = new Array(quantity).fill(false)
+          return Promise.resolve({ data, buffer: Buffer.alloc(Math.ceil(quantity / 8) || 1) })
+        })
+
+        mockClient.readDiscreteInputs = sinon.stub().callsFake(function (address, quantity) {
+          const data = new Array(quantity).fill(false)
+          return Promise.resolve({ data, buffer: Buffer.alloc(Math.ceil(quantity / 8) || 1) })
+        })
+
+        mockClient.readHoldingRegisters = sinon.stub().callsFake(function (address, quantity) {
+          const stored = mockClient._holdingRegisters && mockClient._holdingRegisters[address]
+          const data = stored
+            ? stored.slice(0, quantity)
+            : new Array(quantity).fill(0)
+          const buffer = Buffer.alloc(quantity * 2)
+          data.forEach((val, idx) => buffer.writeUInt16BE(val, idx * 2))
+          return Promise.resolve({ data, buffer })
+        })
+
+        mockClient.readInputRegisters = sinon.stub().callsFake(function (address, quantity) {
+          const data = new Array(quantity).fill(0)
+          const buffer = Buffer.alloc(quantity * 2)
+          return Promise.resolve({ data, buffer })
+        })
+
+        mockClient.writeRegisters = sinon.stub().callsFake(function (address, values) {
+          mockClient._holdingRegisters = mockClient._holdingRegisters || {}
+          mockClient._holdingRegisters[address] = values.slice()
+          return Promise.resolve({ address, length: values.length })
+        })
+
+        mockClient.writeRegister = sinon.stub().callsFake(function (address, value) {
+          mockClient._holdingRegisters = mockClient._holdingRegisters || {}
+          mockClient._holdingRegisters[address] = [value]
+          return Promise.resolve({ address, value })
+        })
+
+        // Write operations succeed (Promise API)
+        mockClient.writeCoil = sinon.stub().callsFake(function (address, value) {
+          return Promise.resolve({ address, state: value })
+        })
+
+        mockClient.writeCoils = sinon.stub().callsFake(function (address, values) {
+          return Promise.resolve({ address, length: values.length })
+        })
 
         // Connection management
         mockClient.close = sinon.stub().callsFake((callback) => {
@@ -102,7 +141,9 @@ class ModbusTestHelper {
         })
 
         mockClient.setTimeout = sinon.stub().returns(mockClient)
+        mockClient.getTimeout = sinon.stub().returns(1000)
         mockClient.setID = sinon.stub().returns(mockClient)
+        mockClient.getID = sinon.stub().returns(1)
         mockClient.isOpen = false
 
         // Mock port object
@@ -154,13 +195,33 @@ class ModbusTestHelper {
       mockSocket.setNoDelay = sinon.stub()
       mockSocket.ref = sinon.stub()
       mockSocket.unref = sinon.stub()
+      mockSocket.cork = sinon.stub()
+      mockSocket.uncork = sinon.stub()
       mockSocket.readable = true
       mockSocket.writable = true
 
       return mockSocket
     }
 
+    if (typeof net.createConnection.restore === 'function') {
+      return
+    }
+
+    const originalCreateConnection = net.createConnection.bind(net)
+
     const createConnectionStub = sinon.stub(net, 'createConnection').callsFake((options, callback) => {
+      // supertest uses net.createConnection with HTTP-style options — must pass through
+      if (options && typeof options === 'object' && ('method' in options || 'path' in options || 'headers' in options)) {
+        return originalCreateConnection(options, callback)
+      }
+
+      const host = options && typeof options === 'object'
+        ? (options.host || options.hostname || options.address)
+        : undefined
+      if (host === '127.0.0.1' || host === 'localhost') {
+        return originalCreateConnection(options, callback)
+      }
+
       const mockSocket = createMockSocket()
 
       process.nextTick(() => {

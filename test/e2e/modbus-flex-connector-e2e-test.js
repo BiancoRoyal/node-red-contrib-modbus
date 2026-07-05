@@ -25,7 +25,7 @@ const { getPort } = require('../helper/test-helper-extensions')
 
 const testFlexConnectorNodes = [nodeUnderTest, serverNode, clientNode, injectNode]
 
-describe('Flex Connector E2E node Testing', function () {
+describe('Flex Connector E2E node Testing (Task 16 — E2E port isolation)', function () {
   before(function (done) {
     helper.startServer(function () {
       done()
@@ -36,12 +36,6 @@ describe('Flex Connector E2E node Testing', function () {
     helper.unload().then(function () {
       done()
     }).catch(function () {
-      done()
-    })
-  })
-
-  after(function (done) {
-    helper.stopServer(function () {
       done()
     })
   })
@@ -98,7 +92,7 @@ describe('Flex Connector E2E node Testing', function () {
       })
     })
 
-    it.skip('should handle invalid payload - needs investigation for port 10000 issue', function (done) {
+    it('should handle invalid payload - needs investigation for port 10000 issue', function (done) {
       const flow = Array.from(testFlows.testShouldBeLoadedFlow)
 
       getPort().then((port) => {
@@ -107,20 +101,12 @@ describe('Flex Connector E2E node Testing', function () {
 
         helper.load(testFlexConnectorNodes, flow, function () {
           const modbusFlexNode = helper.getNode('590974b56aaf9960')
-          const msg = { payload: {} }
-          modbusFlexNode.on('input', function (nMsg) {
-            setTimeout(function () {
-              assert.equal(nMsg.error.message, 'Payload Not Valid - Connector Type')
-              done()
-            }, 1500)
-          })
-
-          // Allow server to start before sending message
-          setTimeout(function () {
-            modbusFlexNode.receive({ id: 'n1', payload: msg, error: { message: 'Payload Not Valid - Connector Type' } })
-          }, 3000)
+          modbusFlexNode.error = sinon.spy()
+          modbusFlexNode.emit('input', { payload: {} })
+          expect(modbusFlexNode.error.calledWith(sinon.match.instanceOf(Error), sinon.match.object)).to.be.true
+          done()
         })
-      })
+      }).catch(done)
     })
 
     it('should set node status if showStatusActivities is true', function (done) {

@@ -1,318 +1,216 @@
 /**
- * E2E Tests for modbus-flex-write node with comprehensive coverage
+ * E2E Tests for modbus-flex-write node — FC5, FC6, FC15, FC16
  */
 
 'use strict'
 
 const assert = require('assert')
 const helper = require('node-red-node-test-helper')
-
-// Load all required nodes
-const flexWriteNode = require('../../src/modbus-flex-write')
-const clientNode = require('../../src/modbus-client')
-const serverNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')
-
-const testFlows = require('./flows/modbus-flex-write-e2e-flows')
+const allModbusTestNodes = require('../helper/all-modbus-test-nodes')
+const { globalTestHelper } = require('../helper/mocha-global-setup')
+const {
+  deployFcFlow,
+  waitForHelper,
+  assertWriteFc,
+  buildServerClientFlow,
+  getTestNode,
+  setupFcMocks
+} = require('../helper/fc-e2e-helper')
+const { deployModbusFlow } = require('../helper/test-helper-extensions')
 
 helper.init(require.resolve('node-red'))
 
+const coreModbusNodes = allModbusTestNodes.filter((n) =>
+  n !== require('../../src/modbus-client-tls') &&
+  n !== require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server-tls'))
+
 describe('Modbus Flex Write E2E Tests', function () {
-  this.timeout(10000)
+  this.timeout(20000)
 
   before(function (done) {
     helper.startServer(done)
   })
 
-  afterEach(function (done) {
-    helper.unload(done)
+  afterEach(async function () {
+    await helper.setFlows([])
   })
 
-  after(function (done) {
-    helper.stopServer(done)
-  })
+  async function runFlexWrite (flexPayload, assertFn, flexConfig = {}) {
+    const { flow } = await buildServerClientFlow({
+      id: 'fc-flex-write',
+      type: 'modbus-flex-write',
+      name: 'Flex Write',
+      server: 'fc-client',
+      emptyMsgOnFail: false,
+      delayOnStart: false,
+      wires: [['fc-helper'], []],
+      ...flexConfig
+    })
+
+    await deployFcFlow(helper, coreModbusNodes, globalTestHelper, flow)
+
+    const flexWrite = getTestNode(helper, 'fc-flex-write')
+    const pending = waitForHelper(helper, 'fc-helper', assertFn)
+
+    setTimeout(() => flexWrite.receive({ payload: flexPayload }), 300)
+    await pending
+  }
 
   describe('Flex Write Operations', function () {
-    it.skip('should write single coil using flex write (FC5)', function (done) {
-      helper.load([flexWriteNode, clientNode, serverNode], testFlows.flexWriteSingleCoilFlow, function () {
-        const flexWrite = helper.getNode('flex-write-coil')
-        const helperNode = helper.getNode('helper-node')
-
-        helperNode.on('input', function (msg) {
-          try {
-            assert.notStrictEqual(msg.payload, undefined)
-            assert.strictEqual(msg.modbusRequest.fc, 5)
-            assert.strictEqual(msg.modbusRequest.address, 10)
-            assert.strictEqual(msg.modbusRequest.unitid, 1)
-            done()
-          } catch (err) {
-            done(err)
-          }
-        })
-
-        setTimeout(function () {
-          flexWrite.receive({
-            payload: {
-              value: true,
-              fc: 5,
-              unitid: 1,
-              address: 10,
-              quantity: 1
-            }
-          })
-        }, 1000)
-      })
+    it('should write single coil using flex write (FC5)', function () {
+      return runFlexWrite(
+        { value: true, fc: 5, unitid: 1, address: 10, quantity: 1 },
+        (msg) => {
+          assertWriteFc(msg, 5)
+          assert.strictEqual(msg.input.payload.address, 10)
+        }
+      )
     })
 
-    it.skip('should write single register using flex write (FC6)', function (done) {
-      helper.load([flexWriteNode, clientNode, serverNode], testFlows.flexWriteSingleRegisterFlow, function () {
-        const flexWrite = helper.getNode('flex-write-register')
-        const helperNode = helper.getNode('helper-node')
-
-        helperNode.on('input', function (msg) {
-          try {
-            assert.notStrictEqual(msg.payload, undefined)
-            assert.strictEqual(msg.modbusRequest.fc, 6)
-            assert.strictEqual(msg.modbusRequest.address, 20)
-            assert.strictEqual(msg.modbusRequest.value, 1234)
-            done()
-          } catch (err) {
-            done(err)
-          }
-        })
-
-        setTimeout(function () {
-          flexWrite.receive({
-            payload: {
-              value: 1234,
-              fc: 6,
-              unitid: 1,
-              address: 20,
-              quantity: 1
-            }
-          })
-        }, 1000)
-      })
+    it('should write single register using flex write (FC6)', function () {
+      return runFlexWrite(
+        { value: 1234, fc: 6, unitid: 1, address: 20, quantity: 1 },
+        (msg) => {
+          assertWriteFc(msg, 6)
+          assert.strictEqual(msg.input.payload.address, 20)
+          assert.strictEqual(msg.input.payload.value, 1234)
+        }
+      )
     })
 
-    it.skip('should write multiple coils using flex write (FC15)', function (done) {
-      helper.load([flexWriteNode, clientNode, serverNode], testFlows.flexWriteMultipleCoilsFlow, function () {
-        const flexWrite = helper.getNode('flex-write-multiple-coils')
-        const helperNode = helper.getNode('helper-node')
-
-        helperNode.on('input', function (msg) {
-          try {
-            assert.notStrictEqual(msg.payload, undefined)
-            assert.strictEqual(msg.modbusRequest.fc, 15)
-            assert.strictEqual(msg.modbusRequest.address, 0)
-            assert.strictEqual(msg.modbusRequest.quantity, 8)
-            assert.strictEqual(Array.isArray(msg.modbusRequest.value), true)
-            assert.strictEqual(msg.modbusRequest.value.length, 8)
-            done()
-          } catch (err) {
-            done(err)
-          }
-        })
-
-        setTimeout(function () {
-          flexWrite.receive({
-            payload: {
-              value: [true, false, true, false, true, false, true, false],
-              fc: 15,
-              unitid: 1,
-              address: 0,
-              quantity: 8
-            }
-          })
-        }, 1000)
-      })
+    it('should write multiple coils using flex write (FC15)', function () {
+      return runFlexWrite(
+        {
+          value: [true, false, true, false, true, false, true, false],
+          fc: 15,
+          unitid: 1,
+          address: 0,
+          quantity: 8
+        },
+        (msg) => {
+          assertWriteFc(msg, 15)
+          assert.strictEqual(msg.input.payload.quantity, 8)
+        }
+      )
     })
 
-    it.skip('should write multiple registers using flex write (FC16)', function (done) {
-      helper.load([flexWriteNode, clientNode, serverNode], testFlows.flexWriteMultipleRegistersFlow, function () {
-        const flexWrite = helper.getNode('flex-write-multiple-registers')
-        const helperNode = helper.getNode('helper-node')
-
-        helperNode.on('input', function (msg) {
-          try {
-            assert.notStrictEqual(msg.payload, undefined)
-            assert.strictEqual(msg.modbusRequest.fc, 16)
-            assert.strictEqual(msg.modbusRequest.address, 0)
-            assert.strictEqual(msg.modbusRequest.quantity, 5)
-            assert.strictEqual(Array.isArray(msg.modbusRequest.value), true)
-            assert.strictEqual(msg.modbusRequest.value.length, 5)
-            done()
-          } catch (err) {
-            done(err)
-          }
-        })
-
-        setTimeout(function () {
-          flexWrite.receive({
-            payload: {
-              value: [100, 200, 300, 400, 500],
-              fc: 16,
-              unitid: 1,
-              address: 0,
-              quantity: 5
-            }
-          })
-        }, 1000)
-      })
+    it('should write multiple registers using flex write (FC16)', function () {
+      return runFlexWrite(
+        {
+          value: [100, 200, 300, 400, 500],
+          fc: 16,
+          unitid: 1,
+          address: 0,
+          quantity: 5
+        },
+        (msg) => {
+          assertWriteFc(msg, 16)
+          assert.strictEqual(msg.input.payload.quantity, 5)
+        }
+      )
     })
 
-    it.skip('should handle write errors gracefully', function (done) {
-      helper.load([flexWriteNode, clientNode, serverNode], testFlows.flexWriteErrorHandlingFlow, function () {
-        const flexWrite = helper.getNode('flex-write-error')
-        const errorHelper = helper.getNode('error-helper')
-
-        errorHelper.on('input', function (msg) {
-          try {
-            assert.notStrictEqual(msg.error, undefined)
-            assert.strictEqual(msg.payload, '')
-            done()
-          } catch (err) {
-            done(err)
-          }
-        })
-
-        setTimeout(function () {
-          flexWrite.receive({
-            payload: {
-              value: [1, 2, 3],
-              fc: 99, // Invalid function code
-              unitid: 1,
-              address: 0,
-              quantity: 3
-            }
-          })
-        }, 1000)
+    it('should handle write errors gracefully', async function () {
+      await setupFcMocks(globalTestHelper)
+      const { flow } = await buildServerClientFlow({
+        id: 'fc-flex-write',
+        type: 'modbus-flex-write',
+        name: 'Flex Write Error',
+        server: 'fc-client',
+        emptyMsgOnFail: true,
+        delayOnStart: false,
+        wires: [[], ['fc-error-helper']]
       })
+      flow.push({ id: 'fc-error-helper', type: 'helper', wires: [] })
+
+      await deployModbusFlow(helper, coreModbusNodes, flow)
+
+      const client = getTestNode(helper, 'fc-client')
+      const flexWrite = getTestNode(helper, 'fc-flex-write')
+      client.client.writeRegisters = function () {
+        return Promise.reject(new Error('Simulated flex write error'))
+      }
+
+      const pending = waitForHelper(helper, 'fc-error-helper', (msg) => {
+        assert.strictEqual(msg.payload, '')
+        assert(msg.error)
+      })
+
+      setTimeout(() => {
+        flexWrite.receive({
+          payload: { value: [1, 2, 3], fc: 16, unitid: 1, address: 0, quantity: 3 }
+        })
+      }, 300)
+      await pending
     })
 
-    it.skip('should use message properties for write configuration', function (done) {
-      helper.load([flexWriteNode, clientNode, serverNode], testFlows.flexWriteDynamicConfigFlow, function () {
-        const flexWrite = helper.getNode('flex-write-dynamic')
-        const helperNode = helper.getNode('helper-node')
-
-        helperNode.on('input', function (msg) {
-          try {
-            assert.notStrictEqual(msg.payload, undefined)
-            assert.strictEqual(msg.modbusRequest.fc, 16)
-            assert.strictEqual(msg.modbusRequest.address, 50)
-            assert.strictEqual(msg.modbusRequest.unitid, 2)
-            done()
-          } catch (err) {
-            done(err)
-          }
-        })
-
-        setTimeout(function () {
-          flexWrite.receive({
-            payload: [1000, 2000],
-            fc: 16,
-            unitid: 2,
-            address: 50,
-            quantity: 2
-          })
-        }, 1000)
+    it('should preserve message properties when configured', async function () {
+      const { flow } = await buildServerClientFlow({
+        id: 'fc-flex-write',
+        type: 'modbus-flex-write',
+        name: 'Flex Write Keep Props',
+        server: 'fc-client',
+        emptyMsgOnFail: false,
+        delayOnStart: false,
+        keepMsgProperties: true,
+        wires: [['fc-helper'], []]
       })
+
+      await deployFcFlow(helper, coreModbusNodes, globalTestHelper, flow)
+
+      const flexWrite = getTestNode(helper, 'fc-flex-write')
+      const pending = waitForHelper(helper, 'fc-helper', (msg) => {
+        assert.strictEqual(msg.customProperty, 'testValue')
+        assert.strictEqual(msg.topic, 'test/topic')
+        assertWriteFc(msg, 16)
+      })
+
+      setTimeout(() => {
+        flexWrite.receive({
+          payload: { value: [111, 222], fc: 16, unitid: 1, address: 10, quantity: 2 },
+          topic: 'test/topic',
+          customProperty: 'testValue'
+        })
+      }, 300)
+      await pending
     })
 
-    it.skip('should preserve message properties when configured', function (done) {
-      helper.load([flexWriteNode, clientNode, serverNode], testFlows.flexWriteKeepPropertiesFlow, function () {
-        const flexWrite = helper.getNode('flex-write-keep-props')
-        const helperNode = helper.getNode('helper-node')
+    it('should handle multiple sequential flex writes', async function () {
+      const { flow } = await buildServerClientFlow({
+        id: 'fc-flex-write',
+        type: 'modbus-flex-write',
+        name: 'Flex Write Batch',
+        server: 'fc-client',
+        emptyMsgOnFail: false,
+        delayOnStart: false,
+        wires: [['fc-helper'], []]
+      })
 
-        helperNode.on('input', function (msg) {
-          try {
-            assert.strictEqual(msg.customProperty, 'testValue')
-            assert.strictEqual(msg.topic, 'test/topic')
-            assert.notStrictEqual(msg.payload, undefined)
-            done()
-          } catch (err) {
-            done(err)
+      await deployFcFlow(helper, coreModbusNodes, globalTestHelper, flow)
+
+      const flexWrite = getTestNode(helper, 'fc-flex-write')
+      let count = 0
+
+      const pending = new Promise((resolve, reject) => {
+        const helperNode = getTestNode(helper, 'fc-helper')
+        const timer = setTimeout(() => reject(new Error('timeout waiting for batch writes')), 15000)
+        helperNode.on('input', () => {
+          count++
+          if (count >= 3) {
+            clearTimeout(timer)
+            resolve()
           }
         })
+      })
 
-        setTimeout(function () {
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
           flexWrite.receive({
-            payload: {
-              value: [111, 222],
-              fc: 16,
-              unitid: 1,
-              address: 10,
-              quantity: 2
-            },
-            topic: 'test/topic',
-            customProperty: 'testValue'
+            payload: { value: [i * 100, i * 200], fc: 16, unitid: 1, address: i * 10, quantity: 2 }
           })
-        }, 1000)
-      })
-    })
-
-    it.skip('should handle connection pool for multiple writes', function (done) {
-      helper.load([flexWriteNode, clientNode, serverNode], testFlows.flexWriteConnectionPoolFlow, function () {
-        const flexWrite = helper.getNode('flex-write-pool')
-        const helperNode = helper.getNode('helper-node')
-        let messageCount = 0
-
-        helperNode.on('input', function (msg) {
-          messageCount++
-          try {
-            assert.notStrictEqual(msg.payload, undefined)
-            if (messageCount === 3) {
-              done()
-            }
-          } catch (err) {
-            done(err)
-          }
-        })
-
-        // Send multiple writes rapidly
-        setTimeout(function () {
-          for (let i = 0; i < 3; i++) {
-            flexWrite.receive({
-              payload: {
-                value: [i * 100, i * 200],
-                fc: 16,
-                unitid: 1,
-                address: i * 10,
-                quantity: 2
-              }
-            })
-          }
-        }, 1000)
-      })
-    })
-
-    it.skip('should handle write with custom timeout', function (done) {
-      helper.load([flexWriteNode, clientNode, serverNode], testFlows.flexWriteTimeoutFlow, function () {
-        const flexWrite = helper.getNode('flex-write-timeout')
-        const helperNode = helper.getNode('helper-node')
-
-        helperNode.on('input', function (msg) {
-          try {
-            assert.notStrictEqual(msg.payload, undefined)
-            assert.notStrictEqual(msg.responseTime, undefined)
-            done()
-          } catch (err) {
-            done(err)
-          }
-        })
-
-        setTimeout(function () {
-          flexWrite.receive({
-            payload: {
-              value: [777],
-              fc: 6,
-              unitid: 1,
-              address: 99,
-              quantity: 1,
-              timeout: 500
-            }
-          })
-        }, 1000)
-      })
+        }, 300 + i * 300)
+      }
+      await pending
     })
   })
 })
