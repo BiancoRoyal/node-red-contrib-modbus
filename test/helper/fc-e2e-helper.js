@@ -34,7 +34,8 @@ function baseClient (id, port) {
 }
 
 async function setupFcMocks (globalTestHelper) {
-  globalTestHelper.cleanup()
+  // Never call cleanup() here — restoring stubs mid-suite lets stale clients
+  // (e.g. complete-e2e timeout test at 192.168.99.99) hit real TCP and flake later FC tests.
   globalTestHelper.setupMocks({
     mockModbusSerial: true,
     mockNetConnections: true,
@@ -42,18 +43,24 @@ async function setupFcMocks (globalTestHelper) {
   })
 }
 
+async function waitForTestNode (helper, id, timeoutMs = 5000) {
+  const start = Date.now()
+  while (Date.now() - start < timeoutMs) {
+    const node = getTestNode(helper, id)
+    if (node) return node
+    await new Promise((resolve) => setTimeout(resolve, 50))
+  }
+  throw new Error(`node ${id} not deployed within ${timeoutMs}ms`)
+}
+
 async function deployFcFlow (helper, nodes, globalTestHelper, flow) {
   await setupFcMocks(globalTestHelper)
   await deployModbusFlow(helper, nodes, flow)
 }
 
-function waitForHelper (helper, helperId, assertFn, timeoutMs = 15000) {
+async function waitForHelper (helper, helperId, assertFn, timeoutMs = 15000) {
+  const helperNode = await waitForTestNode(helper, helperId, Math.min(timeoutMs, 5000))
   return new Promise((resolve, reject) => {
-    const helperNode = getTestNode(helper, helperId)
-    if (!helperNode) {
-      reject(new Error(`helper node ${helperId} not deployed`))
-      return
-    }
     const timer = setTimeout(() => {
       reject(new Error('timeout waiting for helper message'))
     }, timeoutMs)
@@ -100,6 +107,7 @@ module.exports = {
   baseClient,
   setupFcMocks,
   deployFcFlow,
+  waitForTestNode,
   waitForHelper,
   assertReadFc,
   assertWriteFc,

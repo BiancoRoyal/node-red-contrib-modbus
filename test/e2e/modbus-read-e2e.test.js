@@ -10,6 +10,7 @@ const { globalTestHelper } = require('../helper/mocha-global-setup')
 const {
   deployFcFlow,
   waitForHelper,
+  waitForTestNode,
   assertReadFc,
   buildServerClientFlow,
   getTestNode
@@ -50,7 +51,7 @@ describe('Modbus Read E2E Tests', function () {
 
     await deployFcFlow(helper, coreModbusNodes, globalTestHelper, flow)
 
-    const readNode = getTestNode(helper, 'fc-read')
+    const readNode = await waitForTestNode(helper, 'fc-read')
     const pending = waitForHelper(helper, 'fc-helper', (msg) => {
       assertReadFc(msg, fc, quantity)
     })

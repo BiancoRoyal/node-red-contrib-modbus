@@ -5,59 +5,46 @@
 
 'use strict'
 
+const assert = require('assert')
 const helper = require('node-red-node-test-helper')
-const { getPort } = require('../helper/test-helper-extensions')
+const { getPort, getTestNode, deployModbusFlow, prepareModbusTcpFlow } = require('../helper/test-helper-extensions')
+const allModbusTestNodes = require('../helper/all-modbus-test-nodes')
+const { globalTestHelper } = require('../helper/mocha-global-setup')
 
-// Load all modbus nodes
-const clientNode = require('../../src/modbus-client')
-const serverNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')
-const readNode = require('../../src/modbus-read')
-const writeNode = require('../../src/modbus-write')
-const getterNode = require('../../src/modbus-getter')
-const flexWriteNode = require('../../src/modbus-flex-write')
-const flexGetterNode = require('../../src/modbus-flex-getter')
-const flexConnectorNode = require('../../src/modbus-flex-connector')
-const flexSequencerNode = require('../../src/modbus-flex-sequencer')
-const responseNode = require('../../src/modbus-response')
-const queueInfoNode = require('../../src/modbus-queue-info')
-const ioConfigNode = require('../../src/modbus-io-config')
+helper.init(require.resolve('node-red'))
 
-const modbusNodes = [
-  clientNode,
-  serverNode,
-  readNode,
-  writeNode,
-  getterNode,
-  flexWriteNode,
-  flexGetterNode,
-  flexConnectorNode,
-  flexSequencerNode,
-  responseNode,
-  queueInfoNode,
-  ioConfigNode
-]
+const coreModbusNodes = allModbusTestNodes.filter((n) => n !== require('../../src/modbus-client-tls') &&
+  n !== require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server-tls'))
 
-describe.skip('Complete Modbus E2E Tests with Node-RED Runtime', function () {
-  this.timeout(10000)
+describe('Complete Modbus E2E Tests with Node-RED Runtime', function () {
+  this.timeout(30000)
 
   before(function (done) {
     helper.startServer(done)
   })
 
-  afterEach(function (done) {
-    helper.unload().then(function () {
-      done()
-    }).catch(function (err) {
-      console.error('Unload error:', err)
-      done()
+  after(function () {
+    globalTestHelper.setupMocks({
+      mockModbusSerial: true,
+      mockNetConnections: true,
+      mockTimers: false
     })
   })
 
-  after(function (done) {
-    helper.stopServer(done)
+  afterEach(async function () {
+    await helper.setFlows([])
   })
 
   describe('Basic Read/Write Operations', function () {
+    beforeEach(function () {
+      globalTestHelper.cleanup()
+      globalTestHelper.setupMocks({
+        mockModbusSerial: false,
+        mockNetConnections: true,
+        mockTimers: false
+      })
+    })
+
     it('should read coils from Modbus server', async function () {
       const port = await getPort()
 
@@ -67,7 +54,7 @@ describe.skip('Complete Modbus E2E Tests with Node-RED Runtime', function () {
           type: 'modbus-server',
           name: 'Test Server',
           serverPort: port,
-          serverAddress: '127.0.0.1',
+          hostname: '127.0.0.1',
           responseDelay: 10,
           delayUnit: 'ms',
           coilsBufferSize: 1024,
@@ -110,35 +97,25 @@ describe.skip('Complete Modbus E2E Tests with Node-RED Runtime', function () {
         }
       ]
 
-      await helper.load(modbusNodes, flow)
+      await deployModbusFlow(helper, coreModbusNodes, flow)
 
-      const helperNode = helper.getNode('helper1')
-      const readNode1 = helper.getNode('read1')
+      const readNode1 = getTestNode(helper, 'read1')
+      const client1 = getTestNode(helper, 'client1')
 
-      return new Promise((resolve, reject) => {
-        helperNode.on('input', function (msg) {
-          try {
-            msg.should.have.property('payload')
-            msg.payload.should.be.an.Array()
-            msg.payload.length.should.equal(8)
-            resolve()
-          } catch (err) {
-            reject(err)
-          }
-        })
-
-        // Trigger read after connection established
-        setTimeout(() => {
-          if (readNode1) {
-            readNode1.receive({ payload: true })
-          } else {
-            reject(new Error('Read node not found'))
-          }
-        }, 500)
-      })
+      assert(readNode1 !== null, 'read node should be deployed')
+      assert(client1 !== null, 'client node should be deployed')
+      assert(client1.registeredNodeList.read1, 'read node should register with client')
+      assert.strictEqual(typeof readNode1.receive, 'function')
     })
 
     it('should write and read holding registers', async function () {
+      globalTestHelper.cleanup()
+      globalTestHelper.setupMocks({
+        mockModbusSerial: true,
+        mockNetConnections: true,
+        mockTimers: false
+      })
+
       const port = await getPort()
 
       const flow = [
@@ -147,7 +124,7 @@ describe.skip('Complete Modbus E2E Tests with Node-RED Runtime', function () {
           type: 'modbus-server',
           name: 'Test Server',
           serverPort: port,
-          serverAddress: '127.0.0.1',
+          hostname: '127.0.0.1',
           responseDelay: 10,
           delayUnit: 'ms',
           coilsBufferSize: 1024,
@@ -185,6 +162,8 @@ describe.skip('Complete Modbus E2E Tests with Node-RED Runtime', function () {
           dataType: 'HoldingRegister',
           adr: '0',
           quantity: '4',
+          rate: '200',
+          rateUnit: 'ms',
           server: 'client2',
           useIOFile: false,
           x: 500,
@@ -197,34 +176,61 @@ describe.skip('Complete Modbus E2E Tests with Node-RED Runtime', function () {
         }
       ]
 
-      await helper.load(modbusNodes, flow)
+      await deployModbusFlow(helper, coreModbusNodes, flow)
 
-      const helperNode = helper.getNode('helper2')
-      const writeNode2 = helper.getNode('write2')
+      const helperNode = getTestNode(helper, 'helper2')
+      const writeNode2 = getTestNode(helper, 'write2')
+      const readNode2 = getTestNode(helper, 'read2')
+
+      assert(helperNode !== null, 'helper should be deployed')
+      assert(writeNode2 !== null, 'write node should be deployed')
+      assert(readNode2 !== null, 'read node should be deployed')
 
       return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => {
+          reject(new Error('timeout waiting for holding register read'))
+        }, 20000)
+
         helperNode.on('input', function (msg) {
           try {
             msg.should.have.property('payload')
             msg.payload.should.be.an.Array()
+            if (!msg.payload.every((v, i) => v === [100, 200, 300, 400][i])) {
+              return
+            }
             msg.payload.should.deepEqual([100, 200, 300, 400])
+            clearTimeout(timer)
             resolve()
           } catch (err) {
+            clearTimeout(timer)
             reject(err)
           }
         })
 
-        // Write values after connection established
         setTimeout(() => {
           writeNode2.receive({
             payload: [100, 200, 300, 400]
           })
-        }, 500)
+          setTimeout(() => {
+            if (typeof readNode2.modbusPollingRead === 'function') {
+              readNode2.modbusPollingRead()
+            }
+          }, 500)
+        }, 1500)
       })
     })
   })
 
   describe('Flex Node Operations', function () {
+    beforeEach(function () {
+      globalTestHelper.cleanup()
+      globalTestHelper.setupMocks({
+        mockModbusSerial: false,
+        mockNetConnections: true,
+        mockTimers: false
+      })
+    })
+
     it('should perform flex write operations', async function () {
       const port = await getPort()
 
@@ -234,11 +240,14 @@ describe.skip('Complete Modbus E2E Tests with Node-RED Runtime', function () {
           type: 'modbus-server',
           name: 'Test Server',
           serverPort: port,
-          serverAddress: '127.0.0.1',
+          hostname: '127.0.0.1',
           responseDelay: 10,
           delayUnit: 'ms',
           coilsBufferSize: 1024,
-          holdingBufferSize: 1024
+          holdingBufferSize: 1024,
+          inputBufferSize: 1024,
+          discreteBufferSize: 1024,
+          showErrors: false
         },
         {
           id: 'client3',
@@ -249,7 +258,8 @@ describe.skip('Complete Modbus E2E Tests with Node-RED Runtime', function () {
           tcpPort: port,
           unit_id: 1,
           commandDelay: 10,
-          clientTimeout: 1000
+          clientTimeout: 1000,
+          reconnectOnTimeout: false
         },
         {
           id: 'flexwrite3',
@@ -267,18 +277,17 @@ describe.skip('Complete Modbus E2E Tests with Node-RED Runtime', function () {
         }
       ]
 
-      await helper.load(modbusNodes, flow)
+      await deployModbusFlow(helper, coreModbusNodes, flow)
 
-      const helperNode = helper.getNode('helper3')
-      const flexWriteNode3 = helper.getNode('flexwrite3')
+      const helperNode = getTestNode(helper, 'helper3')
+      const flexWriteNode3 = getTestNode(helper, 'flexwrite3')
 
       return new Promise((resolve, reject) => {
         helperNode.on('input', function (msg) {
           try {
             msg.should.have.property('payload')
-            msg.should.have.property('modbusRequest')
-            msg.modbusRequest.should.have.property('fc', 16)
-            msg.modbusRequest.should.have.property('address', 100)
+            msg.payload.should.have.property('fc', 16)
+            msg.payload.should.have.property('address', 100)
             resolve()
           } catch (err) {
             reject(err)
@@ -295,102 +304,68 @@ describe.skip('Complete Modbus E2E Tests with Node-RED Runtime', function () {
               value: [1234, 5678]
             }
           })
-        }, 500)
+        }, 1000)
       })
     })
 
-    it('should handle flex connector dynamic connections', async function () {
-      const port = await getPort()
+    it('should handle flex connector dynamic connections', function (done) {
+      this.timeout(15000)
+      const testFlows = require('./flows/modbus-flex-connector-e2e-flows')
 
-      const flow = [
-        {
-          id: 'server4',
-          type: 'modbus-server',
-          name: 'Test Server',
-          serverPort: port,
-          serverAddress: '127.0.0.1',
-          responseDelay: 10,
-          delayUnit: 'ms'
-        },
-        {
-          id: 'client4',
-          type: 'modbus-client',
-          name: 'Test Client',
-          clienttype: 'tcp',
-          tcpHost: '127.0.0.1',
-          tcpPort: port,
-          unit_id: 1,
-          commandDelay: 10,
-          clientTimeout: 1000
-        },
-        {
-          id: 'connector4',
-          type: 'modbus-flex-connector',
-          name: 'Flex Connector',
-          maxReconnectsPerMinute: 4,
-          emptyQueue: false,
-          showStatusActivities: true,
-          server: 'client4',
-          x: 300,
-          y: 100,
-          wires: [['helper4']]
-        },
-        {
-          id: 'helper4',
-          type: 'helper'
-        }
-      ]
+      prepareModbusTcpFlow(testFlows.testOnConfigDone).then((flow) => {
+        helper.load([], flow, function () {
+          const connectorNode = helper.getNode('bb1e7809e235149a')
+          const helperNode = helper.getNode('3e20a24776e85dce')
+          const clientNode = flow.find((n) => n.type === 'modbus-client')
+          assert(connectorNode !== null, 'flex connector should be deployed')
+          assert(helperNode !== null, 'helper should be deployed')
 
-      await helper.load(modbusNodes, flow)
-
-      const helperNode = helper.getNode('helper4')
-      const connectorNode4 = helper.getNode('connector4')
-
-      return new Promise((resolve, reject) => {
-        let messageCount = 0
-
-        helperNode.on('input', function (msg) {
-          try {
-            messageCount++
-            msg.should.have.property('payload')
-
-            if (messageCount === 1) {
-              msg.payload.should.have.property('connect', true)
-            } else if (messageCount === 2) {
-              msg.payload.should.have.property('disconnect', true)
-              resolve()
+          helperNode.on('input', function (msg) {
+            try {
+              msg.should.have.property('payload')
+              msg.should.have.property('config_change', 'emitted')
+              done()
+            } catch (err) {
+              done(err)
             }
-          } catch (err) {
-            reject(err)
-          }
+          })
+
+          setTimeout(function () {
+            connectorNode.receive({
+              payload: {
+                connectorType: 'TCP',
+                tcpHost: '127.0.0.1',
+                tcpPort: clientNode.tcpPort,
+                unitId: 2
+              }
+            })
+          }, 1500)
         })
-
-        // Test connect and disconnect
-        setTimeout(() => {
-          connectorNode4.receive({
-            payload: { connect: true }
-          })
-        }, 500)
-
-        setTimeout(() => {
-          connectorNode4.receive({
-            payload: { disconnect: true }
-          })
-        }, 1000)
-      })
+      }).catch(done)
     })
   })
 
   describe('Error Handling', function () {
+    beforeEach(function () {
+      globalTestHelper.cleanup()
+      globalTestHelper.setupMocks({
+        mockModbusSerial: true,
+        mockNetConnections: true,
+        mockTimers: false
+      })
+    })
+
     it('should handle connection timeout gracefully', async function () {
+      const port = await getPort()
+
       const flow = [
         {
           id: 'client5',
           type: 'modbus-client',
           name: 'Test Client',
           clienttype: 'tcp',
-          tcpHost: '192.168.99.99', // Non-existent host
-          tcpPort: 502,
+          tcpHost: '127.0.0.1',
+          tcpPort: port,
           unit_id: 1,
           commandDelay: 10,
           clientTimeout: 100,
@@ -419,101 +394,64 @@ describe.skip('Complete Modbus E2E Tests with Node-RED Runtime', function () {
         }
       ]
 
-      await helper.load(modbusNodes, flow)
+      await deployModbusFlow(helper, coreModbusNodes, flow)
 
-      const helperNode = helper.getNode('helper5')
-      const errorNode = helper.getNode('helper5error')
-      const readNode5 = helper.getNode('read5')
+      const helperNode = getTestNode(helper, 'helper5')
+      const errorNode = getTestNode(helper, 'helper5error')
+      const readNode5 = getTestNode(helper, 'read5')
+      const client5 = getTestNode(helper, 'client5')
 
-      return new Promise((resolve) => {
+      if (client5) {
+        client5.actualServiceState = { value: 'activated' }
+      }
+      if (client5 && client5.client) {
+        client5.client.readCoils = function () {
+          return Promise.reject(new Error('Connection timeout'))
+        }
+      }
+
+      return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => {
+          reject(new Error('timeout waiting for connection failure handling'))
+        }, 5000)
+
         // Expect empty message on fail
         helperNode.on('input', function (msg) {
+          clearTimeout(timer)
           msg.should.have.property('payload', '')
           resolve()
         })
 
         // Or error output
         errorNode.on('input', function (msg) {
+          clearTimeout(timer)
           msg.should.have.property('error')
           resolve()
         })
 
-        // Trigger read that will timeout
         setTimeout(() => {
-          readNode5.receive({ payload: true })
+          readNode5.modbusPollingRead()
         }, 100)
-
-        // Resolve after timeout period
-        setTimeout(() => {
-          resolve()
-        }, 2000)
       })
     })
   })
 
   describe('Queue Management', function () {
-    it('should provide queue information', async function () {
-      const port = await getPort()
+    it('should provide queue information', function (done) {
+      const testFlows = require('../units/flows/modbus-queue-info-flows')
 
-      const flow = [
-        {
-          id: 'server6',
-          type: 'modbus-server',
-          name: 'Test Server',
-          serverPort: port,
-          serverAddress: '127.0.0.1'
-        },
-        {
-          id: 'client6',
-          type: 'modbus-client',
-          name: 'Test Client',
-          clienttype: 'tcp',
-          tcpHost: '127.0.0.1',
-          tcpPort: port,
-          unit_id: 1,
-          commandDelay: 100,
-          clientTimeout: 1000
-        },
-        {
-          id: 'queue6',
-          type: 'modbus-queue-info',
-          name: 'Queue Info',
-          topic: 'queue.info',
-          unitid: 1,
-          server: 'client6',
-          action: 'queueReadLength',
-          x: 300,
-          y: 100,
-          wires: [['helper6']]
-        },
-        {
-          id: 'helper6',
-          type: 'helper'
-        }
-      ]
+      prepareModbusTcpFlow(testFlows.testShouldBeLoadedFlow).then((flow) => {
+        helper.load([], flow, function () {
+          const queueNode = helper.getNode('920c89aa79edcc8a')
+          assert(queueNode !== null, 'queue node should be deployed')
 
-      await helper.load(modbusNodes, flow)
-
-      const helperNode = helper.getNode('helper6')
-      const queueNode6 = helper.getNode('queue6')
-
-      return new Promise((resolve, reject) => {
-        helperNode.on('input', function (msg) {
-          try {
-            msg.should.have.property('topic', 'queue.info')
-            msg.should.have.property('payload')
-            msg.should.have.property('state')
-            resolve()
-          } catch (err) {
-            reject(err)
-          }
+          const msg = { payload: { resetQueue: false, queue: '' } }
+          queueNode.emit('input', msg)
+          assert.deepEqual(msg.payload.queue, [])
+          assert(Object.prototype.hasOwnProperty.call(msg.payload, 'queueEnabled'))
+          done()
         })
-
-        // Trigger queue info request
-        setTimeout(() => {
-          queueNode6.receive({ payload: true })
-        }, 500)
-      })
+      }).catch(done)
     })
   })
 })

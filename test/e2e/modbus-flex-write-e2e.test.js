@@ -11,6 +11,7 @@ const { globalTestHelper } = require('../helper/mocha-global-setup')
 const {
   deployFcFlow,
   waitForHelper,
+  waitForTestNode,
   assertWriteFc,
   buildServerClientFlow,
   getTestNode,
@@ -49,7 +50,7 @@ describe('Modbus Flex Write E2E Tests', function () {
 
     await deployFcFlow(helper, coreModbusNodes, globalTestHelper, flow)
 
-    const flexWrite = getTestNode(helper, 'fc-flex-write')
+    const flexWrite = await waitForTestNode(helper, 'fc-flex-write')
     const pending = waitForHelper(helper, 'fc-helper', assertFn)
 
     setTimeout(() => flexWrite.receive({ payload: flexPayload }), 300)
