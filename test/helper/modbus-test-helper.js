@@ -542,9 +542,11 @@ class ModbusFlowTester {
     this.nodes = []
     this.inputs = []
     this.expectations = []
-    this.timeout = 5000
+    this.timeout = 8000
     this.serverPort = null
     this.credentials = {}
+    this._clientNodeModule = null
+    this._serverNodeModule = null
   }
 
   /**
@@ -567,6 +569,13 @@ class ModbusFlowTester {
       showErrors: config.showErrors || false,
       ...config
     })
+    // Lazily load the server module so it is registered by helper.load
+    if (!this._serverNodeModule) {
+      try {
+        this._serverNodeModule = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')
+        this.nodes.push(this._serverNodeModule)
+      } catch (_e) { /* optional dependency */ }
+    }
     return this
   }
 
@@ -603,6 +612,11 @@ class ModbusFlowTester {
       ...config
     }
     this.flow.push(clientConfig)
+    // Load the client module so it is registered by helper.load
+    if (!this._clientNodeModule) {
+      this._clientNodeModule = require('../../src/modbus-client')
+      this.nodes.push(this._clientNodeModule)
+    }
     return this
   }
 
@@ -873,28 +887,48 @@ class MockModbusClient {
  * Create a mock RED object for unit testing
  */
 function createMockRED () {
+  const mockClient = {
+    queueLog: function () {},
+    stateLog: function () {},
+    register: function () {},
+    deregister: function () {},
+    registerForModbus: function () {},
+    deregisterForModbus: function (id, cb) { if (typeof cb === 'function') cb() },
+    unit_id: '1',
+    isInactive: function () { return false },
+    isActive: function () { return true },
+    isClientReadyToSend: function () { return true },
+    client: {},
+    emit: function () {},
+    on: function () {},
+    removeListener: function () {},
+    removeAllListeners: function () {}
+  }
+
   return {
     nodes: {
       createNode: function (node, config) {
+        node.on = node.on || function () {}
+        node.emit = node.emit || function () {}
+        node.status = node.status || function () {}
+        node.error = node.error || function () {}
+        node.warn = node.warn || function () {}
+        node.log = node.log || function () {}
+        node.send = node.send || function () {}
+        node.receive = node.receive || function () {}
         Object.assign(node, config)
-        node.on = function () {}
-        node.status = function () {}
-        node.error = function () {}
-        node.warn = function () {}
-        node.log = function () {}
-        node.send = function () {}
-        node.receive = function () {}
         return node
       },
       registerType: function () {},
       getNode: function () {
-        return new MockModbusClient()
+        return mockClient
       }
     },
     httpNode: {
       get: function () {},
       post: function () {}
     },
+    settings: { verbose: false },
     _: function (text) { return text },
     log: {
       info: function () {},

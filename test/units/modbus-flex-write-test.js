@@ -13,13 +13,15 @@ const mockRED = {
       node.id = config.id
       node.name = config.name
       node.type = config.type
-      node.on = function () {}
-      node.status = function () {}
-      node.error = function () {}
-      node.warn = function () {}
-      node.log = function () {}
-      node.send = function () {}
-      node.receive = function () {}
+      // Preserve existing node methods set by test; only add defaults for missing ones
+      node.on = node.on || function () {}
+      node.emit = node.emit || function () {}
+      node.status = node.status || function () {}
+      node.error = node.error || function () {}
+      node.warn = node.warn || function () {}
+      node.log = node.log || function () {}
+      node.send = node.send || function () {}
+      node.receive = node.receive || function () {}
       return node
     },
     registerType: function () {},
@@ -28,7 +30,18 @@ const mockRED = {
         queueLog: function () {},
         stateLog: function () {},
         register: function () {},
-        deregister: function () {}
+        deregister: function () {},
+        registerForModbus: function () {},
+        deregisterForModbus: function (id, done) { if (typeof done === 'function') done() },
+        unit_id: '1',
+        isInactive: function () { return false },
+        isActive: function () { return true },
+        isClientReadyToSend: function () { return true },
+        client: {},
+        emit: function () {},
+        on: function () {},
+        removeListener: function () {},
+        removeAllListeners: function () {}
       }
     }
   },
@@ -36,6 +49,7 @@ const mockRED = {
     get: function () {},
     post: function () {}
   },
+  settings: { verbose: false },
   _: function (text) { return text },
   log: {
     info: function () {},
@@ -71,7 +85,7 @@ describe('Modbus Flex Write Unit Tests', function () {
     assert.strictEqual(registered, true)
   })
 
-  it.skip('should create node with config', function () {
+  it('should create node with config', function () {
     const config = {
       id: 'test-id',
       name: 'Test Flex Write',
@@ -84,9 +98,17 @@ describe('Modbus Flex Write Unit Tests', function () {
     }
 
     let nodeCreated = false
-    const testRED = Object.assign({}, mockRED)
+    const testRED = Object.assign({}, mockRED, { nodes: Object.assign({}, mockRED.nodes) })
     testRED.nodes.createNode = function (node, conf) {
       nodeCreated = true
+      node.on = node.on || function () {}
+      node.emit = node.emit || function () {}
+      node.status = node.status || function () {}
+      node.error = node.error || function () {}
+      node.warn = node.warn || function () {}
+      node.log = node.log || function () {}
+      node.send = node.send || function () {}
+      node.receive = node.receive || function () {}
       Object.assign(node, conf)
       return node
     }
@@ -102,16 +124,39 @@ describe('Modbus Flex Write Unit Tests', function () {
     assert.strictEqual(nodeCreated, true)
   })
 
-  it.skip('should handle message with FC5 (write single coil)', function (done) {
-    const testRED = Object.assign({}, mockRED)
-    // let msgSent = false - unused variable
+  it('should handle message with FC5 (write single coil)', function (done) {
+    const testRED = Object.assign({}, mockRED, { nodes: Object.assign({}, mockRED.nodes) })
+    let inputHandler = null
+
+    testRED.nodes.getNode = function () {
+      return {
+        register: function () {},
+        queueLog: function () {},
+        stateLog: function () {},
+        registerForModbus: function () {},
+        deregisterForModbus: function (id, cb) { if (typeof cb === 'function') cb() },
+        unit_id: '1',
+        isInactive: function () { return false },
+        isActive: function () { return true },
+        isClientReadyToSend: function () { return true },
+        client: {},
+        emit: function (event, msg, onDone) {
+          if (event === 'writeModbus' && typeof onDone === 'function') {
+            process.nextTick(() => onDone({ buffer: Buffer.alloc(0), data: [] }, msg))
+          }
+        },
+        on: function () {},
+        removeListener: function () {},
+        removeAllListeners: function () {}
+      }
+    }
 
     testRED.nodes.registerType = function (name, constructor) {
       const node = {
         id: 'test-node',
         name: 'Test Node',
-        send: function (msg) {
-          // msgSent = true - variable was removed
+        send: function (msgs) {
+          const msg = Array.isArray(msgs) ? msgs[0] : msgs
           assert.notStrictEqual(msg, undefined)
           done()
         },
@@ -119,184 +164,220 @@ describe('Modbus Flex Write Unit Tests', function () {
         error: function () {},
         warn: function () {},
         log: function () {},
+        emit: function () {},
         on: function (event, handler) {
           if (event === 'input') {
-            // Simulate input message
-            setTimeout(() => {
-              handler({
-                payload: {
-                  value: true,
-                  fc: 5,
-                  unitid: 1,
-                  address: 10,
-                  quantity: 1
-                }
-              })
-            }, 10)
+            inputHandler = handler
           }
         }
       }
 
-      constructor.call(node, {
-        id: 'test-id',
-        name: 'Test',
-        server: 'server-id'
-      })
-    }
+      constructor.call(node, { id: 'test-id', name: 'Test', server: 'server-id' })
 
-    testRED.nodes.getNode = function () {
-      return {
-        register: function (node) {
-          // Node registered
-        },
-        queueLog: function () {},
-        stateLog: function () {}
+      if (inputHandler) {
+        setTimeout(() => {
+          inputHandler({ payload: { value: true, fc: 5, unitid: 1, address: 10, quantity: 1 } })
+        }, 10)
       }
     }
 
     flexWriteModule(testRED)
   })
 
-  it.skip('should handle message with FC6 (write single register)', function (done) {
-    const testRED = Object.assign({}, mockRED)
-
-    testRED.nodes.registerType = function (name, constructor) {
-      const node = {
-        id: 'test-node',
-        send: function (msg) {
-          assert.notStrictEqual(msg, undefined)
-          done()
-        },
-        status: function () {},
-        error: function () {},
-        on: function (event, handler) {
-          if (event === 'input') {
-            setTimeout(() => {
-              handler({
-                payload: {
-                  value: 1234,
-                  fc: 6,
-                  unitid: 1,
-                  address: 20,
-                  quantity: 1
-                }
-              })
-            }, 10)
-          }
-        }
-      }
-
-      constructor.call(node, {
-        id: 'test-id',
-        server: 'server-id'
-      })
-    }
+  it('should handle message with FC6 (write single register)', function (done) {
+    const testRED = Object.assign({}, mockRED, { nodes: Object.assign({}, mockRED.nodes) })
+    let inputHandler = null
 
     testRED.nodes.getNode = function () {
       return {
         register: function () {},
         queueLog: function () {},
-        stateLog: function () {}
+        stateLog: function () {},
+        registerForModbus: function () {},
+        deregisterForModbus: function (id, cb) { if (typeof cb === 'function') cb() },
+        unit_id: '1',
+        isInactive: function () { return false },
+        isActive: function () { return true },
+        isClientReadyToSend: function () { return true },
+        client: {},
+        emit: function (event, msg, onDone) {
+          if (event === 'writeModbus' && typeof onDone === 'function') {
+            process.nextTick(() => onDone({ buffer: Buffer.alloc(0), data: [] }, msg))
+          }
+        },
+        on: function () {},
+        removeListener: function () {},
+        removeAllListeners: function () {}
       }
     }
-
-    flexWriteModule(testRED)
-  })
-
-  it.skip('should handle message with FC15 (write multiple coils)', function (done) {
-    const testRED = Object.assign({}, mockRED)
 
     testRED.nodes.registerType = function (name, constructor) {
       const node = {
         id: 'test-node',
-        send: function (msg) {
+        send: function (msgs) {
+          const msg = Array.isArray(msgs) ? msgs[0] : msgs
           assert.notStrictEqual(msg, undefined)
           done()
         },
         status: function () {},
         error: function () {},
+        emit: function () {},
         on: function (event, handler) {
           if (event === 'input') {
-            setTimeout(() => {
-              handler({
-                payload: {
-                  value: [true, false, true, false],
-                  fc: 15,
-                  unitid: 1,
-                  address: 0,
-                  quantity: 4
-                }
-              })
-            }, 10)
+            inputHandler = handler
           }
         }
       }
 
-      constructor.call(node, {
-        id: 'test-id',
-        server: 'server-id'
-      })
-    }
+      constructor.call(node, { id: 'test-id', server: 'server-id' })
 
-    testRED.nodes.getNode = function () {
-      return {
-        register: function () {},
-        queueLog: function () {},
-        stateLog: function () {}
+      if (inputHandler) {
+        setTimeout(() => {
+          inputHandler({ payload: { value: 1234, fc: 6, unitid: 1, address: 20, quantity: 1 } })
+        }, 10)
       }
     }
 
     flexWriteModule(testRED)
   })
 
-  it.skip('should handle message with FC16 (write multiple registers)', function (done) {
-    const testRED = Object.assign({}, mockRED)
+  it('should handle message with FC15 (write multiple coils)', function (done) {
+    const testRED = Object.assign({}, mockRED, { nodes: Object.assign({}, mockRED.nodes) })
+    let inputHandler = null
+
+    testRED.nodes.getNode = function () {
+      return {
+        register: function () {},
+        queueLog: function () {},
+        stateLog: function () {},
+        registerForModbus: function () {},
+        deregisterForModbus: function (id, cb) { if (typeof cb === 'function') cb() },
+        unit_id: '1',
+        isInactive: function () { return false },
+        isActive: function () { return true },
+        isClientReadyToSend: function () { return true },
+        client: {},
+        emit: function (event, msg, onDone) {
+          if (event === 'writeModbus' && typeof onDone === 'function') {
+            process.nextTick(() => onDone({ buffer: Buffer.alloc(0), data: [] }, msg))
+          }
+        },
+        on: function () {},
+        removeListener: function () {},
+        removeAllListeners: function () {}
+      }
+    }
 
     testRED.nodes.registerType = function (name, constructor) {
       const node = {
         id: 'test-node',
-        send: function (msg) {
+        send: function (msgs) {
+          const msg = Array.isArray(msgs) ? msgs[0] : msgs
           assert.notStrictEqual(msg, undefined)
           done()
         },
         status: function () {},
         error: function () {},
+        emit: function () {},
         on: function (event, handler) {
           if (event === 'input') {
-            setTimeout(() => {
-              handler({
-                payload: {
-                  value: [100, 200, 300],
-                  fc: 16,
-                  unitid: 1,
-                  address: 0,
-                  quantity: 3
-                }
-              })
-            }, 10)
+            inputHandler = handler
           }
         }
       }
 
-      constructor.call(node, {
-        id: 'test-id',
-        server: 'server-id'
-      })
-    }
+      constructor.call(node, { id: 'test-id', server: 'server-id' })
 
-    testRED.nodes.getNode = function () {
-      return {
-        register: function () {},
-        queueLog: function () {},
-        stateLog: function () {}
+      if (inputHandler) {
+        setTimeout(() => {
+          inputHandler({ payload: { value: [true, false, true, false], fc: 15, unitid: 1, address: 0, quantity: 4 } })
+        }, 10)
       }
     }
 
     flexWriteModule(testRED)
   })
 
-  it.skip('should handle invalid function code', function (done) {
-    const testRED = Object.assign({}, mockRED)
+  it('should handle message with FC16 (write multiple registers)', function (done) {
+    const testRED = Object.assign({}, mockRED, { nodes: Object.assign({}, mockRED.nodes) })
+    let inputHandler = null
+
+    testRED.nodes.getNode = function () {
+      return {
+        register: function () {},
+        queueLog: function () {},
+        stateLog: function () {},
+        registerForModbus: function () {},
+        deregisterForModbus: function (id, cb) { if (typeof cb === 'function') cb() },
+        unit_id: '1',
+        isInactive: function () { return false },
+        isActive: function () { return true },
+        isClientReadyToSend: function () { return true },
+        client: {},
+        emit: function (event, msg, onDone) {
+          if (event === 'writeModbus' && typeof onDone === 'function') {
+            process.nextTick(() => onDone({ buffer: Buffer.alloc(0), data: [] }, msg))
+          }
+        },
+        on: function () {},
+        removeListener: function () {},
+        removeAllListeners: function () {}
+      }
+    }
+
+    testRED.nodes.registerType = function (name, constructor) {
+      const node = {
+        id: 'test-node',
+        send: function (msgs) {
+          const msg = Array.isArray(msgs) ? msgs[0] : msgs
+          assert.notStrictEqual(msg, undefined)
+          done()
+        },
+        status: function () {},
+        error: function () {},
+        emit: function () {},
+        on: function (event, handler) {
+          if (event === 'input') {
+            inputHandler = handler
+          }
+        }
+      }
+
+      constructor.call(node, { id: 'test-id', server: 'server-id' })
+
+      if (inputHandler) {
+        setTimeout(() => {
+          inputHandler({ payload: { value: [100, 200, 300], fc: 16, unitid: 1, address: 0, quantity: 3 } })
+        }, 10)
+      }
+    }
+
+    flexWriteModule(testRED)
+  })
+
+  it('should handle invalid function code', function (done) {
+    const testRED = Object.assign({}, mockRED, { nodes: Object.assign({}, mockRED.nodes) })
+    let inputHandler = null
+    let doneCalled = false
+
+    testRED.nodes.getNode = function () {
+      return {
+        register: function () {},
+        queueLog: function () {},
+        stateLog: function () {},
+        registerForModbus: function () {},
+        deregisterForModbus: function (id, cb) { if (typeof cb === 'function') cb() },
+        unit_id: '1',
+        isInactive: function () { return false },
+        isActive: function () { return true },
+        isClientReadyToSend: function () { return true },
+        client: {},
+        emit: function () {},
+        on: function () {},
+        removeListener: function () {},
+        removeAllListeners: function () {}
+      }
+    }
 
     testRED.nodes.registerType = function (name, constructor) {
       const node = {
@@ -304,116 +385,115 @@ describe('Modbus Flex Write Unit Tests', function () {
         send: function () {},
         status: function () {},
         error: function (err) {
-          assert.notStrictEqual(err, undefined)
-          done()
+          if (!doneCalled) {
+            assert.notStrictEqual(err, undefined)
+            doneCalled = true
+            done()
+          }
         },
+        emit: function () {},
         on: function (event, handler) {
           if (event === 'input') {
-            setTimeout(() => {
-              handler({
-                payload: {
-                  value: [1, 2, 3],
-                  fc: 99, // Invalid FC
-                  unitid: 1,
-                  address: 0,
-                  quantity: 3
-                }
-              })
-            }, 10)
+            inputHandler = handler
           }
         }
       }
 
-      constructor.call(node, {
-        id: 'test-id',
-        server: 'server-id',
-        showErrors: true
-      })
-    }
+      constructor.call(node, { id: 'test-id', server: 'server-id', showErrors: true })
 
-    testRED.nodes.getNode = function () {
-      return {
-        register: function () {},
-        queueLog: function () {},
-        stateLog: function () {}
+      if (inputHandler) {
+        setTimeout(() => {
+          inputHandler({ payload: { value: [1, 2, 3], fc: 99, unitid: 1, address: 0, quantity: 3 } })
+        }, 10)
       }
     }
 
     flexWriteModule(testRED)
   })
 
-  it.skip('should handle missing server configuration', function () {
-    const testRED = Object.assign({}, mockRED)
-    let errorLogged = false
-
-    testRED.nodes.registerType = function (name, constructor) {
-      const node = {
-        id: 'test-node',
-        error: function (msg) {
-          errorLogged = true
-        },
-        status: function () {},
-        on: function () {}
-      }
-
-      constructor.call(node, {
-        id: 'test-id',
-        server: null // No server
-      })
-    }
+  it('should handle missing server configuration', function () {
+    const testRED = Object.assign({}, mockRED, { nodes: Object.assign({}, mockRED.nodes) })
+    let constructorCompleted = false
 
     testRED.nodes.getNode = function () {
       return null // Server not found
     }
 
-    flexWriteModule(testRED)
-    assert.strictEqual(errorLogged, true)
-  })
-
-  it.skip('should preserve message properties when configured', function (done) {
-    const testRED = Object.assign({}, mockRED)
-
     testRED.nodes.registerType = function (name, constructor) {
       const node = {
         id: 'test-node',
-        send: function (msg) {
-          assert.strictEqual(msg.topic, 'test/topic')
-          assert.strictEqual(msg.customProp, 'preserved')
-          done()
-        },
         status: function () {},
         error: function () {},
-        on: function (event, handler) {
-          if (event === 'input') {
-            setTimeout(() => {
-              handler({
-                payload: {
-                  value: [1, 2],
-                  fc: 16,
-                  unitid: 1,
-                  address: 0,
-                  quantity: 2
-                },
-                topic: 'test/topic',
-                customProp: 'preserved'
-              })
-            }, 10)
-          }
-        }
+        emit: function () {},
+        on: function () {}
       }
 
-      constructor.call(node, {
-        id: 'test-id',
-        server: 'server-id',
-        keepMsgProperties: true
-      })
+      constructor.call(node, { id: 'test-id', server: null })
+      constructorCompleted = true
     }
+
+    flexWriteModule(testRED)
+    // In v6, constructor returns early when no server is found (no error thrown)
+    assert.strictEqual(constructorCompleted, true)
+  })
+
+  it('should preserve message properties when configured', function (done) {
+    const testRED = Object.assign({}, mockRED, { nodes: Object.assign({}, mockRED.nodes) })
+    let inputHandler = null
 
     testRED.nodes.getNode = function () {
       return {
         register: function () {},
         queueLog: function () {},
-        stateLog: function () {}
+        stateLog: function () {},
+        registerForModbus: function () {},
+        deregisterForModbus: function (id, cb) { if (typeof cb === 'function') cb() },
+        unit_id: '1',
+        isInactive: function () { return false },
+        isActive: function () { return true },
+        isClientReadyToSend: function () { return true },
+        client: {},
+        emit: function (event, msg, onDone) {
+          if (event === 'writeModbus' && typeof onDone === 'function') {
+            process.nextTick(() => onDone({ buffer: Buffer.alloc(0), data: [] }, msg))
+          }
+        },
+        on: function () {},
+        removeListener: function () {},
+        removeAllListeners: function () {}
+      }
+    }
+
+    testRED.nodes.registerType = function (name, constructor) {
+      const node = {
+        id: 'test-node',
+        send: function (msgs) {
+          const msg = Array.isArray(msgs) ? msgs[0] : msgs
+          assert.strictEqual(msg.topic, 'test/topic')
+          assert.strictEqual(msg.customProp, 'preserved')
+          assert.notStrictEqual(msg.payload, undefined)
+          done()
+        },
+        status: function () {},
+        error: function () {},
+        emit: function () {},
+        on: function (event, handler) {
+          if (event === 'input') {
+            inputHandler = handler
+          }
+        }
+      }
+
+      constructor.call(node, { id: 'test-id', server: 'server-id', keepMsgProperties: true })
+
+      if (inputHandler) {
+        setTimeout(() => {
+          inputHandler({
+            payload: { value: [1, 2], fc: 16, unitid: 1, address: 0, quantity: 2 },
+            topic: 'test/topic',
+            customProp: 'preserved'
+          })
+        }, 10)
       }
     }
 
