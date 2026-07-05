@@ -1,47 +1,34 @@
 /**
- * Example test demonstrating timeout-safe patterns for Modbus testing
- * This test shows how to use the new helper utilities to prevent timeouts
+ * Timeout-safe Modbus client loading — uses global test-helper bootstrap.
  */
 
 'use strict'
 
-const { beforeEachTest, afterEachTest, loadNodesWithTimeout } = require('../helper/test-isolation')
+const assert = require('assert')
 const helper = require('node-red-node-test-helper')
-
-// Test modules
 const serverNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')
 const clientNode = require('../../src/modbus-client.js')
 const readNode = require('../../src/modbus-read.js')
 const flexGetterNode = require('../../src/modbus-flex-getter.js')
+const { getPort } = require('../helper/test-helper-extensions')
 
 const testModbusNodes = [serverNode, clientNode, readNode, flexGetterNode]
 
-describe('Modbus Client - Timeout Safe Tests', function () {
-  let testHelper
-
-  before(function (done) {
-    helper.startServer(done)
-  })
-
-  beforeEach(function () {
-    // Setup mocking to prevent timeouts
-    testHelper = beforeEachTest({
-      mockModbusSerial: true,
-      mockNetConnections: true,
-      mockTimers: true
+function loadFlow (flow) {
+  return new Promise((resolve, reject) => {
+    helper.load(testModbusNodes, flow, (err) => {
+      if (err) reject(err)
+      else resolve()
     })
   })
+}
 
-  afterEach(async function () {
-    await afterEachTest()
-  })
-
-  after(function (done) {
-    helper.stopServer(done)
-  })
+describe('Modbus Client - Timeout Safe Tests', function () {
+  this.timeout(15000)
 
   describe('Basic Node Loading', function () {
     it('should load modbus client without timeout', async function () {
+      const port = await getPort()
       const flow = [{
         id: 'client1',
         type: 'modbus-client',
@@ -52,30 +39,31 @@ describe('Modbus Client - Timeout Safe Tests', function () {
         queueLogEnabled: false,
         failureLogEnabled: false,
         tcpHost: '127.0.0.1',
-        tcpPort: '10502',
+        tcpPort: String(port),
         tcpType: 'DEFAULT',
         unit_id: '1',
         commandDelay: '1',
-        clientTimeout: '100', // Very short timeout for testing
-        reconnectOnTimeout: false, // Disable reconnection
+        clientTimeout: '100',
+        reconnectOnTimeout: false,
         reconnectTimeout: '100'
       }]
 
-      await loadNodesWithTimeout(testModbusNodes, flow, 2000)
+      await loadFlow(flow)
 
-      const clientNode = helper.getNode('client1')
-      clientNode.should.have.property('name', 'Test Client')
-      clientNode.should.have.property('clienttype', 'tcp')
-      clientNode.should.have.property('tcpHost', '127.0.0.1')
+      const node = helper.getNode('client1')
+      node.should.have.property('name', 'Test Client')
+      node.should.have.property('clienttype', 'tcp')
+      node.should.have.property('tcpHost', '127.0.0.1')
     })
 
     it('should load modbus read node without timeout', async function () {
+      const port = await getPort()
       const flow = [
         {
           id: 'server1',
           type: 'modbus-server',
           hostname: '127.0.0.1',
-          serverPort: '10503',
+          serverPort: String(port),
           responseDelay: 10,
           delayUnit: 'ms'
         },
@@ -84,8 +72,9 @@ describe('Modbus Client - Timeout Safe Tests', function () {
           type: 'modbus-client',
           clienttype: 'tcp',
           tcpHost: '127.0.0.1',
-          tcpPort: '10503',
-          clientTimeout: '100'
+          tcpPort: String(port),
+          clientTimeout: '100',
+          reconnectOnTimeout: false
         },
         {
           id: 'read1',
@@ -94,190 +83,142 @@ describe('Modbus Client - Timeout Safe Tests', function () {
           dataType: 'Coil',
           adr: '0',
           quantity: '10',
-          rate: '1000',
+          rate: '3600',
+          rateUnit: 's',
           server: 'client1'
         },
         {
           id: 'helper1',
-          type: 'helper'
+          type: 'helper',
+          wires: []
         }
       ]
 
-      await loadNodesWithTimeout(testModbusNodes, flow, 2000)
+      await loadFlow(flow)
 
-      const readNode = helper.getNode('read1')
-      readNode.should.have.property('name', 'Test Read')
-      readNode.should.have.property('dataType', 'Coil')
+      const node = helper.getNode('read1')
+      node.should.have.property('name', 'Test Read')
+      node.should.have.property('dataType', 'Coil')
     })
   })
 
   describe('Connection State Management', function () {
-    it.skip('should handle client state transitions without hanging', async function () {
-      const flow = [{
+    it('should handle client state transitions without hanging', async function () {
+      const port = await getPort()
+      await loadFlow([{
         id: 'client1',
         type: 'modbus-client',
         clienttype: 'tcp',
         tcpHost: '127.0.0.1',
-        tcpPort: '10504',
-        clientTimeout: '100'
-      }]
+        tcpPort: String(port),
+        clientTimeout: '100',
+        reconnectOnTimeout: false
+      }])
 
-      await loadNodesWithTimeout(testModbusNodes, flow, 2000)
-
-      const clientNode = helper.getNode('client1')
-
-      // Mock the FSM to prevent hanging
-      if (clientNode.stateService) {
-        testHelper.mockFSM(clientNode)
-      }
-
-      // Test state should be manageable
-      if (clientNode.isInactive) {
-        const inactive = clientNode.isInactive()
-        inactive.should.be.a('boolean')
+      const node = helper.getNode('client1')
+      if (node.isInactive) {
+        assert.strictEqual(typeof node.isInactive(), 'boolean')
       }
     })
 
-    it.skip('should handle failed connections gracefully', async function () {
-      const flow = [{
+    it('should handle failed connections gracefully', async function () {
+      await loadFlow([{
         id: 'client1',
         type: 'modbus-client',
         clienttype: 'tcp',
-        tcpHost: '192.0.2.1', // Non-routable test IP
-        tcpPort: '9999', // Unlikely port
-        clientTimeout: '50', // Very short timeout
+        tcpHost: '192.0.2.1',
+        tcpPort: '9999',
+        clientTimeout: '50',
         reconnectOnTimeout: false
-      }]
+      }])
 
-      await loadNodesWithTimeout(testModbusNodes, flow, 2000)
-
-      const clientNode = helper.getNode('client1')
-      clientNode.should.be.ok()
-
-      // With mocking, connection should not cause timeout
-      if (clientNode.connectClient) {
-        // This should complete quickly due to mocking
-        testHelper.mockNodeBehavior(clientNode)
-      }
+      helper.getNode('client1').should.be.ok()
     })
   })
 
   describe('Message Handling', function () {
-    it.skip('should process messages without timeout', function (done) {
-      const flow = [
-        {
-          id: 'client1',
-          type: 'modbus-client',
-          clienttype: 'tcp',
-          tcpHost: '127.0.0.1',
-          tcpPort: '10505',
-          clientTimeout: '100'
-        },
-        {
-          id: 'getter1',
-          type: 'modbus-flex-getter',
-          server: 'client1',
-          showStatusActivities: false,
-          showErrors: false
-        },
-        {
-          id: 'helper1',
-          type: 'helper'
-        }
-      ]
-
-      loadNodesWithTimeout(testModbusNodes, flow, 2000).then(() => {
-        const getterNode = helper.getNode('getter1')
-        const helperNode = helper.getNode('helper1')
-
-        let msgReceived = false
-        const timeout = setTimeout(() => {
-          if (!msgReceived) {
-            done(new Error('Message not received within timeout'))
+    it.skip('should process messages without timeout — no wires from getter to helper, no server running', function (done) {
+      getPort().then((port) => {
+        const flow = [
+          {
+            id: 'client1',
+            type: 'modbus-client',
+            clienttype: 'tcp',
+            tcpHost: '127.0.0.1',
+            tcpPort: String(port),
+            clientTimeout: '100',
+            reconnectOnTimeout: false
+          },
+          {
+            id: 'getter1',
+            type: 'modbus-flex-getter',
+            server: 'client1',
+            showStatusActivities: false,
+            showErrors: false
+          },
+          {
+            id: 'helper1',
+            type: 'helper',
+            wires: []
           }
-        }, 1000)
+        ]
 
-        helperNode.on('input', (msg) => {
-          msgReceived = true
-          clearTimeout(timeout)
-          msg.should.be.ok()
-          done()
-        })
+        loadFlow(flow).then(() => {
+          const getterNode = helper.getNode('getter1')
+          const helperNode = helper.getNode('helper1')
 
-        // Send test message
-        getterNode.receive({
-          payload: {
-            fc: 1, // Read coils
-            unitid: 1,
-            address: 0,
-            quantity: 5
-          }
-        })
-      }).catch(done)
+          helperNode.on('input', () => done())
+
+          getterNode.receive({
+            payload: { fc: 1, unitid: 1, address: 0, quantity: 5 }
+          })
+        }).catch(done)
+      })
     })
 
     it('should handle invalid messages gracefully', function (done) {
-      const flow = [
-        {
-          id: 'client1',
-          type: 'modbus-client',
-          clienttype: 'tcp',
-          tcpHost: '127.0.0.1',
-          tcpPort: '10506'
-        },
-        {
-          id: 'getter1',
-          type: 'modbus-flex-getter',
-          server: 'client1',
-          showErrors: true
-        }
-      ]
-
-      loadNodesWithTimeout(testModbusNodes, flow, 2000).then(() => {
-        const getterNode = helper.getNode('getter1')
-
-        // Send invalid message
-        getterNode.receive({
-          payload: {
-            fc: 99, // Invalid function code
-            unitid: 1,
-            address: 0,
-            quantity: 1
+      getPort().then((port) => {
+        const flow = [
+          {
+            id: 'client1',
+            type: 'modbus-client',
+            clienttype: 'tcp',
+            tcpHost: '127.0.0.1',
+            tcpPort: String(port),
+            reconnectOnTimeout: false
+          },
+          {
+            id: 'getter1',
+            type: 'modbus-flex-getter',
+            server: 'client1',
+            showErrors: true
           }
-        })
+        ]
 
-        // Should not hang - test completes quickly
-        setTimeout(() => {
-          done()
-        }, 100)
-      }).catch(done)
+        loadFlow(flow).then(() => {
+          const getterNode = helper.getNode('getter1')
+          getterNode.receive({
+            payload: { fc: 99, unitid: 1, address: 0, quantity: 1 }
+          })
+          setTimeout(done, 100)
+        }).catch(done)
+      })
     })
   })
 
   describe('Resource Cleanup', function () {
-    it.skip('should cleanup resources properly', async function () {
-      const flow = [{
+    it('should cleanup resources properly', async function () {
+      const port = await getPort()
+      await loadFlow([{
         id: 'client1',
         type: 'modbus-client',
         clienttype: 'tcp',
         tcpHost: '127.0.0.1',
-        tcpPort: '10507'
-      }]
+        tcpPort: String(port),
+        reconnectOnTimeout: false
+      }])
 
-      await loadNodesWithTimeout(testModbusNodes, flow, 2000)
-
-      const clientNode = helper.getNode('client1')
-
-      // Mock cleanup functions
-      if (clientNode.stateService) {
-        testHelper.mockFSM(clientNode)
-      }
-
-      // Test helper cleanup should work
-      testHelper.cleanup()
-
-      // Should complete without hanging
-      clientNode.should.be.ok()
+      helper.getNode('client1').should.be.ok()
     })
   })
 })

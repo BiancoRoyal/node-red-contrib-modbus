@@ -1,5 +1,8 @@
 /**
  * Unit tests for modbus-connection-pool core module
+ *
+ * Tests use the class-based API of ModbusConnectionPool directly.
+ * A connectionFactory mock is injected to avoid real network I/O.
  */
 
 'use strict'
@@ -8,330 +11,229 @@ const assert = require('assert')
 const sinon = require('sinon')
 
 describe('Modbus Connection Pool Core Tests', function () {
-  let connectionPool
+  let ModbusConnectionPool
+  let ConnectionState
   let sandbox
+  let pool
+
+  function mockFactory (sandbox) {
+    return () => Promise.resolve({
+      isOpen: true,
+      close: sandbox.stub(),
+      setID: sandbox.stub(),
+      setTimeout: sandbox.stub()
+    })
+  }
 
   beforeEach(function () {
     sandbox = sinon.createSandbox()
-    // Clear require cache
     delete require.cache[require.resolve('../../src/core/modbus-connection-pool')]
-    connectionPool = require('../../src/core/modbus-connection-pool')
+    const mod = require('../../src/core/modbus-connection-pool')
+    ModbusConnectionPool = mod.ModbusConnectionPool
+    ConnectionState = mod.ConnectionState
   })
 
   afterEach(function () {
+    if (pool) {
+      try { pool.clear() } catch (_) {}
+      pool = null
+    }
     sandbox.restore()
   })
 
   describe('Connection Pool Management', function () {
-    it.skip('should export expected functions', function () {
-      assert.strictEqual(typeof connectionPool.ModbusConnectionPool, 'function')
-      assert.strictEqual(typeof connectionPool.ConnectionState, 'object')
+    it('should export expected functions', function () {
+      assert.strictEqual(typeof ModbusConnectionPool, 'function')
+      assert.strictEqual(typeof ConnectionState, 'object')
     })
 
-    it.skip('should create a new connection pool', function () {
-      const config = {
-        host: '127.0.0.1',
-        port: 502,
+    it('should create a new connection pool', function () {
+      pool = new ModbusConnectionPool({
         maxConnections: 5,
-        minConnections: 1,
-        acquireTimeout: 3000
-      }
-
-      const pool = connectionPool.createPool('test-pool', config)
+        connectionFactory: mockFactory(sandbox)
+      })
       assert.notStrictEqual(pool, undefined)
-      assert.strictEqual(pool.id, 'test-pool')
-      assert.strictEqual(pool.config.maxConnections, 5)
-      assert.strictEqual(pool.config.minConnections, 1)
+      assert.strictEqual(pool.maxConnections, 5)
+      assert.ok(pool.connections instanceof Map)
     })
 
-    it.skip('should get a connection from pool', async function () {
-      const pool = connectionPool.createPool('test-pool-2', {
-        host: '127.0.0.1',
-        port: 502,
-        maxConnections: 3
+    it('should get a connection from pool', async function () {
+      pool = new ModbusConnectionPool({
+        connectionFactory: mockFactory(sandbox)
       })
-
-      const mockConnection = {
-        connected: true,
-        connect: sinon.stub().resolves(),
-        close: sinon.stub().resolves()
-      }
-
-      // Mock the connection creation
-      pool.createConnection = sinon.stub().resolves(mockConnection)
-
-      const connection = await connectionPool.getConnection('test-pool-2')
+      const connection = await pool.getConnection({ host: '127.0.0.1', port: 502, type: 'tcp', unitId: 1 })
       assert.notStrictEqual(connection, undefined)
-      assert.strictEqual(connection.connected, true)
+      assert.strictEqual(connection.state, ConnectionState.ACTIVE)
     })
 
-    it.skip('should release connection back to pool', async function () {
-      const pool = connectionPool.createPool('test-pool-3', {
-        host: '127.0.0.1',
-        port: 502,
-        maxConnections: 2
+    it('should release connection back to pool', async function () {
+      pool = new ModbusConnectionPool({
+        connectionFactory: mockFactory(sandbox)
       })
-
-      const mockConnection = {
-        id: 'conn-1',
-        connected: true,
-        inUse: true
-      }
-
-      pool.connections = [mockConnection]
-      pool.activeConnections = 1
-
-      await connectionPool.releaseConnection('test-pool-3', mockConnection)
-      assert.strictEqual(mockConnection.inUse, false)
-      assert.strictEqual(pool.activeConnections, 0)
+      const connection = await pool.getConnection({ host: '127.0.0.1', port: 502, type: 'tcp', unitId: 1 })
+      assert.strictEqual(connection.state, ConnectionState.ACTIVE)
+      pool.releaseConnection(connection)
+      assert.strictEqual(connection.state, ConnectionState.IDLE)
     })
 
-    it.skip('should handle pool overflow', async function () {
-      const pool = connectionPool.createPool('test-pool-4', {
-        host: '127.0.0.1',
-        port: 502,
+    it('should handle pool overflow via queue size limit', async function () {
+      pool = new ModbusConnectionPool({
         maxConnections: 2,
-        acquireTimeout: 100
+        maxConnectionsPerHost: 2,
+        maxQueueSize: 1,
+        connectionTimeout: 5000,
+        connectionFactory: mockFactory(sandbox)
       })
 
-      // Fill the pool
-      pool.connections = [
-        { id: 'conn-1', inUse: true },
-        { id: 'conn-2', inUse: true }
-      ]
-      pool.activeConnections = 2
+      await pool.getConnection({ host: '127.0.0.1', port: 502, type: 'tcp', unitId: 1 })
+      await pool.getConnection({ host: '127.0.0.1', port: 503, type: 'tcp', unitId: 2 })
 
+      // 3rd request: pool full, queued (queue not yet at limit)
+      const pending = pool.getConnection({ host: '127.0.0.1', port: 504, type: 'tcp', unitId: 3 })
+      pending.catch(() => {})
+
+      // 4th request: queue is at maxQueueSize (1), must throw immediately
       try {
-        await connectionPool.getConnection('test-pool-4')
-        assert.fail('Should have thrown timeout error')
+        await pool.getConnection({ host: '127.0.0.1', port: 505, type: 'tcp', unitId: 4 })
+        assert.fail('Should have thrown queue limit error')
       } catch (error) {
-        assert.strictEqual(error.message.includes('timeout'), true)
+        assert.ok(
+          error.message.toLowerCase().includes('queue') || error.message.toLowerCase().includes('timeout'),
+          `Unexpected error message: ${error.message}`
+        )
       }
     })
 
-    it.skip('should close pool and all connections', async function () {
-      const pool = connectionPool.createPool('test-pool-5', {
-        host: '127.0.0.1',
-        port: 502
+    it('should close pool and all connections', async function () {
+      const mockClose = sandbox.stub()
+      pool = new ModbusConnectionPool({
+        connectionFactory: () => Promise.resolve({ close: mockClose })
       })
 
-      const mockConnections = [
-        { id: 'conn-1', close: sinon.stub().resolves() },
-        { id: 'conn-2', close: sinon.stub().resolves() }
+      await pool.getConnection({ host: '127.0.0.1', port: 502, type: 'tcp', unitId: 1 })
+      await pool.getConnection({ host: '127.0.0.1', port: 503, type: 'tcp', unitId: 2 })
+      assert.strictEqual(pool.connections.size, 2)
+
+      pool.clear()
+      pool = null // prevent double-clear in afterEach
+
+      assert.strictEqual(mockClose.callCount, 2)
+    })
+
+    it('should get pool statistics', async function () {
+      pool = new ModbusConnectionPool({
+        connectionFactory: mockFactory(sandbox)
+      })
+      await pool.getConnection({ host: '127.0.0.1', port: 502, type: 'tcp', unitId: 1 })
+      await pool.getConnection({ host: '127.0.0.1', port: 503, type: 'tcp', unitId: 2 })
+
+      const stats = pool.getStatistics()
+      assert.strictEqual(typeof stats, 'object')
+      assert.ok(stats.totalConnectionsCreated >= 2)
+      assert.ok('currentActiveConnections' in stats)
+      assert.ok('currentIdleConnections' in stats)
+    })
+
+    // Feature not in implementation: no retry mechanism — failed connections are removed immediately.
+    it.skip('should handle connection retry on failure — retry not implemented', function () {})
+
+    // Feature not in implementation: constructor does not validate options.
+    it.skip('should validate pool configuration — validation not implemented', function () {})
+
+    it('should handle concurrent connection requests', async function () {
+      pool = new ModbusConnectionPool({
+        maxConnections: 3,
+        maxConnectionsPerHost: 3,
+        connectionFactory: mockFactory(sandbox)
+      })
+
+      const configs = [
+        { host: '127.0.0.1', port: 502, type: 'tcp', unitId: 1 },
+        { host: '127.0.0.1', port: 503, type: 'tcp', unitId: 2 },
+        { host: '127.0.0.1', port: 504, type: 'tcp', unitId: 3 }
       ]
 
-      pool.connections = mockConnections
-
-      await connectionPool.closePool('test-pool-5')
-
-      assert.strictEqual(mockConnections[0].close.called, true)
-      assert.strictEqual(mockConnections[1].close.called, true)
-      assert.strictEqual(pool.connections.length, 0)
+      const connections = await Promise.all(configs.map(cfg => pool.getConnection(cfg)))
+      assert.strictEqual(connections.length, 3)
+      assert.ok(pool.connections.size <= 3)
+      connections.forEach(c => assert.strictEqual(c.state, ConnectionState.ACTIVE))
     })
 
-    it.skip('should get pool statistics', function () {
-      const pool = connectionPool.createPool('test-pool-6', {
-        host: '127.0.0.1',
-        port: 502,
-        maxConnections: 5
+    it('should clean up stale connections', async function () {
+      this.timeout(5000)
+      pool = new ModbusConnectionPool({
+        idleTimeout: 100, // cleanup interval fires every 50ms
+        connectionFactory: mockFactory(sandbox)
       })
 
-      pool.connections = [
-        { id: 'conn-1', inUse: true },
-        { id: 'conn-2', inUse: false },
-        { id: 'conn-3', inUse: true }
-      ]
-      pool.activeConnections = 2
-      pool.totalRequests = 10
-      pool.failedRequests = 2
+      const conn = await pool.getConnection({ host: '127.0.0.1', port: 502, type: 'tcp', unitId: 1 })
+      pool.releaseConnection(conn)
+      assert.strictEqual(pool.connections.size, 1)
 
-      const stats = connectionPool.getPoolStats('test-pool-6')
-      assert.strictEqual(stats.totalConnections, 3)
-      assert.strictEqual(stats.activeConnections, 2)
-      assert.strictEqual(stats.availableConnections, 1)
-      assert.strictEqual(stats.totalRequests, 10)
-      assert.strictEqual(stats.failedRequests, 2)
-      assert.strictEqual(stats.successRate, 0.8)
-    })
-
-    it.skip('should handle connection retry on failure', async function () {
-      const pool = connectionPool.createPool('test-pool-7', {
-        host: '127.0.0.1',
-        port: 502,
-        retryAttempts: 3,
-        retryDelay: 10
-      })
-
-      let attemptCount = 0
-      pool.createConnection = sinon.stub().callsFake(() => {
-        attemptCount++
-        if (attemptCount < 3) {
-          return Promise.reject(new Error('Connection failed'))
-        }
-        return Promise.resolve({ connected: true })
-      })
-
-      const connection = await connectionPool.getConnection('test-pool-7')
-      assert.strictEqual(attemptCount, 3)
-      assert.strictEqual(connection.connected, true)
-    })
-
-    it.skip('should validate pool configuration', function () {
-      assert.throws(() => {
-        connectionPool.createPool('invalid-pool', {
-          host: '127.0.0.1',
-          port: 502,
-          maxConnections: -1 // Invalid
-        })
-      }, /Invalid pool configuration/)
-
-      assert.throws(() => {
-        connectionPool.createPool('invalid-pool-2', {
-          host: '127.0.0.1',
-          port: 502,
-          maxConnections: 2,
-          minConnections: 5 // min > max
-        })
-      }, /Invalid pool configuration/)
-    })
-
-    it.skip('should handle concurrent connection requests', async function () {
-      const pool = connectionPool.createPool('test-pool-8', {
-        host: '127.0.0.1',
-        port: 502,
-        maxConnections: 3
-      })
-
-      let connectionId = 0
-      pool.createConnection = sinon.stub().callsFake(() => {
-        return Promise.resolve({
-          id: `conn-${++connectionId}`,
-          connected: true
-        })
-      })
-
-      // Request 5 connections concurrently (pool max is 3)
-      const promises = []
-      for (let i = 0; i < 5; i++) {
-        promises.push(connectionPool.getConnection('test-pool-8'))
+      // Backdate lastUsed so the cleanup considers the connection stale
+      for (const [, c] of pool.connections) {
+        c.lastUsed = Date.now() - 200
       }
 
-      const results = await Promise.allSettled(promises)
-      const successful = results.filter(r => r.status === 'fulfilled')
+      // Wait for at least one cleanup interval (50ms) plus buffer
+      await new Promise(resolve => setTimeout(resolve, 200))
 
-      assert.strictEqual(successful.length >= 3, true)
-      assert.strictEqual(pool.connections.length <= 3, true)
+      assert.strictEqual(pool.connections.size, 0)
     })
 
-    it.skip('should clean up stale connections', async function () {
-      const pool = connectionPool.createPool('test-pool-9', {
-        host: '127.0.0.1',
-        port: 502,
-        connectionTTL: 100 // 100ms TTL
+    it('should emit pool events', function (done) {
+      pool = new ModbusConnectionPool({
+        connectionFactory: mockFactory(sandbox)
       })
 
-      const staleConnection = {
-        id: 'conn-1',
-        connected: true,
-        createdAt: Date.now() - 200, // Created 200ms ago
-        close: sinon.stub().resolves()
-      }
-
-      const freshConnection = {
-        id: 'conn-2',
-        connected: true,
-        createdAt: Date.now(),
-        close: sinon.stub().resolves()
-      }
-
-      pool.connections = [staleConnection, freshConnection]
-
-      await connectionPool.cleanupStaleConnections('test-pool-9')
-
-      assert.strictEqual(staleConnection.close.called, true)
-      assert.strictEqual(freshConnection.close.called, false)
-      assert.strictEqual(pool.connections.length, 1)
-      assert.strictEqual(pool.connections[0].id, 'conn-2')
-    })
-
-    it.skip('should emit pool events', function (done) {
-      const pool = connectionPool.createPool('test-pool-10', {
-        host: '127.0.0.1',
-        port: 502
-      })
-
-      pool.on('connection:created', (conn) => {
-        assert.notStrictEqual(conn, undefined)
+      pool.on('connectionCreated', (event) => {
+        assert.ok(event.connectionId, 'connectionId should be defined')
         done()
       })
 
-      pool.emit('connection:created', { id: 'test-conn' })
+      pool.getConnection({ host: '127.0.0.1', port: 502, type: 'tcp', unitId: 1 }).catch(done)
     })
 
-    it.skip('should handle pool shutdown gracefully', async function () {
-      const pool = connectionPool.createPool('test-pool-11', {
-        host: '127.0.0.1',
-        port: 502,
-        shutdownTimeout: 100
+    it('should handle pool shutdown gracefully', async function () {
+      pool = new ModbusConnectionPool({
+        connectionFactory: mockFactory(sandbox)
       })
 
-      const connections = [
-        { id: 'conn-1', inUse: true, close: sinon.stub().resolves() },
-        { id: 'conn-2', inUse: false, close: sinon.stub().resolves() }
-      ]
+      const clearedEvents = []
+      pool.on('poolCleared', () => clearedEvents.push('cleared'))
 
-      pool.connections = connections
-      pool.waitingQueue = [
-        { reject: sinon.stub() },
-        { reject: sinon.stub() }
-      ]
+      await pool.getConnection({ host: '127.0.0.1', port: 502, type: 'tcp', unitId: 1 })
 
-      await connectionPool.shutdown('test-pool-11')
+      // Queue a pending request (fill pool first)
+      pool.maxConnections = 1
+      const pending = pool.getConnection({ host: '127.0.0.1', port: 503, type: 'tcp', unitId: 2 })
+      pending.catch(() => {}) // expected rejection on clear
 
-      assert.strictEqual(connections[0].close.called, true)
-      assert.strictEqual(connections[1].close.called, true)
-      assert.strictEqual(pool.waitingQueue[0].reject.called, true)
-      assert.strictEqual(pool.waitingQueue[1].reject.called, true)
-      assert.strictEqual(pool.isShuttingDown, true)
+      pool.clear()
+      pool = null
+
+      assert.strictEqual(clearedEvents.length, 1)
     })
   })
 
   describe('Connection Pool Monitoring', function () {
-    it.skip('should track connection metrics', function () {
-      const pool = connectionPool.createPool('test-pool-metrics', {
-        host: '127.0.0.1',
-        port: 502,
-        enableMetrics: true
+    // Feature not in implementation: no recordMetric()/getMetrics() public API.
+    // Pool tracks stats via this.statistics but does not expose a metric recording API.
+    it.skip('should track connection metrics — recordMetric/getMetrics not implemented', function () {})
+
+    it('should calculate pool health score', async function () {
+      pool = new ModbusConnectionPool({
+        connectionFactory: mockFactory(sandbox)
       })
 
-      pool.recordMetric('connection.created', 1)
-      pool.recordMetric('connection.failed', 1)
-      pool.recordMetric('connection.created', 1)
+      const conn = await pool.getConnection({ host: '127.0.0.1', port: 502, type: 'tcp', unitId: 1 })
+      pool.releaseConnection(conn)
 
-      const metrics = pool.getMetrics()
-      assert.strictEqual(metrics['connection.created'], 2)
-      assert.strictEqual(metrics['connection.failed'], 1)
-    })
-
-    it.skip('should calculate pool health score', function () {
-      const pool = connectionPool.createPool('test-pool-health', {
-        host: '127.0.0.1',
-        port: 502
-      })
-
-      pool.connections = [
-        { id: 'conn-1', inUse: true, healthy: true },
-        { id: 'conn-2', inUse: false, healthy: true },
-        { id: 'conn-3', inUse: false, healthy: false }
-      ]
-      pool.totalRequests = 100
-      pool.failedRequests = 5
-
-      const health = connectionPool.getPoolHealth('test-pool-health')
-      assert.strictEqual(health.healthyConnections, 2)
-      assert.strictEqual(health.unhealthyConnections, 1)
-      assert.strictEqual(health.successRate, 0.95)
-      assert.strictEqual(health.utilizationRate, 1 / 3)
+      const health = pool.getHealthReport()
+      assert.strictEqual(typeof health, 'object')
+      assert.ok('totalConnections' in health, 'missing totalConnections')
+      assert.ok('healthyConnections' in health, 'missing healthyConnections')
+      assert.ok('unhealthyConnections' in health, 'missing unhealthyConnections')
     })
   })
 })
