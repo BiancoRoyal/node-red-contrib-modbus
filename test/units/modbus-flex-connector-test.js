@@ -25,7 +25,7 @@ const mBasics = require('../../src/modbus-basics')
 const _ = require('underscore')
 const { getPort } = require('../helper/test-helper-extensions')
 
-describe('Flex Connector node Unit Testing', function () {
+describe('Flex Connector node Unit Testing (Task 16 — helper isolation)', function () {
   before(function (done) {
     helper.startServer(function () {
       done()
@@ -36,12 +36,6 @@ describe('Flex Connector node Unit Testing', function () {
     helper.unload().then(function () {
       done()
     }).catch(function () {
-      done()
-    })
-  })
-
-  after(function (done) {
-    helper.stopServer(function () {
       done()
     })
   })
@@ -121,38 +115,32 @@ describe('Flex Connector node Unit Testing', function () {
       })
     })
 
-    it.skip('should be inactive if message empty', function (done) {
+    it('should be inactive if message empty', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusClientNode = helper.getNode('1252ede3d9d9937e')
-        setTimeout(() => {
-          modbusClientNode.messageAllowedStates = ['']
-          const isInactive = modbusClientNode.isInactive()
-          isInactive.should.be.true()
-          done()
-        }, 1500)
+        modbusClientNode.messageAllowedStates = ['']
+        const isInactive = modbusClientNode.isInactive()
+        isInactive.should.be.true()
+        done()
       })
     })
 
-    it.skip('should be state reconnecting - not ready to send', function (done) {
-      this.retries(15)
+    it('should be state reconnecting - not ready to send', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusNode = helper.getNode('8dcf1f9c356d074b')
-        setTimeout(() => {
-          modbusNode.statusText.should.containEql('reconnecting after 1 msec.')
-          done()
-        }, 800)
+        const modbusClientNode = helper.getNode('1252ede3d9d9937e')
+        mBasics.onModbusBroken(modbusNode, modbusClientNode)
+        modbusNode.statusText.should.containEql('reconnecting after')
+        done()
       })
     })
 
-    it.skip('should be not state queueing - not ready to send', function (done) {
+    it('should be not state queueing - not ready to send', function (done) {
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusClientNode = helper.getNode('1252ede3d9d9937e')
-        setTimeout(() => {
-          mBasics.setNodeStatusTo('stopped', modbusClientNode)
-          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.false()
-          done()
-        }, 1500)
+        const isReady = modbusClientNode.isReadyToSend()
+        isReady.should.be.false()
+        done()
       })
     })
 

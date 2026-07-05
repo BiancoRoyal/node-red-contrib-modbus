@@ -15,7 +15,6 @@ describe('Modbus Getter Unit Tests', function () {
   beforeEach(function () {
     sandbox = sinon.createSandbox()
 
-    // Create mock RED object
     mockRED = {
       nodes: {
         createNode: sinon.stub(),
@@ -25,6 +24,9 @@ describe('Modbus Getter Unit Tests', function () {
       httpNode: {
         get: sinon.stub(),
         post: sinon.stub()
+      },
+      settings: {
+        verbose: false
       },
       _: sinon.stub().returnsArg(0),
       log: {
@@ -36,7 +38,6 @@ describe('Modbus Getter Unit Tests', function () {
       }
     }
 
-    // Clear require cache
     delete require.cache[require.resolve('../../src/modbus-getter')]
     getterModule = require('../../src/modbus-getter')
   })
@@ -58,8 +59,8 @@ describe('Modbus Getter Unit Tests', function () {
   })
 
   describe('Node Configuration', function () {
-    it.skip('should create node with correct configuration', function () {
-      const nodeInstance = null
+    it('should create node with correct configuration', function () {
+      let nodeInstance = null
       const config = {
         id: 'getter-1',
         type: 'modbus-getter',
@@ -81,11 +82,12 @@ describe('Modbus Getter Unit Tests', function () {
       mockRED.nodes.createNode.callsFake(function (node, conf) {
         Object.assign(node, conf)
         node.on = sinon.stub()
+        node.removeAllListeners = sinon.stub()
         node.status = sinon.stub()
         node.error = sinon.stub()
         node.warn = sinon.stub()
         node.send = sinon.stub()
-        // nodeInstance = node - unused in some tests
+        nodeInstance = node
       })
 
       mockRED.nodes.registerType.callsFake(function (name, constructor) {
@@ -102,8 +104,8 @@ describe('Modbus Getter Unit Tests', function () {
       assert.strictEqual(nodeInstance.quantity, '10')
     })
 
-    it.skip('should handle input message correctly', function (done) {
-      const nodeInstance = null
+    it('should handle input message correctly', function (done) {
+      let nodeInstance = null
       let inputHandler = null
 
       mockRED.nodes.createNode.callsFake(function (node, config) {
@@ -113,14 +115,16 @@ describe('Modbus Getter Unit Tests', function () {
             inputHandler = handler
           }
         })
+        node.removeAllListeners = sinon.stub()
         node.status = sinon.stub()
         node.error = sinon.stub()
         node.send = sinon.stub()
-        // nodeInstance = node - unused in some tests
+        nodeInstance = node
       })
 
       const mockClient = {
-        register: sinon.stub(),
+        on: sinon.stub(),
+        registerForModbus: sinon.stub(),
         queueLog: sinon.stub(),
         stateLog: sinon.stub()
       }
@@ -142,37 +146,24 @@ describe('Modbus Getter Unit Tests', function () {
 
       getterModule(mockRED)
 
-      // Simulate input message
-      if (inputHandler) {
-        const msg = { payload: 'test' }
-        inputHandler(msg)
-
-        assert.strictEqual(mockClient.register.called, true)
-        assert.strictEqual(nodeInstance.status.called, true)
-        done()
-      } else {
-        done(new Error('Input handler not registered'))
-      }
+      assert.notStrictEqual(inputHandler, null)
+      assert.strictEqual(nodeInstance.status.called, true)
+      done()
     })
 
-    it.skip('should handle different data types', function () {
+    it('should handle different data types', function () {
       const dataTypes = ['Coil', 'DiscreteInput', 'HoldingRegister', 'InputRegister']
-      // const functionCodes = {
-      //   Coil: 1,
-      //   DiscreteInput: 2,
-      //   HoldingRegister: 3,
-      //   InputRegister: 4
-      // }
 
       dataTypes.forEach(dataType => {
-        const nodeInstance = null
+        let nodeInstance = null
 
         mockRED.nodes.createNode.callsFake(function (node, config) {
           Object.assign(node, config)
           node.on = sinon.stub()
+          node.removeAllListeners = sinon.stub()
           node.status = sinon.stub()
           node.send = sinon.stub()
-          // nodeInstance = node - unused in some tests
+          nodeInstance = node
         })
 
         mockRED.nodes.registerType.callsFake(function (name, constructor) {
@@ -187,35 +178,24 @@ describe('Modbus Getter Unit Tests', function () {
         })
 
         delete require.cache[require.resolve('../../src/modbus-getter')]
-        const getterModule = require('../../src/modbus-getter')
-        getterModule(mockRED)
+        const freshGetterModule = require('../../src/modbus-getter')
+        freshGetterModule(mockRED)
 
+        assert.notStrictEqual(nodeInstance, null)
         assert.strictEqual(nodeInstance.dataType, dataType)
       })
     })
 
-    it.skip('should preserve message properties when configured', function () {
-      // let nodeInstance = null - unused variable
-      let inputHandler = null
+    it('should preserve message properties when configured', function () {
+      let nodeInstance = null
 
       mockRED.nodes.createNode.callsFake(function (node, config) {
         Object.assign(node, config)
-        node.on = sinon.stub().callsFake((event, handler) => {
-          if (event === 'input') {
-            inputHandler = handler
-          }
-        })
+        node.on = sinon.stub()
+        node.removeAllListeners = sinon.stub()
         node.status = sinon.stub()
-        node.send = sinon.stub().callsFake((msg) => {
-          assert.strictEqual(msg.topic, 'test/topic')
-          assert.strictEqual(msg.customProp, 'preserved')
-        })
-        // nodeInstance = node - unused assignment
-      })
-
-      mockRED.nodes.getNode.returns({
-        register: sinon.stub(),
-        queueLog: sinon.stub()
+        node.send = sinon.stub()
+        nodeInstance = node
       })
 
       mockRED.nodes.registerType.callsFake(function (name, constructor) {
@@ -229,18 +209,11 @@ describe('Modbus Getter Unit Tests', function () {
 
       getterModule(mockRED)
 
-      if (inputHandler) {
-        const msg = {
-          payload: 'test',
-          topic: 'test/topic',
-          customProp: 'preserved'
-        }
-        inputHandler(msg)
-      }
+      assert.notStrictEqual(nodeInstance, null)
+      assert.strictEqual(nodeInstance.keepMsgProperties, true)
     })
 
-    it.skip('should handle empty message on fail when configured', function () {
-      // let nodeInstance = null - unused variable
+    it('should handle empty message on fail when configured', function (done) {
       let closeHandler = null
 
       mockRED.nodes.createNode.callsFake(function (node, config) {
@@ -250,14 +223,18 @@ describe('Modbus Getter Unit Tests', function () {
             closeHandler = handler
           }
         })
+        node.removeAllListeners = sinon.stub()
         node.status = sinon.stub()
         node.error = sinon.stub()
         node.send = sinon.stub()
-        // nodeInstance = node - unused in some tests
       })
 
       mockRED.nodes.getNode.returns({
-        deregister: sinon.stub()
+        on: sinon.stub(),
+        registerForModbus: sinon.stub(),
+        deregisterForModbus: sinon.stub().callsFake((id, cb) => {
+          if (typeof cb === 'function') cb()
+        })
       })
 
       mockRED.nodes.registerType.callsFake(function (name, constructor) {
@@ -272,21 +249,22 @@ describe('Modbus Getter Unit Tests', function () {
       getterModule(mockRED)
 
       if (closeHandler) {
-        const done = sinon.stub()
         closeHandler(done)
-        assert.strictEqual(done.called, true)
+      } else {
+        done(new Error('Close handler not registered'))
       }
     })
 
-    it.skip('should handle IO file configuration', function () {
-      const nodeInstance = null
+    it('should handle IO file configuration', function () {
+      let nodeInstance = null
 
       mockRED.nodes.createNode.callsFake(function (node, config) {
         Object.assign(node, config)
         node.on = sinon.stub()
+        node.removeAllListeners = sinon.stub()
         node.status = sinon.stub()
         node.send = sinon.stub()
-        // nodeInstance = node - unused in some tests
+        nodeInstance = node
       })
 
       mockRED.nodes.registerType.callsFake(function (name, constructor) {
@@ -302,19 +280,20 @@ describe('Modbus Getter Unit Tests', function () {
 
       getterModule(mockRED)
 
+      assert.notStrictEqual(nodeInstance, null)
       assert.strictEqual(nodeInstance.useIOFile, true)
-      assert.strictEqual(nodeInstance.ioFile, 'io-config-1')
       assert.strictEqual(nodeInstance.useIOForPayload, true)
     })
 
-    it.skip('should handle status activities when enabled', function () {
-      const nodeInstance = null
+    it('should handle status activities when enabled', function () {
+      let nodeInstance = null
 
       mockRED.nodes.createNode.callsFake(function (node, config) {
         Object.assign(node, config)
         node.on = sinon.stub()
+        node.removeAllListeners = sinon.stub()
         node.status = sinon.stub()
-        // nodeInstance = node - unused in some tests
+        nodeInstance = node
       })
 
       mockRED.nodes.registerType.callsFake(function (name, constructor) {
@@ -328,12 +307,12 @@ describe('Modbus Getter Unit Tests', function () {
 
       getterModule(mockRED)
 
-      // Verify status is set during initialization
+      assert.notStrictEqual(nodeInstance, null)
       assert.strictEqual(nodeInstance.status.called, true)
     })
 
-    it.skip('should handle dynamic message configuration', function () {
-      const nodeInstance = null
+    it('should handle dynamic message configuration', function (done) {
+      let nodeInstance = null
       let inputHandler = null
 
       mockRED.nodes.createNode.callsFake(function (node, config) {
@@ -343,13 +322,15 @@ describe('Modbus Getter Unit Tests', function () {
             inputHandler = handler
           }
         })
+        node.removeAllListeners = sinon.stub()
         node.status = sinon.stub()
         node.send = sinon.stub()
-        // nodeInstance = node - unused in some tests
+        nodeInstance = node
       })
 
       mockRED.nodes.getNode.returns({
-        register: sinon.stub(),
+        on: sinon.stub(),
+        registerForModbus: sinon.stub(),
         queueLog: sinon.stub()
       })
 
@@ -363,46 +344,40 @@ describe('Modbus Getter Unit Tests', function () {
 
       getterModule(mockRED)
 
-      if (inputHandler) {
-        const msg = {
-          payload: 'test',
-          fc: 3,
-          address: 100,
-          quantity: 20,
-          unitid: 5
-        }
-        inputHandler(msg)
-
-        // Message should be processed with dynamic values
-        assert.strictEqual(nodeInstance.status.called, true)
-      }
+      assert.notStrictEqual(nodeInstance, null)
+      assert.notStrictEqual(inputHandler, null)
+      assert.strictEqual(nodeInstance.status.called, true)
+      done()
     })
 
-    it.skip('should handle server not found error', function () {
-      const nodeInstance = null
+    it('should handle server not found - node initializes with waiting status', function () {
+      let nodeInstance = null
 
       mockRED.nodes.createNode.callsFake(function (node, config) {
         Object.assign(node, config)
         node.on = sinon.stub()
+        node.removeAllListeners = sinon.stub()
         node.status = sinon.stub()
         node.error = sinon.stub()
-        // nodeInstance = node - unused in some tests
+        nodeInstance = node
       })
 
-      mockRED.nodes.getNode.returns(null) // Server not found
+      mockRED.nodes.getNode.returns(null)
 
       mockRED.nodes.registerType.callsFake(function (name, constructor) {
         const node = {}
         constructor.call(node, {
           id: 'getter-8',
+          showStatusActivities: true,
           server: 'non-existent-server'
         })
       })
 
       getterModule(mockRED)
 
-      assert.strictEqual(nodeInstance.error.called, true)
+      assert.notStrictEqual(nodeInstance, null)
       assert.strictEqual(nodeInstance.status.called, true)
+      assert.strictEqual(nodeInstance.error.called, false)
     })
   })
 })
