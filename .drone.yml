@@ -1,17 +1,248 @@
+#file: noinspection YAMLSchemaValidation
+global-variables:
+  node_image: &node_image node:24
+  environment: &default_environment
+    READ_TOKEN:
+      from_secret: api_token
+    PUBLISH_TOKEN:
+      from_secret: publish_api_token
+
 kind: pipeline
-name: default
+name: cloudsmith
 
 steps:
-- name: test
-  image: node
-  commands:
-  - npm install
-  - npm test
-  environment:
-    USERNAME:
-      from_secret: docker_username
-    PASSWORD:
-      from_secret: docker_password
-  when:
-    branch:
-    - master
+  - name: Development-Build
+    image: *node_image
+    environment:
+      <<: *default_environment
+    commands:
+      - cp .npmrcbeta ~/.npmrc
+      - yes | cp -rf .npmrcbeta .npmrc
+      - export NPM_TOKEN=$READ_TOKEN
+      - npm ci
+      - npm run build
+    when:
+      branch:
+        - development
+        - develop
+        - feature/*
+
+  - name: ReleaseCandidate-Build
+    image: *node_image
+    environment:
+      <<: *default_environment
+    commands:
+      - cp .npmrcrc ~/.npmrc
+      - yes | cp -rf .npmrcrc .npmrc
+      - export NPM_TOKEN=$READ_TOKEN
+      - npm ci
+      - npm run build
+    when:
+      branch:
+        - release/*
+
+  - name: Release-Build
+    image: *node_image
+    environment:
+      <<: *default_environment
+    commands:
+      - cp .npmrcmain ~/.npmrc
+      - yes | cp -rf .npmrcmain .npmrc
+      - export NPM_TOKEN=$READ_TOKEN
+      - npm ci
+      - npm run build
+    when:
+      branch:
+        - hotfix/*
+        - main
+
+  - name: Development-Test
+    image: *node_image
+    environment:
+      <<: *default_environment
+    commands:
+      - cp .npmrcbeta ~/.npmrc
+      - yes | cp -rf .npmrcbeta .npmrc
+      - export NPM_TOKEN=$READ_TOKEN
+      - npm ci
+      - npm run test
+    when:
+      branch:
+        - development
+        - develop
+
+  - name: Feature-Test
+    image: *node_image
+    environment:
+      <<: *default_environment
+    commands:
+      - cp .npmrcbeta ~/.npmrc
+      - yes | cp -rf .npmrcbeta .npmrc
+      - export NPM_TOKEN=$READ_TOKEN
+      - export QUIET_LOGGER=true
+      - npm ci
+      - npm run test:parallel
+    when:
+      branch:
+        - feature/*
+
+  - name: ReleaseCandidate-Test
+    image: *node_image
+    environment:
+      <<: *default_environment
+    commands:
+      - cp .npmrcrc ~/.npmrc
+      - yes | cp -rf .npmrcrc .npmrc
+      - export NPM_TOKEN=$READ_TOKEN
+      - node ./overwriteRegistryConfigForRC.js
+      - npm ci
+      - npm run test
+    when:
+      branch:
+        - release/*
+
+  - name: ReleaseCandidate-TimeSensitiveTest
+    image: *node_image
+    environment:
+      <<: *default_environment
+    commands:
+      - cp .npmrcrc ~/.npmrc
+      - yes | cp -rf .npmrcrc .npmrc
+      - export NPM_TOKEN=$READ_TOKEN
+      - export OPCUA_TIME_SENSITIVE=true
+      - node ./overwriteRegistryConfigForRC.js
+      - npm ci
+      - npm run test
+    when:
+      branch:
+        - release/*
+
+  - name: Release-Test
+    image: *node_image
+    environment:
+      <<: *default_environment
+    commands:
+      - cp .npmrcmain ~/.npmrc
+      - yes | cp -rf .npmrcmain .npmrc
+      - export NPM_TOKEN=$READ_TOKEN
+      - npm ci
+      - npm run test
+    when:
+      branch:
+        - hotfix/*
+        - main
+
+  - name: ReleaseCandidate-QA
+    image: *node_image
+    environment:
+      <<: *default_environment
+    commands:
+      - cp .npmrcrc ~/.npmrc
+      - yes | cp -rf .npmrcrc .npmrc
+      - export NPM_TOKEN=$READ_TOKEN
+      - node ./overwriteRegistryConfigForRC.js
+      - npm ci
+      - npm run ci:quality-gate
+      - npm run test:coverage
+    when:
+      branch:
+        - release/*
+
+  - name: QA
+    image: *node_image
+    environment:
+      <<: *default_environment
+    commands:
+      - cp .npmrcmain ~/.npmrc
+      - yes | cp -rf .npmrcmain .npmrc
+      - export NPM_TOKEN=$READ_TOKEN
+      - npm ci
+      - npm run ci:quality-gate
+      - npm run test:coverage
+    when:
+      branch:
+        - hotfix/*
+        - main
+
+  - name: Beta-Publish
+    image: *node_image
+    environment:
+      <<: *default_environment
+    commands:
+      - cp .npmrcbeta ~/.npmrc
+      - export NPM_TOKEN=$PUBLISH_TOKEN
+      - chmod +x select-npmrc.sh
+      - ./select-npmrc.sh
+      - npm cache verify
+      - npm ci
+      - npm run ci:quality-gate
+      - LOGGER=info npm run test
+      - npm run build
+      - npm publish --access=restricted --tag latest
+    when:
+      ref:
+        - refs/tags/v*.*.*-beta
+        - refs/tags/v*.*.*-beta.*
+
+  - name: ReleaseCandidate-Publish
+    image: *node_image
+    environment:
+      <<: *default_environment
+    commands:
+      - cp .npmrcrc ~/.npmrc
+      - export NPM_TOKEN=$PUBLISH_TOKEN
+      - node overwriteRegistryConfigForRC.js
+      - chmod +x select-npmrc.sh
+      - ./select-npmrc.sh
+      - npm cache verify
+      - npm ci
+      - npm run ci:quality-gate
+      - LOGGER=warn npm run test
+      - npm run build
+      - npm publish --access=restricted --tag latest
+    when:
+      ref:
+        - refs/tags/v*.*.*-rc
+        - refs/tags/v*.*.*-rc.*
+
+  - name: Release-Publish
+    image: *node_image
+    environment:
+      <<: *default_environment
+    commands:
+      - cp .npmrcmain ~/.npmrc
+      - export NPM_TOKEN=$PUBLISH_TOKEN
+      - node overwriteRegistryConfigForRelease.js
+      - chmod +x select-npmrc.sh
+      - ./select-npmrc.sh
+      - npm cache verify
+      - npm ci
+      - npm run ci:quality-gate
+      - LOGGER=error npm run test
+      - npm run build
+      - npm publish --access=restricted --tag latest
+    when:
+      ref:
+        - refs/tags/v*.*.*-release
+
+  - name: Build-Publish
+    image: *node_image
+    environment:
+      <<: *default_environment
+    commands:
+      - cp .npmrcci ~/.npmrc
+      - yes | cp -rf .npmrcci .npmrc
+      - export NPM_TOKEN=$PUBLISH_TOKEN
+      - node overwriteRegistryConfigForBuild.js
+      - chmod +x select-npmrc.sh
+      - ./select-npmrc.sh
+      - npm cache verify
+      - npm ci
+      - npm run ci:quality-gate
+      - LOGGER=debug npm run test
+      - npm run build
+      - npm publish --access=restricted --tag latest
+    when:
+      ref:
+        - refs/tags/v*.*.*-build
+        - refs/tags/v*.*.*-build.*

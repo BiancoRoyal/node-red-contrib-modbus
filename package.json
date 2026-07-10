@@ -1,6 +1,6 @@
 {
   "name": "@plus4nodered/node-red-contrib-modbus",
-  "version": "6.0.0",
+  "version": "6.0.0-alpha.1",
   "private": true,
   "description": "Modbus TCP, TLS, UDP and Serial client nodes for Node-RED. For server nodes, install @plus4nodered/node-red-contrib-modbus-server.",
   "dependencies": {
@@ -79,6 +79,8 @@
     "test:units": "npm run prereq && mocha test/units/*.js --recursive --exit",
     "test:core": "npm run prereq && mocha test/core/*.js --recursive --exit",
     "test:integration": "mocha --config .mocharc.integration.json",
+    "test:parallel": "npm run test",
+    "ci:quality-gate": "npm run lint && npm run build",
     "test:migration:cleanup": "find test -name '*-test.js' -delete",
     "coverage": "npm run prereq && nyc mocha test/**/*.js --recursive --exit",
     "coverage:codacy": "nyc --reporter=lcovonly mocha test/**/*.js --recursive --exit && cat ./coverage/lcov.info | codacy-coverage --token $CODACY_COVERAGE_TOKEN && rm -rf ./coverage",
