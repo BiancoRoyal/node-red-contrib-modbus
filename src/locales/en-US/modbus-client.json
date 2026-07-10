@@ -2,6 +2,7 @@
   "modbus-contrib": {
     "label": {
       "type": "Type",
+      "configPreset": "Configuration profile",
       "queueCommands": "Queue commands",
       "queueLogEnabled": "Queue Logging",
       "stateLogEnabled": "Log states changes",
@@ -9,6 +10,17 @@
       "host": "Host",
       "port": "Port",
       "tcpType": "TCP Type",
+      "enableTls": "Enable TLS/SSL",
+      "tlsPrivateKey": "Private Key",
+      "tlsCertificate": "Certificate",
+      "tlsCa": "CA Certificate",
+      "tlsRejectUnauthorized": "Reject Unauthorized",
+      "tlsServername": "Server Name",
+      "tlsSecureProtocol": "Secure Protocol",
+      "tlsCheckServerIdentity": "Check Server Identity",
+      "circuitBreakerEnabled": "Enable Circuit Breaker",
+      "retryEnabled": "Enable Retry Handler",
+      "connectionPoolEnabled": "Enable Connection Pool",
       "serialport": "Serial port",
       "serialType": "Serial type",
       "serialEndian": "Endian type",
@@ -32,7 +44,8 @@
     "tabs-label": {
       "settings": "Settings",
       "queues": "Queues",
-      "options": "Optionals"
+      "options": "Optionals",
+      "advanced": "Advanced"
     }
   }
 }

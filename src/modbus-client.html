@@ -18,6 +18,7 @@
     defaults: {
 
       name: {value: ''},
+      configPreset: {value: ''},
       clienttype: {value: 'tcp', required: true},
       bufferCommands: {value: true},
       stateLogEnabled: {value: false},
@@ -52,7 +53,11 @@
 
       showErrors: {value: false},
       showWarnings: {value: true},
-      showLogs: {value: true}
+      showLogs: {value: true},
+
+      circuitBreakerEnabled: {value: false},
+      retryEnabled: {value: false},
+      connectionPoolEnabled: {value: false}
     },
     label: function () {
       let node = this
@@ -88,6 +93,11 @@
       tabs.addTab({
         id: "modbus-options-tab",
         label: this._("modbus-contrib.tabs-label.options")
+      })
+
+      tabs.addTab({
+        id: "modbus-advanced-tab",
+        label: this._("modbus-contrib.tabs-label.advanced")
       })
 
       node.ports = []
@@ -220,6 +230,33 @@
         inputsTLS.hide()
       }
 
+      $('#node-config-input-configPreset').on('change', function () {
+        const presetId = $(this).val()
+        if (!presetId) return
+        if (!window.confirm('Apply configuration preset? Unsaved preset fields will be overwritten.')) {
+          $(this).val(node.configPreset || '')
+          return
+        }
+        $.getJSON('modbus/client/presets', function (presets) {
+          const preset = presets[presetId]
+          if (!preset) return
+          Object.keys(preset).forEach(function (key) {
+            const input = $('#node-config-input-' + key)
+            if (input.length && input.attr('type') === 'checkbox') {
+              input.prop('checked', !!preset[key])
+            } else if (input.length) {
+              input.val(preset[key])
+            }
+          })
+          clientTypeSelector.trigger('change')
+          if (preset.tlsEnabled) {
+            $('#node-config-input-tlsEnabled').prop('checked', true).trigger('change')
+          } else {
+            $('#node-config-input-tlsEnabled').prop('checked', false).trigger('change')
+          }
+        })
+      })
+
       try {
         $('#node-config-input-serialPort').autocomplete('destroy')
       }
@@ -256,6 +293,17 @@
     </div>
     <div id="node-input-tabs-content" style="min-height: 170px;">
         <div id="modbus-settings-tab" style="display:none">
+            <div class="form-row">
+                <label for="node-config-input-configPreset"><i class="fa fa-magic"></i> <span data-i18n="modbus-contrib.label.configPreset">Configuration profile</span></label>
+                <select id="node-config-input-configPreset" style="width:220px;">
+                    <option value="">— custom —</option>
+                    <option value="plain-tcp">Plain TCP</option>
+                    <option value="tls-production">TLS Production</option>
+                    <option value="tls-lab">TLS Lab (insecure)</option>
+                    <option value="serial-rtu">Serial RTU</option>
+                    <option value="high-latency">High Latency</option>
+                </select>
+            </div>
             <div class="form-row">
                 <label for="node-config-input-name"><i class="icon-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
                 <input type="text" id="node-config-input-name" placeholder="Name">
@@ -324,6 +372,21 @@
                             <i class="fa fa-server"></i> <span data-i18n="modbus-contrib.label.tlsServername">Server Name</span>
                         </label>
                         <input type="text" id="node-config-input-tlsServername" placeholder="Leave empty to use host">
+                    </div>
+                    <div class="form-row">
+                        <label for="node-config-input-tlsSecureProtocol">
+                            <i class="fa fa-lock"></i> <span data-i18n="modbus-contrib.label.tlsSecureProtocol">Secure Protocol</span>
+                        </label>
+                        <select id="node-config-input-tlsSecureProtocol" style="width:220px;">
+                            <option value="TLSv1_3_method">TLSv1.3</option>
+                            <option value="TLSv1_2_method">TLSv1.2</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label style="min-width:190px" for="node-config-input-tlsCheckServerIdentity">
+                            <i class="fa fa-id-card"></i> <span data-i18n="modbus-contrib.label.tlsCheckServerIdentity">Check Server Identity</span>
+                        </label>
+                        <input type="checkbox" id="node-config-input-tlsCheckServerIdentity" style="max-width:30px" checked>
                     </div>
                 </div>
             </div>
@@ -476,6 +539,26 @@
                 <label style="min-width:190px" for="node-config-input-showLogs"><i class="fa fa-th"></i> <span
                 data-i18n="modbus-contrib.label.showLogs"></span></label>
                 <input type="checkbox" checked id="node-config-input-showLogs" style="max-width:30px">
+            </div>
+        </div>
+        <div id="modbus-advanced-tab" style="display:none">
+            <div class="form-row">
+                <label style="min-width:190px" for="node-config-input-circuitBreakerEnabled">
+                    <i class="fa fa-bolt"></i> <span data-i18n="modbus-contrib.label.circuitBreakerEnabled">Enable Circuit Breaker</span>
+                </label>
+                <input type="checkbox" id="node-config-input-circuitBreakerEnabled" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:190px" for="node-config-input-retryEnabled">
+                    <i class="fa fa-repeat"></i> <span data-i18n="modbus-contrib.label.retryEnabled">Enable Retry Handler</span>
+                </label>
+                <input type="checkbox" id="node-config-input-retryEnabled" style="max-width:30px">
+            </div>
+            <div class="form-row">
+                <label style="min-width:190px" for="node-config-input-connectionPoolEnabled">
+                    <i class="fa fa-database"></i> <span data-i18n="modbus-contrib.label.connectionPoolEnabled">Enable Connection Pool</span>
+                </label>
+                <input type="checkbox" id="node-config-input-connectionPoolEnabled" style="max-width:30px">
             </div>
         </div>
     </div>

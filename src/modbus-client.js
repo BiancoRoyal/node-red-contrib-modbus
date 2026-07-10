@@ -157,9 +157,9 @@ module.exports = function (RED) {
 
     // Initialize resilience modules
     const resilienceOptions = {
-      enableCircuitBreaker: config.enableCircuitBreaker === true,
-      enableConnectionPool: config.enableConnectionPool === true,
-      enableRetryHandler: config.enableRetryHandler === true,
+      enableCircuitBreaker: config.circuitBreakerEnabled === true || config.enableCircuitBreaker === true,
+      enableConnectionPool: config.connectionPoolEnabled === true || config.enableConnectionPool === true,
+      enableRetryHandler: config.retryEnabled === true || config.enableRetryHandler === true,
       enableDiagnostics: config.enableDiagnostics !== false,
       failureThreshold: config.failureThreshold || 5,
       successThreshold: config.successThreshold || 2,
@@ -843,6 +843,11 @@ module.exports = function (RED) {
       tlsCertificate: { type: 'text' },
       tlsCa: { type: 'text' }
     }
+  })
+
+  const clientPresets = require('./core/client/config-presets')
+  RED.httpAdmin.get('/modbus/client/presets', RED.auth.needsPermission('flows.read'), function (req, res) {
+    res.json(clientPresets.CLIENT_PRESETS)
   })
 
   /* istanbul ignore next */
