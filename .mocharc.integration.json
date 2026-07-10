@@ -1,0 +1,18 @@
+{
+  "recursive": true,
+  "exit": true,
+  "timeout": 60000,
+  "slow": 2000,
+  "reporter": "spec",
+  "retries": 1,
+  "bail": false,
+  "require": [
+    "test/helper/test-helper-extensions.js"
+  ],
+  "spec": [
+    "test/integration/**/*.js"
+  ],
+  "ignore": [
+    "test/**/flows/*.js"
+  ]
+}

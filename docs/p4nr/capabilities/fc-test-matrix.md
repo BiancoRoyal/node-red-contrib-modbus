@@ -42,7 +42,8 @@ Legende: ✅ grün | 🔲 geplant | ⏭ skip/begründet | — nicht anwendbar
 
 | Test | TCP | TLS Mock | TLS Integration |
 |------|-----|----------|-----------------|
-| Deploy + register | ✅ | 🔲 | 🔲 |
+| Deploy + register | ✅ | ✅ | 🔲 |
+| FC5 flex-write (mock) | — | ✅ | 🔲 |
 | Reconnect | ✅ | 🔲 | 🔲 |
 | Timeout handling | ✅ | 🔲 | 🔲 |
 | Credentials / Env TLS | — | 🔲 | 🔲 |

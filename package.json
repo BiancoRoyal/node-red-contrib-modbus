@@ -78,6 +78,7 @@
     "test:e2e": "npm run prereq && mocha test/e2e/*.js --recursive --exit --timeout 30000",
     "test:units": "npm run prereq && mocha test/units/*.js --recursive --exit",
     "test:core": "npm run prereq && mocha test/core/*.js --recursive --exit",
+    "test:integration": "mocha --config .mocharc.integration.json",
     "test:migration:cleanup": "find test -name '*-test.js' -delete",
     "coverage": "npm run prereq && nyc mocha test/**/*.js --recursive --exit",
     "coverage:codacy": "nyc --reporter=lcovonly mocha test/**/*.js --recursive --exit && cat ./coverage/lcov.info | codacy-coverage --token $CODACY_COVERAGE_TOKEN && rm -rf ./coverage",
