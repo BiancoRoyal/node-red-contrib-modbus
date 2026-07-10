@@ -39,7 +39,8 @@
       useIOFile: {value: false},
       ioFile: {value: '', type: 'modbus-io-config', required: false},
       useIOForPayload: {value: false},
-      emptyMsgOnFail: {value: false}
+      emptyMsgOnFail: {value: false},
+      suppressNotReadyWarnings: {value: false}
     },
     inputs: 0,
     outputs: 2,
@@ -193,6 +194,11 @@
             </div>
         </div>
         <div id="modbus-options-tab" style="display:none">
+            <div class="form-row">
+                <label style="min-width:190px" for="node-input-suppressNotReadyWarnings"><i class="fa fa-bell-slash"></i> <span
+                data-i18n="modbus-contrib.label.suppressNotReadyWarnings">Suppress not-ready warnings</span></label>
+                <input type="checkbox" id="node-input-suppressNotReadyWarnings" style="max-width:30px">
+            </div>
             <div class="form-row">
                 <label style="min-width:190px" for="node-input-emptyMsgOnFail"><i class="fa fa-th"></i> <span
                 data-i18n="modbus-contrib.label.emptyMsgOnFail"></span></label>

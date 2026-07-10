@@ -88,7 +88,7 @@ v6 ist ein **Major Release** mit bewussten Verhaltensverbesserungen, Core-Refact
 | `circuitBreakerEnabled` | `false` | Circuit Breaker bei wiederholten Fehlern |
 | `retryEnabled` | `false` | Exponential Backoff vor Fehler-Propagation |
 
-**Migration:** Keine Aktion nötig — Defaults entsprechen v5-Verhalten (deaktiviert).
+**Migration:** Keine Aktion nötig — Defaults entsprechen v5-Verhalten (deaktiviert). Im Editor unter Tab **Advanced** (`circuitBreakerEnabled`, `retryEnabled`, `connectionPoolEnabled`).
 
 ---
 
@@ -134,6 +134,18 @@ v6 ist ein **Major Release** mit bewussten Verhaltensverbesserungen, Core-Refact
 - [ ] Flows mit sofortigem Send nach Deploy: `mbactive` abwarten
 - [ ] Reconnect-Erwartungen nach manuellem Close prüfen
 - [ ] Custom-Forks: Legacy-Namespace-Requires entfernen
+
+---
+
+## Client-Konfigurationsprofile (Presets)
+
+Der `modbus-client`-Editor bietet optionale **Configuration profiles** (Plain TCP, TLS Production, TLS Lab, Serial RTU, High Latency). Presets setzen empfohlene Defaults; Zertifikate bleiben im Credential Store.
+
+- Bestehende Flows unverändert (Preset leer = custom)
+- TLS Production: `tlsRejectUnauthorized` und `tlsCheckServerIdentity` aktiv
+- TLS Lab: nur für Tests/Lab — **nicht** in Produktion
+- Legacy `modbus-client-tls`: Deprecation-Hinweis im Editor; siehe §3
+- Editor-Felder: `tlsSecureProtocol` (TLSv1.2/1.3), `tlsCheckServerIdentity`, Resilience unter Tab **Advanced**
 
 ---
 
