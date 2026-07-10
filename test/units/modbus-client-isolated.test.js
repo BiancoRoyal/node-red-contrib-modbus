@@ -137,43 +137,37 @@ describe('Modbus Client - Timeout Safe Tests', function () {
   })
 
   describe('Message Handling', function () {
-    it.skip('should process messages without timeout — no wires from getter to helper, no server running', function (done) {
-      getPort().then((port) => {
-        const flow = [
-          {
-            id: 'client1',
-            type: 'modbus-client',
-            clienttype: 'tcp',
-            tcpHost: '127.0.0.1',
-            tcpPort: String(port),
-            clientTimeout: '100',
-            reconnectOnTimeout: false
-          },
-          {
-            id: 'getter1',
-            type: 'modbus-flex-getter',
-            server: 'client1',
-            showStatusActivities: false,
-            showErrors: false
-          },
-          {
-            id: 'helper1',
-            type: 'helper',
-            wires: []
-          }
-        ]
+    it('should process flex-getter messages with mocked client', async function () {
+      const { globalTestHelper } = require('../helper/mocha-global-setup')
+      const { setupFcMocks, buildServerClientFlow, waitForHelper } = require('../helper/fc-e2e-helper')
+      const { deployModbusFlow } = require('../helper/test-helper-extensions')
+      const allModbusTestNodes = require('../helper/all-modbus-test-nodes')
 
-        loadFlow(flow).then(() => {
-          const getterNode = helper.getNode('getter1')
-          const helperNode = helper.getNode('helper1')
-
-          helperNode.on('input', () => done())
-
-          getterNode.receive({
-            payload: { fc: 1, unitid: 1, address: 0, quantity: 5 }
-          })
-        }).catch(done)
+      const { flow } = await buildServerClientFlow({
+        id: 'getter1',
+        type: 'modbus-flex-getter',
+        name: 'Flex Getter',
+        server: 'fc-client',
+        showStatusActivities: false,
+        showErrors: false,
+        wires: [['fc-helper'], []]
       })
+
+      await setupFcMocks(globalTestHelper)
+      await deployModbusFlow(helper, allModbusTestNodes, flow)
+
+      const msgPromise = waitForHelper(helper, 'fc-helper', (msg) => {
+        assert(Array.isArray(msg.payload))
+        assert.strictEqual(msg.payload.length, 1)
+        assert(msg.modbusRequest)
+        assert.strictEqual(Number(msg.modbusRequest.fc), 3)
+      })
+
+      helper.getNode('getter1').receive({
+        payload: { fc: 3, unitid: 1, address: 0, quantity: 1 }
+      })
+
+      await msgPromise
     })
 
     it('should handle invalid messages gracefully', function (done) {

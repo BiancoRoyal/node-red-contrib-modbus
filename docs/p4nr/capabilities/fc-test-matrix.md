@@ -1,6 +1,6 @@
 # FC Test Matrix — Tracking Document
 
-Stand: Branch `upgrade_settings` (Initial).  
+Stand: Branch `upgrade_settings` (F7).  
 Legende: ✅ grün | 🔲 geplant | ⏭ skip/begründet | — nicht anwendbar
 
 ## Transport-Legende
@@ -14,16 +14,16 @@ Legende: ✅ grün | 🔲 geplant | ⏭ skip/begründet | — nicht anwendbar
 
 | Node | FC1 | FC2 | FC3 | FC4 | Error | KeepProps | TCP | TLS |
 |------|-----|-----|-----|-----|-------|-----------|-----|-----|
-| modbus-read | ✅ | ✅ | ✅ | ✅ | 🔲 | — | ✅ | 🔲 |
-| modbus-getter | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🔲 |
-| modbus-flex-getter | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🔲 |
+| modbus-read | ✅ | ✅ | ✅ | ✅ | 🔲 | — | ✅ | ✅ |
+| modbus-getter | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| modbus-flex-getter | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ## Write Operations
 
 | Node | FC5 | FC6 | FC15 | FC16 | Error | Batch | TCP | TLS |
 |------|-----|-----|------|------|-------|-------|-----|-----|
-| modbus-write | ✅ | ✅ | ✅ | ✅ | 🔲 | — | ✅ | 🔲 |
-| modbus-flex-write | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🔲 |
+| modbus-write | ✅ | ✅ | ✅ | ✅ | 🔲 | — | ✅ | ✅ |
+| modbus-flex-write | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ## Flex / Utility
 
@@ -42,25 +42,25 @@ Legende: ✅ grün | 🔲 geplant | ⏭ skip/begründet | — nicht anwendbar
 
 | Test | TCP | TLS Mock | TLS Integration |
 |------|-----|----------|-----------------|
-| Deploy + register | ✅ | ✅ | 🔲 |
+| Deploy + register | ✅ | ✅ | ✅ |
 | FC5 flex-write (mock) | — | ✅ | 🔲 |
 | Reconnect | ✅ | 🔲 | 🔲 |
 | Timeout handling | ✅ | 🔲 | 🔲 |
-| Credentials / Env TLS | — | 🔲 | 🔲 |
-| rejectUnauthorized | — | 🔲 | 🔲 |
+| Credentials / Env TLS | — | ✅ | 🔲 |
+| rejectUnauthorized | — | ✅ | ✅ |
 | Wrong CA fails | — | — | 🔲 |
 
 ## Settings UX
 
 | Feature | Status |
 |---------|--------|
-| tlsSecureProtocol in Editor | 🔲 |
-| tlsCheckServerIdentity in Editor | 🔲 |
-| Client Presets (≥4) | 🔲 |
-| Resilience Advanced Tab | 🔲 |
-| suppressNotReadyWarnings (I/O) | 🔲 |
-| TLS i18n en-US / de-DE | 🔲 |
-| Legacy TLS deprecation banner | 🔲 |
+| tlsSecureProtocol in Editor | ✅ |
+| tlsCheckServerIdentity in Editor | ✅ |
+| Client Presets (≥4) | ✅ |
+| Resilience Advanced Tab | ✅ |
+| suppressNotReadyWarnings (I/O) | ✅ |
+| TLS i18n en-US / de-DE | ✅ |
+| Legacy TLS deprecation banner | ✅ |
 
 ## Skip-Register
 
@@ -69,7 +69,7 @@ Legende: ✅ grün | 🔲 geplant | ⏭ skip/begründet | — nicht anwendbar
 | modbus-connection-pool-test.js | retry, validate, metrics | Feature fehlt | Implement or Won't Fix |
 | modbus-fc-flex-e2e-test.js | error/empty, client undefined | Port isolation | ✅ F2.2 |
 | modbus-flex-sequencer-e2e-test.js | valid sequences | Deferred | ✅ F2.3 |
-| modbus-client-isolated.test.js | no timeout | No server wire | F7.1 |
+| modbus-client-isolated.test.js | no timeout | No server wire | ✅ F7.1 |
 
 ---
 

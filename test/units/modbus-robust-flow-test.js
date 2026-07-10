@@ -132,7 +132,7 @@ describe('Robust Modbus Flow Tests', function () {
     }
   })
 
-    it('should handle connection lifecycle properly', async function () {
+  it('should handle connection lifecycle properly', async function () {
     return runSimpleTest('connection-lifecycle', async (runner) => {
       const port = await runner.getPort()
       const flow = createModbusFlow(port, { includeHelper: false })
