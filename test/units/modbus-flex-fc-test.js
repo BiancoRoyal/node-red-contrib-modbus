@@ -25,7 +25,7 @@ helper.init(require.resolve('node-red'), {
 
 const testFlows = require('./flows/modbus-flex-fc-flows')
 
-describe('modbus flex fc unit test', function () {
+describe('modbus flex fc unit test (Task 16 — helper isolation)', function () {
   before(function (done) {
     helper.startServer(function () {
       done()
@@ -36,12 +36,6 @@ describe('modbus flex fc unit test', function () {
     helper.unload().then(function () {
       done()
     }).catch(function () {
-      done()
-    })
-  })
-
-  after(function (done) {
-    helper.stopServer(function () {
       done()
     })
   })

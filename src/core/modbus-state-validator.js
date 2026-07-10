@@ -1,41 +1,34 @@
 /**
- * XState Machine Validator for Modbus Client
- * Detects potential deadlocks and invalid state transitions
+ * XState Machine Validator for Modbus Client (v6 — 12 states)
  */
 
 'use strict'
 
 class ModbusStateValidator {
   constructor () {
-    // Define valid state transitions
     this.validTransitions = {
-      init: ['connected', 'failed', 'broken'],
-      connected: ['activated', 'failed', 'broken', 'closed'],
-      activated: ['queueing', 'failed', 'broken', 'closed'],
-      queueing: ['sending', 'empty', 'failed', 'broken', 'closed'],
-      sending: ['activated', 'queueing', 'failed', 'broken', 'closed'],
-      empty: ['activated', 'failed', 'broken', 'closed'],
-      failed: ['init', 'broken', 'closed'],
-      broken: ['init', 'closed'],
-      closed: ['init']
+      init: ['opened', 'connected', 'failed', 'broken', 'stopped', 'switch'],
+      opened: ['connected', 'failed', 'broken', 'closed', 'stopped', 'switch'],
+      connected: ['activated', 'queueing', 'failed', 'broken', 'closed', 'stopped', 'switch'],
+      activated: ['queueing', 'failed', 'broken', 'closed', 'stopped', 'switch'],
+      queueing: ['sending', 'activated', 'failed', 'broken', 'closed', 'stopped', 'switch'],
+      sending: ['activated', 'failed', 'broken', 'stopped', 'switch'],
+      closed: ['failed', 'broken', 'connected', 'reconnecting', 'init', 'stopped', 'switch'],
+      reconnecting: ['init', 'stopped'],
+      failed: ['closed', 'broken', 'stopped', 'switch'],
+      broken: ['init', 'failed', 'activated', 'reconnecting', 'stopped'],
+      switch: ['closed', 'broken', 'stopped'],
+      stopped: ['init', 'stopped']
     }
 
-    // Define states that can cause deadlocks if stuck
     this.potentialDeadlockStates = ['sending', 'queueing']
-
-    // Track state history for deadlock detection
     this.stateHistory = []
     this.maxHistorySize = 100
     this.deadlockDetectionWindow = 20
-    this.stuckStateThreshold = 10 // Number of same states to consider stuck
+    this.stuckStateThreshold = 10
+    this.stuckThresholdMs = 30000
   }
 
-  /**
-   * Validate a state transition
-   * @param {string} fromState - Current state
-   * @param {string} toState - Target state
-   * @returns {Object} Validation result with warnings
-   */
   validateTransition (fromState, toState) {
     const result = {
       valid: false,
@@ -43,7 +36,6 @@ class ModbusStateValidator {
       suggestions: []
     }
 
-    // Check if transition is valid
     if (this.validTransitions[fromState]) {
       result.valid = this.validTransitions[fromState].includes(toState)
     }
@@ -53,7 +45,6 @@ class ModbusStateValidator {
       result.suggestions.push(`Valid transitions from ${fromState}: ${this.validTransitions[fromState]?.join(', ') || 'none'}`)
     }
 
-    // Check for potential issues
     if (toState === 'queueing' && fromState === 'sending') {
       result.warnings.push('Potential queue buildup detected')
       result.suggestions.push('Monitor queue size to prevent memory issues')
@@ -67,16 +58,9 @@ class ModbusStateValidator {
     return result
   }
 
-  /**
-   * Record state change and check for deadlocks
-   * @param {string} state - Current state
-   * @param {number} timestamp - Timestamp of state change
-   * @returns {Object} Deadlock detection result
-   */
   recordStateChange (state, timestamp = Date.now()) {
     this.stateHistory.push({ state, timestamp })
 
-    // Keep history bounded
     if (this.stateHistory.length > this.maxHistorySize) {
       this.stateHistory.shift()
     }
@@ -84,10 +68,6 @@ class ModbusStateValidator {
     return this.detectDeadlock()
   }
 
-  /**
-   * Detect potential deadlocks in state machine
-   * @returns {Object} Detection result with warnings
-   */
   detectDeadlock () {
     const result = {
       hasDeadlock: false,
@@ -101,10 +81,7 @@ class ModbusStateValidator {
       return result
     }
 
-    // Get recent states
     const recentStates = this.stateHistory.slice(-this.deadlockDetectionWindow)
-
-    // Check for stuck state (same state repeated)
     const stateCounts = {}
     recentStates.forEach(entry => {
       stateCounts[entry.state] = (stateCounts[entry.state] || 0) + 1
@@ -120,7 +97,6 @@ class ModbusStateValidator {
       }
     }
 
-    // Check for rapid cycling between states
     const transitions = []
     for (let i = 1; i < recentStates.length; i++) {
       if (recentStates[i].state !== recentStates[i - 1].state) {
@@ -128,7 +104,6 @@ class ModbusStateValidator {
       }
     }
 
-    // Detect cycles (e.g., A->B->A->B)
     const transitionCounts = {}
     transitions.forEach(t => {
       transitionCounts[t] = (transitionCounts[t] || 0) + 1
@@ -142,12 +117,11 @@ class ModbusStateValidator {
       }
     }
 
-    // Check time spent in states
     const now = Date.now()
     const lastState = recentStates[recentStates.length - 1]
     const timeInState = now - lastState.timestamp
 
-    if (timeInState > 30000 && this.potentialDeadlockStates.includes(lastState.state)) {
+    if (timeInState > this.stuckThresholdMs && this.potentialDeadlockStates.includes(lastState.state)) {
       result.warnings.push(`Long duration in ${lastState.state} state: ${timeInState}ms`)
       result.suggestions.push('Check if operations are completing properly')
     }
@@ -155,10 +129,6 @@ class ModbusStateValidator {
     return result
   }
 
-  /**
-   * Get state machine health report
-   * @returns {Object} Health report
-   */
   getHealthReport () {
     const uniqueStates = new Set(this.stateHistory.map(h => h.state))
     const transitionCount = this.stateHistory.length - 1
@@ -171,7 +141,6 @@ class ModbusStateValidator {
       recommendations: []
     }
 
-    // Add recommendations based on patterns
     if (uniqueStates.has('failed') || uniqueStates.has('broken')) {
       report.recommendations.push('Implement retry mechanisms for failed states')
     }
@@ -188,10 +157,6 @@ class ModbusStateValidator {
     return report
   }
 
-  /**
-   * Calculate average time between state transitions
-   * @returns {number} Average time in milliseconds
-   */
   calculateAverageTransitionTime () {
     if (this.stateHistory.length < 2) {
       return 0
@@ -209,9 +174,6 @@ class ModbusStateValidator {
     return transitionCount > 0 ? totalTime / transitionCount : 0
   }
 
-  /**
-   * Reset validator state
-   */
   reset () {
     this.stateHistory = []
   }

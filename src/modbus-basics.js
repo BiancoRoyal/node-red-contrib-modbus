@@ -29,6 +29,26 @@ de.biancoroyal.modbus.basics.isNullOrUndefined = function (value) {
 }
 
 /**
+ * Resolve Modbus unit id from msg payload (supports unitid and unitId).
+ * @param {object} payload
+ * @param {number|string} fallback
+ * @returns {number}
+ */
+de.biancoroyal.modbus.basics.resolvePayloadUnitId = function (payload, fallback) {
+  if (!payload || typeof payload !== 'object') {
+    const fb = parseInt(fallback)
+    return Number.isNaN(fb) ? 0 : fb
+  }
+  const raw = payload.unitid ?? payload.unitId ?? payload.unit_id
+  if (raw !== undefined && raw !== null && raw !== '') {
+    const parsed = parseInt(raw)
+    if (!Number.isNaN(parsed)) return parsed
+  }
+  const fb = parseInt(fallback)
+  return Number.isNaN(fb) ? 0 : fb
+}
+
+/**
  *
  * @param unit
  * @returns {string}
@@ -313,6 +333,7 @@ de.biancoroyal.modbus.dispatchReady = false
 
 de.biancoroyal.modbus.setupDispatcherEvents = function (modbusClient) {
   modbusClient.on('mbinit', (id, data) => { de.biancoroyal.modbus.basics.messageDispatch(id, data) })
+  modbusClient.on('mbregister', (id, data) => { de.biancoroyal.modbus.basics.messageDispatch(id, data) })
   modbusClient.on('mbqueue', (id, data) => { de.biancoroyal.modbus.basics.messageDispatch(id, data) })
   modbusClient.on('mbconnected', (id, data) => { de.biancoroyal.modbus.basics.messageDispatch(id, data) })
   modbusClient.on('mbbroken', (id, data) => { de.biancoroyal.modbus.basics.messageDispatch(id, data) })
@@ -323,6 +344,7 @@ de.biancoroyal.modbus.setupDispatcherEvents = function (modbusClient) {
 
 de.biancoroyal.modbus.cleanupDispatcherEvents = function (modbusClient) {
   modbusClient.removeAllListeners('mbinit')
+  modbusClient.removeAllListeners('mbregister')
   modbusClient.removeAllListeners('mbqueue')
   modbusClient.removeAllListeners('mbconnected')
   modbusClient.removeAllListeners('mbbroken')
@@ -375,6 +397,9 @@ de.biancoroyal.modbus.basics.messageDispatch = function (nodeId, actionObj) {
     switch (actionObj.type) {
       case 'init':
         registeredNodes[nodeId].onModbusInit(actionObj.data)
+        break
+      case 'register':
+        registeredNodes[nodeId].onModbusRegister(actionObj.data)
         break
       case 'queue':
         registeredNodes[nodeId].onModbusQueue(actionObj.data)
@@ -443,6 +468,31 @@ de.biancoroyal.modbus.basics.buildNewMessage = function (keepMsgProperties, msg,
   } else {
     return minMsg
   }
+}
+
+/**
+ * v6 send-gate: block enqueue when client is not in activated state.
+ * @param {object} modbusClient
+ * @param {object} node
+ * @param {Function} [warnFn]
+ * @returns {boolean} true when send is allowed
+ */
+de.biancoroyal.modbus.basics.guardClientReadyToSend = function (modbusClient, node, warnFn) {
+  if (!modbusClient || typeof modbusClient.isClientReadyToSend !== 'function') {
+    return true
+  }
+  if (modbusClient.isClientReadyToSend()) {
+    return true
+  }
+  if (!node.suppressNotReadyWarnings && node.showWarnings !== false) {
+    const message = 'Client not ready to send — v6 requires activated state'
+    if (typeof warnFn === 'function') {
+      warnFn(message)
+    } else if (node.warn) {
+      node.warn(message)
+    }
+  }
+  return false
 }
 
 module.exports = de.biancoroyal.modbus.basics

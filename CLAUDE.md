@@ -128,3 +128,19 @@ Nodes are registered in `package.json` under `node-red.nodes`. Each node consist
 - JavaScript file: Runtime logic
 - HTML file: Editor UI definition and help text
 - Localization files: Multi-language support in `src/locales/`
+
+## P4NR Agent Team (Cursor)
+
+Non-trivial work uses a 3-team pipeline. See `docs/p4nr/README.md`.
+
+**This repo is v6 (closed, TLS).** For v5 Open Source, use
+`BIANCO-ROYAL/node-red-contrib-modbus`.
+
+| Team | Agent | Role |
+|------|-------|------|
+| 1 | `p4nr-spec-author` | Capability specs + plans in `docs/p4nr/` |
+| 2 | `p4nr-spec-reviewer` | APPROVE/REJECT before any code |
+| 3 | `p4nr-developer` | TDD implementation in `src/` + `test/` |
+
+Flow: Team 1 → Team 2 → GATE 1 (human) → Team 3 → GATE 2 (human).
+Skill: `.cursor/skills/node-red-contrib-patterns/SKILL.md`

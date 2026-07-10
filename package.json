@@ -1,6 +1,6 @@
 {
   "name": "@plus4nodered/node-red-contrib-modbus",
-  "version": "6.0.0-beta.2",
+  "version": "6.0.0",
   "private": true,
   "description": "Modbus TCP, TLS, UDP and Serial client nodes for Node-RED. For server nodes, install @plus4nodered/node-red-contrib-modbus-server.",
   "dependencies": {
@@ -32,7 +32,7 @@
     "url": "git+https://github.com/biancoroyal/node-red-contrib-modbus.git"
   },
   "node-red": {
-    "version": ">=4",
+    "version": ">=4.0.0",
     "nodes": {
       "Modbus-Client": "modbus/modbus-client.js",
       "Modbus-Client-TLS": "modbus/modbus-client-tls.js",
@@ -69,7 +69,7 @@
     "clean": "gulp clean && npm run lint",
     "build": "npm run lint && gulp",
     "changelog": "gulp changelog",
-    "test": "npm run prereq && mocha test/**/*.js --recursive --exit",
+    "test": "npm run prereq && mocha --exit",
     "test:watch": "mocha test/**/*.js --recursive --watch",
     "test:slow": "npm run prereq && mocha test/**/*.js --recursive --exit --timeout 30000",
     "test:verbose": "npm run prereq && mocha test/**/*.js --recursive --exit --reporter spec",
@@ -103,7 +103,7 @@
     "@babel/core": "^7.24.5",
     "@babel/preset-env": "^7.24.5",
     "@babel/register": "^7.24.5",
-    "@node-red/nodes": "^4.1.0",
+    "@node-red/nodes": "^5.0.0",
     "@plus4nodered/node-red-contrib-modbus-server": "file:../node-red-contrib-modbus-server",
     "address": "^2.0.1",
     "chai": "^3.5.0",
@@ -124,7 +124,7 @@
     "js-beautify": "^1.15.1",
     "mocha": "^10.4.0",
     "nock": "^13.5.4",
-    "node-red": "^4.1.0",
+    "node-red": "^5.0.0",
     "node-red-node-test-helper": "/Users/biancode/Development/P4NR/Node-RED/node-red-node-test-helper",
     "nodemon": "^3.0.0",
     "nyc": "^15.1.0",

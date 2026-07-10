@@ -227,7 +227,7 @@ module.exports = {
           "queueLogEnabled": false,
           "failureLogEnabled": true,
           "tcpHost": "127.0.0.1",
-          "tcpPort": "502",
+          "tcpPort": "15002",
           "tcpType": "DEFAULT",
           "serialPort": "/dev/ttyUSB",
           "serialType": "RTU-BUFFERD",

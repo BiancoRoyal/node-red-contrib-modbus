@@ -10,6 +10,14 @@ const caCert = fs.readFileSync(path.join(certPath, 'ca-cert.pem'), 'utf8')
 const clientKey = fs.readFileSync(path.join(certPath, 'client-key.pem'), 'utf8')
 const clientCert = fs.readFileSync(path.join(certPath, 'client-cert.pem'), 'utf8')
 
+const serverTlsFields = {
+  privateKey: serverKey,
+  certificate: serverCert,
+  ca: caCert,
+  rejectUnauthorized: false,
+  demoMode: false
+}
+
 module.exports = {
   
   basicTlsClientFlow: helperExtensions.cleanFlowPositionData([
@@ -46,12 +54,7 @@ module.exports = {
       holdingBufferSize: 10000,
       inputBufferSize: 10000,
       discreteBufferSize: 10000,
-      tlsOptions: {
-        key: serverKey,
-        cert: serverCert,
-        ca: caCert,
-        rejectUnauthorized: false
-      },
+      ...serverTlsFields,
       showErrors: false
     },
     {
@@ -112,9 +115,7 @@ module.exports = {
       holdingBufferSize: 10000,
       inputBufferSize: 10000,
       discreteBufferSize: 10000,
-      tlsOptions: {
-        rejectUnauthorized: false
-      },
+      ...serverTlsFields,
       showErrors: false
     },
     {
@@ -126,9 +127,9 @@ module.exports = {
       tcpHost: '127.0.0.1',
       tcpPort: '8505',
       tcpAlwaysReconnect: true,
-      reconnectOnTimeout: true,
-      reconnectTimeout: 2000,
-      unitId: 1
+      tlsOptions: {
+        rejectUnauthorized: false
+      }
     },
     {
       id: 'tls-read',
@@ -172,9 +173,7 @@ module.exports = {
       holdingBufferSize: 10000,
       inputBufferSize: 10000,
       discreteBufferSize: 10000,
-      tlsOptions: {
-        rejectUnauthorized: false
-      },
+      ...serverTlsFields,
       showErrors: false
     },
     {
@@ -247,9 +246,8 @@ module.exports = {
       holdingBufferSize: 10000,
       inputBufferSize: 10000,
       discreteBufferSize: 10000,
-      tlsOptions: {
-        rejectUnauthorized: false
-      },
+      rejectUnauthorized: false,
+      demoMode: true,
       showErrors: false
     },
     {

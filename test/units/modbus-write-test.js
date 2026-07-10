@@ -41,12 +41,6 @@ describe('Write node Testing', function () {
       done()
     })
   })
-
-  after(function (done) {
-    helper.stopServer(function () {
-      done()
-    })
-  })
   describe('Unique Port', function () {
 
     // it('simple flow with string true http inject and write should be loaded and write done', function (done) {

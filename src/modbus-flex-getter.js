@@ -27,6 +27,7 @@ module.exports = function (RED) {
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
     this.showWarnings = config.showWarnings
+    this.suppressNotReadyWarnings = config.suppressNotReadyWarnings === true
     this.connection = null
 
     this.useIOFile = config.useIOFile
@@ -118,7 +119,7 @@ module.exports = function (RED) {
       }
 
       msg.payload.fc = parseInt(msg.payload.fc) || 3
-      msg.payload.unitid = parseInt(msg.payload.unitid)
+      msg.payload.unitid = mbBasics.resolvePayloadUnitId(msg.payload, modbusClient.unit_id)
       msg.payload.address = parseInt(msg.payload.address) || 0
       msg.payload.quantity = parseInt(msg.payload.quantity) || 1
 
@@ -179,7 +180,10 @@ module.exports = function (RED) {
     }
 
     node.isReadyForInput = function () {
-      return (modbusClient.client && modbusClient.isActive() && node.delayOccured)
+      if (!modbusClient.client || !modbusClient.isActive() || !node.delayOccured) {
+        return false
+      }
+      return typeof modbusClient.isClientReadyToSend !== 'function' || modbusClient.isClientReadyToSend()
     }
 
     node.isNotReadyForInput = function () {
@@ -230,6 +234,9 @@ module.exports = function (RED) {
         verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
         return
       }
+      if (!mbBasics.guardClientReadyToSend(modbusClient, node, verboseWarn)) {
+        return
+      }
 
       messageQueue.push(msg)
       processNextMessage()
@@ -247,6 +254,9 @@ module.exports = function (RED) {
         if (node.isValidModbusMsg(inputMsg)) {
           const newMsg = node.buildNewMessageObject(node, inputMsg)
           node.bufferMessageList.set(newMsg.messageId, mbBasics.buildNewMessage(node.keepMsgProperties, inputMsg, newMsg))
+          if (!mbBasics.guardClientReadyToSend(modbusClient, node, verboseWarn)) {
+            return
+          }
           modbusClient.emit('readModbus', newMsg, node.onModbusReadDone, node.onModbusReadError)
         } else {
           node.errorProtocolMsg(new Error('Invalid Modbus message'), origMsgInput)

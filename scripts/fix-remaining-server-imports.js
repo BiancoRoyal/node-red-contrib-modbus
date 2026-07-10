@@ -33,7 +33,7 @@ const importMap = {
   'require("../../../src/modbus-server.js")': "require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')",
   'require("../../../src/modbus-server")': "require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')",
   'require("../../../src/modbus-server-demo")': "require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server-demo')",
-  'require("../../../src/modbus-server-tls")': "require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server-tls')",
+  'require("../../../src/modbus-server-tls")': "require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server-tls')"
 }
 
 // Counter for tracking updates

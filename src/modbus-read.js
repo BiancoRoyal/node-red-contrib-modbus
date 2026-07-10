@@ -44,6 +44,7 @@ module.exports = function (RED) {
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
     this.showWarnings = config.showWarnings
+    this.suppressNotReadyWarnings = config.suppressNotReadyWarnings === true
     this.connection = null
 
     this.useIOFile = config.useIOFile
@@ -174,6 +175,10 @@ module.exports = function (RED) {
 
       if (node.showStatusActivities) {
         setNodeStatusWithTimeTo('polling')
+      }
+
+      if (!mbBasics.guardClientReadyToSend(modbusClient, node, verboseWarn)) {
+        return
       }
 
       modbusClient.emit('readModbus', msg, node.onModbusReadDone, node.onModbusReadError)

@@ -38,12 +38,6 @@ describe('Core IO Testing', function () {
     })
   })
 
-  after(function (done) {
-    helper.stopServer(function () {
-      done()
-    })
-  })
-
   describe('Core IO', function () {
     describe('Core IO Simple', function () {
       it('should correctly insert value for 64-bit items', () => {
@@ -146,7 +140,8 @@ describe('Core IO Testing', function () {
         const coreMock = {
           getOriginalMessage: sinon.stub().returns({}),
           nameValuesFromIOFile: sinon.stub().returns([]),
-          filterValueNames: sinon.stub().returns([])
+          filterValueNames: sinon.stub().returns([]),
+          cloneBuffer: (buf) => Buffer.from(buf)
         }
 
         sinonStub = sinon.stub(coreIOUnderTest, 'core').value(coreMock)

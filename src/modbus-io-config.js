@@ -51,6 +51,7 @@ module.exports = function (RED) {
         node.lineReader.on('line', function (line) {
           if (line) {
             node.configData.push(line)
+            node.emit('line', line)
           }
         })
 
@@ -68,28 +69,35 @@ module.exports = function (RED) {
         coreIO.internalDebug('Loading IO File Started For ' + node.path)
       }
 
+      function reloadIoFile () {
+        coreIO.internalDebug('Reload IO File ' + node.path)
+        node.configData = []
+        delete node.lastUpdatedAt
+        if (node.lineReader) {
+          node.lineReader.removeAllListeners()
+        }
+        node.lineReader = new coreIO.LineByLineReader(node.path)
+        setLineReaderEvents()
+        coreIO.internalDebug('Reloading IO File Started For ' + node.path)
+      }
+
       setLineReaderEvents()
 
-      node.watcher = fs.watchFile(node.path, (curr, prev) => {
-        coreIO.internalDebug(`the current mtime is: ${curr.mtime}`)
-        coreIO.internalDebug(`the previous mtime was: ${prev.mtime}`)
-
-        if (curr.mtime !== prev.mtime) {
-          coreIO.internalDebug('Reload IO File ' + node.path)
-          node.configData = []
-          delete node.lastUpdatedAt
-          node.lineReader.removeAllListeners()
-          node.lineReader = new coreIO.LineByLineReader(node.path)
-          setLineReaderEvents()
-          coreIO.internalDebug('Reloading IO File Started For ' + node.path)
+      node.watcher = fs.watch(node.path, (eventType) => {
+        if (eventType === 'change') {
+          reloadIoFile()
         }
       })
     }
 
     node.on('close', function (done) {
-      fs.unwatchFile(node.path)
-      node.watcher.stop()
-      node.lineReader.removeAllListeners()
+      if (node.watcher) {
+        node.watcher.close()
+        node.watcher = null
+      }
+      if (node.lineReader) {
+        node.lineReader.removeAllListeners()
+      }
       node.removeAllListeners()
       done()
     })

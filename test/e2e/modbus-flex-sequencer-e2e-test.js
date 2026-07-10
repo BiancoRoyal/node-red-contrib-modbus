@@ -27,7 +27,7 @@ const chai = require('chai')
 const expect = chai.expect
 const { getPort } = require('../helper/test-helper-extensions')
 
-describe('Flex Sequencer node Testing', function () {
+describe('Flex Sequencer node Testing (Task 16 — E2E port isolation)', function () {
   before(function (done) {
     helper.startServer(function () {
       done()
@@ -44,12 +44,6 @@ describe('Flex Sequencer node Testing', function () {
       done()
     }).catch(function () {
       clearTimeout(timeout)
-      done()
-    })
-  })
-
-  after(function (done) {
-    helper.stopServer(function () {
       done()
     })
   })

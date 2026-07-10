@@ -23,7 +23,7 @@ de.biancoroyal.modbus.core.client.ModbusDiagnostics = de.biancoroyal.modbus.core
 de.biancoroyal.modbus.core.client.networkErrors = ['ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNRESET', 'ENETRESET',
   'ECONNABORTED', 'ECONNREFUSED', 'ENETUNREACH', 'ENOTCONN',
   'ESHUTDOWN', 'EHOSTDOWN', 'ENETDOWN', 'EWOULDBLOCK', 'EAGAIN', 'EHOSTUNREACH',
-  'EPIPE', 'ECONNRESET']
+  'EPIPE']
 
 /**
  * Get connection from pool or create new one
@@ -353,29 +353,8 @@ de.biancoroyal.modbus.core.client.executeWithCircuitBreaker = async function (no
  */
 de.biancoroyal.modbus.core.client.createStateMachineService = function () {
   this.stateLogEnabled = false
-
-  return this.XStateFSM.createMachine({
-    id: 'modbus',
-    initial: 'new',
-    states: {
-      new: { on: { INIT: 'init', BREAK: 'broken', STOP: 'stopped' } },
-      broken: { on: { INIT: 'init', STOP: 'stopped', FAILURE: 'failed', ACTIVATE: 'activated', RECONNECT: 'reconnecting' } },
-      reconnecting: { on: { INIT: 'init', STOP: 'stopped' } },
-      init: { on: { OPENSERIAL: 'opened', CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' } },
-      opened: { on: { CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', STOP: 'stopped', SWITCH: 'switch' } },
-      connected: { on: { CLOSE: 'closed', ACTIVATE: 'activated', QUEUE: 'queueing', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' } },
-      activated: { on: { READ: 'reading', WRITE: 'writing', QUEUE: 'queueing', BREAK: 'broken', CLOSE: 'closed', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' } },
-      queueing: { on: { ACTIVATE: 'activated', SEND: 'sending', READ: 'reading', WRITE: 'writing', EMPTY: 'empty', BREAK: 'broken', CLOSE: 'closed', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' } },
-      empty: { on: { QUEUE: 'queueing', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', STOP: 'stopped', SWITCH: 'switch' } },
-      sending: { on: { ACTIVATE: 'activated', READ: 'reading', WRITE: 'writing', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' } },
-      reading: { on: { ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' } },
-      writing: { on: { ACTIVATE: 'activated', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped' } },
-      closed: { on: { FAILURE: 'failed', BREAK: 'broken', CONNECT: 'connected', RECONNECT: 'reconnecting', INIT: 'init', STOP: 'stopped', SWITCH: 'switch' } },
-      failed: { on: { CLOSE: 'closed', BREAK: 'broken', STOP: 'stopped', SWITCH: 'switch' } },
-      switch: { on: { CLOSE: 'closed', BREAK: 'broken', STOP: 'stopped' } },
-      stopped: { on: { NEW: 'new', STOP: 'stopped' } }
-    }
-  })
+  const { createModbusFsm } = require('./client/modbus-fsm')
+  return createModbusFsm()
 }
 
 de.biancoroyal.modbus.core.client.getActualUnitId = function (node, msg) {
@@ -389,7 +368,8 @@ de.biancoroyal.modbus.core.client.getActualUnitId = function (node, msg) {
 }
 
 de.biancoroyal.modbus.core.client.startStateService = function (toggleMachine) {
-  return this.XStateFSM.interpret(toggleMachine).start()
+  const { startFsmService } = require('./client/modbus-fsm')
+  return startFsmService(toggleMachine)
 }
 
 de.biancoroyal.modbus.core.client.checkUnitId = function (unitid, clientType) {
@@ -537,7 +517,7 @@ de.biancoroyal.modbus.core.client.customModbusMessage = function (node, msg, cb,
   setTimeout(function () {
     if (!node.bufferCommands) {
       if (node.clienttype !== 'tcp') {
-        node.stateService.send('READ')
+        node.stateService.send('SEND')
       }
     } else {
       node.queueLog(JSON.stringify({
@@ -583,7 +563,7 @@ de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
   setTimeout(function () {
     if (!node.bufferCommands) {
       if (node.clienttype !== 'tcp') {
-        node.stateService.send('READ')
+        node.stateService.send('SEND')
       }
     } else {
       node.queueLog(JSON.stringify({
@@ -717,7 +697,7 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
   setTimeout(function () {
     if (!node.bufferCommands) {
       if (node.clienttype !== 'tcp') {
-        node.stateService.send('WRITE')
+        node.stateService.send('SEND')
       }
     } else {
       node.queueLog(JSON.stringify({
@@ -797,6 +777,9 @@ de.biancoroyal.modbus.core.client.setNewNodeOptionalSettings = function (node, m
 
   try {
     let unitId = parseInt(msg.payload.unitId)
+    if (Number.isNaN(unitId)) {
+      unitId = parseInt(msg.payload.unitid)
+    }
     if (!node.checkUnitId(unitId, node.clienttype)) {
       unitId = node.unit_id
     }
@@ -847,6 +830,7 @@ de.biancoroyal.modbus.core.client.setNewNodeSettings = function (node, msg) {
   return true
 }
 
-de.biancoroyal.modbus.core.client.messageAllowedStates = ['activated', 'queueing', 'sending', 'empty', 'connected']
+const { MESSAGE_ALLOWED_STATES_V6 } = require('./client/modbus-client-state')
+de.biancoroyal.modbus.core.client.messageAllowedStates = MESSAGE_ALLOWED_STATES_V6
 
 module.exports = de.biancoroyal.modbus.core.client

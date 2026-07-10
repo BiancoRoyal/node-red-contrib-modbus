@@ -460,14 +460,15 @@ de.biancoroyal.modbus.io.core.isRegisterSizeWrong = function (register, start, b
 }
 
 de.biancoroyal.modbus.io.core.buildMessageWithIO = function (node, values, response, msg) {
-  const origMsg = this.core.getOriginalMessage(node.bufferMessageList, msg)
+  const core = this.core
+  const origMsg = core.getOriginalMessage(node.bufferMessageList, msg)
   origMsg.modbusRequest = Object.assign({}, msg.payload)
   origMsg.payload = values
   origMsg.topic = msg.topic
-  origMsg.responseBuffer = response
+  origMsg.responseBuffer = core.cloneBuffer(response)
 
   const rawMsg = Object.assign({}, origMsg)
-  rawMsg.payload = response
+  rawMsg.payload = core.cloneBuffer(response)
   rawMsg.values = values
   delete rawMsg.responseBuffer
 

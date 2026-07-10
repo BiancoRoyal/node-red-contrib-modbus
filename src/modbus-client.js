@@ -16,18 +16,29 @@
  */
 module.exports = function (RED) {
   'use strict'
+  if (module.exports.__modbusClientRegistered) {
+    return
+  }
+  module.exports.__modbusClientRegistered = true
   // SOURCE-MAP-REQUIRED
   const mbBasics = require('./modbus-basics')
   const coreModbusClient = require('./core/modbus-client-core')
+  const { createFsmHandler, runInitConnection } = require('./core/client/modbus-fsm-handler')
+  const { MESSAGE_ALLOWED_STATES_V6, isClientInactive, isClientReadyToSend } = require('./core/client/modbus-client-state')
   const coreModbusQueue = require('./core/modbus-queue-core')
   const internalDebugLog = require('./core/modbus-logger').getDebugLogger('contribModbus:config:client')
-  const _ = require('underscore')
   const { ModbusStateValidator } = require('./core/modbus-state-validator')
   const { ModbusTimerManager } = require('./core/modbus-timer-manager')
 
   function ModbusClientNode (config) {
     RED.nodes.createNode(this, config)
     const node = this
+
+    if (node.type === 'modbus-client-tls') {
+      config.tlsEnabled = true
+      config.clienttype = config.clienttype || 'tcp'
+      node.tlsEnabled = true
+    }
 
     // create an empty modbus client
     const ModbusRTU = require('@openp4nr/node-modbus')
@@ -77,33 +88,63 @@ module.exports = function (RED) {
         content = process.env[envKey]
       }
 
-      // If content looks like a file path, try to read the file
-      if (content && !content.includes('BEGIN') && fs.existsSync(content)) {
+      return content
+    }
+
+    const resolveCertContent = (value) => {
+      if (!value) return ''
+      if (typeof value !== 'string') return value
+      if (value.includes('BEGIN')) return value
+      if (fs.existsSync(value)) {
         try {
-          content = fs.readFileSync(content, 'utf8')
+          return fs.readFileSync(value, 'utf8')
         } catch (err) {
           if (node.showErrors) {
-            node.error(`Failed to read TLS certificate file: ${content}`)
+            node.error(`Failed to read TLS certificate file: ${value}`)
           }
-          content = ''
+          return ''
         }
       }
+      return value
+    }
 
-      return content
+    const resolveRejectUnauthorized = (legacyTls) => {
+      if (config.tlsRejectUnauthorized !== undefined) {
+        return config.tlsRejectUnauthorized !== false
+      }
+      if (config.rejectUnauthorized !== undefined) {
+        return config.rejectUnauthorized !== false
+      }
+      if (legacyTls.rejectUnauthorized !== undefined) {
+        return legacyTls.rejectUnauthorized !== false
+      }
+      return true
     }
 
     // Only build TLS options if TLS is enabled
     if (this.tlsEnabled) {
+      const legacyTls = (config.tlsOptions && typeof config.tlsOptions === 'object')
+        ? config.tlsOptions
+        : {}
+
       this.tlsOptions = {
-        key: loadCertificate('tlsPrivateKey'),
-        cert: loadCertificate('tlsCertificate'),
-        ca: loadCertificate('tlsCa'),
-        rejectUnauthorized: config.tlsRejectUnauthorized !== false, // Default to secure
-        servername: config.tlsServername || this.tcpHost,
-        secureProtocol: config.tlsSecureProtocol || 'TLSv1_3_method',
-        checkServerIdentity: config.tlsCheckServerIdentity !== false ? undefined : () => undefined,
-        minVersion: 'TLSv1.2' // Enforce minimum TLS version
+        key: resolveCertContent(loadCertificate('tlsPrivateKey') || legacyTls.key || config.privateKey || ''),
+        cert: resolveCertContent(loadCertificate('tlsCertificate') || legacyTls.cert || config.certificate || ''),
+        ca: resolveCertContent(loadCertificate('tlsCa') || legacyTls.ca || config.ca || ''),
+        rejectUnauthorized: resolveRejectUnauthorized(legacyTls),
+        servername: config.tlsServername || config.servername || legacyTls.servername || this.tcpHost,
+        secureProtocol: config.tlsSecureProtocol || config.secureProtocol || legacyTls.secureProtocol || 'TLSv1_3_method',
+        checkServerIdentity: config.tlsCheckServerIdentity !== false && config.checkServerIdentity !== false
+          ? undefined
+          : () => undefined,
+        minVersion: legacyTls.minVersion || 'TLSv1.2'
       }
+
+      Object.keys(legacyTls).forEach((key) => {
+        if (this.tlsOptions[key] === undefined || this.tlsOptions[key] === '') {
+          this.tlsOptions[key] = legacyTls[key]
+        }
+      })
 
       // Remove empty certificate fields
       Object.keys(this.tlsOptions).forEach(key => {
@@ -149,7 +190,24 @@ module.exports = function (RED) {
     node.bufferCommandList = new Map()
     node.sendingAllowed = new Map()
     node.unitSendingAllowed = []
-    node.messageAllowedStates = coreModbusClient.messageAllowedStates
+    node.messageAllowedStates = MESSAGE_ALLOWED_STATES_V6
+    node._closeIntent = 'error'
+
+    node.setCloseIntent = function (intent) {
+      node._closeIntent = intent
+    }
+
+    node.getCloseIntent = function () {
+      return node._closeIntent || 'error'
+    }
+
+    node.resetCloseIntent = function () {
+      node._closeIntent = 'error'
+    }
+
+    node.isClientReadyToSend = function () {
+      return isClientReadyToSend(node)
+    }
     node.serverInfo = ''
 
     node.stateMachine = null
@@ -158,15 +216,16 @@ module.exports = function (RED) {
     node.actualServiceState = node.stateMachine.initialState
     node.actualServiceStateBefore = node.actualServiceState
     node.stateService = coreModbusClient.startStateService(node.stateMachine)
-    node.reconnectTimeoutId = 0
+    node.actualServiceState = node.stateService.state
+    node.actualServiceStateBefore = node.actualServiceState
     node.serialSendingAllowed = false
     node.internalDebugLog = internalDebugLog
 
     // Initialize resilience modules
     const resilienceOptions = {
-      enableCircuitBreaker: config.enableCircuitBreaker !== false,
-      enableConnectionPool: config.enableConnectionPool || false,
-      enableRetryHandler: config.enableRetryHandler !== false,
+      enableCircuitBreaker: config.enableCircuitBreaker === true,
+      enableConnectionPool: config.enableConnectionPool === true,
+      enableRetryHandler: config.enableRetryHandler === true,
       enableDiagnostics: config.enableDiagnostics !== false,
       failureThreshold: config.failureThreshold || 5,
       successThreshold: config.successThreshold || 2,
@@ -255,175 +314,14 @@ module.exports = function (RED) {
       }
     }
 
-    node.stateService.subscribe(state => {
-      node.actualServiceStateBefore = node.actualServiceState
-      node.actualServiceState = state
-      stateLog(state.value)
-
-      if (!state.value || node.actualServiceState.value === undefined) {
-        // verboseWarn('fsm ignore invalid state')
-        /* istanbul ignore next */
-        return
-      }
-
-      if (node.actualServiceStateBefore.value === node.actualServiceState.value) {
-        // verboseWarn('fsm ignore equal state ' + node.actualServiceState.value + ' after ' + node.actualServiceStateBefore.value)
-        return
-      }
-
-      // Track state for deadlock detection
-      if (node.stateValidator) {
-        const validationResult = node.stateValidator.recordStateChange(state.value)
-        if (validationResult.hasDeadlock) {
-          verboseWarn('Potential deadlock detected: ' + validationResult.warnings.join(', '))
-        }
-      }
-
-      if (state.matches('init')) {
-        /* istanbul ignore next */
-        verboseWarn('fsm init state after ' + node.actualServiceStateBefore.value)
-        node.updateServerinfo()
-        coreModbusQueue.initQueue(node)
-        node.reconnectTimeoutId = 0
-
-        try {
-          if (node.isFirstInitOfConnection) {
-            node.isFirstInitOfConnection = false
-            /* istanbul ignore next */
-            verboseWarn('first fsm init in ' + serialConnectionDelayTimeMS + ' ms')
-            if (node.timerManager) {
-              node.timerManager.setTimeout(node.connectClient, serialConnectionDelayTimeMS, node.id, 'initial-connection')
-            } else {
-              setTimeout(node.connectClient, serialConnectionDelayTimeMS)
-            }
-          } else {
-            /* istanbul ignore next */
-            verboseWarn('fsm init in ' + node.reconnectTimeout + ' ms')
-            if (node.timerManager) {
-              node.timerManager.setTimeout(node.connectClient, node.reconnectTimeout, node.id, 'reconnection')
-            } else {
-              setTimeout(node.connectClient, node.reconnectTimeout)
-            }
-          }
-        } catch (err) {
-          /* istanbul ignore next */
-          node.error(err, { payload: 'client connection error ' + logHintText })
-        }
-
-        const data = node.generateEvent('init', {})
-        node.emitGlobalStateChange('mbinit', data)
-      }
-
-      if (state.matches('connected')) {
-        /* istanbul ignore next */
-        verboseWarn('fsm connected after state ' + node.actualServiceStateBefore.value + logHintText)
-        coreModbusQueue.queueSerialUnlockCommand(node)
-        const data = node.generateEvent('connected', {})
-        node.emitGlobalStateChange('mbconnected', data)
-      }
-
-      if (state.matches('activated')) {
-        const data = node.generateEvent('active', {})
-        node.emitGlobalStateChange('mbactive', data)
-        if (node.bufferCommands && !coreModbusQueue.checkQueuesAreEmpty(node)) {
-          node.stateService.send('QUEUE')
-        }
-      }
-
-      if (state.matches('queueing')) {
-        if (node.clienttype === 'tcp') {
-          if (!node.parallelUnitIdsAllowed) {
-            if (node.serialSendingAllowed) {
-              coreModbusQueue.queueSerialLockCommand(node)
-              node.stateService.send('SEND')
-            }
-          } else {
-            node.stateService.send('SEND')
-          }
-        } else {
-          if (node.serialSendingAllowed) {
-            coreModbusQueue.queueSerialLockCommand(node)
-            node.stateService.send('SEND')
-          }
-        }
-      }
-
-      if (state.matches('sending')) {
-        setTimeout(() => {
-          coreModbusQueue.dequeueCommand(node)
-        }, node.commandDelay)
-        const data = node.generateEvent('queue', {})
-        node.emitGlobalStateChange('mbqueue', data)
-      }
-
-      if (state.matches('opened')) {
-        coreModbusQueue.queueSerialUnlockCommand(node)
-        const data = node.generateEvent('open', {})
-        node.emitGlobalStateChange('mbopen', data)
-        // node.emit('mbopen', null, data)
-      }
-
-      if (state.matches('switch')) {
-        const data = node.generateEvent('switch', {})
-        node.emitGlobalStateChange('mbswitch', data)
-        // node.emit('mbswitch', null, data)
-        node.stateService.send('CLOSE')
-      }
-
-      /* istanbul ignore next */
-      if (state.matches('closed')) {
-        const data = node.generateEvent('closed', {})
-        node.emitGlobalStateChange('mbclosed', data)
-        node.stateService.send('RECONNECT')
-      }
-
-      if (state.matches('stopped')) {
-        /* istanbul ignore next */
-        verboseWarn('stopped state without reconnecting')
-        const data = node.generateEvent('closed', {})
-        node.emitGlobalStateChange('mbclosed', data)
-      }
-
-      if (state.matches('failed')) {
-        /* istanbul ignore next */
-        verboseWarn('fsm failed state after ' + node.actualServiceStateBefore.value + logHintText)
-        const data = node.generateEvent('error', {
-          message: 'Modbus Failure On State ' + node.actualServiceStateBefore.value + logHintText
-        })
-        node.emitGlobalStateChange('mberror', data)
-        node.stateService.send('BREAK')
-      }
-
-      if (state.matches('broken')) {
-        /* istanbul ignore next */
-        verboseWarn('fsm broken state after ' + node.actualServiceStateBefore.value + logHintText)
-        const data = node.generateEvent('broken', {
-          message: 'Modbus Broken On State ' + node.actualServiceStateBefore.value + logHintText
-        })
-        node.emitGlobalStateChange('mbbroken', data)
-
-        if (node.reconnectOnTimeout) {
-          node.stateService.send('RECONNECT')
-        } else {
-          node.stateService.send('ACTIVATE')
-        }
-      }
-
-      if (state.matches('reconnecting')) {
-        /* istanbul ignore next */
-        verboseWarn('fsm reconnect state after ' + node.actualServiceStateBefore.value + logHintText)
-        coreModbusQueue.queueSerialLockCommand(node)
-        const data = node.generateEvent('reconnecting', {})
-        node.emitGlobalStateChange('mbreconnecting', data)
-        if (node.reconnectTimeout <= 0) {
-          node.reconnectTimeout = reconnectTimeMS
-        }
-        setTimeout(() => {
-          node.reconnectTimeoutId = 0
-          node.stateService.send('INIT')
-        }, node.reconnectTimeout)
-      }
-    })
+    node.stateService.subscribe(createFsmHandler(node, {
+      coreModbusQueue,
+      verboseWarn,
+      stateLog,
+      serialConnectionDelayTimeMS,
+      reconnectTimeMS,
+      logHintText
+    }))
 
     node.emitGlobalStateChange = function (state, data) {
       const registeredIds = Object.keys(node.registeredNodeList)
@@ -646,13 +544,16 @@ module.exports = function (RED) {
       } else {
         coreModbusClient.modbusSerialDebug('modbusErrorHandling:' + JSON.stringify(err))
       }
-      if (err.errno && coreModbusClient.networkErrors.includes(err.errno)) {
+      if ((err.errno && coreModbusClient.networkErrors.includes(err.errno)) ||
+        (err.code && coreModbusClient.networkErrors.includes(err.code))) {
+        node.setCloseIntent('error')
         node.stateService.send('FAILURE')
       }
     }
 
     node.modbusTcpErrorHandling = function (err) {
       coreModbusQueue.queueSerialUnlockCommand(node)
+      node.setCloseIntent('error')
       if (node.showErrors) {
         node.error(err)
       }
@@ -709,6 +610,7 @@ module.exports = function (RED) {
       /* istanbul ignore next */
       verboseWarn('Modbus closed port')
       coreModbusClient.modbusSerialDebug('modbus closed port')
+      node.setCloseIntent('error')
       node.stateService.send('CLOSE')
     }
 
@@ -783,7 +685,7 @@ module.exports = function (RED) {
               }))
 
               if (coreModbusQueue.checkQueuesAreEmpty(node)) {
-                node.stateService.send('EMPTY')
+                node.stateService.send('ACTIVATE')
               }
             }
             resolve()
@@ -797,6 +699,7 @@ module.exports = function (RED) {
     node.setMaxListeners(unlimitedListeners)
 
     node.on('reconnect', function () {
+      node.setCloseIntent('manual')
       node.stateService.send('CLOSE')
     })
 
@@ -822,6 +725,7 @@ module.exports = function (RED) {
     node.on('close', function (done) {
       const nodeIdentifierName = node.name || node.id
       node.closingModbus = true
+      node.setCloseIntent('stop')
       verboseLog('stop fsm on close ' + nodeIdentifierName)
       node.stateService.send('STOP')
       verboseLog('close node ' + nodeIdentifierName)
@@ -883,8 +787,20 @@ module.exports = function (RED) {
       node.registeredNodeList[clientUserNodeId.id] = clientUserNodeId
       if (Object.keys(node.registeredNodeList).length === 1) {
         node.closingModbus = false
-        node.stateService.send('NEW')
-        node.stateService.send('INIT')
+        const currentState = node.actualServiceState && node.actualServiceState.value
+        if (currentState === 'stopped') {
+          node.stateService.send('INIT')
+        } else if (currentState === 'init') {
+          runInitConnection(node, {
+            coreModbusQueue,
+            verboseWarn,
+            serialConnectionDelayTimeMS,
+            reconnectTimeMS,
+            logHintText
+          })
+        } else {
+          node.stateService.send('INIT')
+        }
       }
       const data = node.generateEvent('register', {})
       node.emit('mbregister', clientUserNodeId, data)
@@ -901,7 +817,7 @@ module.exports = function (RED) {
     node.setStoppedState = function (clientUserNodeId, done) {
       const data = node.generateEvent('deregister', {})
       node.emit('mbderegister', clientUserNodeId, data)
-      done()
+      if (typeof done === 'function') done()
     }
 
     /**
@@ -941,44 +857,53 @@ module.exports = function (RED) {
      * @param done {function} node-red done callback
      */
     node.deregisterForModbus = function (clientUserNodeId, done) {
+      let finished = false
+      const finish = () => {
+        if (finished) return
+        finished = true
+        if (typeof done === 'function') done()
+      }
       try {
         delete node.registeredNodeList[clientUserNodeId]
         if (Object.keys(node.registeredNodeList).length !== 0) {
-          done()
+          finish()
           const data = node.generateEvent('deregister', {})
           node.emit('mbderegister', clientUserNodeId, data)
         } else {
-          node.closeConnectionWithoutRegisteredNodes(clientUserNodeId, done)
+          node.setCloseIntent('stop')
+          node.closeConnectionWithoutRegisteredNodes(clientUserNodeId, finish)
           node.stateService.send('STOP')
-          done()
         }
       } catch (err) {
         /* istanbul ignore next */
         verboseWarn(err.message + ' on de-register node ' + clientUserNodeId)
         node.error(err)
-        done()
+        finish()
       }
     }
 
     node.isInactive = function () {
-      return _.isUndefined(node.actualServiceState) || node.messageAllowedStates.indexOf(node.actualServiceState.value) === -1
+      return isClientInactive(node)
     }
 
     node.isActive = function () {
       return !node.isInactive()
     }
 
-    node.isReadyToSend = function (node) {
-      if (node.actualServiceState.matches('queueing') || node.actualServiceState.matches('activated')) {
-        return true
-      }
-
-      verboseWarn('Client not ready to send')
-      return false
+    node.isReadyToSend = function () {
+      return node.isClientReadyToSend()
     }
   }
 
   RED.nodes.registerType('modbus-client', ModbusClientNode, {
+    credentials: {
+      tlsPrivateKey: { type: 'text' },
+      tlsCertificate: { type: 'text' },
+      tlsCa: { type: 'text' }
+    }
+  })
+
+  RED.nodes.registerType('modbus-client-tls', ModbusClientNode, {
     credentials: {
       tlsPrivateKey: { type: 'text' },
       tlsCertificate: { type: 'text' },

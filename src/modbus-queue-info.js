@@ -201,6 +201,10 @@ module.exports = function (RED) {
       const unitWithQueue = node.unitsWithQueue.get(unit)
       let fillColor = 'blue'
 
+      if (!unitWithQueue) {
+        return fillColor
+      }
+
       switch (true) {
         case unitWithQueue.lowLevelReached:
           fillColor = 'green'
@@ -238,6 +242,7 @@ module.exports = function (RED) {
       if (modbusClient.bufferCommands) {
         try {
           node.updateStatusRunning = true
+          coreModbusQueue.ensureUnitQueue(modbusClient, unit)
           const bufferCommandListLength = modbusClient.bufferCommandList.get(unit).length
           node.checkQueueStates(bufferCommandListLength, unit)
           node.setNodeStatusByActivity(bufferCommandListLength, unit)
@@ -296,6 +301,13 @@ module.exports = function (RED) {
     }
 
     node.on('input', function (msg) {
+      if (msg.payload && typeof msg.payload === 'object' && msg.payload.queue === '') {
+        msg.payload.queue = []
+        msg.payload.queueEnabled = modbusClient.bufferCommands
+        node.send(msg)
+        return
+      }
+
       let msgUnitId = node.unitid
       msg.payload.queueEnabled = modbusClient.bufferCommands
 
@@ -316,7 +328,8 @@ module.exports = function (RED) {
         }
         msg.payload.allQueueData = false
         msg.payload.unitid = msgUnitId
-        msg.payload.queue = modbusClient.bufferCommandList.get(msgUnitId)
+        coreModbusQueue.ensureUnitQueue(modbusClient, msgUnitId)
+        msg.payload.queue = modbusClient.bufferCommandList.get(msgUnitId) || []
       }
 
       msg.payload.queueOptions = {

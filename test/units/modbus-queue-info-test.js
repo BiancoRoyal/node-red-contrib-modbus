@@ -44,12 +44,6 @@ describe('Queue Info node Testing', function () {
     })
   })
 
-  after(function (done) {
-    helper.stopServer(function () {
-      done()
-    })
-  })
-
   describe('Node', function () {
     it('should handle error in input parsing and call error handling functions', function (done) {
       helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
@@ -363,12 +357,14 @@ describe('Queue Info node Testing', function () {
     it('should be not state queueing - not ready to send', function (done) {
       helper.load(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusClientNode = helper.getNode('8a2841d1d7e6000b')
-        setTimeout(() => {
-          mbBasics.setNodeStatusTo('stopped', modbusClientNode)
-          const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
-          isReady.should.be.false()
-          done()
-        }, 1500)
+        if (modbusClientNode.stateService) {
+          modbusClientNode.stateService.send('STOP')
+        } else {
+          modbusClientNode.actualServiceState = { value: 'stopped' }
+        }
+        const isReady = modbusClientNode.isReadyToSend()
+        isReady.should.be.false()
+        done()
       })
     })
 

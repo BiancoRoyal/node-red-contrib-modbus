@@ -26,6 +26,7 @@ module.exports = function (RED) {
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
     this.showWarnings = config.showWarnings
+    this.suppressNotReadyWarnings = config.suppressNotReadyWarnings === true
     this.emptyMsgOnFail = config.emptyMsgOnFail
     this.keepMsgProperties = config.keepMsgProperties
     this.internalDebugLog = internalDebugLog
@@ -113,7 +114,7 @@ module.exports = function (RED) {
       }
 
       msg.payload.fc = parseInt(msg.payload.fc)
-      msg.payload.unitid = parseInt(msg.payload.unitid)
+      msg.payload.unitid = mbBasics.resolvePayloadUnitId(msg.payload, modbusClient.unit_id)
       msg.payload.address = parseInt(msg.payload.address)
       msg.payload.quantity = parseInt(msg.payload.quantity)
       return msg
@@ -188,7 +189,10 @@ module.exports = function (RED) {
     }
 
     node.isReadyForInput = function () {
-      return (modbusClient.client && modbusClient.isActive() && node.delayOccured)
+      if (!modbusClient.client || !modbusClient.isActive() || !node.delayOccured) {
+        return false
+      }
+      return typeof modbusClient.isClientReadyToSend !== 'function' || modbusClient.isClientReadyToSend()
     }
 
     node.isNotReadyForInput = function () {
@@ -234,6 +238,9 @@ module.exports = function (RED) {
       /* istanbul ignore next */
       if (modbusClient.isInactive()) {
         verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
+        return false
+      }
+      if (!mbBasics.guardClientReadyToSend(modbusClient, node, verboseWarn)) {
         return false
       }
 

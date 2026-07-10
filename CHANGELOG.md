@@ -1,4 +1,4 @@
-# [6.0.0-beta.2](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.43.0...v6.0.0-beta.2) (2025-09-28)
+# [6.0.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.43.0...v6.0.0) (2026-07-05)
 
 
 ### Bug Fixes

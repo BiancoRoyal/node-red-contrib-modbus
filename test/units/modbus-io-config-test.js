@@ -36,15 +36,15 @@ describe('IO Config node Testing', function () {
   })
 
   afterEach(function (done) {
+    try {
+      const rawdata = fs.readFileSync('./test/resources/deviceCopy.json')
+      fs.writeFileSync('./test/resources/device.json', rawdata)
+    } catch (e) {
+      // ignore restore errors
+    }
     helper.unload().then(function () {
       done()
     }).catch(function () {
-      done()
-    })
-  })
-
-  after(function (done) {
-    helper.stopServer(function () {
       done()
     })
   })
@@ -60,12 +60,13 @@ describe('IO Config node Testing', function () {
         helper.load(testIoConfigNodes, flow, function () {
           const modbusIOConfigNode = helper.getNode('b0d101525a3ab7f5')
           let counter = 0
-          modbusIOConfigNode.lineReader.on('line', () => {
+          modbusIOConfigNode.on('line', () => {
             counter++
             if (counter === 2) {
               done()
             }
           })
+          fs.appendFileSync(modbusIOConfigNode.path, ' ')
         })
       })
     })
@@ -87,6 +88,7 @@ describe('IO Config node Testing', function () {
               done()
             }
           })
+          fs.appendFileSync(modbusIOConfigNode.path, ' ')
         })
       })
     })

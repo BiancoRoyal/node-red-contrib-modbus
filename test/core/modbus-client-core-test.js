@@ -553,7 +553,7 @@ describe('Core Client Testing', function () {
       clock3.tick(1)
 
       sinon.assert.calledOnce(node.stateService.send)
-      sinon.assert.calledWithExactly(node.stateService.send, 'READ')
+      sinon.assert.calledWithExactly(node.stateService.send, 'SEND')
       clock3.restore()
 
       const clock1 = sinon.useFakeTimers()
@@ -699,7 +699,7 @@ describe('Core Client Testing', function () {
         bufferCommands: false,
         stateService: {
           send: function (state) {
-            assert.strictEqual(state, 'WRITE')
+            assert.strictEqual(state, 'SEND')
           }
         }
       }
@@ -737,7 +737,7 @@ describe('Core Client Testing', function () {
     })
 
     it('should log an error when connectorType is unknown', () => {
-      const node = { tcpHost: '127.0.0.1', tcpPort: 502, tcpType: 'MODBUS-TCP' }
+      const node = { tcpHost: '127.0.0.1', tcpPort: 15002, tcpType: 'MODBUS-TCP' }
       const msg = { payload: { connectorType: 'UNKNOWN' } }
       const nodeLog = sinon.spy()
       coreClientUnderTest.getLogFunction = sinon.stub().returns(nodeLog)
@@ -788,13 +788,13 @@ describe('Core Client Testing', function () {
       sinon.assert.calledWith(coreClientUnderTest.getLogFunction, node)
     })
 
-    it('should send READ state if bufferCommands is false and clienttype is not tcp', function (done) {
+    it('should send SEND state if bufferCommands is false and clienttype is not tcp', function (done) {
       const node = {
         bufferCommands: false,
         clienttype: 'serial',
         stateService: {
           send: function (state) {
-            assert.strictEqual(state, 'READ')
+            assert.strictEqual(state, 'SEND')
           }
         }
       }

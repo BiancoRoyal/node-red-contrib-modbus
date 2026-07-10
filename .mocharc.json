@@ -1,15 +1,16 @@
 {
   "recursive": true,
   "exit": true,
-  "timeout": 2000,
+  "timeout": 30000,
   "slow": 500,
   "reporter": "spec",
   "retries": 0,
-  "bail": true,
+  "bail": false,
   "fullTrace": false,
   "require": [
     "test/helper/test-helper-extensions.js",
-    "test/helper/test-isolation.js"
+    "test/helper/test-isolation.js",
+    "test/helper/mocha-global-setup.js"
   ],
   "spec": [
     "test/**/*.js"

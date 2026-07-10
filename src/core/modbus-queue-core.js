@@ -14,35 +14,39 @@ var de = de || { biancoroyal: { modbus: { queue: { core: {} } } } } // eslint-di
 de.biancoroyal.modbus.queue.core.internalDebug = de.biancoroyal.modbus.queue.core.internalDebug || require('debug')('contribModbus:queue:core') // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.queue.core.core = de.biancoroyal.modbus.queue.core.core || require('./modbus-core') // eslint-disable-line no-use-before-define
 
+de.biancoroyal.modbus.queue.core.ensureUnitQueue = function (node, unitId) {
+  if (!node.bufferCommandList.has(unitId)) {
+    node.bufferCommandList.set(unitId, [])
+    node.sendingAllowed.set(unitId, true)
+  }
+}
+
 de.biancoroyal.modbus.queue.core.initQueue = function (node) {
   node.bufferCommandList.clear()
   node.sendingAllowed.clear()
   node.unitSendingAllowed = []
+}
 
-  for (let step = 0; step <= 255; step++) {
-    node.bufferCommandList.set(step, [])
-    node.sendingAllowed.set(step, true)
+de.biancoroyal.modbus.queue.core.checkQueuesAreEmpty = function (node) {
+  for (const queue of node.bufferCommandList.values()) {
+    if (queue.length > 0) {
+      return false
+    }
   }
+  return true
 }
 
 de.biancoroyal.modbus.queue.core.clearUnitQueue = function (node, unitId) {
+  de.biancoroyal.modbus.queue.core.ensureUnitQueue(node, unitId)
   const queue = node.bufferCommandList.get(unitId)
   if (queue && queue.length > 0) {
     const queueLength = queue.length
-    queue.length = 0 // Clear the array
+    queue.length = 0
     node.sendingAllowed.set(unitId, true)
     de.biancoroyal.modbus.queue.core.internalDebug(`Cleared queue for unit ${unitId}, removed ${queueLength} items`)
     return queueLength
   }
   return 0
-}
-
-de.biancoroyal.modbus.queue.core.checkQueuesAreEmpty = function (node) {
-  let queuesAreEmpty = true
-  for (let step = 0; step <= 255; step++) {
-    queuesAreEmpty &= (node.bufferCommandList.get(step).length === 0)
-  }
-  return queuesAreEmpty
 }
 
 de.biancoroyal.modbus.queue.core.queueSerialUnlockCommand = function (node) {
@@ -62,9 +66,11 @@ de.biancoroyal.modbus.queue.core.sequentialDequeueCommand = function (node) {
       const queueCore = de.biancoroyal.modbus.queue.core
 
       if (node.parallelUnitIdsAllowed) {
-        for (let unitId = 0; unitId < 256; unitId += 1) {
-          queueCore.sendQueueDataToModbus(node, unitId)
-        }
+        node.bufferCommandList.forEach(function (queue, unitId) {
+          if (queue.length > 0) {
+            queueCore.sendQueueDataToModbus(node, unitId)
+          }
+        })
       } else {
         const unitId = node.unitSendingAllowed.shift()
         if (!queueCore.isValidUnitId(unitId)) {
@@ -131,6 +137,9 @@ de.biancoroyal.modbus.queue.core.sendQueueDataToModbus = function (node, unitId)
 }
 
 de.biancoroyal.modbus.queue.core.dequeueLogEntry = function (node, state, info) {
+  if (typeof node.queueLog !== 'function') {
+    return
+  }
   node.queueLog(JSON.stringify({
     state: state.value,
     message: `${info} ${node.clienttype}`,
@@ -141,8 +150,10 @@ de.biancoroyal.modbus.queue.core.dequeueLogEntry = function (node, state, info) 
 de.biancoroyal.modbus.queue.core.dequeueCommand = function (node) {
   const queueCore = de.biancoroyal.modbus.queue.core
   const state = node.actualServiceState
+  const { INTERNAL_QUEUE_STATES_V6 } = require('./client/modbus-client-state')
+  const allowedStates = node.internalQueueStates || INTERNAL_QUEUE_STATES_V6
 
-  if (node.messageAllowedStates.indexOf(state.value) === -1) {
+  if (allowedStates.indexOf(state.value) === -1) {
     queueCore.dequeueLogEntry(node, state, 'dequeue command disallowed state')
   } else {
     queueCore.sequentialDequeueCommand(node).then(function () {
@@ -154,7 +165,8 @@ de.biancoroyal.modbus.queue.core.dequeueCommand = function (node) {
 }
 
 de.biancoroyal.modbus.queue.core.getUnitIdToQueue = function (node, msg) {
-  return parseInt(msg.payload.unitid) || parseInt(node.unit_id) || 0
+  const mbBasics = require('../modbus-basics')
+  return mbBasics.resolvePayloadUnitId(msg.payload, node.unit_id)
 }
 
 de.biancoroyal.modbus.queue.core.isValidUnitId = function (unitId) {
@@ -163,6 +175,7 @@ de.biancoroyal.modbus.queue.core.isValidUnitId = function (unitId) {
 
 de.biancoroyal.modbus.queue.core.getQueueLengthByUnitId = function (node, unitId) {
   if (this.isValidUnitId(unitId)) {
+    de.biancoroyal.modbus.queue.core.ensureUnitQueue(node, unitId)
     return node.bufferCommandList.get(unitId).length
   } else {
     throw new Error('(0-255) Got A Wrong Unit-Id: ' + unitId)
@@ -179,13 +192,8 @@ de.biancoroyal.modbus.queue.core.pushToQueueByUnitId = function (node, callModbu
         if (!coreQueue.isValidUnitId(unitId)) {
           reject(new Error('UnitId ' + unitId + ' is not valid from msg or node'))
           return
-        } else {
-          node.queueLog(JSON.stringify({
-            info: 'will push to Queue by Unit-Id',
-            message: msg.payload,
-            unitId
-          }))
         }
+        coreQueue.ensureUnitQueue(node, unitId)
         const queueLength = coreQueue.getQueueLengthByUnitId(node, unitId)
 
         msg.queueLengthByUnitId = { unitId, queueLength }

@@ -20,6 +20,18 @@ helper.init(require.resolve('node-red'))
 
 const testFlows = require('./flows/modbus-response-flows')
 
+function triggerInjectAndAssert (flow, injectId, responseNodeId, expectedName, payload, done) {
+  helper.load(testResponseNodes, flow, function () {
+    const modbusResponseNode = helper.getNode(responseNodeId)
+    const inject = helper.getNode(injectId)
+    modbusResponseNode.on('input', function () {
+      modbusResponseNode.should.have.property('name', expectedName)
+      done()
+    })
+    inject.receive({ payload, topic: '' })
+  })
+}
+
 describe('Response node Testing', function () {
   before(function (done) {
     helper.startServer(function () {
@@ -31,12 +43,6 @@ describe('Response node Testing', function () {
     helper.unload().then(function () {
       done()
     }).catch(function () {
-      done()
-    })
-  })
-
-  after(function (done) {
-    helper.stopServer(function () {
       done()
     })
   })
@@ -61,53 +67,58 @@ describe('Response node Testing', function () {
     })
 
     it('should work with short data', function (done) {
-      helper.load(testResponseNodes, testFlows.testShortLengthInjectDataFlow, function () {
-        const modbusResponseNode = helper.getNode('f1ff9252.b5ce18')
-        modbusResponseNode.on('input', function () {
-          modbusResponseNode.should.have.property('name', 'shortLengthInjectData')
-          done()
-        })
-      })
+      triggerInjectAndAssert(
+        testFlows.testShortLengthInjectDataFlow,
+        '8827b34f.682e8',
+        'f1ff9252.b5ce18',
+        'shortLengthInjectData',
+        { data: { length: 2 } },
+        done
+      )
     })
 
     it('should work with long data', function (done) {
-      helper.load(testResponseNodes, testFlows.testLongLengthInjectDataFlow, function () {
-        const modbusResponseNode = helper.getNode('d2e1ea25b04bb763')
-        modbusResponseNode.on('input', function () {
-          modbusResponseNode.should.have.property('name', 'longLengthInjectData')
-          done()
-        })
-      })
+      triggerInjectAndAssert(
+        testFlows.testLongLengthInjectDataFlow,
+        '6f658b96c679e24b',
+        'd2e1ea25b04bb763',
+        'longLengthInjectData',
+        { data: { length: 22 } },
+        done
+      )
     })
 
     it('should work with short address', function (done) {
-      helper.load(testResponseNodes, testFlows.testShortLengthInjectAddressFlow, function () {
-        const modbusResponseNode = helper.getNode('975548ef841a5c36')
-        modbusResponseNode.on('input', function () {
-          modbusResponseNode.should.have.property('name', 'shortLengthInjectAddress')
-          done()
-        })
-      })
+      triggerInjectAndAssert(
+        testFlows.testShortLengthInjectAddressFlow,
+        'ca4b13300ce76a24',
+        '975548ef841a5c36',
+        'shortLengthInjectAddress',
+        { length: 2, address: {} },
+        done
+      )
     })
 
     it('should work with long address', function (done) {
-      helper.load(testResponseNodes, testFlows.testLongLengthInjectAddressFlow, function () {
-        const modbusResponseNode = helper.getNode('945f19a0f84d2de2')
-        modbusResponseNode.on('input', function () {
-          modbusResponseNode.should.have.property('name', 'longLengthInjectAddress')
-          done()
-        })
-      })
+      triggerInjectAndAssert(
+        testFlows.testLongLengthInjectAddressFlow,
+        '74e5fa89a94c1baf',
+        '945f19a0f84d2de2',
+        'longLengthInjectAddress',
+        { length: 22, address: {} },
+        done
+      )
     })
 
     it('should work with just payload', function (done) {
-      helper.load(testResponseNodes, testFlows.testInjectJustPayloadFlow, function () {
-        const modbusResponseNode = helper.getNode('672b5322fc5e27c5')
-        modbusResponseNode.on('input', function () {
-          modbusResponseNode.should.have.property('name', 'injectJustPayload')
-          done()
-        })
-      })
+      triggerInjectAndAssert(
+        testFlows.testInjectJustPayloadFlow,
+        '0a6d1e3947f56aa8',
+        '672b5322fc5e27c5',
+        'injectJustPayload',
+        {},
+        done
+      )
     })
   })
 

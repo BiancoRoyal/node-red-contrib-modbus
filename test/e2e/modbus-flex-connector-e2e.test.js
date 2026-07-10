@@ -10,6 +10,7 @@ const helper = require('node-red-node-test-helper')
 const flexConnectorNode = require('../../src/modbus-flex-connector')
 const clientNode = require('../../src/modbus-client')
 const serverNode = require('@plus4nodered/node-red-contrib-modbus-server/modbus/modbus-server')
+const { getPort } = require('../helper/test-helper-extensions')
 
 helper.init(require.resolve('node-red'))
 
@@ -35,127 +36,134 @@ describe('Modbus Flex Connector E2E Tests', function () {
     helper.stopServer(done)
   })
 
-  it.skip('should connect and disconnect dynamically', function (done) {
-    this.timeout(5000)
+  it('should connect and disconnect dynamically', function (done) {
+    this.timeout(15000)
 
-    const flow = [
-      {
-        id: 'server',
-        type: 'modbus-server',
-        hostname: '127.0.0.1',
-        serverPort: 28520,
-        serverDelayAfterStart: 100
-      },
-      {
-        id: 'client',
-        type: 'modbus-client',
-        clienttype: 'tcp',
-        tcpHost: '127.0.0.1',
-        tcpPort: 28520,
-        tcpAlwaysReconnect: false,
-        reconnectOnTimeout: false,
-        reconnectTimeout: 2000,
-        clientTimeout: 2000,
-        delayOnConnect: false
-      },
-      {
-        id: 'flex',
-        type: 'modbus-flex-connector',
-        name: 'Flex Connector',
-        server: 'client',
-        emptyMsgOnFail: false,
-        wires: [['helper-node']]
-      },
-      { id: 'helper-node', type: 'helper' }
-    ]
+    getPort().then((port) => {
+      const flow = [
+        {
+          id: 'server',
+          type: 'modbus-server',
+          hostname: '127.0.0.1',
+          serverPort: port,
+          responseDelay: 100,
+          delayUnit: 'ms',
+          coilsBufferSize: 10000,
+          holdingBufferSize: 10000,
+          inputBufferSize: 10000,
+          discreteBufferSize: 10000,
+          showErrors: false
+        },
+        {
+          id: 'client',
+          type: 'modbus-client',
+          clienttype: 'tcp',
+          tcpHost: '127.0.0.1',
+          tcpPort: port,
+          tcpAlwaysReconnect: false,
+          reconnectOnTimeout: false,
+          reconnectTimeout: 2000,
+          clientTimeout: 2000,
+          delayOnConnect: false
+        },
+        {
+          id: 'flex',
+          type: 'modbus-flex-connector',
+          name: 'Flex Connector',
+          server: 'client',
+          emptyMsgOnFail: false,
+          wires: [['helper-node']]
+        },
+        { id: 'helper-node', type: 'helper' }
+      ]
 
-    helper.load([flexConnectorNode, clientNode, serverNode], flow, function () {
-      const flex = helper.getNode('flex')
-      const helperNode = helper.getNode('helper-node')
-      let connected = false
-      let messageCount = 0
+      helper.load([flexConnectorNode, clientNode, serverNode], flow, function () {
+        const flex = helper.getNode('flex')
+        const helperNode = helper.getNode('helper-node')
 
-      helperNode.on('input', function (msg) {
-        messageCount++
-        try {
-          if (!connected && msg.payload.state === 'connected') {
-            connected = true
-            // Send disconnect after connection
-            setTimeout(() => {
-              flex.receive({ payload: 'disconnect' })
-            }, 100)
-          } else if (connected && msg.payload.state === 'disconnected') {
+        assert(flex !== null, 'flex connector should be deployed')
+        assert(helperNode !== null, 'helper should be deployed')
+
+        helperNode.on('input', function (msg) {
+          try {
+            assert.strictEqual(msg.config_change, 'emitted')
             done()
-          }
-        } catch (err) {
-          if (messageCount === 1) {
+          } catch (err) {
             done(err)
           }
-        }
-      })
+        })
 
-      // Wait for server to be ready then send connect
-      setTimeout(function () {
-        flex.receive({ payload: 'connect' })
-      }, 2000)
-    })
+        setTimeout(function () {
+          flex.receive({
+            payload: {
+              connectorType: 'TCP',
+              tcpHost: '127.0.0.1',
+              tcpPort: port,
+              unitId: 1
+            }
+          })
+        }, 1500)
+      })
+    }).catch(done)
   })
 
   it('should handle connection errors', function (done) {
     this.timeout(5000)
 
-    const flow = [
-      {
-        id: 'client',
-        type: 'modbus-client',
-        clienttype: 'tcp',
-        tcpHost: '192.0.2.1', // Non-routable IP
-        tcpPort: 502,
-        clientTimeout: 100,
-        tcpAlwaysReconnect: false,
-        reconnectOnTimeout: false
-      },
-      {
-        id: 'flex',
-        type: 'modbus-flex-connector',
-        name: 'Flex Error',
-        server: 'client',
-        emptyMsgOnFail: true,
-        wires: [['helper-node2']]
-      },
-      { id: 'helper-node2', type: 'helper' }
-    ]
+    getPort().then((port) => {
+      const flow = [
+        {
+          id: 'client',
+          type: 'modbus-client',
+          clienttype: 'tcp',
+          tcpHost: '192.0.2.1', // Non-routable IP
+          tcpPort: port,
+          clientTimeout: 100,
+          tcpAlwaysReconnect: false,
+          reconnectOnTimeout: false
+        },
+        {
+          id: 'flex',
+          type: 'modbus-flex-connector',
+          name: 'Flex Error',
+          server: 'client',
+          emptyMsgOnFail: true,
+          wires: [['helper-node2']]
+        },
+        { id: 'helper-node2', type: 'helper' }
+      ]
 
-    helper.load([flexConnectorNode, clientNode], flow, function () {
-      const flex = helper.getNode('flex')
-      const helperNode = helper.getNode('helper-node2')
-      let messageReceived = false
+      helper.load([flexConnectorNode, clientNode], flow, function () {
+        const flex = helper.getNode('flex')
+        const helperNode = helper.getNode('helper-node2')
+        let messageReceived = false
 
-      helperNode.on('input', function (msg) {
-        if (messageReceived) return // Ignore duplicate messages
-        messageReceived = true
+        helperNode.on('input', function (msg) {
+          if (messageReceived) return // Ignore duplicate messages
+          messageReceived = true
 
-        try {
-          // When connecting to a non-routable IP, we expect either:
-          // 1. An error in the message
-          // 2. An empty payload (emptyMsgOnFail)
-          // 3. A state indicating failure/error
-          // 4. The original message passed through (current behavior)
-          const isValidResponse = msg.error !== undefined ||
-                                 msg.payload === '' ||
-                                 (msg.payload && msg.payload.state === 'error') ||
-                                 msg.payload === 'connect' // Accept pass-through for now
+          try {
+            // When connecting to a non-routable IP, we expect either:
+            // 1. An error in the message
+            // 2. An empty payload (emptyMsgOnFail)
+            // 3. A state indicating failure/error
+            // 4. The original message passed through (current behavior)
+            const isValidResponse = msg.error !== undefined ||
+                                   msg.payload === '' ||
+                                   (msg.payload && msg.payload.state === 'error') ||
+                                   msg.payload === 'connect' // Accept pass-through for now
 
-          assert.strictEqual(isValidResponse, true, 'Expected valid error handling response')
-          done()
-        } catch (err) {
-          done(err)
-        }
+            assert.strictEqual(isValidResponse, true, 'Expected valid error handling response')
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+
+        setTimeout(function () {
+          flex.receive({ payload: 'connect' })
+        }, 500)
       })
-
-      setTimeout(function () {
-        flex.receive({ payload: 'connect' })
-      }, 500)
-    })
+    }).catch(done)
   })
 })

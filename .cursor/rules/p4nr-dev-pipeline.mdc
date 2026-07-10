@@ -1,0 +1,49 @@
+---
+description: "P4NR 3-team dev pipeline for node-red-contrib-modbus: Spec Author → Spec Reviewer → Developer with human gates"
+alwaysApply: true
+---
+
+# P4NR Development Pipeline
+
+All non-trivial work on `@plus4nodered/node-red-contrib-modbus` follows the 3-team pipeline.
+
+## Teams
+
+| Team | Agent | Writes to | Never touches |
+|------|-------|-----------|---------------|
+| 1 Spec | `p4nr-spec-author` | `docs/p4nr/capabilities/`, `docs/p4nr/plans/` | `src/`, `modbus/`, `test/` |
+| 2 Review | `p4nr-spec-reviewer` | `docs/p4nr/reviews/` | Code, specs (read-only) |
+| 3 Dev | `p4nr-developer` | `src/`, `test/`, locales | Without APPROVE review |
+
+## Flow
+
+```
+Request → Team 1 (spec + plan)
+       → Team 2 (review → APPROVE | REJECT)
+       → GATE 1 (human approves plan)
+       → Team 3 (TDD implement: RED → GREEN → build → test)
+       → GATE 2 (human approves commit)
+```
+
+## Rules
+
+1. **No code before APPROVE** in `docs/p4nr/reviews/*.review.md`
+2. **REJECT** sends work back to Team 1 with listed blockers
+3. **Trivial fixes** (typo, single-line obvious fix): Team 3 may skip Team 1/2 if user explicitly says so
+4. After `src/` changes: always `npm run build` before testing
+5. Node tests: Mocha + `node-red-node-test-helper` — not Jest
+6. Use `node-red-contrib-patterns` skill for Node-RED conventions
+
+## Orchestration Skills (ECC-compatible)
+
+| Operation | When |
+|-----------|------|
+| New capability | Team 1 → Team 2 → Team 3 (maps to `orch-add-feature`) |
+| Bug fix | Team 3 with regression test (maps to `orch-fix-defect`) |
+| Refactor | Team 1 light plan → Team 2 → Team 3 (maps to `orch-refine-code`) |
+
+## Artifact Index
+
+- Specs: `docs/p4nr/capabilities/<name>.md`
+- Plans: `docs/p4nr/plans/<name>.plan.md`
+- Reviews: `docs/p4nr/reviews/<name>.review.md`

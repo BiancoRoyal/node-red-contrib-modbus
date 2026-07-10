@@ -43,12 +43,6 @@ describe('Getter node Unit Testing', function () {
     })
   })
 
-  after(function (done) {
-    helper.stopServer(function () {
-      done()
-    })
-  })
-
   describe('Node', function () {
     let invalidPayloadInStub, isNotReadyForInputStub,
       isInactiveStub, setNodeStatusToSpy, buildNewMessageObjectStub,
@@ -444,6 +438,7 @@ describe('Getter node Unit Testing', function () {
           const isNotReadyForInputStub = sinon.stub(modbusGetterNode, 'isNotReadyForInput').returns(false)
           const isInactiveStub = sinon.stub(modbusClient, 'isInactive').returns(false)
           const invalidPayloadInStub = sinon.stub(mbBasics, 'invalidPayloadIn').returns(false)
+          const guardClientReadyToSendStub = sinon.stub(mbBasics, 'guardClientReadyToSend').returns(true)
 
           const buildNewMessageObjectStub = sinon.stub(modbusGetterNode, 'buildNewMessageObject').returns({ messageId: '12345' })
           const buildNewMessageStub = sinon.stub(mbBasics, 'buildNewMessage').returns({ builtMessage: true })
@@ -458,6 +453,7 @@ describe('Getter node Unit Testing', function () {
           isNotReadyForInputStub.restore()
           isInactiveStub.restore()
           invalidPayloadInStub.restore()
+          guardClientReadyToSendStub.restore()
           buildNewMessageObjectStub.restore()
           buildNewMessageStub.restore()
           emitStub.restore()

@@ -29,6 +29,7 @@ module.exports = function (RED) {
     this.showStatusActivities = config.showStatusActivities
     this.showErrors = config.showErrors
     this.showWarnings = config.showWarnings
+    this.suppressNotReadyWarnings = config.suppressNotReadyWarnings === true
     this.connection = null
 
     this.emptyMsgOnFail = config.emptyMsgOnFail
@@ -60,7 +61,10 @@ module.exports = function (RED) {
     }
 
     node.isReadyForInput = function () {
-      return (modbusClient.client && modbusClient.isActive())
+      if (!modbusClient.client || !modbusClient.isActive()) {
+        return false
+      }
+      return typeof modbusClient.isClientReadyToSend !== 'function' || modbusClient.isClientReadyToSend()
     }
 
     node.isNotReadyForInput = function () {
@@ -154,6 +158,10 @@ module.exports = function (RED) {
         setNodeStatusWithTimeTo('reading')
       }
 
+      if (!mbBasics.guardClientReadyToSend(modbusClient, node, verboseWarn)) {
+        return
+      }
+
       modbusClient.emit('customModbusMessage', msg, node.onModbusReadDone, node.onModbusReadError)
     }
 
@@ -195,6 +203,9 @@ module.exports = function (RED) {
       /* istanbul ignore next */
       if (modbusClient.isInactive()) {
         verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
+        return
+      }
+      if (!mbBasics.guardClientReadyToSend(modbusClient, node, verboseWarn)) {
         return
       }
 
