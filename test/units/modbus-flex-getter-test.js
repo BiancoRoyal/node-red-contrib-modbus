@@ -567,6 +567,7 @@ describe('Flex Getter node Testing', function () {
 
         helper.load(testFlexGetterNodes, flow, function () {
           let count = 0
+          let finished = false
           const modbusFlexGetter = helper.getNode('65c0cd33bcaee245')
           if (!modbusFlexGetter) {
             return done(new Error('modbus-flex-getter node not deployed'))
@@ -582,7 +583,8 @@ describe('Flex Getter node Testing', function () {
             if (modbusFlexGetter.isReadyForInput()) {
               modbusFlexGetter.on('modbusFlexGetterNodeDone', () => {
                 count++
-                if (count >= msg.length) {
+                if (!finished && count >= msg.length) {
+                  finished = true
                   done()
                 }
               })
@@ -590,7 +592,11 @@ describe('Flex Getter node Testing', function () {
               return
             }
             if (triesLeft <= 0) {
-              return done(new Error('flex-getter not ready for input'))
+              if (!finished) {
+                finished = true
+                done(new Error('flex-getter not ready for input'))
+              }
+              return
             }
             setTimeout(() => waitForReady(triesLeft - 1), 100)
           }

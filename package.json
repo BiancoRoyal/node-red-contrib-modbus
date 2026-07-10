@@ -1,10 +1,13 @@
 {
   "name": "@plus4nodered/node-red-contrib-modbus",
   "version": "6.0.0-alpha.1",
-  "private": true,
   "description": "Modbus TCP, TLS, UDP and Serial client nodes for Node-RED. For server nodes, install @plus4nodered/node-red-contrib-modbus-server.",
+  "private": true,
+  "publishConfig": {
+    "registry": "https://packages.iniationware.com/api/packages/p4nr-nodejs-beta/npm/"
+  },
   "dependencies": {
-    "@openp4nr/node-modbus": "/Users/biancode/Development/P4NR/modbus/node-modbus-serial",
+    "@plus4nodered/node-modbus": "10.0.0-beta.3",
     "@xstate/fsm": "~2.1.0",
     "bson": "~6.10.1",
     "line-by-line": "~0.1.6",
@@ -64,6 +67,9 @@
   },
   "homepage": "https://plus4nodered.com/",
   "scripts": {
+    "prepare": "./select-npmrc.sh",
+    "prebuild": "./select-npmrc.sh",
+    "preinstall": "./select-npmrc.sh",
     "prereq": "npm run lint",
     "lint": "standard --fix",
     "clean": "gulp clean && npm run lint",

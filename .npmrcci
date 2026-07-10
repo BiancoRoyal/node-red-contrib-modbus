@@ -1,0 +1,6 @@
+@p4nr:registry=https://packages.iniationware.com/api/packages/p4nr-nodejs-ci/npm/
+@plus4nodered:registry=https://packages.iniationware.com/api/packages/p4nr-nodejs-ci/npm/
+@openp4nr:registry=https://packages.iniationware.com/api/packages/plus4nodered/npm/
+//packages.iniationware.com/api/packages/p4nr-nodejs-ci/npm/:_authToken=${NPM_TOKEN}
+//packages.iniationware.com/api/packages/plus4nodered/npm/:_authToken=
+registry=https://registry.npmjs.org/

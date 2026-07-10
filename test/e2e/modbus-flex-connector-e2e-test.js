@@ -103,7 +103,7 @@ describe('Flex Connector E2E node Testing (Task 16 — E2E port isolation)', fun
           const modbusFlexNode = helper.getNode('590974b56aaf9960')
           modbusFlexNode.error = sinon.spy()
           modbusFlexNode.emit('input', { payload: {} })
-          expect(modbusFlexNode.error.calledWith(sinon.match.instanceOf(Error), sinon.match.object)).to.be.true
+          assert(modbusFlexNode.error.calledWith(sinon.match.instanceOf(Error), sinon.match.object))
           done()
         })
       }).catch(done)

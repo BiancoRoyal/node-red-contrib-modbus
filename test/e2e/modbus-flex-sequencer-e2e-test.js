@@ -23,8 +23,6 @@ const testFlexSequencerNodes = [injectNode, clientNode, serverNode, nodeUnderTes
 const testFlows = require('./flows/modbus-flex-sequencer-e2e-flows.js')
 // const assert = require('assert')
 const sinon = require('sinon')
-const chai = require('chai')
-const expect = chai.expect
 const { getPort, assignModbusTcpPorts, deployModbusFlow, getTestNode } = require('../helper/test-helper-extensions')
 const { globalTestHelper } = require('../helper/mocha-global-setup')
 

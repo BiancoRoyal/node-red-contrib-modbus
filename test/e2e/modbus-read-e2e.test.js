@@ -12,8 +12,7 @@ const {
   waitForHelper,
   waitForTestNode,
   assertReadFc,
-  buildServerClientFlow,
-  getTestNode
+  buildServerClientFlow
 } = require('../helper/fc-e2e-helper')
 
 helper.init(require.resolve('node-red'))

@@ -23,7 +23,6 @@ const testFlexSequencerNodes = [injectNode, clientNode, serverNode, nodeUnderTes
 const testFlows = require('./flows/modbus-flex-sequencer-flows')
 const mBasics = require('../../src/modbus-basics')
 const _ = require('underscore')
-const { getPort } = require('../helper/test-helper-extensions')
 
 // const chai = require('chai')
 const sinon = require('sinon')
