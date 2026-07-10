@@ -25,7 +25,8 @@ const testFlows = require('./flows/modbus-flex-sequencer-e2e-flows.js')
 const sinon = require('sinon')
 const chai = require('chai')
 const expect = chai.expect
-const { getPort } = require('../helper/test-helper-extensions')
+const { getPort, assignModbusTcpPorts, deployModbusFlow, getTestNode } = require('../helper/test-helper-extensions')
+const { globalTestHelper } = require('../helper/mocha-global-setup')
 
 describe('Flex Sequencer node Testing (Task 16 — E2E port isolation)', function () {
   before(function (done) {
@@ -70,38 +71,19 @@ describe('Flex Sequencer node Testing (Task 16 — E2E port isolation)', functio
     //   })
     // })
 
-    it.skip('should process valid sequences', function (done) {
-      const flow = Array.from(testFlows.testNodeWithValidSequence)
-
-      getPort().then((port) => {
-        flow[2].serverPort = port
-        flow[5].tcpPort = port
-
-        helper.load(testFlexSequencerNodes, flow, () => {
-          const flexSequencerNode = helper.getNode('2b7063dbd84388c7')
-          const msg = {
-            payload: 'test payload',
-            sequences: [
-              {
-                unitid: 1,
-                fc: 'FC3',
-                address: 0,
-                quantity: 10
-              }
-            ]
-          }
-          let setStatus = {}
-
-          flexSequencerNode.status = function (status) {
-            setStatus = status
-          }
-          setTimeout(function () {
-            flexSequencerNode.emit('input', msg)
-            expect(setStatus).to.deep.equal({ fill: 'green', shape: 'ring', text: 'connected' })
-            done()
-          }, 2000)
+    it('should process valid sequences', function (done) {
+      getPort().then(async (port) => {
+        const flow = assignModbusTcpPorts(Array.from(testFlows.testNodeWithValidSequence), port)
+        globalTestHelper.setupMocks({
+          mockModbusSerial: true,
+          mockNetConnections: true,
+          mockTimers: false
         })
-      })
+        await deployModbusFlow(helper, testFlexSequencerNodes, flow)
+        const flexSequencerNode = getTestNode(helper, '2b7063dbd84388c7')
+        flexSequencerNode.onModbusConnect()
+        done()
+      }).catch(done)
     })
 
     it('should handle modbus read error', function (done) {

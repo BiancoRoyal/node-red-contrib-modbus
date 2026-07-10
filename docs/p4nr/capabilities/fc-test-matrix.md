@@ -16,7 +16,7 @@ Legende: ✅ grün | 🔲 geplant | ⏭ skip/begründet | — nicht anwendbar
 |------|-----|-----|-----|-----|-------|-----------|-----|-----|
 | modbus-read | ✅ | ✅ | ✅ | ✅ | 🔲 | — | ✅ | 🔲 |
 | modbus-getter | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🔲 |
-| modbus-flex-getter | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 |
+| modbus-flex-getter | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 🔲 |
 
 ## Write Operations
 
@@ -29,13 +29,13 @@ Legende: ✅ grün | 🔲 geplant | ⏭ skip/begründet | — nicht anwendbar
 
 | Node | Scope | TCP | TLS | Notiz |
 |------|-------|-----|-----|-------|
-| modbus-flex-fc | Custom FC | 🔲 | 🔲 | 2 Tests ⏭ |
-| modbus-flex-sequencer | Sequence | ⏭ | 🔲 | 1 skip |
+| modbus-flex-fc | Custom FC | ✅ | 🔲 | error/waiting re-enabled |
+| modbus-flex-sequencer | Sequence | ✅ | 🔲 | fc-e2e + onModbusConnect |
 | modbus-flex-connector | Routing | ✅ | 🔲 | |
 | modbus-flex-connector | emptyMsgOnFail | ✅ | 🔲 | |
 | modbus-io-config | IO file | ✅ | — | |
-| modbus-queue-info | Metrics | 🔲 | 🔲 | |
-| modbus-response-filter | Filter | 🔲 | — | |
+| modbus-queue-info | Metrics | ✅ | 🔲 | |
+| modbus-response-filter | Filter | ✅ | — | |
 | modbus-response | Formatter | 🔲 | — | Unit only |
 
 ## Client / Connection
@@ -67,8 +67,8 @@ Legende: ✅ grün | 🔲 geplant | ⏭ skip/begründet | — nicht anwendbar
 | Datei | Test | Grund | Ziel |
 |-------|------|-------|------|
 | modbus-connection-pool-test.js | retry, validate, metrics | Feature fehlt | Implement or Won't Fix |
-| modbus-fc-flex-e2e-test.js | error/empty, client undefined | Port isolation | F2.2 |
-| modbus-flex-sequencer-e2e-test.js | valid sequences | Deferred | F2.3 |
+| modbus-fc-flex-e2e-test.js | error/empty, client undefined | Port isolation | ✅ F2.2 |
+| modbus-flex-sequencer-e2e-test.js | valid sequences | Deferred | ✅ F2.3 |
 | modbus-client-isolated.test.js | no timeout | No server wire | F7.1 |
 
 ---

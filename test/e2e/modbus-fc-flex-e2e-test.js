@@ -80,7 +80,7 @@ describe('Modbus E2E Flex FC-Functionality tests (Task 16 — E2E port isolation
       if (buildNewMessageObjectStub) buildNewMessageObjectStub.restore()
     })
 
-    it.skip('should handle error and send empty message on fail (Task 16 — E2E port isolation)', function (done) {
+    it('should handle error and send empty message on fail', function (done) {
       loadWithDynamicPort(nodeList, testFcFlexFlows.testFlowWithError, function () {
         const flexNode = helper.getNode('5bd25e14c9c67f95')
         const modbusClient = helper.getNode('a24bea7c.848da')
@@ -148,9 +148,10 @@ describe('Modbus E2E Flex FC-Functionality tests (Task 16 — E2E port isolation
   })
 
   describe('Flex-FC-Read-Coil', function () {
-    it.skip('should set node status to waiting if modbusClient.client is not defined', function (done) {
+    it('should set node status to waiting if modbusClient.client is not defined', function (done) {
       loadWithDynamicPort(nodeList, testFcFlexFlows.testFlowWithError, function () {
         const flexNode = helper.getNode('5bd25e14c9c67f95')
+        const modbusClient = helper.getNode('a24bea7c.848da')
 
         let setStatus = {}
         flexNode.status = function (status) {
@@ -163,7 +164,7 @@ describe('Modbus E2E Flex FC-Functionality tests (Task 16 — E2E port isolation
           shape: 'ring'
         })
 
-        flexNode.server.client.client = null
+        modbusClient.client = null
         flexNode.modbusRead()
 
         expect(setNodeStatusPropertiesStub.calledWith('waiting')).to.be.true
