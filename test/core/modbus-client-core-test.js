@@ -16,7 +16,28 @@ const sinon = require('sinon')
 const chai = require('chai')
 const expect = chai.expect
 
+function snapshotCoreExports (mod) {
+  const snap = {}
+  for (const key of Object.keys(mod)) {
+    snap[key] = mod[key]
+  }
+  return snap
+}
+
+function restoreCoreExports (mod, snap) {
+  for (const key of Object.keys(snap)) {
+    mod[key] = snap[key]
+  }
+}
+
+const coreExportSnapshot = snapshotCoreExports(coreClientUnderTest)
+
 describe('Core Client Testing', function () {
+  after(function () {
+    sinon.restore()
+    restoreCoreExports(coreClientUnderTest, coreExportSnapshot)
+  })
+
   describe('readModbusByFunctionCode', () => {
     it('should call readModbusByFunctionCodeOne when msg.payload.fc is 1', () => {
       const node = {}

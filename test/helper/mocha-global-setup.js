@@ -3,6 +3,7 @@
  */
 'use strict'
 
+const sinon = require('sinon')
 const helper = require('node-red-node-test-helper')
 const { ModbusTestHelper } = require('./modbus-test-helper')
 const allModbusTestNodes = require('./all-modbus-test-nodes')
@@ -116,6 +117,7 @@ exports.mochaHooks = {
   },
 
   beforeEach (done) {
+    sinon.restore()
     globalTestHelper.cleanup()
     globalTestHelper.setupMocks({
       mockModbusSerial: true,
@@ -126,10 +128,12 @@ exports.mochaHooks = {
   },
 
   afterEach (done) {
+    sinon.restore()
     clearTestFlows(helper).then(() => done()).catch(() => done())
   },
 
   afterAll (done) {
+    sinon.restore()
     globalTestHelper.cleanup()
     globalTestHelper.setupMocks({
       mockModbusSerial: true,
