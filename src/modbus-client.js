@@ -25,6 +25,7 @@ module.exports = function (RED) {
   const coreModbusClient = require('./core/modbus-client-core')
   const { createFsmHandler, runInitConnection } = require('./core/client/modbus-fsm-handler')
   const { MESSAGE_ALLOWED_STATES_V6, isClientInactive, isClientReadyToSend } = require('./core/client/modbus-client-state')
+  const { buildTlsOptions, getTlsOptionsLogKeys } = require('./core/client/modbus-tls-options')
   const coreModbusQueue = require('./core/modbus-queue-core')
   const internalDebugLog = require('./core/modbus-logger').getDebugLogger('contribModbus:config:client')
   const { ModbusStateValidator } = require('./core/modbus-state-validator')
@@ -71,89 +72,22 @@ module.exports = function (RED) {
 
     // TLS Configuration with enhanced security
     this.tlsEnabled = config.tlsEnabled || false
-    const fs = require('fs')
 
-    // Helper function to load certificate content
-    const loadCertificate = (credentialKey) => {
-      let content = ''
-
-      // First try to get from Node-RED credentials
-      if (this.credentials && this.credentials[credentialKey]) {
-        content = this.credentials[credentialKey]
-      }
-      // Fallback to environment variables for security
-      const envKey = `MODBUS_TLS_${credentialKey.toUpperCase().replace('TLS', '')}`
-      if (!content && process.env[envKey]) {
-        internalDebugLog('Using environment variable for TLS:', envKey)
-        content = process.env[envKey]
-      }
-
-      return content
-    }
-
-    const resolveCertContent = (value) => {
-      if (!value) return ''
-      if (typeof value !== 'string') return value
-      if (value.includes('BEGIN')) return value
-      if (fs.existsSync(value)) {
-        try {
-          return fs.readFileSync(value, 'utf8')
-        } catch (err) {
-          if (node.showErrors) {
-            node.error(`Failed to read TLS certificate file: ${value}`)
-          }
-          return ''
-        }
-      }
-      return value
-    }
-
-    const resolveRejectUnauthorized = (legacyTls) => {
-      if (config.tlsRejectUnauthorized !== undefined) {
-        return config.tlsRejectUnauthorized !== false
-      }
-      if (config.rejectUnauthorized !== undefined) {
-        return config.rejectUnauthorized !== false
-      }
-      if (legacyTls.rejectUnauthorized !== undefined) {
-        return legacyTls.rejectUnauthorized !== false
-      }
-      return true
-    }
-
-    // Only build TLS options if TLS is enabled
     if (this.tlsEnabled) {
-      const legacyTls = (config.tlsOptions && typeof config.tlsOptions === 'object')
-        ? config.tlsOptions
-        : {}
-
-      this.tlsOptions = {
-        key: resolveCertContent(loadCertificate('tlsPrivateKey') || legacyTls.key || config.privateKey || ''),
-        cert: resolveCertContent(loadCertificate('tlsCertificate') || legacyTls.cert || config.certificate || ''),
-        ca: resolveCertContent(loadCertificate('tlsCa') || legacyTls.ca || config.ca || ''),
-        rejectUnauthorized: resolveRejectUnauthorized(legacyTls),
-        servername: config.tlsServername || config.servername || legacyTls.servername || this.tcpHost,
-        secureProtocol: config.tlsSecureProtocol || config.secureProtocol || legacyTls.secureProtocol || 'TLSv1_3_method',
-        checkServerIdentity: config.tlsCheckServerIdentity !== false && config.checkServerIdentity !== false
-          ? undefined
-          : () => undefined,
-        minVersion: legacyTls.minVersion || 'TLSv1.2'
-      }
-
-      Object.keys(legacyTls).forEach((key) => {
-        if (this.tlsOptions[key] === undefined || this.tlsOptions[key] === '') {
-          this.tlsOptions[key] = legacyTls[key]
+      this.tlsOptions = buildTlsOptions({
+        config,
+        credentials: this.credentials,
+        tcpHost: this.tcpHost,
+        env: process.env,
+        deps: {
+          onReadFileError: (filePath, err) => {
+            if (node.showErrors) {
+              node.error(`Failed to read TLS certificate file: ${filePath}`)
+            }
+          }
         }
       })
-
-      // Remove empty certificate fields
-      Object.keys(this.tlsOptions).forEach(key => {
-        if (this.tlsOptions[key] === '') {
-          delete this.tlsOptions[key]
-        }
-      })
-
-      internalDebugLog('TLS enabled with options:', Object.keys(this.tlsOptions))
+      internalDebugLog('TLS enabled with options:', getTlsOptionsLogKeys(this.tlsOptions))
     }
 
     this.serialPort = config.serialPort

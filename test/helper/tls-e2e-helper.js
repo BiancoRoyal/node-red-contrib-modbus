@@ -5,7 +5,6 @@ const path = require('path')
 const {
   baseServer,
   setupFcMocks,
-  deployFcFlow,
   waitForHelper,
   waitForTestNode,
   assertWriteFc,

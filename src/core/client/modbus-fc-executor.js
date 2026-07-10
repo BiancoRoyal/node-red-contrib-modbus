@@ -9,6 +9,7 @@ const legacyCore = require('../modbus-client-core')
 
 module.exports = {
   readModbusByFunctionCode: legacyCore.readModbusByFunctionCode,
+  writeModbusByFunctionCode: legacyCore.writeModbus,
   activateSendingOnSuccess: legacyCore.activateSendingOnSuccess,
   activateSendingOnFailure: legacyCore.activateSendingOnFailure
 }
