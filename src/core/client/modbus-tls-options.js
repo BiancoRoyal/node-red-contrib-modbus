@@ -121,10 +121,19 @@ function getTlsOptionsLogKeys (tlsOptions) {
   })
 }
 
+function buildTlsConnectOptions (params) {
+  const tls = buildTlsOptions(params)
+  if (!tls) {
+    return null
+  }
+  return { tls }
+}
+
 module.exports = {
   resolveCertContent,
   loadCertificateFromSources,
   resolveRejectUnauthorized,
   buildTlsOptions,
+  buildTlsConnectOptions,
   getTlsOptionsLogKeys
 }

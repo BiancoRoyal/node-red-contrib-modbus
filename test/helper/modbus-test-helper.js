@@ -30,11 +30,11 @@ class ModbusTestHelper {
   }
 
   /**
-   * Mock the @openp4nr/node-modbus library to prevent real network connections
+   * Mock the @plus4nodered/node-modbus library to prevent real network connections
    */
   mockModbusSerial () {
     try {
-      const modulePath = require.resolve('@openp4nr/node-modbus')
+      const modulePath = require.resolve('@plus4nodered/node-modbus')
 
       // Create comprehensive mock client
       const createMockClient = () => {
@@ -59,6 +59,10 @@ class ModbusTestHelper {
           return connectSuccess(resolveConnectCallback(args))
         })
 
+        mockClient.connectTCPSecure = sinon.stub().callsFake(function (...args) {
+          return connectSuccess(resolveConnectCallback(args))
+        })
+
         mockClient.connectTelnet = sinon.stub().callsFake(function (...args) {
           return connectSuccess(resolveConnectCallback(args))
         })
@@ -76,6 +80,14 @@ class ModbusTestHelper {
         })
 
         mockClient.connectRTUBuffered = sinon.stub().callsFake(function (...args) {
+          return connectSuccess(resolveConnectCallback(args))
+        })
+
+        mockClient.connectRTU = sinon.stub().callsFake(function (...args) {
+          return connectSuccess(resolveConnectCallback(args))
+        })
+
+        mockClient.connectAsciiSerial = sinon.stub().callsFake(function (...args) {
           return connectSuccess(resolveConnectCallback(args))
         })
 
@@ -175,7 +187,7 @@ class ModbusTestHelper {
       }
     } catch (error) {
       // If module not found, create stub
-      console.warn('Could not mock @openp4nr/node-modbus, module not found:', error.message)
+      console.warn('Could not mock @plus4nodered/node-modbus, module not found:', error.message)
     }
   }
 
@@ -398,7 +410,7 @@ class ModbusTestHelper {
     const operations = [
       'readCoils', 'readDiscreteInputs', 'readHoldingRegisters', 'readInputRegisters',
       'writeCoil', 'writeRegister', 'writeCoils', 'writeRegisters',
-      'connectTCP', 'connectRTUBuffered', 'connectSerial', 'close'
+      'connectTCP', 'connectTCPSecure', 'connectRTU', 'connectAsciiSerial', 'connectRTUBuffered', 'connectSerial', 'close'
     ]
 
     operations.forEach(op => {

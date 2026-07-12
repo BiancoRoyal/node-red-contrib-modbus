@@ -44,6 +44,7 @@ Legende: ✅ grün | 🔲 geplant | ⏭ skip/begründet | — nicht anwendbar
 |------|-----|----------|-----------------|
 | Deploy + register | ✅ | ✅ | ✅ |
 | FC5 flex-write (mock) | — | ✅ | 🔲 |
+| FC3 read (integration) | — | — | ✅ |
 | Reconnect | ✅ | 🔲 | 🔲 |
 | Timeout handling | ✅ | 🔲 | 🔲 |
 | Credentials / Env TLS | — | ✅ | 🔲 |

@@ -26,6 +26,7 @@ module.exports = function (RED) {
   const { createFsmHandler, runInitConnection } = require('./core/client/modbus-fsm-handler')
   const { MESSAGE_ALLOWED_STATES_V6, isClientInactive, isClientReadyToSend } = require('./core/client/modbus-client-state')
   const { buildTlsOptions, getTlsOptionsLogKeys } = require('./core/client/modbus-tls-options')
+  const { MODBUS_PACKAGE, connectModbusClientTransport } = require('./core/client/modbus-connect-factory')
   const coreModbusQueue = require('./core/modbus-queue-core')
   const internalDebugLog = require('./core/modbus-logger').getDebugLogger('contribModbus:config:client')
   const { ModbusStateValidator } = require('./core/modbus-state-validator')
@@ -42,7 +43,7 @@ module.exports = function (RED) {
     }
 
     // create an empty modbus client
-    const ModbusRTU = require('@openp4nr/node-modbus')
+    const ModbusRTU = require(MODBUS_PACKAGE)
 
     const unlimitedListeners = 0
     const minCommandDelayMilliseconds = 1
@@ -298,90 +299,6 @@ module.exports = function (RED) {
             node.stateService.send('FAILURE')
             return false
           }
-
-          try {
-            switch (node.tcpType) {
-              case 'C701': {
-                verboseLog('C701 port UDP bridge' + (node.tlsEnabled ? ' with TLS' : ''))
-                const c701Options = {
-                  port: node.tcpPort,
-                  autoOpen: true
-                }
-                if (node.tlsEnabled && node.tlsOptions) {
-                  Object.assign(c701Options, node.tlsOptions)
-                }
-                node.client.connectC701(node.tcpHost, c701Options).then(node.setTCPConnectionOptions)
-                  .then(node.setTCPConnected)
-                  .catch((err) => {
-                    node.modbusTcpErrorHandling(err)
-                    return false
-                  })
-                break
-              }
-              case 'TELNET': {
-                verboseLog('Telnet port' + (node.tlsEnabled ? ' with TLS' : ''))
-                const telnetOptions = {
-                  port: node.tcpPort,
-                  autoOpen: true
-                }
-                if (node.tlsEnabled && node.tlsOptions) {
-                  Object.assign(telnetOptions, node.tlsOptions)
-                }
-                node.client.connectTelnet(node.tcpHost, telnetOptions).then(node.setTCPConnectionOptions)
-                  .catch((err) => {
-                    node.modbusTcpErrorHandling(err)
-                    return false
-                  })
-                break
-              }
-              /* istanbul ignore next */
-              case 'TCP-RTU-BUFFERED': {
-                verboseLog('TCP RTU buffered port' + (node.tlsEnabled ? ' with TLS' : ''))
-                const tcpRtuOptions = {
-                  port: node.tcpPort,
-                  autoOpen: true
-                }
-                if (node.tlsEnabled && node.tlsOptions) {
-                  Object.assign(tcpRtuOptions, node.tlsOptions)
-                }
-                node.client.connectTcpRTUBuffered(node.tcpHost, tcpRtuOptions).then(node.setTCPConnectionOptions)
-                  .catch((err) => {
-                    node.modbusTcpErrorHandling(err)
-                    return false
-                  })
-                break
-              }
-              case 'UDP':
-                verboseLog('UDP port')
-                node.client.connectUDP(node.tcpHost, {
-                  port: node.tcpPort,
-                  autoOpen: true
-                }).then(node.setTCPConnectionOptions)
-                  .catch((err) => {
-                    node.modbusTcpErrorHandling(err)
-                    return false
-                  })
-                break
-              default: {
-                verboseLog('TCP port' + (node.tlsEnabled ? ' with TLS' : ''))
-                const tcpOptions = {
-                  port: node.tcpPort,
-                  autoOpen: true
-                }
-                if (node.tlsEnabled && node.tlsOptions) {
-                  Object.assign(tcpOptions, node.tlsOptions)
-                }
-                node.client.connectTCP(node.tcpHost, tcpOptions).then(node.setTCPConnectionOptions)
-                  .catch((err) => {
-                    node.modbusTcpErrorHandling(err)
-                    return false
-                  })
-              }
-            }
-          } /* istanbul ignore next */ catch (e) {
-            node.modbusTcpErrorHandling(e)
-            return false
-          }
         } else {
           /* istanbul ignore next */
           if (!coreModbusClient.checkUnitId(node.unit_id, node.clienttype)) {
@@ -399,54 +316,24 @@ module.exports = function (RED) {
             node.stateService.send('FAILURE')
             return false
           }
+        }
 
-          const serialPortOptions = {
-            baudRate: parseInt(node.serialBaudrate),
-            dataBits: parseInt(node.serialDatabits),
-            stopBits: parseInt(node.serialStopbits),
-            parity: node.serialParity,
-            autoOpen: false
-          }
-
-          try {
-            switch (node.serialType) {
-              case 'ASCII':
-                verboseLog('ASCII port serial')
-                // Make sure is parsed when string, otherwise just assign.
-                if (node.serialAsciiResponseStartDelimiter && typeof node.serialAsciiResponseStartDelimiter === 'string') {
-                  serialPortOptions.startOfSlaveFrameChar = parseInt(node.serialAsciiResponseStartDelimiter, 16)
-                } else {
-                  serialPortOptions.startOfSlaveFrameChar = node.serialAsciiResponseStartDelimiter
-                }
-                verboseLog('Using response delimiter: 0x' + serialPortOptions.startOfSlaveFrameChar.toString(16))
-
-                node.client.connectAsciiSerial(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
-                  .catch((err) => {
-                    node.modbusSerialErrorHandling(err)
-                    return false
-                  })
-                break
-              case 'RTU':
-                verboseLog('RTU port serial')
-                node.client.connectRTU(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
-                  .catch((err) => {
-                    node.modbusSerialErrorHandling(err)
-                    return false
-                  })
-                break
-              default:
-                verboseLog('RTU buffered port serial')
-                node.client.connectRTUBuffered(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
-                  .catch((err) => {
-                    node.modbusSerialErrorHandling(err)
-                    return false
-                  })
-                break
-            }
-          } /* istanbul ignore next */ catch (e) {
+        try {
+          connectModbusClientTransport(node, node.client, {
+            verboseLog,
+            modbusTcpErrorHandling: node.modbusTcpErrorHandling,
+            setTCPConnectionOptions: node.setTCPConnectionOptions,
+            setTCPConnected: node.setTCPConnected,
+            modbusSerialErrorHandling: node.modbusSerialErrorHandling,
+            setSerialConnectionOptions: node.setSerialConnectionOptions
+          })
+        } /* istanbul ignore next */ catch (e) {
+          if (node.clienttype === 'tcp') {
+            node.modbusTcpErrorHandling(e)
+          } else {
             node.modbusSerialErrorHandling(e)
-            return false
           }
+          return false
         }
       } /* istanbul ignore next */ catch (err) {
         node.modbusErrorHandling(err)
@@ -530,7 +417,7 @@ module.exports = function (RED) {
         coreModbusClient.modbusSerialDebug('modbus connection opened')
         node.client.setID(node.unit_id)
         node.client.setTimeout(parseInt(node.clientTimeout))
-        node.client._port.on('close', node.onModbusClose)
+        node.client.on('close', node.onModbusClose)
         node.stateService.send('CONNECT')
       } else {
         verboseLog('wrong state on connect serial ' + node.actualServiceState.value)

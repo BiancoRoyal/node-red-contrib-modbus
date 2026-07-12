@@ -37,7 +37,7 @@ const SUSPICIOUS_PATTERNS = [
 
 const PACKAGES_TO_CHECK = [
   'winston',
-  '@openp4nr/node-modbus',
+  '@plus4nodered/node-modbus',
   'jsmodbus',
   'serialport',
   'node-red'

@@ -20,6 +20,10 @@ de.biancoroyal.modbus.core.client.ModbusConnectionPool = de.biancoroyal.modbus.c
 de.biancoroyal.modbus.core.client.ModbusRetryHandler = de.biancoroyal.modbus.core.client.ModbusRetryHandler || require('./modbus-retry-handler').ModbusRetryHandler // eslint-disable-line no-use-before-define
 de.biancoroyal.modbus.core.client.ModbusDiagnostics = de.biancoroyal.modbus.core.client.ModbusDiagnostics || require('./modbus-diagnostics').ModbusDiagnostics // eslint-disable-line no-use-before-define
 
+de.biancoroyal.modbus.core.client.isModbusClientTransportOpen = function (client) {
+  return !!(client && client.isOpen === true)
+}
+
 de.biancoroyal.modbus.core.client.networkErrors = ['ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNRESET', 'ENETRESET',
   'ECONNABORTED', 'ECONNREFUSED', 'ENETUNREACH', 'ENOTCONN',
   'ESHUTDOWN', 'EHOSTDOWN', 'ENETDOWN', 'EWOULDBLOCK', 'EAGAIN', 'EHOSTUNREACH',
@@ -506,7 +510,7 @@ de.biancoroyal.modbus.core.client.customModbusMessage = function (node, msg, cb,
     return
   }
 
-  if (node.client._port && node.client._port._client && !node.client._port._client.readable) {
+  if (!coreClient.isModbusClientTransportOpen(node.client)) {
     if (!node.connectClient()) {
       coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg)
       return
@@ -552,7 +556,7 @@ de.biancoroyal.modbus.core.client.readModbus = function (node, msg, cb, cberr) {
     return
   }
 
-  if (node.client._port && node.client._port._client && !node.client._port._client.readable) {
+  if (!coreClient.isModbusClientTransportOpen(node.client)) {
     if (!node.connectClient()) {
       coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg)
       return
@@ -685,7 +689,7 @@ de.biancoroyal.modbus.core.client.writeModbus = function (node, msg, cb, cberr) 
     return
   }
 
-  if (node.client._port && node.client._port._client && !node.client._port._client.writable) {
+  if (!coreClient.isModbusClientTransportOpen(node.client)) {
     if (!node.connectClient()) {
       coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg)
       return

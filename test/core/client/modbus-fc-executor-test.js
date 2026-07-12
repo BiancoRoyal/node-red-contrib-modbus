@@ -56,7 +56,7 @@ describe('modbus-fc-executor', function () {
       const clock = sinon.useFakeTimers()
       const node = {
         client: {
-          _port: null,
+          isOpen: true,
           setTimeout: sinon.stub(),
           getTimeout: sinon.stub().returns(1000)
         },

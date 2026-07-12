@@ -1,4 +1,4 @@
-# [6.0.0](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.43.0...v6.0.0) (2026-07-05)
+# [6.0.0-alpha.3](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.43.0...v6.0.0-alpha.3) (2026-07-12)
 
 
 ### Bug Fixes
@@ -35,8 +35,10 @@
 ### Features
 
 * **basics:** add event handling system that can dispatch messages ([ad45ed4](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ad45ed43d75bfdef25845eb39155fdb5e7285766))
+* **client:** add configuration presets, advanced tab, and TLS editor fields (Phase F5) ([7b3a025](https://github.com/biancoroyal/node-red-contrib-modbus/commit/7b3a025b07805bca9ba85385292323d4418224a2))
 * **client:** add function to remove all listeners from the client ([e9718c3](https://github.com/biancoroyal/node-red-contrib-modbus/commit/e9718c3925bb7a55b7391f7da3c6268cfdd91873))
 * **client:** generate events and emit them with a two new functions ([a9404d5](https://github.com/biancoroyal/node-red-contrib-modbus/commit/a9404d5578d6be3233f2e267c648fee01ad4f87c))
+* **editor:** expose suppressNotReadyWarnings on I/O nodes and document presets (Phase F6) ([ccc60c8](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ccc60c844cae1976029cdfe0050e9fad64a5c00d))
 * **flex-fc-unit:** reexported all tests, changed some tests ([e8429e1](https://github.com/biancoroyal/node-red-contrib-modbus/commit/e8429e16b96d02294dadebd27989e8250b77448d))
 * **flex-fc:** add event handler interface, use the new dispatch system ([8e296c6](https://github.com/biancoroyal/node-red-contrib-modbus/commit/8e296c653fe98650f8086f3ae8fc8fb1a98909f4))
 * **flex-fc:** add load button ([04fb46e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/04fb46ed4d2764276b7bcfae1800f9ac342da85a))
@@ -62,6 +64,7 @@
 * **response-filter-flow:** reexported all tests ([7f9d445](https://github.com/biancoroyal/node-red-contrib-modbus/commit/7f9d4454dbb637e8bce86f4f99397375e371ddfa))
 * slowly moving tests to jest. ([27d971e](https://github.com/biancoroyal/node-red-contrib-modbus/commit/27d971eb97f415ea9d8c646e85dbd4191601d635))
 * **test-flow:** added tets flow for github issue 473 ([6130171](https://github.com/biancoroyal/node-red-contrib-modbus/commit/6130171e2542dc5c8a2c900b4f6b81d5f07367cf))
+* v6 client refactor, test infrastructure, and P4NR pipeline ([d840aca](https://github.com/biancoroyal/node-red-contrib-modbus/commit/d840acaac906fa2f2b46ae4b6c9257151688fb19))
 * **write:** add event handler interface, use the new dispatch system ([986f9d1](https://github.com/biancoroyal/node-red-contrib-modbus/commit/986f9d1116cfcdaddf76e48d12662593e075b518))
 
 

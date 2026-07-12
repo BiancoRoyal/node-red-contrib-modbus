@@ -331,16 +331,14 @@ describe('Client node Unit Testing', function () {
         modbusClientNode.client = {
           setID: sinon.spy(),
           setTimeout: sinon.spy(),
-          _port: {
-            on: sinon.spy()
-          }
+          on: sinon.spy()
         }
 
         modbusClientNode.openSerialClient()
 
         sinon.assert.calledWith(modbusClientNode.client.setTimeout, 1)
         sinon.assert.calledWith(modbusClientNode.client.setID, 1)
-        sinon.assert.calledWith(modbusClientNode.client._port.on, 'close', modbusClientNode.onModbusClose)
+        sinon.assert.calledWith(modbusClientNode.client.on, 'close', modbusClientNode.onModbusClose)
         done()
       })
     })

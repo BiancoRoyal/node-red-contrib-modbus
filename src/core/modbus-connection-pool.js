@@ -458,7 +458,8 @@ class ModbusConnectionPool extends EventEmitter {
    */
   async createModbusClient (config) {
     // This should be overridden or use connectionFactory
-    const ModbusRTU = require('@openp4nr/node-modbus')
+    const { MODBUS_PACKAGE } = require('./client/modbus-connect-factory')
+    const ModbusRTU = require(MODBUS_PACKAGE)
     const client = new ModbusRTU()
 
     if (config.type === 'tcp') {
@@ -506,8 +507,12 @@ class ModbusConnectionPool extends EventEmitter {
 
     try {
       // Perform a simple health check operation
-      if (connection.client.isOpen && typeof connection.client.isOpen === 'function') {
-        return connection.client.isOpen()
+      if (connection.client.isOpen === true) {
+        return true
+      }
+
+      if (connection.client.isOpen === false) {
+        return false
       }
 
       // Default to checking if client exists

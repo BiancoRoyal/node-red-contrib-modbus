@@ -509,11 +509,7 @@ describe('Core Client Testing', function () {
     it('should handle when the client port is not readable and connection fails', () => {
       const node = {
         client: {
-          _port: {
-            _client: {
-              readable: false
-            }
-          },
+          isOpen: false,
           getTimeout: sinon.stub().returns(100)
 
         },
@@ -528,6 +524,7 @@ describe('Core Client Testing', function () {
       const cb = sinon.stub()
       const cberr = sinon.stub()
 
+      coreClientUnderTest.activateSendingOnFailure = sinon.spy()
       coreClientUnderTest.customModbusMessage(node, msg, cb, cberr)
 
       sinon.assert.calledOnce(node.connectClient)
@@ -536,11 +533,7 @@ describe('Core Client Testing', function () {
     it('should handle when the client port is not readable and connection fails', () => {
       let node = {
         client: {
-          _port: {
-            _client: {
-              readable: true
-            }
-          },
+          isOpen: true,
           getTimeout: sinon.stub().returns(100),
           setTimeout: sinon.spy()
         },
@@ -592,6 +585,7 @@ describe('Core Client Testing', function () {
 
       node = {
         client: {
+          isOpen: true,
           getTimeout: sinon.stub().returns(1000),
           setTimeout: sinon.spy()
 
@@ -629,9 +623,7 @@ describe('Core Client Testing', function () {
       const node = {
         clienttype: 'serial',
         client: {
-          _port: {
-            _client: { readable: true }
-          },
+          isOpen: true,
           setTimeout: sinon.spy(),
           getTimeout: sinon.stub().returns(1000)
         },
@@ -657,9 +649,7 @@ describe('Core Client Testing', function () {
       const node = {
         clienttype: 'serial',
         client: {
-          _port: {
-            _client: { writable: true }
-          },
+          isOpen: true,
           setTimeout: sinon.spy(),
           getTimeout: sinon.stub().returns(1000)
         },
@@ -683,7 +673,7 @@ describe('Core Client Testing', function () {
     it('should call writeModbusByFunctionCodeSix for function code 6', () => {
       const node = {
         client: {
-          _port: { _client: { writable: true } },
+          isOpen: true,
           getTimeout: sinon.stub().returns(1000),
           setTimeout: sinon.spy()
         },
@@ -714,7 +704,11 @@ describe('Core Client Testing', function () {
 
     it('should activate sending on failure with error "Function Code Unknown" for unknown function code', async () => {
       const node = {
-        client: { setTimeout: sinon.spy() },
+        client: {
+          isOpen: true,
+          setTimeout: sinon.spy(),
+          getTimeout: sinon.stub().returns(1000)
+        },
         clienttype: 'serial',
         setUnitIdFromPayload: sinon.spy(),
         bufferCommands: false,
@@ -769,9 +763,7 @@ describe('Core Client Testing', function () {
     it('should reconnect and process write command when node client is not writable', (done) => {
       const node = {
         client: {
-          _port: {
-            _client: { writable: false }
-          },
+          isOpen: false,
           setTimeout: sinon.spy(),
           getTimeout: sinon.stub().returns(1000)
         },
@@ -1019,11 +1011,7 @@ describe('Core Client Testing', function () {
     it('should call writeModbusByFunctionCodeFifteen on FC 15', function (done) {
       const node = {
         client: {
-          _port: {
-            _client: {
-              writable: true
-            }
-          },
+          isOpen: true,
           getTimeout: sinon.stub().returns(1000),
           setTimeout: sinon.stub()
         },
@@ -1057,11 +1045,7 @@ describe('Core Client Testing', function () {
     it('should call activateSendingOnFailure and nodeLog on error', function (done) {
       const node = {
         client: {
-          _port: {
-            _client: {
-              writable: true
-            }
-          },
+          isOpen: true,
           getTimeout: sinon.stub().returns(1000),
           setTimeout: sinon.stub()
         },
@@ -1126,11 +1110,7 @@ describe('Core Client Testing', function () {
   it('should call activateSendingOnFailure when client connection fails', () => {
     const node = {
       client: {
-        _port: {
-          _client: {
-            readable: false
-          }
-        }
+        isOpen: false
       },
       connectClient: sinon.stub().returns(false)
     }
