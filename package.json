@@ -1,6 +1,6 @@
 {
   "name": "@plus4nodered/node-red-contrib-modbus",
-  "version": "6.0.0-alpha.1",
+  "version": "6.0.0-alpha.3",
   "description": "Modbus TCP, TLS, UDP and Serial client nodes for Node-RED. For server nodes, install @plus4nodered/node-red-contrib-modbus-server.",
   "private": true,
   "publishConfig": {

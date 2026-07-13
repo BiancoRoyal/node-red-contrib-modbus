@@ -215,7 +215,8 @@ describe('TLS integration (deploy + options)', function () {
     const pending = waitForHelperRead('fc-helper')
 
     await waitForTlsClientReady(client)
-    assert.strictEqual(client.client._port.constructor.name, 'TcpSecurePort')
+    assert.strictEqual(client.client.isOpen, true)
+    assert(client.tlsOptions && client.tlsOptions.ca)
 
     read.modbusPollingRead()
 

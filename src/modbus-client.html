@@ -41,7 +41,7 @@
       serialDatabits: {value: 8, required: true, validate: RED.validators.number()},
       serialStopbits: {value: 1, required: true, validate: RED.validators.number()},
       serialParity: {value: 'none', required: true},
-      serialConnectionDelay: {value: 100},
+      serialConnectionDelay: {value: 500},
       serialAsciiResponseStartDelimiter: {value: '0x3A'},
 
       unit_id: {value: 1},
@@ -57,7 +57,23 @@
 
       circuitBreakerEnabled: {value: false},
       retryEnabled: {value: false},
-      connectionPoolEnabled: {value: false}
+      connectionPoolEnabled: {value: false},
+      failureThreshold: {value: 5, validate: RED.validators.number()},
+      successThreshold: {value: 2, validate: RED.validators.number()},
+      circuitBreakerTimeout: {value: 10000, validate: RED.validators.number()},
+      circuitBreakerResetTimeout: {value: 30000, validate: RED.validators.number()},
+      maxRetries: {value: 3, validate: RED.validators.number()},
+      initialDelay: {value: 1000, validate: RED.validators.number()},
+      maxDelay: {value: 30000, validate: RED.validators.number()},
+      backoffMultiplier: {value: 2, validate: RED.validators.number()},
+      maxConnections: {value: 10, validate: RED.validators.number()},
+      maxConnectionsPerHost: {value: 3, validate: RED.validators.number()},
+      enableDiagnostics: {value: false},
+      metricsInterval: {value: 10000, validate: RED.validators.number()},
+      errorRateThreshold: {value: 10, validate: RED.validators.number()},
+      responseTimeThreshold: {value: 5000, validate: RED.validators.number()},
+      connectionFailureThreshold: {value: 20, validate: RED.validators.number()},
+      enableTimerTracking: {value: true}
     },
     label: function () {
       let node = this
@@ -86,6 +102,11 @@
       })
 
       tabs.addTab({
+        id: "modbus-tls-tab",
+        label: this._("modbus-contrib.tabs-label.tls")
+      })
+
+      tabs.addTab({
         id: "modbus-queues-tab",
         label: this._("modbus-contrib.tabs-label.queues")
       })
@@ -108,6 +129,39 @@
       let inputsAsciiExtras = $('#node-inputs-ascii-extras')
       let inputsTCP = $('#node-inputs-modbus-tcp')
       let inputsTLS = $('#node-inputs-modbus-tls')
+      let tlsTabUnavailable = $('#node-inputs-modbus-tls-unavailable')
+
+      function setTlsTabVisible (show) {
+        $('#node-input-modbus-tabs').children().each(function () {
+          const $link = $(this).find('a')
+          if ($link.length && $link.attr('href') === '#modbus-tls-tab') {
+            $(this).toggle(!!show)
+          }
+        })
+        if (!show && $('#modbus-tls-tab').is(':visible')) {
+          $('#node-input-modbus-tabs a[href="#modbus-settings-tab"]').trigger('click')
+        }
+      }
+
+      function updateTlsOptionsVisibility () {
+        if ($('#node-config-input-tlsEnabled').is(':checked')) {
+          inputsTLS.show()
+        } else {
+          inputsTLS.hide()
+        }
+      }
+
+      function updateTlsTabContent () {
+        const isTcp = clientTypeSelector.val() === 'tcp'
+        setTlsTabVisible(isTcp)
+        if (isTcp) {
+          tlsTabUnavailable.hide()
+          updateTlsOptionsVisibility()
+        } else {
+          tlsTabUnavailable.show()
+          inputsTLS.hide()
+        }
+      }
 
       clientTypeSelector.on('focus', function () {
         previous = this.value
@@ -200,6 +254,7 @@
           default:
             break
         }
+        updateTlsTabContent()
       })
 
       serialTypeSelector.on('focus').change(function () {
@@ -215,20 +270,23 @@
       })
       
       // TLS checkbox toggle handler
-      $('#node-config-input-tlsEnabled').change(function() {
-        if ($(this).is(':checked')) {
-          inputsTLS.show()
-        } else {
-          inputsTLS.hide()
-        }
+      $('#node-config-input-tlsEnabled').change(function () {
+        updateTlsOptionsVisibility()
       })
-      
-      // Initialize TLS options visibility
-      if (node.tlsEnabled) {
-        inputsTLS.show()
-      } else {
-        inputsTLS.hide()
+
+      clientTypeSelector.trigger('change')
+      updateTlsTabContent()
+
+      function updateAdvancedPanels () {
+        $('#advanced-circuit-breaker-fields').toggle($('#node-config-input-circuitBreakerEnabled').is(':checked'))
+        $('#advanced-retry-fields').toggle($('#node-config-input-retryEnabled').is(':checked'))
+        $('#advanced-pool-fields').toggle($('#node-config-input-connectionPoolEnabled').is(':checked'))
+        $('#advanced-diagnostics-fields').toggle($('#node-config-input-enableDiagnostics').is(':checked'))
       }
+
+      $('#node-config-input-circuitBreakerEnabled, #node-config-input-retryEnabled, #node-config-input-connectionPoolEnabled, #node-config-input-enableDiagnostics')
+        .on('change', updateAdvancedPanels)
+      updateAdvancedPanels()
 
       $('#node-config-input-configPreset').on('change', function () {
         const presetId = $(this).val()
@@ -254,6 +312,7 @@
           } else {
             $('#node-config-input-tlsEnabled').prop('checked', false).trigger('change')
           }
+          updateTlsTabContent()
         })
       })
 
@@ -335,59 +394,6 @@
                         <option value="C701">C701</option>
                         <option value="UDP">UDP</option>
                     </select>
-                </div>
-                <div class="form-row">
-                    <label style="min-width:190px" for="node-config-input-tlsEnabled">
-                        <i class="fa fa-lock"></i> <span data-i18n="modbus-contrib.label.enableTls">Enable TLS/SSL</span>
-                    </label>
-                    <input type="checkbox" id="node-config-input-tlsEnabled" style="max-width:30px">
-                </div>
-                <div id="node-inputs-modbus-tls" style="display:none">
-                    <div class="form-row">
-                        <label for="node-config-input-tlsPrivateKey">
-                            <i class="fa fa-key"></i> <span data-i18n="modbus-contrib.label.tlsPrivateKey">Private Key</span>
-                        </label>
-                        <input type="text" id="node-config-input-tlsPrivateKey" placeholder="/path/to/client-key.pem or paste PEM content">
-                    </div>
-                    <div class="form-row">
-                        <label for="node-config-input-tlsCertificate">
-                            <i class="fa fa-certificate"></i> <span data-i18n="modbus-contrib.label.tlsCertificate">Certificate</span>
-                        </label>
-                        <input type="text" id="node-config-input-tlsCertificate" placeholder="/path/to/client-cert.pem or paste PEM content">
-                    </div>
-                    <div class="form-row">
-                        <label for="node-config-input-tlsCa">
-                            <i class="fa fa-shield"></i> <span data-i18n="modbus-contrib.label.tlsCa">CA Certificate</span>
-                        </label>
-                        <input type="text" id="node-config-input-tlsCa" placeholder="/path/to/ca-cert.pem or paste PEM content">
-                    </div>
-                    <div class="form-row">
-                        <label style="min-width:190px" for="node-config-input-tlsRejectUnauthorized">
-                            <i class="fa fa-check"></i> <span data-i18n="modbus-contrib.label.tlsRejectUnauthorized">Reject Unauthorized</span>
-                        </label>
-                        <input type="checkbox" id="node-config-input-tlsRejectUnauthorized" style="max-width:30px" checked>
-                    </div>
-                    <div class="form-row">
-                        <label for="node-config-input-tlsServername">
-                            <i class="fa fa-server"></i> <span data-i18n="modbus-contrib.label.tlsServername">Server Name</span>
-                        </label>
-                        <input type="text" id="node-config-input-tlsServername" placeholder="Leave empty to use host">
-                    </div>
-                    <div class="form-row">
-                        <label for="node-config-input-tlsSecureProtocol">
-                            <i class="fa fa-lock"></i> <span data-i18n="modbus-contrib.label.tlsSecureProtocol">Secure Protocol</span>
-                        </label>
-                        <select id="node-config-input-tlsSecureProtocol" style="width:220px;">
-                            <option value="TLSv1_3_method">TLSv1.3</option>
-                            <option value="TLSv1_2_method">TLSv1.2</option>
-                        </select>
-                    </div>
-                    <div class="form-row">
-                        <label style="min-width:190px" for="node-config-input-tlsCheckServerIdentity">
-                            <i class="fa fa-id-card"></i> <span data-i18n="modbus-contrib.label.tlsCheckServerIdentity">Check Server Identity</span>
-                        </label>
-                        <input type="checkbox" id="node-config-input-tlsCheckServerIdentity" style="max-width:30px" checked>
-                    </div>
                 </div>
             </div>
             <div id="node-inputs-modbus-serial">
@@ -485,6 +491,69 @@
                 <input type="text" id="node-config-input-reconnectTimeout" placeholder="2000" style="max-width:80px">
             </div>
         </div>
+        <div id="modbus-tls-tab" style="display:none">
+            <div id="node-inputs-modbus-tls-unavailable" class="form-row" style="display:none">
+                <p><i class="fa fa-info-circle"></i> <span data-i18n="modbus-contrib.label.tlsTabTcpOnly">TLS is available for TCP clients only. Switch Type to TCP on the Settings tab.</span></p>
+            </div>
+            <div id="node-inputs-modbus-tls-panel">
+                <div class="form-row">
+                    <p class="form-tips"><i class="fa fa-info-circle"></i> <span data-i18n="modbus-contrib.label.tlsDefaultTcpHint">TLS applies to TCP Type DEFAULT only (connectTCPSecure). Other TCP types connect without TLS.</span></p>
+                </div>
+                <div class="form-row">
+                    <label style="min-width:190px" for="node-config-input-tlsEnabled">
+                        <i class="fa fa-lock"></i> <span data-i18n="modbus-contrib.label.enableTls">Enable TLS/SSL</span>
+                    </label>
+                    <input type="checkbox" id="node-config-input-tlsEnabled" style="max-width:30px">
+                </div>
+                <div id="node-inputs-modbus-tls" style="display:none">
+                    <div class="form-row">
+                        <label for="node-config-input-tlsPrivateKey">
+                            <i class="fa fa-key"></i> <span data-i18n="modbus-contrib.label.tlsPrivateKey">Private Key</span>
+                        </label>
+                        <input type="text" id="node-config-input-tlsPrivateKey" placeholder="/path/to/client-key.pem or paste PEM content">
+                    </div>
+                    <div class="form-row">
+                        <label for="node-config-input-tlsCertificate">
+                            <i class="fa fa-certificate"></i> <span data-i18n="modbus-contrib.label.tlsCertificate">Certificate</span>
+                        </label>
+                        <input type="text" id="node-config-input-tlsCertificate" placeholder="/path/to/client-cert.pem or paste PEM content">
+                    </div>
+                    <div class="form-row">
+                        <label for="node-config-input-tlsCa">
+                            <i class="fa fa-shield"></i> <span data-i18n="modbus-contrib.label.tlsCa">CA Certificate</span>
+                        </label>
+                        <input type="text" id="node-config-input-tlsCa" placeholder="/path/to/ca-cert.pem or paste PEM content">
+                    </div>
+                    <div class="form-row">
+                        <label style="min-width:190px" for="node-config-input-tlsRejectUnauthorized">
+                            <i class="fa fa-check"></i> <span data-i18n="modbus-contrib.label.tlsRejectUnauthorized">Reject Unauthorized</span>
+                        </label>
+                        <input type="checkbox" id="node-config-input-tlsRejectUnauthorized" style="max-width:30px" checked>
+                    </div>
+                    <div class="form-row">
+                        <label for="node-config-input-tlsServername">
+                            <i class="fa fa-server"></i> <span data-i18n="modbus-contrib.label.tlsServername">Server Name</span>
+                        </label>
+                        <input type="text" id="node-config-input-tlsServername" placeholder="Leave empty to use host">
+                    </div>
+                    <div class="form-row">
+                        <label for="node-config-input-tlsSecureProtocol">
+                            <i class="fa fa-lock"></i> <span data-i18n="modbus-contrib.label.tlsSecureProtocol">Secure Protocol</span>
+                        </label>
+                        <select id="node-config-input-tlsSecureProtocol" style="width:220px;">
+                            <option value="TLSv1_3_method">TLSv1.3</option>
+                            <option value="TLSv1_2_method">TLSv1.2</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label style="min-width:190px" for="node-config-input-tlsCheckServerIdentity">
+                            <i class="fa fa-id-card"></i> <span data-i18n="modbus-contrib.label.tlsCheckServerIdentity">Check Server Identity</span>
+                        </label>
+                        <input type="checkbox" id="node-config-input-tlsCheckServerIdentity" style="max-width:30px" checked>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="modbus-queues-tab" style="display:none">
             <div class="form-row">
                 <label style="min-width:190px" for="node-config-input-parallelUnitIdsAllowed"><i class="fa fa-th"></i> <span
@@ -548,17 +617,97 @@
                 </label>
                 <input type="checkbox" id="node-config-input-circuitBreakerEnabled" style="max-width:30px">
             </div>
+            <div id="advanced-circuit-breaker-fields">
+                <div class="form-row">
+                    <label for="node-config-input-failureThreshold"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.failureThreshold">Failure threshold</span></label>
+                    <input type="text" id="node-config-input-failureThreshold" style="max-width:80px">
+                </div>
+                <div class="form-row">
+                    <label for="node-config-input-successThreshold"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.successThreshold">Success threshold</span></label>
+                    <input type="text" id="node-config-input-successThreshold" style="max-width:80px">
+                </div>
+                <div class="form-row">
+                    <label for="node-config-input-circuitBreakerTimeout"><i class="icon-time"></i> <span data-i18n="modbus-contrib.label.circuitBreakerTimeout">Open timeout (ms)</span></label>
+                    <input type="text" id="node-config-input-circuitBreakerTimeout" style="max-width:100px">
+                </div>
+                <div class="form-row">
+                    <label for="node-config-input-circuitBreakerResetTimeout"><i class="icon-time"></i> <span data-i18n="modbus-contrib.label.circuitBreakerResetTimeout">Reset timeout (ms)</span></label>
+                    <input type="text" id="node-config-input-circuitBreakerResetTimeout" style="max-width:100px">
+                </div>
+            </div>
+            <hr>
             <div class="form-row">
                 <label style="min-width:190px" for="node-config-input-retryEnabled">
                     <i class="fa fa-repeat"></i> <span data-i18n="modbus-contrib.label.retryEnabled">Enable Retry Handler</span>
                 </label>
                 <input type="checkbox" id="node-config-input-retryEnabled" style="max-width:30px">
             </div>
+            <div id="advanced-retry-fields">
+                <div class="form-row">
+                    <label for="node-config-input-maxRetries"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.maxRetries">Max retries</span></label>
+                    <input type="text" id="node-config-input-maxRetries" style="max-width:80px">
+                </div>
+                <div class="form-row">
+                    <label for="node-config-input-initialDelay"><i class="icon-time"></i> <span data-i18n="modbus-contrib.label.initialDelay">Initial delay (ms)</span></label>
+                    <input type="text" id="node-config-input-initialDelay" style="max-width:100px">
+                </div>
+                <div class="form-row">
+                    <label for="node-config-input-maxDelay"><i class="icon-time"></i> <span data-i18n="modbus-contrib.label.maxDelay">Max delay (ms)</span></label>
+                    <input type="text" id="node-config-input-maxDelay" style="max-width:100px">
+                </div>
+                <div class="form-row">
+                    <label for="node-config-input-backoffMultiplier"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.backoffMultiplier">Backoff multiplier</span></label>
+                    <input type="text" id="node-config-input-backoffMultiplier" style="max-width:80px">
+                </div>
+            </div>
+            <hr>
             <div class="form-row">
                 <label style="min-width:190px" for="node-config-input-connectionPoolEnabled">
                     <i class="fa fa-database"></i> <span data-i18n="modbus-contrib.label.connectionPoolEnabled">Enable Connection Pool</span>
                 </label>
                 <input type="checkbox" id="node-config-input-connectionPoolEnabled" style="max-width:30px">
+            </div>
+            <div id="advanced-pool-fields">
+                <div class="form-row">
+                    <label for="node-config-input-maxConnections"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.maxConnections">Max connections</span></label>
+                    <input type="text" id="node-config-input-maxConnections" style="max-width:80px">
+                </div>
+                <div class="form-row">
+                    <label for="node-config-input-maxConnectionsPerHost"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.maxConnectionsPerHost">Max per host</span></label>
+                    <input type="text" id="node-config-input-maxConnectionsPerHost" style="max-width:80px">
+                </div>
+            </div>
+            <hr>
+            <div class="form-row">
+                <label style="min-width:190px" for="node-config-input-enableDiagnostics">
+                    <i class="fa fa-line-chart"></i> <span data-i18n="modbus-contrib.label.enableDiagnostics">Enable Diagnostics</span>
+                </label>
+                <input type="checkbox" id="node-config-input-enableDiagnostics" style="max-width:30px">
+            </div>
+            <div id="advanced-diagnostics-fields">
+                <div class="form-row">
+                    <label for="node-config-input-metricsInterval"><i class="icon-time"></i> <span data-i18n="modbus-contrib.label.metricsInterval">Metrics interval (ms)</span></label>
+                    <input type="text" id="node-config-input-metricsInterval" style="max-width:100px">
+                </div>
+                <div class="form-row">
+                    <label for="node-config-input-errorRateThreshold"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.errorRateThreshold">Error rate alert (%)</span></label>
+                    <input type="text" id="node-config-input-errorRateThreshold" style="max-width:80px">
+                </div>
+                <div class="form-row">
+                    <label for="node-config-input-responseTimeThreshold"><i class="icon-time"></i> <span data-i18n="modbus-contrib.label.responseTimeThreshold">Response time alert (ms)</span></label>
+                    <input type="text" id="node-config-input-responseTimeThreshold" style="max-width:100px">
+                </div>
+                <div class="form-row">
+                    <label for="node-config-input-connectionFailureThreshold"><i class="icon-bookmark"></i> <span data-i18n="modbus-contrib.label.connectionFailureThreshold">Connection failure alert (%)</span></label>
+                    <input type="text" id="node-config-input-connectionFailureThreshold" style="max-width:80px">
+                </div>
+            </div>
+            <hr>
+            <div class="form-row">
+                <label style="min-width:190px" for="node-config-input-enableTimerTracking">
+                    <i class="fa fa-clock-o"></i> <span data-i18n="modbus-contrib.label.enableTimerTracking">Timer tracking</span>
+                </label>
+                <input type="checkbox" id="node-config-input-enableTimerTracking" style="max-width:30px" checked>
             </div>
         </div>
     </div>
@@ -602,7 +751,19 @@
         <ul>
             <li>Host - IP address</li>
             <li>Port (default 502)</li>
+            <li>TCP Type (DEFAULT, RTU-BUFFERED, TELNET, C701, UDP)</li>
         </ul>
+
+        <h3>TLS</h3>
+        <p>Configure TLS on the <b>TLS</b> tab (TCP clients only). Uses <code>connectTCPSecure</code> when TCP Type is DEFAULT.</p>
+        <ul>
+            <li>Enable TLS/SSL</li>
+            <li>Private Key, Certificate, CA (file path or PEM content; stored as credentials)</li>
+            <li>Reject Unauthorized, Server Name (SNI), Secure Protocol, Check Server Identity</li>
+        </ul>
+
+        <h3>Advanced (Resilience)</h3>
+        <p>Circuit breaker, retry handler, connection pool, and diagnostics — each opt-in via toggles on the <b>Advanced</b> tab.</p>
 
         <h3>Serial</h3>
         <ul>

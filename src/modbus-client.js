@@ -32,9 +32,59 @@ module.exports = function (RED) {
   const { ModbusStateValidator } = require('./core/modbus-state-validator')
   const { ModbusTimerManager } = require('./core/modbus-timer-manager')
 
+  function normalizeClientConfig (config) {
+    if (config.retryHandlerEnabled === true && config.retryEnabled !== true) {
+      config.retryEnabled = true
+    }
+    if (config.diagnosticsEnabled === true && config.enableDiagnostics !== true) {
+      config.enableDiagnostics = true
+    }
+    if (config.retryHandlerMaxRetries != null && config.maxRetries == null) {
+      config.maxRetries = config.retryHandlerMaxRetries
+    }
+    if (config.retryHandlerInitialDelay != null && config.initialDelay == null) {
+      config.initialDelay = config.retryHandlerInitialDelay
+    }
+    if (config.retryHandlerMaxDelay != null && config.maxDelay == null) {
+      config.maxDelay = config.retryHandlerMaxDelay
+    }
+    if (config.retryHandlerBackoffMultiplier != null && config.backoffMultiplier == null) {
+      config.backoffMultiplier = config.retryHandlerBackoffMultiplier
+    }
+    if (config.circuitBreakerFailureThreshold != null && config.failureThreshold == null) {
+      config.failureThreshold = config.circuitBreakerFailureThreshold
+    }
+    if (config.circuitBreakerSuccessThreshold != null && config.successThreshold == null) {
+      config.successThreshold = config.circuitBreakerSuccessThreshold
+    }
+    if (config.connectionPoolMaxConnections != null && config.maxConnections == null) {
+      config.maxConnections = config.connectionPoolMaxConnections
+    }
+    if (config.connectionPoolMaxPerHost != null && config.maxConnectionsPerHost == null) {
+      config.maxConnectionsPerHost = config.connectionPoolMaxPerHost
+    }
+    if (config.diagnosticsMetricsInterval != null && config.metricsInterval == null) {
+      config.metricsInterval = config.diagnosticsMetricsInterval
+    }
+    if (config.tlsRejectUnauthorized === undefined && config.rejectUnauthorized !== undefined) {
+      config.tlsRejectUnauthorized = config.rejectUnauthorized
+    }
+    if (!config.tlsServername && config.servername) {
+      config.tlsServername = config.servername
+    }
+    if (!config.tlsSecureProtocol && config.secureProtocol) {
+      config.tlsSecureProtocol = config.secureProtocol
+    }
+    if (config.tlsCheckServerIdentity === undefined && config.checkServerIdentity !== undefined) {
+      config.tlsCheckServerIdentity = config.checkServerIdentity
+    }
+  }
+
   function ModbusClientNode (config) {
     RED.nodes.createNode(this, config)
     const node = this
+
+    normalizeClientConfig(config)
 
     if (node.type === 'modbus-client-tls') {
       config.tlsEnabled = true
@@ -161,15 +211,22 @@ module.exports = function (RED) {
       enableCircuitBreaker: config.circuitBreakerEnabled === true || config.enableCircuitBreaker === true,
       enableConnectionPool: config.connectionPoolEnabled === true || config.enableConnectionPool === true,
       enableRetryHandler: config.retryEnabled === true || config.enableRetryHandler === true,
-      enableDiagnostics: config.enableDiagnostics !== false,
-      failureThreshold: config.failureThreshold || 5,
-      successThreshold: config.successThreshold || 2,
-      maxRetries: config.maxRetries || 3,
-      initialDelay: config.initialDelay || 1000,
+      enableDiagnostics: config.enableDiagnostics === true,
+      failureThreshold: parseInt(config.failureThreshold, 10) || 5,
+      successThreshold: parseInt(config.successThreshold, 10) || 2,
+      timeout: parseInt(config.circuitBreakerTimeout, 10) || 10000,
+      resetTimeout: parseInt(config.circuitBreakerResetTimeout, 10) || 30000,
+      maxRetries: parseInt(config.maxRetries, 10) || 3,
+      initialDelay: parseInt(config.initialDelay, 10) || 1000,
+      maxDelay: parseInt(config.maxDelay, 10) || 30000,
+      backoffMultiplier: parseFloat(config.backoffMultiplier) || 2,
+      maxConnections: parseInt(config.maxConnections, 10) || 10,
+      maxConnectionsPerHost: parseInt(config.maxConnectionsPerHost, 10) || 3,
+      metricsInterval: parseInt(config.metricsInterval, 10) || 10000,
       alertThresholds: {
-        errorRate: config.errorRateThreshold || 10,
-        responseTime: config.responseTimeThreshold || 5000,
-        connectionFailure: config.connectionFailureThreshold || 20
+        errorRate: parseInt(config.errorRateThreshold, 10) || 10,
+        responseTime: parseInt(config.responseTimeThreshold, 10) || 5000,
+        connectionFailure: parseInt(config.connectionFailureThreshold, 10) || 20
       }
     }
 

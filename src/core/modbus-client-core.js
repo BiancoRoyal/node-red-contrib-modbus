@@ -126,7 +126,7 @@ de.biancoroyal.modbus.core.client.cleanupResilienceModules = function (node) {
  */
 de.biancoroyal.modbus.core.client.initializeResilienceModules = function (node, options = {}) {
   // Initialize Circuit Breaker
-  if (!node.circuitBreaker && options.enableCircuitBreaker !== false) {
+  if (!node.circuitBreaker && options.enableCircuitBreaker === true) {
     const circuitBreakerOptions = {
       failureThreshold: options.failureThreshold || 5,
       successThreshold: options.successThreshold || 2,
@@ -181,7 +181,7 @@ de.biancoroyal.modbus.core.client.initializeResilienceModules = function (node, 
   }
 
   // Initialize Retry Handler
-  if (!node.retryHandler && options.enableRetryHandler !== false) {
+  if (!node.retryHandler && options.enableRetryHandler === true) {
     const retryOptions = {
       maxRetries: options.maxRetries || 3,
       initialDelay: options.initialDelay || 1000,
@@ -202,7 +202,7 @@ de.biancoroyal.modbus.core.client.initializeResilienceModules = function (node, 
   }
 
   // Initialize Diagnostics
-  if (!node.diagnostics && options.enableDiagnostics !== false) {
+  if (!node.diagnostics && options.enableDiagnostics === true) {
     const diagnosticsOptions = {
       enableMetrics: options.enableMetrics !== false,
       enableTracing: options.enableTracing || false,

@@ -1,4 +1,4 @@
-# [6.0.0-alpha.3](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.43.0...v6.0.0-alpha.3) (2026-07-12)
+# [6.0.0-alpha.3](https://github.com/biancoroyal/node-red-contrib-modbus/compare/v5.43.0...v6.0.0-alpha.3) (2026-07-13)
 
 
 ### Bug Fixes
@@ -37,6 +37,7 @@
 * **basics:** add event handling system that can dispatch messages ([ad45ed4](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ad45ed43d75bfdef25845eb39155fdb5e7285766))
 * **client:** add configuration presets, advanced tab, and TLS editor fields (Phase F5) ([7b3a025](https://github.com/biancoroyal/node-red-contrib-modbus/commit/7b3a025b07805bca9ba85385292323d4418224a2))
 * **client:** add function to remove all listeners from the client ([e9718c3](https://github.com/biancoroyal/node-red-contrib-modbus/commit/e9718c3925bb7a55b7391f7da3c6268cfdd91873))
+* **client:** align modbus transport with SDK 10.0.0-beta.3 (Phase A) ([0e05c09](https://github.com/biancoroyal/node-red-contrib-modbus/commit/0e05c09b63837e7aa4ba35521e6a902214e6b568))
 * **client:** generate events and emit them with a two new functions ([a9404d5](https://github.com/biancoroyal/node-red-contrib-modbus/commit/a9404d5578d6be3233f2e267c648fee01ad4f87c))
 * **editor:** expose suppressNotReadyWarnings on I/O nodes and document presets (Phase F6) ([ccc60c8](https://github.com/biancoroyal/node-red-contrib-modbus/commit/ccc60c844cae1976029cdfe0050e9fad64a5c00d))
 * **flex-fc-unit:** reexported all tests, changed some tests ([e8429e1](https://github.com/biancoroyal/node-red-contrib-modbus/commit/e8429e16b96d02294dadebd27989e8250b77448d))
