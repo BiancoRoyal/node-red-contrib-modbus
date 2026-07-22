@@ -11,7 +11,7 @@
     "jsmodbus": "~4.0.10",
     "line-by-line": "~0.1.6",
     "source-map-support": "~0.5.21",
-    "underscore": "~1.13.7"
+    "underscore": "1.13.8"
   },
   "optionalDependencies": {
     "@serialport/list": "~12.0.0",
