@@ -381,6 +381,38 @@ describe('Flex Getter node Testing', function () {
         })
       })
     })
+
+    it('should sendEmptyMsgOnFail when client is inactive (#578)', function (done) {
+      const msg = { payload: { fc: 3, unitid: 1, address: 0, quantity: 1 } }
+      const flow = Array.from(testFlows.testNodeShouldBeLoadedFlow)
+
+      getPort().then((port) => {
+        flow[2].serverPort = port
+        flow[3].tcpPort = port
+
+        helper.load(testFlexGetterNodes, flow, function () {
+          const modbusFlexGetter = helper.getNode('bc5a61b6.a3972')
+          const modbusClient = helper.getNode('92e7bf63.2efd7')
+          modbusFlexGetter.emptyMsgOnFail = true
+
+          const isNotReadyForInputStub = sinon.stub(modbusFlexGetter, 'isNotReadyForInput').returns(false)
+          const isInactiveStub = sinon.stub(modbusClient, 'isInactive').returns(true)
+          const invalidPayloadInStub = sinon.stub(mBasics, 'invalidPayloadIn').returns(false)
+          const sendEmptyMsgOnFailStub = sinon.stub(mBasics, 'sendEmptyMsgOnFail')
+
+          modbusFlexGetter.emit('input', msg)
+
+          sinon.assert.calledOnce(sendEmptyMsgOnFailStub)
+          sinon.assert.match(sendEmptyMsgOnFailStub.firstCall.args[1].message, /inactive client/)
+
+          isNotReadyForInputStub.restore()
+          isInactiveStub.restore()
+          invalidPayloadInStub.restore()
+          sendEmptyMsgOnFailStub.restore()
+          done()
+        })
+      })
+    })
     it('should process a valid Modbus message and call the required methods', function (done) {
       const msg = { payload: 'valid' }
       const flow = Array.from(testFlows.testNodeShouldBeLoadedFlow)

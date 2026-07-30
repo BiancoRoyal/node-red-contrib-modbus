@@ -43,7 +43,38 @@ coreClient.stateLogEnabled = false
 
 coreClient.networkErrors = ['ESOCKETTIMEDOUT', 'ETIMEDOUT', 'ECONNRESET', 'ENETRESET',
   'ECONNABORTED', 'ECONNREFUSED', 'ENETUNREACH', 'ENOTCONN',
-  'ESHUTDOWN', 'EHOSTDOWN', 'ENETDOWN', 'EWOULDBLOCK', 'EAGAIN', 'EHOSTUNREACH']
+  'ESHUTDOWN', 'EHOSTDOWN', 'ENETDOWN', 'EWOULDBLOCK', 'EAGAIN', 'EHOSTUNREACH',
+  'EAI_AGAIN', 'ENOTFOUND']
+
+/** States where ACTIVATE is safe (drain / ready) — not recovery Fake-Ready. */
+coreClient.activateAllowedStates = ['connected', 'activated', 'queueing', 'sending', 'empty', 'reading', 'writing']
+
+/**
+ * Timeout, DNS, and transport errors that must enter FAILURE/BREAK recovery
+ * (FR-TO-01 / FR-TO-02 — client-timeout-reconnect-honesty).
+ */
+coreClient.isRecoverableModbusError = function (err) {
+  if (!err) return false
+  if (err.errno && coreClient.networkErrors.includes(err.errno)) return true
+  if (err.code && coreClient.networkErrors.includes(err.code)) return true
+  const msg = (err.message && String(err.message)) || ''
+  if (msg === 'Timed out' || msg.indexOf('Timed out') !== -1) return true
+  if (msg.indexOf('EAI_AGAIN') !== -1 || msg.indexOf('ENOTFOUND') !== -1) return true
+  if (msg.indexOf('getaddrinfo') !== -1) return true
+  if (msg === 'Port Not Open') return true
+  return false
+}
+
+coreClient.canSendActivate = function (node) {
+  const value = node && node.actualServiceState && node.actualServiceState.value
+  return !!value && coreClient.activateAllowedStates.indexOf(value) !== -1
+}
+
+coreClient.sendActivateIfAllowed = function (node) {
+  if (coreClient.canSendActivate(node)) {
+    node.stateService.send('ACTIVATE')
+  }
+}
 
 coreClient.createStateMachineService = function () {
   this.stateLogEnabled = false
@@ -53,7 +84,8 @@ coreClient.createStateMachineService = function () {
     initial: 'new',
     states: {
       new: { on: { INIT: 'init', BREAK: 'broken', STOP: 'stopped' } },
-      broken: { on: { INIT: 'init', STOP: 'stopped', FAILURE: 'failed', ACTIVATE: 'activated', RECONNECT: 'reconnecting' } },
+      // No ACTIVATE from broken — late completion must not Fake-Ready (FR-FSM-ACT)
+      broken: { on: { INIT: 'init', STOP: 'stopped', FAILURE: 'failed', RECONNECT: 'reconnecting' } },
       reconnecting: { on: { INIT: 'init', STOP: 'stopped' } },
       init: { on: { OPENSERIAL: 'opened', CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', STOP: 'stopped', SWITCH: 'switch' } },
       opened: { on: { CONNECT: 'connected', BREAK: 'broken', FAILURE: 'failed', CLOSE: 'closed', STOP: 'stopped', SWITCH: 'switch' } },
@@ -139,7 +171,7 @@ coreClient.activateSendingOnSuccess = function (node, cb, cberr, resp, msg) {
   }).catch(function (err) {
     cberr(err, msg)
   }).finally(function () {
-    node.stateService.send('ACTIVATE')
+    coreClient.sendActivateIfAllowed(node)
   })
 }
 
@@ -149,7 +181,7 @@ coreClient.activateSendingOnFailure = function (node, cberr, err, msg) {
   }).catch(function (err) {
     cberr(err, msg)
   }).finally(function () {
-    node.stateService.send('ACTIVATE')
+    coreClient.sendActivateIfAllowed(node)
   })
 }
 
@@ -254,19 +286,21 @@ coreClient.readModbusByFunctionCode = function (node, msg, cb, cberr) {
 
 coreClient.customModbusMessage = function (node, msg, cb, cberr) {
   const nodeLog = coreClient.getLogFunction(node)
-  let delayTime = 1
+  const delayTime = 1
 
   if (!node.client) {
     nodeLog('Client Not Ready As Object On Reading Modbus')
     return
   }
 
+  // FR-FSM-CONN: never heal half-open sockets via in-band connectClient (FSM only)
   if (node.client._port && node.client._port._client && !node.client._port._client.readable) {
-    if (!node.connectClient()) {
-      coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg)
-      return
-    }
-    delayTime = 500
+    const sockErr = new Error('Modbus client socket not readable')
+    sockErr.errno = 'ECONNRESET'
+    sockErr.code = 'ECONNRESET'
+    coreClient.activateSendingOnFailure(node, cberr, sockErr, msg)
+    node.modbusErrorHandling(sockErr)
+    return
   }
 
   setTimeout(function () {
@@ -299,19 +333,21 @@ coreClient.customModbusMessage = function (node, msg, cb, cberr) {
 
 coreClient.readModbus = function (node, msg, cb, cberr) {
   const nodeLog = coreClient.getLogFunction(node)
-  let delayTime = 1
+  const delayTime = 1
 
   if (!node.client) {
     nodeLog('Client Not Ready As Object On Reading Modbus')
     return
   }
 
+  // FR-FSM-CONN: never heal half-open sockets via in-band connectClient (FSM only)
   if (node.client._port && node.client._port._client && !node.client._port._client.readable) {
-    if (!node.connectClient()) {
-      coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg)
-      return
-    }
-    delayTime = 500
+    const sockErr = new Error('Modbus client socket not readable')
+    sockErr.errno = 'ECONNRESET'
+    sockErr.code = 'ECONNRESET'
+    coreClient.activateSendingOnFailure(node, cberr, sockErr, msg)
+    node.modbusErrorHandling(sockErr)
+    return
   }
 
   setTimeout(function () {
@@ -437,19 +473,20 @@ coreClient.writeModbusByFunctionCodeSixteen = function (node, msg, cb, cberr) {
 
 coreClient.writeModbus = function (node, msg, cb, cberr) {
   const nodeLog = coreClient.getLogFunction(node)
-  let delayTime = 1
+  const delayTime = 1
   if (!node.client) {
     nodeLog('Client Not Ready As Object On Writing Modbus')
     return
   }
 
+  // FR-FSM-CONN: never heal half-open sockets via in-band connectClient (FSM only)
   if (node.client._port && node.client._port._client && !node.client._port._client.writable) {
-    if (!node.connectClient()) {
-      coreClient.activateSendingOnFailure(node, cberr, new Error('Modbus-Read Error from client connecting'), msg)
-      return
-    }
-    /* istanbul ignore next */
-    delayTime = 500
+    const sockErr = new Error('Modbus client socket not writable')
+    sockErr.errno = 'ECONNRESET'
+    sockErr.code = 'ECONNRESET'
+    coreClient.activateSendingOnFailure(node, cberr, sockErr, msg)
+    node.modbusErrorHandling(sockErr)
+    return
   }
 
   setTimeout(function () {

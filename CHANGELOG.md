@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.60.1](https://github.com/BiancoRoyal/node-red-contrib-modbus/compare/v5.60.0...v5.60.1) (2026-07-30)
+
+
+### Bug Fixes
+
+* **client:** drive FAILURE/reconnect on `Timed out` and DNS errors (`EAI_AGAIN`, `ENOTFOUND`, …) so Flex-Getter does not stay stuck waiting ([#564](https://github.com/BiancoRoyal/node-red-contrib-modbus/issues/564), [#569](https://github.com/BiancoRoyal/node-red-contrib-modbus/issues/569))
+* **client:** block late `ACTIVATE` from `broken` (no Fake-Ready); gate ACTIVATE on ready FSM states
+* **client:** remove in-band `connectClient` from read/write/custom on half-open sockets (FSM recovery only)
+* **queue:** notify pending commands with `Modbus queue cleared on reconnect` before INIT wipe (FR-Q-WIPE)
+* **client:** clear reconnect / commandDelay / serialOpen timers before reschedule (FR-TMR)
+* **flex:** call `sendEmptyMsgOnFail` on invalid input / not-ready / inactive client ([#578](https://github.com/BiancoRoyal/node-red-contrib-modbus/pull/578))
+
+
+### Notes
+
+* Patch on LTS line `support/v5.60`. Sequential queue re-arm (#574) unchanged.
+* Follow-up (not in this release): Serial RTU segfault on ARM64 Node 24 ([#577](https://github.com/BiancoRoyal/node-red-contrib-modbus/issues/577)).
+
 ## [5.60.0](https://github.com/BiancoRoyal/node-red-contrib-modbus/compare/v5.51.0...v5.60.0) (2026-07-22)
 
 

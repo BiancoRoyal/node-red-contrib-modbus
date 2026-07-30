@@ -193,16 +193,19 @@ module.exports = function (RED) {
       if (mbBasics.invalidPayloadIn(msg)) {
         /* istanbul ignore next */
         verboseWarn('Invalid message on input.')
+        mbBasics.sendEmptyMsgOnFail(node, new Error('Invalid message on input.'), msg)
         return
       }
       if (node.isNotReadyForInput()) {
         /* istanbul ignore next */
         verboseWarn('Inject while node is not ready for input.')
+        mbBasics.sendEmptyMsgOnFail(node, new Error('Inject while node is not ready for input.'), msg)
         return
       }
       if (modbusClient.isInactive()) {
         /* istanbul ignore next */
         verboseWarn('You sent an input to inactive client. Please use initial delay on start or send data more slowly.')
+        mbBasics.sendEmptyMsgOnFail(node, new Error('You sent an input to inactive client. Please use initial delay on start or send data more slowly.'), msg)
         return
       }
 

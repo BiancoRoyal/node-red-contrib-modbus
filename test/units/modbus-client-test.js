@@ -1010,4 +1010,72 @@ describe('Client node Unit Testing', function () {
       })
     })
   })
+
+  describe('client-timeout-reconnect-honesty (#564 / #569)', function () {
+    it('should send FAILURE on Timed out when reconnectOnTimeout is true', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
+        const node = helper.getNode('3')
+        const sendSpy = sinon.spy(node.stateService, 'send')
+        node.reconnectOnTimeout = true
+        node.modbusErrorHandling(new Error('Timed out'))
+        sinon.assert.calledWith(sendSpy, 'FAILURE')
+        sendSpy.restore()
+        done()
+      })
+    })
+
+    it('should send FAILURE on EAI_AGAIN DNS errors', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
+        const node = helper.getNode('3')
+        const sendSpy = sinon.spy(node.stateService, 'send')
+        const err = new Error('getaddrinfo EAI_AGAIN host.local')
+        err.code = 'EAI_AGAIN'
+        err.errno = 'EAI_AGAIN'
+        node.modbusErrorHandling(err)
+        sinon.assert.calledWith(sendSpy, 'FAILURE')
+        sendSpy.restore()
+        done()
+      })
+    })
+
+    it('should not Fake-Ready via ACTIVATE while broken', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
+        const node = helper.getNode('3')
+        node.reconnectOnTimeout = true
+        node.reconnectTimeout = 60000
+        node.isFirstInitOfConnection = false
+        sinon.stub(node, 'connectClient')
+        node.stateService.send('NEW')
+        node.stateService.send('INIT')
+        node.stateService.send('CONNECT')
+        node.stateService.send('ACTIVATE')
+        node.stateService.send('BREAK')
+        assert.strictEqual(node.actualServiceState.value, 'reconnecting')
+        node.stateService.send('ACTIVATE')
+        assert.notStrictEqual(node.actualServiceState.value, 'activated')
+        assert.strictEqual(node.actualServiceState.value, 'reconnecting')
+        done()
+      })
+    })
+
+    it('should notify pending commands on INIT queue wipe', function (done) {
+      const coreModbusQueue = require('../../src/core/modbus-queue-core')
+      helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
+        const node = helper.getNode('3')
+        const cberr = sinon.spy()
+        coreModbusQueue.initQueue(node)
+        node.bufferCommandList.get(1).push({
+          callModbus: function () {},
+          msg: { payload: { fc: 3, unitid: 1, address: 0, quantity: 1 } },
+          cb: function () {},
+          cberr
+        })
+        coreModbusQueue.initQueue(node)
+        sinon.assert.calledOnce(cberr)
+        assert.ok(cberr.firstCall.args[0].message.indexOf('queue cleared on reconnect') !== -1)
+        assert.ok(coreModbusQueue.checkQueuesAreEmpty(node))
+        done()
+      })
+    })
+  })
 })

@@ -46,6 +46,8 @@ Feature/Bug → Team 1 → Team 2 → GATE 1 → Team 3 → GATE 2 → PR/commit
 | `shared-client-deregister-isolation` | GATE 1 APPROVE — fix #423/#487 shared-client STOP |
 | `queue-sequential-drain-rearm` | GATE 1 APPROVE — fix #574 Queue full / sequential drain |
 | `live-node-red-feature-matrix` | GATE 1 APPROVE — live helper+Modbus-Server matrix |
+| `client-timeout-reconnect-honesty` | GATE 1 APPROVE — #564/#569 timeout/DNS reconnect honesty (target **5.60.1**) |
+| `serial-rtu-arm64-node24` | DRAFT follow-up — #577 segfault Serial RTU ARM64 Node 24 |
 
 ## OSS Notes
 

@@ -17,7 +17,37 @@ const queueCore = {}
 queueCore.internalDebug = internalDebug
 queueCore.core = coreModule
 
+/**
+ * Notify pending buffered commands before wipe (FR-Q-WIPE).
+ * Stable message for Catch / emptyMsgOnFail flows.
+ */
+queueCore.QUEUE_CLEARED_ON_RECONNECT = 'Modbus queue cleared on reconnect'
+
+queueCore.failPendingQueueCommands = function (node, err) {
+  const error = err || new Error(queueCore.QUEUE_CLEARED_ON_RECONNECT)
+  if (!node.bufferCommandList || typeof node.bufferCommandList.get !== 'function') {
+    return
+  }
+  for (let step = 0; step <= 255; step++) {
+    const list = node.bufferCommandList.get(step)
+    if (!list || !list.length) continue
+    while (list.length) {
+      const command = list.shift()
+      if (command && typeof command.cberr === 'function') {
+        try {
+          command.cberr(error, command.msg)
+        } catch (cbErr) {
+          queueCore.internalDebug('failPendingQueueCommands cberr: ' + cbErr.message)
+        }
+      }
+    }
+  }
+}
+
 queueCore.initQueue = function (node) {
+  // FR-Q-WIPE: deliver defined errors before dropping buffered work
+  queueCore.failPendingQueueCommands(node)
+
   node.bufferCommandList.clear()
   node.sendingAllowed.clear()
   node.unitSendingAllowed = []

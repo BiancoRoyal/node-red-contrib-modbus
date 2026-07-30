@@ -78,8 +78,7 @@ describe('Core Client Coverage Uplift', function () {
     sandbox.assert.calledOnce(cberr)
   })
 
-  it('should delay readModbus when port is not readable and connect succeeds', function () {
-    const clock = useFakeTimers(sandbox)
+  it('should fail readModbus via FSM recovery when port is not readable (no in-band connect)', function (done) {
     const readStub = sandbox.stub(coreClient, 'readModbusByFunctionCode')
     const node = {
       client: {
@@ -88,20 +87,25 @@ describe('Core Client Coverage Uplift', function () {
         getTimeout: sandbox.stub().returns(1000)
       },
       connectClient: sandbox.stub().returns(true),
+      activateSending: sandbox.stub().resolves(),
+      modbusErrorHandling: sandbox.stub(),
       setUnitIdFromPayload: sandbox.stub(),
       bufferCommands: true,
-      actualServiceState: { value: 'connected' },
-      queueLog: sandbox.stub()
+      actualServiceState: { value: 'sending' },
+      queueLog: sandbox.stub(),
+      stateService: { send: sandbox.stub() }
     }
-    coreClient.readModbus(node, { payload: { fc: 3, address: 0, quantity: 1 } }, sandbox.spy(), sandbox.spy())
-    sandbox.assert.notCalled(readStub)
-    clock.tick(500)
-    sandbox.assert.calledOnce(readStub)
-    clock.restore()
+    const cberr = sandbox.spy()
+    coreClient.readModbus(node, { payload: { fc: 3, address: 0, quantity: 1 }, queueUnitId: 1 }, sandbox.spy(), cberr)
+    setTimeout(function () {
+      sandbox.assert.notCalled(node.connectClient)
+      sandbox.assert.notCalled(readStub)
+      sandbox.assert.calledOnce(node.modbusErrorHandling)
+      done()
+    }, 20)
   })
 
-  it('should delay writeModbus when port is not writable and connect succeeds', function () {
-    const clock = useFakeTimers(sandbox)
+  it('should fail writeModbus via FSM recovery when port is not writable (no in-band connect)', function (done) {
     const writeStub = sandbox.stub(coreClient, 'writeModbusByFunctionCodeSix')
     const node = {
       client: {
@@ -110,18 +114,23 @@ describe('Core Client Coverage Uplift', function () {
         getTimeout: sandbox.stub().returns(1000)
       },
       connectClient: sandbox.stub().returns(true),
+      activateSending: sandbox.stub().resolves(),
+      modbusErrorHandling: sandbox.stub(),
       setUnitIdFromPayload: sandbox.stub(),
       bufferCommands: true,
       clienttype: 'tcp',
-      actualServiceState: { value: 'connected' },
+      actualServiceState: { value: 'sending' },
       queueLog: sandbox.stub(),
       stateService: { send: sandbox.stub() }
     }
-    coreClient.writeModbus(node, { payload: { fc: 6, address: 0, value: 1 } }, sandbox.spy(), sandbox.spy())
-    sandbox.assert.notCalled(writeStub)
-    clock.tick(500)
-    sandbox.assert.calledOnce(writeStub)
-    clock.restore()
+    const cberr = sandbox.spy()
+    coreClient.writeModbus(node, { payload: { fc: 6, address: 0, value: 1 }, queueUnitId: 1 }, sandbox.spy(), cberr)
+    setTimeout(function () {
+      sandbox.assert.notCalled(node.connectClient)
+      sandbox.assert.notCalled(writeStub)
+      sandbox.assert.calledOnce(node.modbusErrorHandling)
+      done()
+    }, 20)
   })
 
   it('should reject FC15 when value length does not match quantity', async function () {
@@ -180,12 +189,12 @@ describe('Core Client Coverage Uplift', function () {
     sandbox.assert.calledOnce(cberr)
   })
 
-  it('should call readModbusByFunctionCode for FC3 via readModbus serial delay path', function () {
+  it('should call readModbusByFunctionCode for FC3 when port is readable', function () {
     const clock = useFakeTimers(sandbox)
     const readStub = sandbox.stub(coreClient, 'readModbusByFunctionCode')
     const node = {
       client: {
-        _port: { _client: { readable: false } },
+        _port: { _client: { readable: true } },
         setTimeout: sandbox.stub(),
         getTimeout: sandbox.stub().returns(1000)
       },
@@ -198,7 +207,7 @@ describe('Core Client Coverage Uplift', function () {
       queueLog: sandbox.stub()
     }
     coreClient.readModbus(node, { payload: { fc: 3, address: 0, quantity: 1 } }, sandbox.spy(), sandbox.spy())
-    clock.tick(500)
+    clock.tick(1)
     sandbox.assert.calledOnce(readStub)
     sandbox.assert.calledWith(node.stateService.send, 'READ')
     clock.restore()

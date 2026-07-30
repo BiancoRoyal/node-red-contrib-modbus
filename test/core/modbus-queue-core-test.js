@@ -221,4 +221,30 @@ describe('Core IO Testing', function () {
         .catch(done)
     })
   })
+
+  describe('FR-Q-WIPE — fail pending on initQueue', function () {
+    it('should call cberr for buffered commands before wipe', function () {
+      const node = {
+        bufferCommandList: new Map(),
+        sendingAllowed: new Map(),
+        unitSendingAllowed: [1],
+        queueLog: sinon.stub()
+      }
+      for (let i = 0; i <= 255; i++) {
+        node.bufferCommandList.set(i, [])
+        node.sendingAllowed.set(i, true)
+      }
+      const cberr = sinon.spy()
+      node.bufferCommandList.get(1).push({
+        callModbus: sinon.spy(),
+        msg: { payload: { unitid: 1 } },
+        cb: sinon.spy(),
+        cberr
+      })
+      coreQueueUnderTest.initQueue(node)
+      expect(cberr.calledOnce).to.equal(true)
+      expect(cberr.firstCall.args[0].message).to.equal(coreQueueUnderTest.QUEUE_CLEARED_ON_RECONNECT)
+      expect(node.bufferCommandList.get(1).length).to.equal(0)
+    })
+  })
 })

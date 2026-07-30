@@ -179,7 +179,8 @@ describe('Core Client Settings Testing', function () {
       const cberr = sinon.spy()
       const node = {
         activateSending: sandbox.stub().resolves(),
-        stateService: { send: sandbox.spy() }
+        stateService: { send: sandbox.spy() },
+        actualServiceState: { value: 'sending' }
       }
       validateImpl(msg, 3, cberr, node)
       setTimeout(function () {

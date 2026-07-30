@@ -183,18 +183,24 @@ module.exports = function (RED) {
       if (state.matches('init')) {
         verboseWarn('fsm init state after ' + node.actualServiceStateBefore.value)
         node.updateServerinfo()
-        coreModbusQueue.initQueue(node)
+        // FR-TMR: clear before nulling; also cancel orphan command/serial timers
+        clearTimeout(node.reconnectTimeoutId)
+        clearTimeout(node.commandDelayTimeoutId)
+        clearTimeout(node.serialOpenTimeoutId)
         node.reconnectTimeoutId = 0
+        node.commandDelayTimeoutId = 0
+        node.serialOpenTimeoutId = 0
+        coreModbusQueue.initQueue(node)
 
         try {
           if (node.isFirstInitOfConnection) {
             node.isFirstInitOfConnection = false
             verboseWarn('first fsm init in ' + serialConnectionDelayTimeMS + ' ms')
-            clearTimeout(node.reconnectTimeoutId)
-            node.reconnectTimeoutId = setTimeout(node.connectClient, serialConnectionDelayTimeMS)
+            if (!node.closingModbus) {
+              node.reconnectTimeoutId = setTimeout(node.connectClient, serialConnectionDelayTimeMS)
+            }
           } else {
             verboseWarn('fsm init in ' + node.reconnectTimeout + ' ms')
-            clearTimeout(node.reconnectTimeoutId)
             if (!node.closingModbus) {
               node.reconnectTimeoutId = setTimeout(node.connectClient, node.reconnectTimeout)
             }
@@ -240,7 +246,9 @@ module.exports = function (RED) {
       }
 
       if (state.matches('sending')) {
-        setTimeout(() => {
+        clearTimeout(node.commandDelayTimeoutId)
+        node.commandDelayTimeoutId = setTimeout(() => {
+          node.commandDelayTimeoutId = 0
           coreModbusQueue.dequeueCommand(node)
         }, node.commandDelay)
         node.emit('mbqueue')
@@ -278,6 +286,10 @@ module.exports = function (RED) {
       if (state.matches('broken')) {
         verboseWarn('fsm broken state after ' + node.actualServiceStateBefore.value + logHintText)
         node.emit('mbbroken', 'Modbus Broken On State ' + node.actualServiceStateBefore.value + logHintText)
+        clearTimeout(node.commandDelayTimeoutId)
+        clearTimeout(node.serialOpenTimeoutId)
+        node.commandDelayTimeoutId = 0
+        node.serialOpenTimeoutId = 0
         if (node.reconnectOnTimeout) {
           node.stateService.send('RECONNECT')
         } else {
@@ -487,7 +499,11 @@ module.exports = function (RED) {
 
     node.setSerialConnectionOptions = function () {
       node.stateService.send('OPENSERIAL')
-      setTimeout(node.openSerialClient, parseInt(node.serialConnectionDelay))
+      clearTimeout(node.serialOpenTimeoutId)
+      node.serialOpenTimeoutId = setTimeout(function () {
+        node.serialOpenTimeoutId = 0
+        node.openSerialClient()
+      }, parseInt(node.serialConnectionDelay))
     }
 
     node.modbusErrorHandling = function (err) {
@@ -497,7 +513,8 @@ module.exports = function (RED) {
       } else {
         coreModbusClient.modbusSerialDebug('modbusErrorHandling:' + JSON.stringify(err))
       }
-      if (err.errno && coreModbusClient.networkErrors.includes(err.errno)) {
+      // FR-TO-01 / FR-TO-02: Timed out, DNS (EAI_AGAIN), and network errno → FAILURE
+      if (coreModbusClient.isRecoverableModbusError(err)) {
         node.stateService.send('FAILURE')
       }
     }
@@ -516,8 +533,7 @@ module.exports = function (RED) {
         }
       }
 
-      if ((err.errno && coreModbusClient.networkErrors.includes(err.errno)) ||
-        (err.code && coreModbusClient.networkErrors.includes(err.code))) {
+      if (coreModbusClient.isRecoverableModbusError(err)) {
         node.stateService.send('BREAK')
       }
     }

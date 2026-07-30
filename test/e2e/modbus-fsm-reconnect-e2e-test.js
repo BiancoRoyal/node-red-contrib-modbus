@@ -328,24 +328,29 @@ describe('E2E Modbus FSM reconnect + message handling', function () {
     })
   })
 
-  it('INIT after outage wipes command queues (no stale drain)', function (done) {
+  it('INIT after outage wipes command queues and notifies pending (FR-Q-WIPE)', function (done) {
     const finish = onceDone(done)
 
     loadReconnectFlow({}, function (err, ctx) {
       if (err) return finish(err)
       const { server, client } = ctx
 
+      let wipeErrors = 0
       client.bufferCommandList.get(1).push({
         callModbus: function () {},
         msg: { payload: { fc: 3, unitid: 1, address: 0, quantity: 1 } },
         cb: function () {},
-        cberr: function () {}
+        cberr: function (e) {
+          if (e && String(e.message).indexOf('queue cleared on reconnect') !== -1) wipeErrors++
+        }
       })
       client.bufferCommandList.get(2).push({
         callModbus: function () {},
         msg: { payload: { fc: 3, unitid: 2, address: 0, quantity: 1 } },
         cb: function () {},
-        cberr: function () {}
+        cberr: function (e) {
+          if (e && String(e.message).indexOf('queue cleared on reconnect') !== -1) wipeErrors++
+        }
       })
       assert.ok(queueDepth(client, 1) >= 1)
       assert.ok(queueDepth(client, 2) >= 1)
@@ -357,6 +362,7 @@ describe('E2E Modbus FSM reconnect + message handling', function () {
           assert.strictEqual(queueDepth(client, 1), 0)
           assert.strictEqual(queueDepth(client, 2), 0)
           assert.deepStrictEqual(client.unitSendingAllowed, [])
+          assert.strictEqual(wipeErrors, 2, 'both pending commands must get wipe error')
         } catch (e) {
           return finish(e)
         }

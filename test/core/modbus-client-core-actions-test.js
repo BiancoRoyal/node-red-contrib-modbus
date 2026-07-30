@@ -219,7 +219,8 @@ describe('Core Client Actions Testing', function () {
     it('should call callback cb with resp and msg when activateSending resolves', async () => {
       const node = {
         activateSending: sinon.stub(),
-        stateService: { send: sinon.spy() }
+        stateService: { send: sinon.spy() },
+        actualServiceState: { value: 'sending' }
       }
       const cb = sinon.spy()
       const errorCallback = sinon.spy()
@@ -354,8 +355,7 @@ describe('Core Client Actions Testing', function () {
       sinon.assert.notCalled(coreClientUnderTest.activateSendingOnSuccess)
     })
 
-    it('should handle when the client port is not readable and connection fails', () => {
-      const sandbox = getSandbox()
+    it('should fail customModbusMessage when port is not readable without in-band connect', () => {
       const node = {
         client: {
           _port: {
@@ -367,21 +367,23 @@ describe('Core Client Actions Testing', function () {
 
         },
         connectClient: sinon.stub().returns(false),
+        activateSending: sinon.stub().resolves(),
+        modbusErrorHandling: sinon.stub(),
         stateService: { send: sinon.stub() },
         clienttype: 'tcp',
         setUnitIdFromPayload: sinon.stub(),
-        clientTimeout: 500
+        clientTimeout: 500,
+        actualServiceState: { value: 'sending' }
       }
 
       const msg = {}
       const cb = sinon.stub()
       const cberr = sinon.stub()
 
-      sandbox.stub(coreClientUnderTest, 'activateSendingOnFailure')
       coreClientUnderTest.customModbusMessage(node, msg, cb, cberr)
 
-      sinon.assert.calledOnce(node.connectClient)
-      sinon.assert.notCalled(node.stateService.send)
+      sinon.assert.notCalled(node.connectClient)
+      sinon.assert.calledOnce(node.modbusErrorHandling)
     })
     it('should handle when the client port is not readable and connection fails', () => {
       const sandbox = getSandbox()
@@ -622,8 +624,7 @@ describe('Core Client Actions Testing', function () {
       sinon.assert.calledWith(nodeLog, 'Unknown Dynamic Reconnect Type UNKNOWN')
     })
 
-    it('should reconnect and process write command when node client is not writable', (done) => {
-      const sandbox = getSandbox()
+    it('should fail write when node client is not writable without in-band connect', (done) => {
       const node = {
         client: {
           _port: {
@@ -633,25 +634,26 @@ describe('Core Client Actions Testing', function () {
           getTimeout: sinon.stub().returns(1000)
         },
         connectClient: sinon.stub().returns(false),
+        activateSending: sinon.stub().resolves(),
+        modbusErrorHandling: sinon.stub(),
         stateService: { send: sinon.spy() },
         queueLog: sinon.spy(),
         setUnitIdFromPayload: sinon.spy(),
         clientTimeout: 1000,
+        actualServiceState: { value: 'sending' },
         writeModbusByFunctionCodeSixteen: sinon.spy()
       }
-      const msg = { payload: { fc: 16 } }
+      const msg = { payload: { fc: 16 }, queueUnitId: 1 }
       const cb = sinon.spy()
       const cberr = sinon.spy()
-      const clock = useFakeTimers(sinon)
-      sandbox.stub(coreClientUnderTest, 'activateSendingOnFailure')
 
       coreClientUnderTest.writeModbus(node, msg, cb, cberr)
 
-      clock.tick(1)
-
-      sinon.assert.calledWith(coreClientUnderTest.activateSendingOnFailure)
-      clock.restore()
-      done()
+      setTimeout(function () {
+        sinon.assert.notCalled(node.connectClient)
+        sinon.assert.calledOnce(node.modbusErrorHandling)
+        done()
+      }, 20)
     })
 
     it('should return false and log an error when msg is null', () => {
@@ -830,7 +832,7 @@ describe('Core Client Actions Testing', function () {
       }, 20)
     })
   })
-  it('should call activateSendingOnFailure when client connection fails', () => {
+  it('should call activateSendingOnFailure when client socket is not readable', () => {
     const sandbox = getSandbox()
     const node = {
       client: {
@@ -840,7 +842,9 @@ describe('Core Client Actions Testing', function () {
           }
         }
       },
-      connectClient: sinon.stub().returns(false)
+      connectClient: sinon.stub().returns(false),
+      modbusErrorHandling: sinon.stub(),
+      actualServiceState: { value: 'sending' }
     }
     const msg = { payload: 'test' }
     const cb = sinon.spy()
@@ -848,6 +852,8 @@ describe('Core Client Actions Testing', function () {
     sandbox.stub(coreClientUnderTest, 'activateSendingOnFailure')
 
     coreClientUnderTest.readModbus(node, msg, cb, cberr)
+    sinon.assert.notCalled(node.connectClient)
     sinon.assert.calledWith(coreClientUnderTest.activateSendingOnFailure, node, cberr, sinon.match.instanceOf(Error), msg)
+    sinon.assert.calledOnce(node.modbusErrorHandling)
   })
 })

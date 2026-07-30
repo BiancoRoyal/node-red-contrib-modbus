@@ -2,6 +2,7 @@
 
 ## Current (v5.60+)
 
+* **Tip:** `v5.60.1` on `support/v5.60` — timeout/DNS reconnect honesty (#564/#569)
 * **Node.js `>= 22`** required (`package.json` engines)
 * **Node-RED `>= 4`** required (`package.json` → `node-red.version`)
 * Runtime client stack: `@openp4nr/modbus-serial` · server: `jsmodbus` · FSM: `@xstate/fsm`
