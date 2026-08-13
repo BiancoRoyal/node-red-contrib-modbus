@@ -9,6 +9,7 @@
 [![Build and publish](https://github.com/BiancoRoyal/node-red-contrib-modbus/actions/workflows/build.yml/badge.svg)](https://github.com/BiancoRoyal/node-red-contrib-modbus/actions/workflows/build.yml)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6cbeb40ab5604b3ab99e6badc9469e8a)](https://www.codacy.com/gh/BiancoRoyal/node-red-contrib-modbus?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=BiancoRoyal/node-red-contrib-modbus&amp;utm_campaign=Badge_Grade)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/BiancoRoyal/node-red-contrib-modbus)
+[![Supported with Claude Code Pro](https://img.shields.io/badge/Supported%20with-Claude%20Code%20Pro-d97706?logo=anthropic&logoColor=white)](https://claude.ai/code)
 
 
 # node-red-contrib-modbus
@@ -17,9 +18,11 @@
 
 [![nodemodbus64](images/modbus-icon64.png)](https://www.npmjs.com/package/node-red-contrib-modbus)
 
-**Public LTS line:** **v5.x** (current: **5.60.0**) · License **BSD-3-Clause** · Repo: [GitHub][12]
+**Public LTS line:** **v5.x** (current: **5.60.2**) · License **BSD-3-Clause** · Repo: [GitHub][12]
 
 If you like this package, please **give us a star on [GitHub][12]**.
+
+> **AI-assisted maintenance:** This project is **actively developed and supported with [Claude Code Pro](https://claude.ai/code)** (Anthropic). Issue triage, specs, tests, and patches on the v5 LTS line are routinely done with Claude Code as part of the maintainer workflow — alongside human review before release.
 
 ---
 
@@ -63,7 +66,7 @@ TCP / serial Modbus **client** nodes plus an in-package **buffer Modbus TCP serv
 - Client **FSM / reconnect / queue** hardening (from 5.46.x)
 - Safer **unit ID** handling (`unitId` / `unitid`, including unit `0`)
 - Modbus address/quantity validation improvements
-- Numbered **learning examples** `01`…`15` + [Learning Path docs](docs/LEARNING-PATH.md)
+- Numbered **learning examples** `01`…`18` + [Learning Path docs](docs/LEARNING-PATH.md)
 - **Requires Node-RED `>= 4`** and **Node.js `>= 22`**
 
 See [CHANGELOG.md](CHANGELOG.md) for the full list.
@@ -168,7 +171,7 @@ The [P4NR B2B Community][16] (driven by [Iniationware][15]) supports development
 
 ### Leanpub live book
 
-The [Online Leanpub Book](https://leanpub.com/p4nr-contribution-modbus/) covers v5.x nodes and options in depth (“buy once, update forever”). For a free start in this repo, use the [**Learning Path**](docs/LEARNING-PATH.md).
+The [Online Leanpub Book](https://leanpub.com/p4nr-contribution-modbus/) (Edition 2 for **5.60+**, Node-RED 5 / Node.js 24) covers v5.x nodes and options in depth (“buy once, update forever”). For a free start in this repo, use the [**Learning Path**](docs/LEARNING-PATH.md) (examples `01`–`18`).
 
 ---
 
