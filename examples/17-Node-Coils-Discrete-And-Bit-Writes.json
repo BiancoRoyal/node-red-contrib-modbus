@@ -1,0 +1,347 @@
+[
+  {
+    "id": "a17tab0000000001",
+    "type": "tab",
+    "label": "17 Coils Discrete Bits",
+    "disabled": false,
+    "info": "NODE: Coils, Discrete Inputs, FC5/FC15 writes\n\nFEATURES IN THIS FLOW\n- Modbus-Write Coil (FC5) and multi-coil (FC15 via Flex-Write)\n- Modbus-Read DiscreteInput (FC2) and Coil (FC1)\n- Local modbus-server buffer for bit areas\n\nWHAT THE CONFIG DOES\n- Write dataType Coil + quantity 1 \u2192 FC5\n- Flex-Write fc 15 with boolean array \u2192 FC15\n- Read dataType DiscreteInput \u2192 FC2; Coil \u2192 FC1\n- Flow-scoped client on 127.0.0.1:10518\n\nHOW TO RUN\n1) Deploy\n2) Click Write Coil TRUE (FC5) then Read FC1\n3) Click Flex FC15 then compare FC1 Debug\n4) Watch FC2 Discrete poll (may stay false unless you inject discrete buffer via server tools / example 12)\n\nDemo TCP port: 10518\n\nConfig nodes are flow-scoped: delete this tab to remove client/IO config."
+  },
+  {
+    "id": "a17cmt0000000001",
+    "type": "comment",
+    "z": "a17tab0000000001",
+    "name": "NODE: Coils / Discrete / Bit writes",
+    "info": "NODE: Coils, Discrete Inputs, FC5/FC15 writes\n\nFEATURES IN THIS FLOW\n- Modbus-Write Coil (FC5) and multi-coil (FC15 via Flex-Write)\n- Modbus-Read DiscreteInput (FC2) and Coil (FC1)\n- Local modbus-server buffer for bit areas\n\nWHAT THE CONFIG DOES\n- Write dataType Coil + quantity 1 \u2192 FC5\n- Flex-Write fc 15 with boolean array \u2192 FC15\n- Read dataType DiscreteInput \u2192 FC2; Coil \u2192 FC1\n- Flow-scoped client on 127.0.0.1:10518\n\nHOW TO RUN\n1) Deploy\n2) Click Write Coil TRUE (FC5) then Read FC1\n3) Click Flex FC15 then compare FC1 Debug\n4) Watch FC2 Discrete poll (may stay false unless you inject discrete buffer via server tools / example 12)\n\nDemo TCP port: 10518\n\nConfig nodes are flow-scoped: delete this tab to remove client/IO config.",
+    "x": 220,
+    "y": 40,
+    "wires": []
+  },
+  {
+    "id": "a17server00000001",
+    "type": "modbus-server",
+    "z": "a17tab0000000001",
+    "name": "",
+    "logEnabled": false,
+    "hostname": "127.0.0.1",
+    "serverPort": "10518",
+    "responseDelay": 100,
+    "delayUnit": "ms",
+    "coilsBufferSize": 10000,
+    "holdingBufferSize": 10000,
+    "inputBufferSize": 10000,
+    "discreteBufferSize": 10000,
+    "showErrors": false,
+    "showStatusActivities": false,
+    "x": 120,
+    "y": 160,
+    "wires": [
+      [],
+      [],
+      [],
+      [],
+      []
+    ]
+  },
+  {
+    "id": "a17client00000001",
+    "type": "modbus-client",
+    "z": "a17tab0000000001",
+    "name": "Bits Client",
+    "clienttype": "tcp",
+    "bufferCommands": true,
+    "stateLogEnabled": false,
+    "queueLogEnabled": false,
+    "failureLogEnabled": true,
+    "tcpHost": "127.0.0.1",
+    "tcpPort": "10518",
+    "tcpType": "DEFAULT",
+    "serialPort": "/dev/ttyUSB0",
+    "serialType": "RTU-BUFFERD",
+    "serialBaudrate": "9600",
+    "serialDatabits": "8",
+    "serialStopbits": "1",
+    "serialParity": "none",
+    "serialConnectionDelay": "100",
+    "serialAsciiResponseStartDelimiter": "0x3A",
+    "unit_id": "1",
+    "commandDelay": "1",
+    "clientTimeout": "1000",
+    "reconnectOnTimeout": true,
+    "reconnectTimeout": "2000",
+    "parallelUnitIdsAllowed": true
+  },
+  {
+    "id": "a17injfc5",
+    "type": "inject",
+    "z": "a17tab0000000001",
+    "name": "Write Coil TRUE (FC5)",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "topic": "",
+    "payload": "true",
+    "payloadType": "bool",
+    "x": 180,
+    "y": 280,
+    "wires": [
+      [
+        "a17writefc5"
+      ]
+    ]
+  },
+  {
+    "id": "a17writefc5",
+    "type": "modbus-write",
+    "z": "a17tab0000000001",
+    "name": "FC5 Coil",
+    "showStatusActivities": true,
+    "showErrors": true,
+    "showWarnings": true,
+    "unitid": "1",
+    "dataType": "Coil",
+    "adr": "0",
+    "quantity": "1",
+    "server": "a17client00000001",
+    "emptyMsgOnFail": false,
+    "keepMsgProperties": false,
+    "x": 420,
+    "y": 280,
+    "wires": [
+      [
+        "a17dbgfc5"
+      ],
+      [
+        "a17respfc5"
+      ]
+    ]
+  },
+  {
+    "id": "a17respfc5",
+    "type": "modbus-response",
+    "z": "a17tab0000000001",
+    "name": "FC5 response",
+    "registerShowMax": 20,
+    "x": 640,
+    "y": 320,
+    "wires": []
+  },
+  {
+    "id": "a17dbgfc5",
+    "type": "debug",
+    "z": "a17tab0000000001",
+    "name": "SEE: FC5",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 620,
+    "y": 240,
+    "wires": []
+  },
+  {
+    "id": "a17injfc15",
+    "type": "inject",
+    "z": "a17tab0000000001",
+    "name": "Flex FC15",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "x": 150,
+    "y": 400,
+    "wires": [
+      [
+        "a17fnfc15"
+      ]
+    ]
+  },
+  {
+    "id": "a17fnfc15",
+    "type": "function",
+    "z": "a17tab0000000001",
+    "name": "Build FC15",
+    "func": "msg.payload = { value: [true, false, true, true], fc: 15, unitid: 1, address: 0, quantity: 4 };\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 360,
+    "y": 400,
+    "wires": [
+      [
+        "a17flexw"
+      ]
+    ]
+  },
+  {
+    "id": "a17flexw",
+    "type": "modbus-flex-write",
+    "z": "a17tab0000000001",
+    "name": "",
+    "showStatusActivities": true,
+    "showErrors": true,
+    "showWarnings": true,
+    "server": "a17client00000001",
+    "emptyMsgOnFail": false,
+    "keepMsgProperties": true,
+    "x": 580,
+    "y": 400,
+    "wires": [
+      [
+        "a17dbgfc15"
+      ],
+      [
+        "a17respfc15"
+      ]
+    ]
+  },
+  {
+    "id": "a17respfc15",
+    "type": "modbus-response",
+    "z": "a17tab0000000001",
+    "name": "FC15 response",
+    "registerShowMax": 20,
+    "x": 820,
+    "y": 440,
+    "wires": []
+  },
+  {
+    "id": "a17dbgfc15",
+    "type": "debug",
+    "z": "a17tab0000000001",
+    "name": "SEE: FC15",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 800,
+    "y": 360,
+    "wires": []
+  },
+  {
+    "id": "a17readfc1",
+    "type": "modbus-read",
+    "z": "a17tab0000000001",
+    "name": "FC1 Coils",
+    "showStatusActivities": true,
+    "logIOActivities": false,
+    "showErrors": true,
+    "showWarnings": true,
+    "unitid": "1",
+    "dataType": "Coil",
+    "adr": "0",
+    "quantity": "8",
+    "rate": "2",
+    "rateUnit": "s",
+    "delayOnStart": true,
+    "startDelayTime": "1",
+    "server": "a17client00000001",
+    "useIOFile": false,
+    "ioFile": "",
+    "useIOForPayload": false,
+    "emptyMsgOnFail": false,
+    "x": 400,
+    "y": 520,
+    "wires": [
+      [
+        "a17dbgfc1"
+      ],
+      [
+        "a17respfc1"
+      ]
+    ]
+  },
+  {
+    "id": "a17respfc1",
+    "type": "modbus-response",
+    "z": "a17tab0000000001",
+    "name": "FC1 response",
+    "registerShowMax": 20,
+    "x": 640,
+    "y": 560,
+    "wires": []
+  },
+  {
+    "id": "a17dbgfc1",
+    "type": "debug",
+    "z": "a17tab0000000001",
+    "name": "SEE: FC1",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 620,
+    "y": 480,
+    "wires": []
+  },
+  {
+    "id": "a17readfc2",
+    "type": "modbus-read",
+    "z": "a17tab0000000001",
+    "name": "FC2 Discrete",
+    "showStatusActivities": true,
+    "logIOActivities": false,
+    "showErrors": true,
+    "showWarnings": true,
+    "unitid": "1",
+    "dataType": "DiscreteInput",
+    "adr": "0",
+    "quantity": "8",
+    "rate": "2",
+    "rateUnit": "s",
+    "delayOnStart": true,
+    "startDelayTime": "1",
+    "server": "a17client00000001",
+    "useIOFile": false,
+    "ioFile": "",
+    "useIOForPayload": false,
+    "emptyMsgOnFail": false,
+    "x": 410,
+    "y": 640,
+    "wires": [
+      [
+        "a17dbgfc2"
+      ],
+      [
+        "a17respfc2"
+      ]
+    ]
+  },
+  {
+    "id": "a17respfc2",
+    "type": "modbus-response",
+    "z": "a17tab0000000001",
+    "name": "FC2 response",
+    "registerShowMax": 20,
+    "x": 650,
+    "y": 680,
+    "wires": []
+  },
+  {
+    "id": "a17dbgfc2",
+    "type": "debug",
+    "z": "a17tab0000000001",
+    "name": "SEE: FC2",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 630,
+    "y": 600,
+    "wires": []
+  }
+]

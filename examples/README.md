@@ -4,7 +4,7 @@ Import these flows from Node-RED:
 
 **Menu → Import → Examples → node-red-contrib-modbus**
 
-(or copy JSON from this folder). Work through **01 → 15** if you are new to Modbus or this package.
+(or copy JSON from this folder). Work through **01 → 18** if you are new to Modbus or this package.
 
 | Guide | Link |
 |-------|------|
@@ -46,6 +46,8 @@ Also linked from the package [README — How to use / Learning Path](../README.m
 | [`14-Pattern-Serial-RTU-Client.json`](14-Pattern-Serial-RTU-Client.json) | Serial RTU client (needs hardware) |
 | [`15-Pattern-Gateway-With-Buffer-Server.json`](15-Pattern-Gateway-With-Buffer-Server.json) | Buffer “cache slave” today; pointer to #567 dynamic gateway |
 | [`16-Bugfix-Shared-Client-Disable-Isolation.json`](16-Bugfix-Shared-Client-Disable-Isolation.json) | **#423**: disable one Flex-Getter — sibling on same client must stay up |
+| [`17-Node-Coils-Discrete-And-Bit-Writes.json`](17-Node-Coils-Discrete-And-Bit-Writes.json) | **FC2** Discrete read + **FC5/FC15** coil writes |
+| [`18-Pattern-Ops-Timeout-And-Reconnect.json`](18-Pattern-Ops-Timeout-And-Reconnect.json) | Ops: logs + timeout/reconnect with local server disturb |
 
 ## Demo TCP ports
 
@@ -69,6 +71,8 @@ Import **one learning flow at a time**, or ensure these ports stay unique:
 | 14 | serial only |
 | 15 | 10516 |
 | 16 | 10517 |
+| 17 | 10518 |
+| 18 | 10519 |
 
 ## IO file (example 11) — how to maintain names
 

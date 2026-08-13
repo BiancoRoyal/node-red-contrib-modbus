@@ -7,8 +7,8 @@ This package ships a **numbered example curriculum** so you can learn both
 |----------|--------|
 | Runtime | Node.js `>= 22`, Node-RED `>= 4` |
 | Example index + ports | [`examples/README.md`](../examples/README.md) |
-| Flow files | [`examples/01-…` … `examples/15-…`](../examples/) |
-| Deep dive (book) | [Leanpub: P4NR Contribution Modbus](https://leanpub.com/p4nr-contribution-modbus/) |
+| Flow files | [`examples/01-…` … `examples/18-…`](../examples/) |
+| Deep dive (book) | [Leanpub: P4NR Contribution Modbus](https://leanpub.com/p4nr-contribution-modbus/) (Edition 2 for 5.60+) |
 | Dynamic gateway (future / separate pkg) | [Issue #567](https://github.com/BiancoRoyal/node-red-contrib-modbus/issues/567), [capability draft](p4nr/capabilities/modbus-dynamic-server-gateway.md) |
 
 ---
@@ -22,7 +22,7 @@ This package ships a **numbered example curriculum** so you can learn both
 - Deploy, wait until the Modbus-Client status is active / reading, then use Inject / Debug / **each node's own** Modbus-Response as described in the **comment node** on the tab.
 - Every example comment (and tab info) has **FEATURES IN THIS FLOW**, **WHAT THE CONFIG DOES**, and **HOW TO RUN** — that is the intended lesson for that flow.
 
-Work **01 → 16** if you are new. Jump to a single **Node-…** flow if you already know Modbus and only need that node.
+Work **01 → 18** if you are new. Jump to a single **Node-…** flow if you already know Modbus and only need that node.
 
 ---
 
@@ -30,8 +30,8 @@ Work **01 → 16** if you are new. Jump to a single **Node-…** flow if you alr
 
 ```text
 Basics & Getting started     01 → 02
-Per-node tutorials           03 → 12
-Integration patterns         13 → 15
+Per-node tutorials           03 → 12, 17
+Integration patterns         13 → 16, 18
 ```
 
 ### Stage A — Modbus + first connection
@@ -48,7 +48,8 @@ Integration patterns         13 → 15
 | 03 | `03-Node-Read-Polling` | Modbus-Read |
 | 04 | `04-Node-Getter-On-Demand` | Modbus-Getter |
 | 05 | `05-Node-Flex-Getter-Dynamic` | Modbus-Flex-Getter |
-| 06 | `06-Node-Write-And-Flex-Write` | Modbus-Write, Modbus-Flex-Write |
+| 06 | `06-Node-Write-And-Flex-Write` | Modbus-Write, Modbus-Flex-Write (FC6 / FC16) |
+| 17 | `17-Node-Coils-Discrete-And-Bit-Writes` | Coil FC5/FC15 + Discrete FC2 (+ FC1 readback) |
 | 07 | `07-Node-Flex-Sequencer` | Modbus-Flex-Sequencer |
 | 08 | `08-Node-Flex-FC-Custom-Maps` | Modbus-Flex-FC (+ `extras/argumentMaps`) |
 | 09 | `09-Node-Flex-Connector-Runtime-Switch` | Modbus-Flex-Connector |
@@ -64,8 +65,9 @@ Integration patterns         13 → 15
 | 14 | `14-Pattern-Serial-RTU-Client` | Serial RTU client (needs hardware; educational) |
 | 15 | `15-Pattern-Gateway-With-Buffer-Server` | Buffer “cache” slave today; pointer to flow-based gateway (#567) |
 | 16 | `16-Bugfix-Shared-Client-Disable-Isolation` | Disable one Flex-Getter on a shared client — sibling must stay active (#423) |
+| 18 | `18-Pattern-Ops-Timeout-And-Reconnect` | Timeout / reconnect honesty (5.60.1+); disturb local server and recover |
 
-Full table and **TCP port map** (10502–10516): see [`examples/README.md`](../examples/README.md).
+Full table and **TCP port map** (10502–10519): see [`examples/README.md`](../examples/README.md).
 
 ---
 
@@ -94,7 +96,8 @@ Official protocol site: [modbus.org](http://www.modbus.org/).
 | Modbus-Read | 03 |
 | Modbus-Getter | 04, 13 |
 | Modbus-Flex-Getter | 05, 14 |
-| Modbus-Write / Flex-Write | 06 |
+| Modbus-Write / Flex-Write | 06 (registers), 17 (coils / FC5 / FC15) |
+| Modbus-Read (Discrete / Coil) | 03 (FC1), 17 (FC2 + FC5/FC15) |
 | Modbus-Flex-Sequencer | 07 |
 | Modbus-Flex-FC | 08 |
 | Modbus-Flex-Connector | 09 |

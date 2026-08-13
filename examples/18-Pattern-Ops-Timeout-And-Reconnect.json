@@ -1,0 +1,169 @@
+[
+  {
+    "id": "a18tab0000000001",
+    "type": "tab",
+    "label": "18 Ops Timeout Reconnect",
+    "disabled": false,
+    "info": "PATTERN: Ops \u2014 timeout, logs, reconnect\n\nFEATURES IN THIS FLOW\n- Client with failure/state-oriented logging enabled\n- Flex-Getter polling Holding Registers\n- Comment describes how to disturb and recover the local server\n- Teaches 5.60.1+ reconnect honesty (Timed out / network blips)\n\nWHAT THE CONFIG DOES\n- reconnectOnTimeout=true, clientTimeout=1000, reconnectTimeout=2000\n- failureLogEnabled / showErrors for visibility\n- emptyMsgOnFail on Flex-Getter optional for downstream handling\n- Demo server on 10519\n\nHOW TO RUN\n1) Deploy; wait until client active and SEE: values update\n2) Disable the Modbus-Server node and Deploy (or stop binding briefly)\n3) Observe timeout / inactive behaviour in status and Debug\n4) Re-enable the Modbus-Server and Deploy\n5) Confirm Flex-Getter recovers without restarting Node-RED\n\nDemo TCP port: 10519\n\nConfig nodes are flow-scoped: delete this tab to remove client/IO config."
+  },
+  {
+    "id": "a18cmt0000000001",
+    "type": "comment",
+    "z": "a18tab0000000001",
+    "name": "PATTERN: Ops timeout & reconnect",
+    "info": "PATTERN: Ops \u2014 timeout, logs, reconnect\n\nFEATURES IN THIS FLOW\n- Client with failure/state-oriented logging enabled\n- Flex-Getter polling Holding Registers\n- Comment describes how to disturb and recover the local server\n- Teaches 5.60.1+ reconnect honesty (Timed out / network blips)\n\nWHAT THE CONFIG DOES\n- reconnectOnTimeout=true, clientTimeout=1000, reconnectTimeout=2000\n- failureLogEnabled / showErrors for visibility\n- emptyMsgOnFail on Flex-Getter optional for downstream handling\n- Demo server on 10519\n\nHOW TO RUN\n1) Deploy; wait until client active and SEE: values update\n2) Disable the Modbus-Server node and Deploy (or stop binding briefly)\n3) Observe timeout / inactive behaviour in status and Debug\n4) Re-enable the Modbus-Server and Deploy\n5) Confirm Flex-Getter recovers without restarting Node-RED\n\nDemo TCP port: 10519\n\nConfig nodes are flow-scoped: delete this tab to remove client/IO config.",
+    "x": 230,
+    "y": 40,
+    "wires": []
+  },
+  {
+    "id": "a18server00000001",
+    "type": "modbus-server",
+    "z": "a18tab0000000001",
+    "name": "Ops Demo Server",
+    "logEnabled": false,
+    "hostname": "127.0.0.1",
+    "serverPort": "10519",
+    "responseDelay": 100,
+    "delayUnit": "ms",
+    "coilsBufferSize": 2000,
+    "holdingBufferSize": 2000,
+    "inputBufferSize": 2000,
+    "discreteBufferSize": 2000,
+    "showErrors": true,
+    "showStatusActivities": true,
+    "x": 160,
+    "y": 160,
+    "wires": [
+      [],
+      [],
+      [],
+      [],
+      []
+    ]
+  },
+  {
+    "id": "a18client00000001",
+    "type": "modbus-client",
+    "z": "a18tab0000000001",
+    "name": "Ops Client",
+    "clienttype": "tcp",
+    "bufferCommands": true,
+    "stateLogEnabled": true,
+    "queueLogEnabled": false,
+    "failureLogEnabled": true,
+    "tcpHost": "127.0.0.1",
+    "tcpPort": "10519",
+    "tcpType": "DEFAULT",
+    "serialPort": "/dev/ttyUSB0",
+    "serialType": "RTU-BUFFERD",
+    "serialBaudrate": "9600",
+    "serialDatabits": "8",
+    "serialStopbits": "1",
+    "serialParity": "none",
+    "serialConnectionDelay": "100",
+    "serialAsciiResponseStartDelimiter": "0x3A",
+    "unit_id": "1",
+    "commandDelay": "5",
+    "clientTimeout": "1000",
+    "reconnectOnTimeout": true,
+    "reconnectTimeout": "2000",
+    "parallelUnitIdsAllowed": true,
+    "showErrors": true,
+    "showWarnings": true,
+    "showLogs": true
+  },
+  {
+    "id": "a18inj",
+    "type": "inject",
+    "z": "a18tab0000000001",
+    "name": "Poll trigger 1s",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "1",
+    "crontab": "",
+    "once": true,
+    "onceDelay": "1",
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "x": 160,
+    "y": 280,
+    "wires": [
+      [
+        "a18fn"
+      ]
+    ]
+  },
+  {
+    "id": "a18fn",
+    "type": "function",
+    "z": "a18tab0000000001",
+    "name": "FC3 payload",
+    "func": "msg.payload = { fc: 3, unitid: 1, address: 0, quantity: 4 };\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 360,
+    "y": 280,
+    "wires": [
+      [
+        "a18flex"
+      ]
+    ]
+  },
+  {
+    "id": "a18flex",
+    "type": "modbus-flex-getter",
+    "z": "a18tab0000000001",
+    "name": "",
+    "showStatusActivities": true,
+    "showErrors": true,
+    "showWarnings": true,
+    "logIOActivities": false,
+    "server": "a18client00000001",
+    "useIOFile": false,
+    "ioFile": "",
+    "useIOForPayload": false,
+    "emptyMsgOnFail": true,
+    "keepMsgProperties": true,
+    "delayOnStart": true,
+    "startDelayTime": "1",
+    "x": 580,
+    "y": 280,
+    "wires": [
+      [
+        "a18dbg"
+      ],
+      [
+        "a18resp"
+      ]
+    ]
+  },
+  {
+    "id": "a18resp",
+    "type": "modbus-response",
+    "z": "a18tab0000000001",
+    "name": "Ops response",
+    "registerShowMax": 20,
+    "x": 820,
+    "y": 320,
+    "wires": []
+  },
+  {
+    "id": "a18dbg",
+    "type": "debug",
+    "z": "a18tab0000000001",
+    "name": "SEE: ops values",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 820,
+    "y": 240,
+    "wires": []
+  }
+]
