@@ -104,6 +104,7 @@ describe('Flex Sequencer node Testing', function () {
       loadFlow(testFlexSequencerNodes, flow, function () {
         const modbusClientNode = helper.getNode('92e7bf63.2efd7')
         setTimeout(() => {
+          modbusClientNode.stateService.send('STOP')
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.false()

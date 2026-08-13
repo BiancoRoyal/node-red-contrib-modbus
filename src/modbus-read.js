@@ -123,9 +123,20 @@ module.exports = function (RED) {
     node.onModbusBroken = function () {
       setNodeStatusWithTimeTo('broken')
       if (modbusClient.reconnectOnTimeout) {
-        setNodeStatusWithTimeTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.')
+        setNodeStatusWithTimeTo(
+          'retrying after ' + modbusClient.reconnectTimeout + ' msec.'
+        )
         node.resetAllReadingTimer()
       }
+    }
+
+    node.onModbusReconnecting = function (attempt) {
+      const n = attempt || modbusClient.reconnectAttempt || 0
+      const attemptSuffix = n > 0 ? ' (attempt ' + n + ')' : ''
+      setNodeStatusWithTimeTo(
+        'retrying after ' + modbusClient.reconnectTimeout + ' msec.' + attemptSuffix
+      )
+      node.resetAllReadingTimer()
     }
 
     node.onModbusReadDone = function (resp, msg) {
@@ -230,6 +241,7 @@ module.exports = function (RED) {
       modbusClient.removeListener('mberror', node.onModbusError)
       modbusClient.removeListener('mbclosed', node.onModbusClose)
       modbusClient.removeListener('mbbroken', node.onModbusBroken)
+      modbusClient.removeListener('mbreconnecting', node.onModbusReconnecting)
       modbusClient.removeListener('mbregister', node.onModbusRegister)
       modbusClient.removeListener('mbderegister', node.onModbusClose)
     }
@@ -342,6 +354,7 @@ module.exports = function (RED) {
     modbusClient.on('mberror', node.onModbusError)
     modbusClient.on('mbclosed', node.onModbusClose)
     modbusClient.on('mbbroken', node.onModbusBroken)
+    modbusClient.on('mbreconnecting', node.onModbusReconnecting)
     modbusClient.on('mbregister', node.onModbusRegister)
     modbusClient.on('mbderegister', node.onModbusClose)
 

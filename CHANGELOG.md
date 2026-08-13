@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.60.2](https://github.com/BiancoRoyal/node-red-contrib-modbus/compare/v5.60.1...v5.60.2) (2026-08-13)
+
+
+### Bug Fixes
+
+* **client:** after reconnect wait, connect immediately on `init` (no second `reconnectTimeout` stack) so recovery after peer-up is faster ([#569](https://github.com/BiancoRoyal/node-red-contrib-modbus/issues/569))
+* **client:** send `ACTIVATE` on successful `CONNECT` (post-connect Ready) without waiting for a command completion
+* **client:** reconnect attempt counter + status `retrying after N msec. (attempt k)` for clearer recovery UX
+
+
+### Features
+
+* **examples:** add learning labs **17** (FC2 Discrete + FC5/FC15 coil writes, port 10518) and **18** (ops timeout/reconnect, port 10519); sync `examples/README.md` and `docs/LEARNING-PATH.md`
+
+
+### Notes
+
+* Keeps 5.60.1 honesty: no Fake-Ready from `broken`, no in-band `connectClient` on half-open sockets.
+* Patch on LTS line `support/v5.60`. Related: #564.
+* README notes active maintenance with Claude Code Pro.
+
 ## [5.60.1](https://github.com/BiancoRoyal/node-red-contrib-modbus/compare/v5.60.0...v5.60.1) (2026-07-30)
 
 

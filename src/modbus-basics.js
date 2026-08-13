@@ -265,7 +265,23 @@ basics.onModbusQueue = function (node) {
 }
 
 basics.onModbusBroken = function (node, modbusClient) {
-  this.setNodeStatusTo('reconnecting after ' + modbusClient.reconnectTimeout + ' msec.', node)
+  this.setNodeStatusTo('broken', node)
+  if (modbusClient && modbusClient.reconnectOnTimeout) {
+    // Attempt counter is set when entering reconnecting (mbreconnecting)
+    this.setNodeStatusTo(
+      'retrying after ' + modbusClient.reconnectTimeout + ' msec.',
+      node
+    )
+  }
+}
+
+basics.onModbusReconnecting = function (node, modbusClient, attempt) {
+  const n = attempt || (modbusClient && modbusClient.reconnectAttempt) || 0
+  const attemptSuffix = n > 0 ? ' (attempt ' + n + ')' : ''
+  this.setNodeStatusTo(
+    'retrying after ' + modbusClient.reconnectTimeout + ' msec.' + attemptSuffix,
+    node
+  )
 }
 
 basics.setNodeDefaultStatus = function (node) {
@@ -278,6 +294,7 @@ basics.initModbusClientEvents = function (node, modbusClient) {
     modbusClient.on('mbqueue', () => { this.onModbusQueue(node) })
     modbusClient.on('mbconnected', () => { this.onModbusConnect(node) })
     modbusClient.on('mbbroken', () => { this.onModbusBroken(node, modbusClient) })
+    modbusClient.on('mbreconnecting', (attempt) => { this.onModbusReconnecting(node, modbusClient, attempt) })
     modbusClient.on('mbactive', () => { this.onModbusActive(node) })
     modbusClient.on('mberror', (failureMsg) => { this.onModbusError(node, failureMsg) })
     modbusClient.on('mbclosed', () => { this.onModbusClose(node) })

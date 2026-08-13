@@ -117,32 +117,37 @@ function loadReconnectFlow (opts, cb) {
 
 /**
  * Restart TCP listener and wait until client isActive again.
- * Nudges connectClient only while FSM is in init (intentional retry cycle).
+ * By default does NOT nudge connectClient (field-like FR recovery, AC-05).
+ * Pass { nudge: true } only for teardown grace on flaky CI hosts.
  */
-function recoverClient (client, server, callback, maxWaitMs) {
+function recoverClient (client, server, callback, maxWaitMs, opts) {
+  const nudgeEnabled = opts && opts.nudge === true
   startTcpModbusServer(server, function (startErr) {
     if (startErr) return callback(startErr)
 
     let nudges = 0
-    const nudge = setInterval(function () {
-      if (client.isActive && client.isActive()) {
-        clearInterval(nudge)
-        return
-      }
-      if (nudges++ > 40 || client.closingModbus) {
-        clearInterval(nudge)
-        return
-      }
-      const st = client.actualServiceState && client.actualServiceState.value
-      if (st === 'init' && typeof client.connectClient === 'function') {
-        try {
-          client.connectClient()
-        } catch (e) { /* ignore */ }
-      }
-    }, Math.max(120, (client.reconnectTimeout || 300)))
+    let nudge = null
+    if (nudgeEnabled) {
+      nudge = setInterval(function () {
+        if (client.isActive && client.isActive()) {
+          clearInterval(nudge)
+          return
+        }
+        if (nudges++ > 40 || client.closingModbus) {
+          clearInterval(nudge)
+          return
+        }
+        const st = client.actualServiceState && client.actualServiceState.value
+        if (st === 'init' && typeof client.connectClient === 'function') {
+          try {
+            client.connectClient()
+          } catch (e) { /* ignore */ }
+        }
+      }, Math.max(120, (client.reconnectTimeout || 300)))
+    }
 
     waitForModbusClientActive(client, function (activeErr) {
-      clearInterval(nudge)
+      if (nudge) clearInterval(nudge)
       callback(activeErr)
     }, maxWaitMs || RECOVER_WAIT_MS)
   })
@@ -581,6 +586,53 @@ describe('E2E Modbus FSM reconnect + message handling', function () {
           },
           CI ? 10000 : 5000
         )
+      })
+    })
+  })
+
+  it('AC-05: peer-up recovery without connectClient nudge (FR-TMR-SINGLE / FR-CONN-READY)', function (done) {
+    const finish = onceDone(done)
+    const MAGIC = 2009
+
+    loadReconnectFlow({ reconnectTimeout: CI ? 400 : 250 }, function (err, ctx) {
+      if (err) return finish(err)
+      const { server, client } = ctx
+      const trail = []
+      const unsub = client.stateService.subscribe(function (state) {
+        if (state && state.value && trail[trail.length - 1] !== state.value) {
+          trail.push(state.value)
+        }
+      })
+
+      simulateTcpOutage(server, client, function (stopErr) {
+        if (stopErr) {
+          unsub.unsubscribe()
+          return finish(stopErr)
+        }
+
+        waitForModbusClientInactive(client, function (inactiveErr) {
+          if (inactiveErr) {
+            unsub.unsubscribe()
+            return finish(inactiveErr)
+          }
+
+          // Explicitly field-like: no connectClient nudge
+          recoverClient(client, server, function (activeErr) {
+            unsub.unsubscribe()
+            if (activeErr) return finish(activeErr)
+            try {
+              assert.strictEqual(client.reconnectAttempt, 0, 'attempt counter reset on connect')
+              assert.ok(
+                trail.some(function (s) { return s === 'activated' || s === 'connected' }),
+                'expected post-connect ready, trail=' + trail.join('→')
+              )
+              measure('fsm.no-nudge-recover', { trail: trail.join('→') })
+            } catch (e) {
+              return finish(e)
+            }
+            writeThenFilterRead(MAGIC, finish)
+          }, RECOVER_WAIT_MS, { nudge: false })
+        }, CI ? 10000 : 5000)
       })
     })
   })

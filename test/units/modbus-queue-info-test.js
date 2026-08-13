@@ -405,6 +405,7 @@ describe('Queue Info node Testing', function () {
       loadFlow(testQueueInfoNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusClientNode = helper.getNode('d4c76ff5.c424b8')
         setTimeout(() => {
+          modbusClientNode.stateService.send('STOP')
           mbBasics.setNodeStatusTo('stopped', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.false()

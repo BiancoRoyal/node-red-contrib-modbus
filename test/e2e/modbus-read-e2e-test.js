@@ -44,11 +44,11 @@ describe('ModbusRead node', () => {
       readNode.status = function (status) {
         setStatus = status
       }
-      modbusClient.emit('mbregister', readNode.onModbusRegister)
-      setTimeout(function () {
-        expect(setStatus).to.deep.equal({ fill: 'green', shape: 'ring', text: 'connected' })
-        done()
-      }, 1500)
+      // Assert immediately: FR-CONN-READY may emit mbactive asynchronously and
+      // would otherwise race a delayed expectation of "connected".
+      modbusClient.emit('mbregister')
+      expect(setStatus).to.deep.equal({ fill: 'green', shape: 'ring', text: 'connected' })
+      done()
     })
   })
   it('should send message with values and valueNames when useIOFile is false', function (done) {

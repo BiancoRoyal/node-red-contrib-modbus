@@ -247,7 +247,8 @@ describe('Flex Connector node Unit Testing', function () {
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusNode = helper.getNode('40ddaabb.fd44d4')
         setTimeout(() => {
-          modbusNode.statusText.should.containEql('reconnecting')
+          // 5.60.2 status UX: "retrying after N msec. (attempt k)"
+          modbusNode.statusText.should.containEql('retrying')
           done()
         }, 800)
       })
@@ -257,6 +258,7 @@ describe('Flex Connector node Unit Testing', function () {
       helper.load(testFlexConnectorNodes, testFlows.testShouldBeLoadedFlow, function () {
         const modbusClientNode = helper.getNode('2a253153.fae3ce')
         setTimeout(() => {
+          modbusClientNode.stateService.send('STOP')
           mBasics.setNodeStatusTo('stopped', modbusClientNode)
           const isReady = modbusClientNode.isReadyToSend(modbusClientNode)
           isReady.should.be.false()

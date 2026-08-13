@@ -1078,4 +1078,91 @@ describe('Client node Unit Testing', function () {
       })
     })
   })
+
+  describe('client-timeout-reconnect-recovery (#569 / 5.60.2)', function () {
+    it('should ACTIVATE after CONNECT without a prior command (FR-CONN-READY)', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
+        const node = helper.getNode('3')
+        sinon.stub(node, 'connectClient')
+        node.stateService.send('NEW')
+        node.stateService.send('INIT')
+        assert.strictEqual(node.actualServiceState.value, 'init')
+        node.stateService.send('CONNECT')
+        assert.strictEqual(node.actualServiceState.value, 'activated')
+        done()
+      })
+    })
+
+    it('should connect immediately on init after reconnecting wait (FR-TMR-SINGLE)', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
+        const node = helper.getNode('3')
+        const clock = useFakeTimers(sinon)
+        const connectStub = sinon.stub(node, 'connectClient')
+        node.closingModbus = false
+        node.reconnectOnTimeout = true
+        node.reconnectTimeout = 2000
+        node.isFirstInitOfConnection = false
+        node.stateService.send('NEW')
+        node.stateService.send('INIT')
+        node.stateService.send('CONNECT')
+        assert.strictEqual(node.actualServiceState.value, 'activated')
+        node.stateService.send('BREAK')
+        assert.strictEqual(node.actualServiceState.value, 'reconnecting')
+        connectStub.resetHistory()
+        clock.tick(2000)
+        assert.strictEqual(node.actualServiceState.value, 'init')
+        sinon.assert.calledOnce(connectStub)
+        // Must not require a second full reconnectTimeout before connect
+        clock.tick(2000)
+        sinon.assert.calledOnce(connectStub)
+        clock.restore()
+        done()
+      })
+    })
+
+    it('should still delay non-first init when not coming from reconnecting', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
+        const node = helper.getNode('3')
+        const clock = useFakeTimers(sinon)
+        const connectStub = sinon.stub(node, 'connectClient')
+        node.closingModbus = false
+        node.reconnectOnTimeout = false
+        node.reconnectTimeout = 2000
+        node.isFirstInitOfConnection = false
+        node.stateService.send('NEW')
+        node.stateService.send('INIT')
+        node.stateService.send('CONNECT')
+        node.stateService.send('BREAK')
+        assert.strictEqual(node.actualServiceState.value, 'init')
+        connectStub.resetHistory()
+        // broken → INIT (not reconnecting): still waits reconnectTimeout
+        clock.tick(0)
+        sinon.assert.notCalled(connectStub)
+        clock.tick(2000)
+        sinon.assert.calledOnce(connectStub)
+        clock.restore()
+        done()
+      })
+    })
+
+    it('should reset reconnectAttempt on connected', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
+        const node = helper.getNode('3')
+        sinon.stub(node, 'connectClient')
+        node.reconnectOnTimeout = true
+        node.reconnectTimeout = 60000
+        node.isFirstInitOfConnection = false
+        node.stateService.send('NEW')
+        node.stateService.send('INIT')
+        node.stateService.send('CONNECT')
+        node.stateService.send('BREAK')
+        assert.ok(node.reconnectAttempt >= 1)
+        node.stateService.send('INIT')
+        node.stateService.send('CONNECT')
+        assert.strictEqual(node.reconnectAttempt, 0)
+        assert.strictEqual(node.actualServiceState.value, 'activated')
+        done()
+      })
+    })
+  })
 })

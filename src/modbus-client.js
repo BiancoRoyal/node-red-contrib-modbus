@@ -90,6 +90,7 @@ module.exports = function (RED) {
     node.unitSendingAllowed = []
     node.messageAllowedStates = coreModbusClient.messageAllowedStates
     node.serverInfo = ''
+    node.reconnectAttempt = 0
 
     node.stateMachine = null
     node.stateService = null
@@ -199,6 +200,12 @@ module.exports = function (RED) {
             if (!node.closingModbus) {
               node.reconnectTimeoutId = setTimeout(node.connectClient, serialConnectionDelayTimeMS)
             }
+          } else if (node.actualServiceStateBefore.value === 'reconnecting') {
+            // FR-TMR-SINGLE: reconnecting already waited reconnectTimeout — connect now
+            verboseWarn('fsm init after reconnect — connect now')
+            if (!node.closingModbus) {
+              node.connectClient()
+            }
           } else {
             verboseWarn('fsm init in ' + node.reconnectTimeout + ' ms')
             if (!node.closingModbus) {
@@ -216,8 +223,11 @@ module.exports = function (RED) {
       if (state.matches('connected')) {
         /* istanbul ignore next */
         verboseWarn('fsm connected after state ' + node.actualServiceStateBefore.value + logHintText)
+        node.reconnectAttempt = 0
         coreModbusQueue.queueSerialUnlockCommand(node)
         node.emit('mbconnected')
+        // FR-CONN-READY: reach activated without waiting for a command completion
+        coreModbusClient.sendActivateIfAllowed(node)
       }
 
       if (state.matches('activated')) {
@@ -299,8 +309,9 @@ module.exports = function (RED) {
 
       if (state.matches('reconnecting')) {
         verboseWarn('fsm reconnect state after ' + node.actualServiceStateBefore.value + logHintText)
+        node.reconnectAttempt = (node.reconnectAttempt || 0) + 1
         coreModbusQueue.queueSerialLockCommand(node)
-        node.emit('mbreconnecting')
+        node.emit('mbreconnecting', node.reconnectAttempt)
         if (node.reconnectTimeout <= 0) {
           node.reconnectTimeout = reconnectTimeMS
         }
