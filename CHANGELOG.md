@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [5.60.2](https://github.com/BiancoRoyal/node-red-contrib-modbus/compare/v5.60.1...v5.60.2) (2026-08-13)
+## [5.60.2](https://github.com/BiancoRoyal/node-red-contrib-modbus/compare/v5.60.1...v5.60.2) (2026-08-14)
 
 
 ### Bug Fixes
@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **client:** after reconnect wait, connect immediately on `init` (no second `reconnectTimeout` stack) so recovery after peer-up is faster ([#569](https://github.com/BiancoRoyal/node-red-contrib-modbus/issues/569))
 * **client:** send `ACTIVATE` on successful `CONNECT` (post-connect Ready) without waiting for a command completion
 * **client:** reconnect attempt counter + status `retrying after N msec. (attempt k)` for clearer recovery UX
+* **test:** accept 400 or 404 for invalid IO-config admin POST under parallel CI
 
 
 ### Features
