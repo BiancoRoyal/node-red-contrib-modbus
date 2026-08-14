@@ -99,7 +99,7 @@
   },
   "devDependencies": {
     "@babel/cli": "~7.25.9",
-    "@babel/core": "~7.26.0",
+    "@babel/core": "~7.29.6",
     "@babel/preset-env": "~7.26.0",
     "@babel/register": "~7.25.9",
     "@node-red/nodes": "~4.1.11",
