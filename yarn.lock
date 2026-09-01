@@ -2640,9 +2640,9 @@ browserslist@^4.24.0, browserslist@^4.24.2:
     update-browserslist-db "^1.1.1"
 
 bson@~7.3.1:
-  version "7.3.1"
-  resolved "https://registry.npmjs.org/bson/-/bson-7.3.1.tgz"
-  integrity sha512-h/C0qe6857pQhcSJHLfsR1uYGj98Ge3wKAD3Ed9KqH3wcVh+BM4Jq4xISD7vs9OPuT07n+q3QQVjslJ286j6ag==
+  version "7.3.2"
+  resolved "https://registry.yarnpkg.com/bson/-/bson-7.3.2.tgz#8ce07eabe4212467e63084574cf47ed970f3dbf9"
+  integrity sha512-1w0ra+ho1cuE+w8jzwgzTFIimFtCfZeCoOsvIPQg6uyFCsp8M29U7bNNf5GrFh88TXbYg1g3TyKUGpd6O7q6zA==
 
 buffer-equal@^1.0.0:
   version "1.0.1"
