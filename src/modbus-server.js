@@ -46,6 +46,7 @@ module.exports = function (RED) {
 
     node.netServer = null
     node.modbusServer = null
+    node.clientSockets = new Set()
 
     mbBasics.setNodeStatusTo('initialized', node)
 
@@ -76,6 +77,10 @@ module.exports = function (RED) {
 
         // NOTE(Kay): Get the underlying socket of the client connection
         const socket = client.socket
+        node.clientSockets.add(socket)
+        socket.on('close', function () {
+          node.clientSockets.delete(socket)
+        })
         // NOTE(Kay): This event listener is making sure that node-RED does not crash, as jsmodbus isn't handling
         //           the error internally we need to handle the exception here!
         socket.on('error', function (err) {
@@ -139,6 +144,9 @@ module.exports = function (RED) {
       mbBasics.setNodeStatusTo('closed', node)
 
       if (node.netServer) {
+        node.clientSockets.forEach((socket) => { socket.destroy() })
+        node.clientSockets.clear()
+
         node.netServer.close(() => {
           internalDebugLog('Modbus Server closed')
           done()
