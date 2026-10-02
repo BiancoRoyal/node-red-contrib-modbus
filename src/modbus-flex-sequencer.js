@@ -79,7 +79,7 @@ module.exports = function (RED) {
       node.internalDebugLog(err.message)
       const origMsg = mbCore.getOriginalMessage(node.bufferMessageList, msg)
       node.errorProtocolMsg(err, origMsg)
-      mbBasics.sendEmptyMsgOnFail(node, err, msg)
+      mbBasics.sendEmptyMsgOnFail(node, err, origMsg)
       mbBasics.setModbusError(node, modbusClient, err, origMsg)
       node.emit('modbusFlexSequencerNodeError')
     }
@@ -225,7 +225,8 @@ module.exports = function (RED) {
           const inputMsg = node.prepareMsg(msg)
           if (node.isValidModbusMsg(inputMsg)) {
             const newMsg = node.buildNewMessageObject(node, inputMsg)
-            node.bufferMessageList.set(newMsg.messageId, mbBasics.buildNewMessage(node.keepMsgProperties, inputMsg, newMsg))
+            const origSequenceMsg = Object.assign({}, origMsgInput, inputMsg)
+            node.bufferMessageList.set(newMsg.messageId, mbBasics.buildNewMessage(node.keepMsgProperties, origSequenceMsg, newMsg))
             modbusClient.emit('readModbus', newMsg, node.onModbusReadDone, node.onModbusReadError)
           }
         })

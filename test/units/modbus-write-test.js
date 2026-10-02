@@ -25,6 +25,7 @@ const expect = require('chai').expect
 const testSimpleWriteParametersNodes = [injectNode, clientNode, serverNode, nodeUnderTest, functionNode]
 
 const testFlows = require('./flows/modbus-write-flows')
+const mbBasics = require('../../src/modbus-basics')
 const { waitForModbusClientActive, withEphemeralPorts } = require('../helper/test-helper-extensions')
 
 function loadFlowWithPort (nodes, flowTemplate, done, onLoaded) {
@@ -73,6 +74,28 @@ describe('Write node Testing', function () {
         sinon.assert.calledOnce(emitSpy)
         sinon.assert.calledWithExactly(emitSpy, 'modbusWriteNodeDone')
 
+        done()
+      })
+    })
+
+    it('should use the original message on write failure', function (done) {
+      loadFlowWithPort(testSimpleWriteParametersNodes, testFlows.testWriteExampleFlow, done, function (_flow, done) {
+        const modbusWriteNode = helper.getNode('e71050e54fc87ddf')
+        const err = new Error('Test Modbus write error')
+        const origMsg = {
+          messageId: 'request-id',
+          _linkSource: [{ id: 'link-call-id', node: 'link-in-id' }],
+          custom: 'original value',
+          payload: 'original payload'
+        }
+        const requestMsg = { payload: { messageId: 'request-id' } }
+        const sendEmptyMsgOnFailStub = sinon.stub(mbBasics, 'sendEmptyMsgOnFail')
+        modbusWriteNode.bufferMessageList.set('request-id', origMsg)
+
+        modbusWriteNode.onModbusWriteError(err, requestMsg)
+
+        sinon.assert.calledWithExactly(sendEmptyMsgOnFailStub, modbusWriteNode, err, origMsg)
+        sendEmptyMsgOnFailStub.restore()
         done()
       })
     })

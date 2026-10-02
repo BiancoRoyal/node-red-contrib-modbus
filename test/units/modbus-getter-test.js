@@ -302,6 +302,35 @@ describe('Getter node Unit Testing', function () {
         })
       })
     })
+
+    it('should use the original message on command failure', function (done) {
+      const flow = Array.from(testFlows.testGetterFlowWithInjectIo)
+
+      getPort().then((port) => {
+        flow[1].serverPort = port
+        flow[5].tcpPort = port
+
+        helper.load(testGetterNodes, flow, function () {
+          const modbusGetter = helper.getNode('a2adb6ed727a01d6')
+          const err = new Error('Test Modbus command error')
+          const origMsg = {
+            messageId: 'request-id',
+            _linkSource: [{ id: 'link-call-id', node: 'link-in-id' }],
+            custom: 'original value',
+            payload: 'original payload'
+          }
+          const requestMsg = { payload: { messageId: 'request-id' } }
+          const sendEmptyMsgOnFailStub = sinon.stub(mbBasics, 'sendEmptyMsgOnFail')
+          modbusGetter.bufferMessageList.set('request-id', origMsg)
+
+          modbusGetter.onModbusCommandError(err, requestMsg)
+
+          sinon.assert.calledWithExactly(sendEmptyMsgOnFailStub, modbusGetter, err, origMsg)
+          sendEmptyMsgOnFailStub.restore()
+          done()
+        })
+      }).catch(done)
+    })
   })
 
   describe('post', function () {

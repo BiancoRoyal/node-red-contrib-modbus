@@ -271,6 +271,56 @@ describe('Flex Sequencer node Testing', function () {
       })
     })
 
+    it('should preserve top-level message properties in each buffered sequence request', function (done) {
+      loadFlow(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
+        const flexSequencer = helper.getNode('bc5a61b6.a3972')
+        const modbusClient = helper.getNode('92e7bf63.2efd7')
+        const linkSource = [{ id: 'link-call-id', node: 'link-in-id' }]
+        flexSequencer.keepMsgProperties = true
+        sinon.stub(flexSequencer, 'isNotReadyForInput').returns(false)
+        sinon.stub(modbusClient, 'isInactive').returns(false)
+        sinon.stub(modbusClient, 'emit')
+
+        flexSequencer.emit('input', {
+          _msgid: 'message-id',
+          _linkSource: linkSource,
+          custom: 'top-level value',
+          payload: 'trigger',
+          sequences: [{ name: 'first', unitid: 1, fc: 3, address: 4, quantity: 1 }]
+        })
+
+        flexSequencer.bufferMessageList.size.should.equal(1)
+        const bufferedMsg = Array.from(flexSequencer.bufferMessageList.values())[0]
+        bufferedMsg.should.have.property('_msgid', 'message-id')
+        bufferedMsg.should.have.property('_linkSource', linkSource)
+        bufferedMsg.should.have.property('custom', 'top-level value')
+        bufferedMsg.should.have.property('name', 'first')
+        bufferedMsg.payload.should.have.property('address', 4)
+        done()
+      })
+    })
+
+    it('should use the buffered sequence message on read failure', function (done) {
+      loadFlow(testFlexSequencerNodes, testFlows.testNodeWithServerFlow, function () {
+        const flexSequencer = helper.getNode('bc5a61b6.a3972')
+        const err = new Error('Test Modbus read error')
+        const origMsg = {
+          messageId: 'request-id',
+          _linkSource: [{ id: 'link-call-id', node: 'link-in-id' }],
+          custom: 'top-level value',
+          payload: 'original payload'
+        }
+        const requestMsg = { payload: { messageId: 'request-id' } }
+        const sendEmptyMsgOnFailStub = sinon.stub(mBasics, 'sendEmptyMsgOnFail')
+        flexSequencer.bufferMessageList.set('request-id', origMsg)
+
+        flexSequencer.onModbusReadError(err, requestMsg)
+
+        sinon.assert.calledWithExactly(sendEmptyMsgOnFailStub, flexSequencer, err, origMsg)
+        done()
+      })
+    })
+
     it('should reset the input delay timer, log a warning, and set a timeout when delayOnStart is true', async function () {
       //   await loadFlow(testFlexSequencerNodes, testFlows.testNodeWithInjectNodeFlow)
       //   const flexSequencerNode = helper.getNode('42c7ed2cf52e284e')
