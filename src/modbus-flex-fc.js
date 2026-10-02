@@ -32,7 +32,6 @@ module.exports = function (RED) {
     this.connection = null
 
     this.emptyMsgOnFail = config.emptyMsgOnFail
-    this.keepMsgProperties = config.keepMsgProperties
     this.internalDebugLog = internalDebugLog
     this.verboseLogging = RED.settings.verbose
 
@@ -177,21 +176,18 @@ module.exports = function (RED) {
     }
 
     node.buildNewMessageObject = function (origMsgInput) {
-      if (node.isValidCustomFc(origMsgInput)) {
-        return origMsgInput
-      }
-
-      const newMsg = {
-        topic: 'customFc',
-        payload: {
-          unitid: parseInt(node.unitid),
-          fc: parseInt(node.fc, 16),
-          requestCard: node.requestCard,
-          responseCard: node.responseCard,
-          from: node.name
-        }
-      }
-      return mbBasics.buildNewMessage(node.keepMsgProperties, origMsgInput, newMsg)
+      return (node.isValidCustomFc(origMsgInput))
+        ? origMsgInput
+        : {
+            topic: 'customFc',
+            payload: {
+              unitid: parseInt(node.unitid),
+              fc: parseInt(node.fc, 16),
+              requestCard: node.requestCard,
+              responseCard: node.responseCard,
+              from: node.name
+            }
+          }
     }
 
     node.on('input', function (msg) {

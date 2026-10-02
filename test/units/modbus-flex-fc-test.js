@@ -73,50 +73,6 @@ describe('modbus flex fc unit test', function () {
     })
   })
 
-  it('should initialize and apply keepMsgProperties to synthesized requests', function (done) {
-    loadFlow(testFlexFcNodes, testFlows.testReadCoilMode, function () {
-      const node = helper.getNode('d975b1203f71a3b5')
-      node.should.have.property('keepMsgProperties', false)
-      node.keepMsgProperties = true
-
-      const linkSource = [{ id: 'link-call-id', node: 'link-in-id' }]
-      const msg = node.buildNewMessageObject({
-        topic: 'trigger',
-        payload: { trigger: true },
-        _msgid: 'message-id',
-        _linkSource: linkSource,
-        custom: 'original value'
-      })
-
-      msg.should.have.property('topic', 'customFc')
-      msg.should.have.property('_msgid', 'message-id')
-      msg.should.have.property('_linkSource', linkSource)
-      msg.should.have.property('custom', 'original value')
-      msg.payload.should.have.property('unitid', 1)
-      done()
-    })
-  })
-
-  it('should retain a valid input-driven custom request', function (done) {
-    loadFlow(testFlexFcNodes, testFlows.testReadCoilMode, function () {
-      const node = helper.getNode('d975b1203f71a3b5')
-      const msg = {
-        topic: 'customFc',
-        _msgid: 'message-id',
-        _linkSource: [{ id: 'link-call-id', node: 'link-in-id' }],
-        payload: {
-          unitid: 1,
-          fc: 4,
-          requestCard: node.requestCard,
-          responseCard: node.responseCard
-        }
-      }
-
-      node.buildNewMessageObject(msg).should.equal(msg)
-      done()
-    })
-  })
-
   it('should be in waiting state if it cannot connect', function (done) {
     loadFlow(testFlexFcNodes, testFlows.testFlexClientWithoutConnection, function () {
       const modbusClientNode = helper.getNode('87bd51afcaba0962')

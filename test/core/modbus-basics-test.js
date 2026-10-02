@@ -130,54 +130,22 @@ describe('Modbus Node basics Suite', function () {
       checkStatus(status, 'red', 'dot', 'stopped')
     })
 
-    it('should preserve message properties on failure when configured', function () {
+    it('should send an empty message on failure when node.emptyMsgOnFail is true', function () {
       const node = {
         emptyMsgOnFail: true,
-        keepMsgProperties: true,
         send: sinon.spy(),
         statusText: 'error'
       }
       const err = new Error('Test error')
-      const msg = {
-        _msgid: 'message-id',
-        _linkSource: [{ id: 'link-call-id', node: 'link-in-id' }],
-        custom: 'value',
-        payload: 'initial'
-      }
+      const msg = { payload: 'initial' }
 
       basic.sendEmptyMsgOnFail(node, err, msg)
 
       assert(node.send.calledOnce)
-      const errorMsg = node.send.firstCall.args[0][0]
-      assert.notStrictEqual(errorMsg, msg)
-      assert.strictEqual(msg.payload, 'initial')
-      assert.strictEqual(errorMsg.payload, '')
-      assert.strictEqual(errorMsg._msgid, 'message-id')
-      assert.deepStrictEqual(errorMsg._linkSource, msg._linkSource)
-      assert.strictEqual(errorMsg.custom, 'value')
-      assert.strictEqual(errorMsg.error, err)
-      assert.strictEqual(errorMsg.error.nodeStatus, 'error')
-      assert.strictEqual(node.send.firstCall.args[0][1], errorMsg)
-    })
-
-    it('should omit message properties on failure when not configured to keep them', function () {
-      const node = {
-        emptyMsgOnFail: true,
-        keepMsgProperties: false,
-        send: sinon.spy(),
-        statusText: 'error'
-      }
-
-      basic.sendEmptyMsgOnFail(node, new Error('Test error'), {
-        _linkSource: [{ id: 'link-call-id', node: 'link-in-id' }],
-        custom: 'value',
-        payload: 'initial'
-      })
-
-      const errorMsg = node.send.firstCall.args[0][0]
-      assert.strictEqual(errorMsg.payload, '')
-      assert.strictEqual(errorMsg._linkSource, undefined)
-      assert.strictEqual(errorMsg.custom, undefined)
+      assert.deepStrictEqual(msg.payload, '')
+      assert(err instanceof Error)
+      assert.deepStrictEqual(msg.error, err)
+      assert.strictEqual(msg.error.nodeStatus, 'error')
     })
 
     it('should set node status to \'not ready to reconnect\' when error message is \'FSM Not Ready To Reconnect\'', () => {
