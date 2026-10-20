@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## Unreleased
+
+### Security / Maintenance
+
+* **deps:** `bson` 7.3.1 → 7.3.3 (patch). The production dependency tree has no known advisories (`npm audit --omit=dev`: 0).
+* **deps (dev):** removed unused devDependencies (`jasmine-node`, `codacy-coverage`, `coveralls`, `@babel/cli`, `@babel/register`, `supertest`, `gulp-sequence`, `uglify-js-harmony`, `js-beautify`, `nock`, `when`) and updated `node-red`, `@node-red/nodes`, Babel and `pump` within their major lines. Vulnerable packages in `npm audit`: 107 → 67, critical 11 → 2; `package-lock.json` and `yarn.lock` stay in sync.
+* **ci:** the release job no longer installs dependencies: the tarball is built and tested in the build job and published unchanged; new `audit` job (production audit at high/critical, `yarn.lock` frozen-lockfile check); all GitHub Actions are pinned to commit SHAs; Dependabot also covers development dependencies and GitHub Actions.
+
 ## [5.60.3](https://github.com/BiancoRoyal/node-red-contrib-modbus/compare/v5.60.2...v5.60.3) (2026-10-20)
 
 
