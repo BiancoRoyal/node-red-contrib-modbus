@@ -116,6 +116,23 @@ const RECONNECT_JITTER = 0.1
 const LIVENESS_MIN_WINDOW_MS = 10000
 const LIVENESS_TIMEOUT_FACTOR = 4
 
+function normalizedAttempt (attempt) {
+  return Number.isInteger(attempt) && attempt > 0 ? attempt : 1
+}
+
+function jitterFactor (random) {
+  const rnd = typeof random === 'function' ? random : Math.random
+  return 1 + (rnd() * 2 - 1) * RECONNECT_JITTER
+}
+
+function clientTimeoutMs (node) {
+  return (node && parseInt(node.clientTimeout)) || 0
+}
+
+function timestampOrNow (now) {
+  return typeof now === 'number' ? now : Date.now()
+}
+
 /**
  * Reconnect delay for the given attempt (1-based): the configured delay for the
  * first attempts so short blips recover fast, then doubling up to 30 s with ±10 %
@@ -130,19 +147,6 @@ coreClient.computeReconnectDelay = function (baseMs, attempt, random) {
   const backedOff = baseMs * Math.pow(2, n - RECONNECT_FREE_ATTEMPTS)
   const capped = Math.max(baseMs, Math.min(backedOff, RECONNECT_BACKOFF_CAP_MS))
   return Math.round(capped * jitterFactor(random))
-}
-
-function normalizedAttempt (attempt) {
-  return Number.isInteger(attempt) && attempt > 0 ? attempt : 1
-}
-
-function jitterFactor (random) {
-  const rnd = typeof random === 'function' ? random : Math.random
-  return 1 + (rnd() * 2 - 1) * RECONNECT_JITTER
-}
-
-function clientTimeoutMs (node) {
-  return (node && parseInt(node.clientTimeout)) || 0
 }
 
 /**
@@ -162,7 +166,7 @@ coreClient.describeError = function (err) {
 }
 
 coreClient.markAlive = function (node, now) {
-  node.lastAliveAt = now === undefined ? Date.now() : now
+  node.lastAliveAt = timestampOrNow(now)
 }
 
 /**
@@ -171,14 +175,14 @@ coreClient.markAlive = function (node, now) {
  * Otherwise the peer is simply absent (#580 / #586).
  */
 coreClient.shouldEscalateTimeout = function (node, now) {
-  const current = now === undefined ? Date.now() : now
+  const current = timestampOrNow(now)
   const lastAlive = (node && node.lastAliveAt) || 0
   return current - lastAlive >= coreClient.livenessWindow(node)
 }
 
 /** A Modbus exception response means the device answered — the transport is alive. */
 coreClient.isDeviceAnswerError = function (err) {
-  return Boolean(err) && err.modbusCode !== undefined
+  return Boolean(err) && Number.isInteger(err.modbusCode)
 }
 
 coreClient.canSendActivate = function (node) {
