@@ -1,12 +1,31 @@
 version: 2
 updates:
+  # npm updates both lock files in one pull request (npm keeps yarn.lock in sync), the CI
+  # audit job fails when yarn.lock drifts from package.json.
   - package-ecosystem: 'npm'
     directory: '/'
     target-branch: "master"
     schedule:
       interval: "monthly"
-    allow:
-      - dependency-type: "production"
+    open-pull-requests-limit: 5
+    groups:
+      production-dependencies:
+        dependency-type: "production"
+      development-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
     ignore:
       - dependency-name: "modbus*"
       - dependency-name: "*modbus*"
+  # Actions are pinned to commit SHAs in .github/workflows; Dependabot moves the pins.
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    target-branch: "master"
+    schedule:
+      interval: "monthly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
