@@ -117,7 +117,7 @@
     "nyc": "~15.1.0",
     "pump": "~3.0.4",
     "should": "~13.2.3",
-    "sinon": "~17.0.1",
+    "sinon": "~22.1.0",
     "standard": "~17.1.2",
     "standard-version": "~9.5.0",
     "uglify-js": "~3.19.3",
