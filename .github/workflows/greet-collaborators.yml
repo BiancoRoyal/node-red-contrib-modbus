@@ -8,6 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Greet Contributor"
-        uses: ibakshay/greet-contributors-action@v3
+        uses: ibakshay/greet-contributors-action@f07d3d58ea4b1af68b23b408242a1e73dae3fd29 # v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

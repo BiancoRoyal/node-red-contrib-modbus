@@ -16,11 +16,17 @@ on:
   # Re-run the release pipeline from master by hand (e.g. after fixing npm Trusted Publishing).
   workflow_dispatch:
 
+# Least privilege: jobs get read-only access unless they list more below.
+permissions:
+  contents: read
+
 # New pushes cancel superseded PR/branch runs; a running master release is never cancelled.
 concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
+# Third-party actions are pinned to commit SHAs (the comment names the tag they resolve to);
+# Dependabot (github-actions ecosystem) keeps them current.
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,18 +36,28 @@ jobs:
       matrix:
         node: [22, 24]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: ${{ matrix.node }}
-      - run: npm install
+      # npm ci installs exactly what package-lock.json pins (fails when it is out of sync)
+      - run: npm ci
       - run: npm run test:ci
       - run: npm run build
-      - run: tar -czvf distrib-${{ matrix.node }}.tar.gz modbus examples extras package.json docs index.js README.md CHANGELOG.md
-      - uses: actions/upload-artifact@v4
+      # The release tarball is built here, in a job without publish rights, and published
+      # unchanged by the publish job. Scripts are skipped: build already ran.
+      - name: Pack the npm tarball
+        if: matrix.node == 24
+        run: npm pack --ignore-scripts
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: matrix.node == 24
         with:
-          name: build-artifact-${{ matrix.node }}
-          path: distrib-${{ matrix.node }}.tar.gz
+          name: npm-tarball
+          path: node-red-contrib-modbus-*.tgz
+          retention-days: 7
+          if-no-files-found: error
 
   # Coverage gate: nyc.config.js sets check-coverage with the minimum thresholds, so this
   # job fails when coverage drops. The release below waits for it.
@@ -49,22 +65,42 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24
-      - run: npm install
+      - run: npm ci
       - run: npm run coverage
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: coverage-report
           path: coverage
           if-no-files-found: ignore
 
+  # Supply chain gate: what users install (production dependencies) must stay free of
+  # high/critical advisories, and yarn.lock must match package.json so npm and Yarn users
+  # get the same installation as package-lock.json.
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+      - name: npm audit (production dependencies)
+        run: npm audit --omit=dev --audit-level=high
+      - name: yarn.lock is in sync with package.json
+        run: yarn install --frozen-lockfile --ignore-scripts --ignore-engines --non-interactive
+
   publish:
     runs-on: ubuntu-latest
-    needs: [build, coverage]
+    needs: [build, coverage, audit]
     if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
     # OIDC Trusted Publishing — classic NPM_TOKEN was revoked by npm (Dec 2025).
     # REQUIRED once on https://www.npmjs.com/package/node-red-contrib-modbus/access
@@ -78,8 +114,12 @@ jobs:
       # tag + GitHub release after the npm publish
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      # Checkout only to read package.json and CHANGELOG.md. No dependency is installed and
+      # no repository code runs in this job: it holds the publish rights.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           # Trusted Publishing: Node >= 22.14, npm >= 11.5.1
           node-version: 24
@@ -99,7 +139,7 @@ jobs:
             echo "publish=true" >> "$GITHUB_OUTPUT"
             echo "$NAME@$VERSION is new — releasing"
           fi
-          # Release notes come from the committed CHANGELOG section (the build rewrites the file)
+          # Release notes come from the committed CHANGELOG section
           awk -v v="$VERSION" 'index($0, "## [" v "]") == 1 { found = 1; next } /^## \[/ { found = 0 } found' CHANGELOG.md > "$RUNNER_TEMP/release-notes.md"
           if [ ! -s "$RUNNER_TEMP/release-notes.md" ]; then
             echo "Release v$VERSION" > "$RUNNER_TEMP/release-notes.md"
@@ -115,22 +155,29 @@ jobs:
             exit 1
           fi
           echo "OIDC token request URL is present"
-      # @openp4nr/modbus-serial is a root package.json remote tarball (public Cloudsmith).
-      # npm@latest defaults can set allow-remote=none → EALLOWREMOTE without this.
-      - name: Install
+      # The tarball was built and tested on this commit in the build job.
+      - name: Download the tarball built from this commit
         if: steps.version.outputs.publish == 'true'
-        run: npm install --allow-remote=root
-      # Tests and coverage already gated this commit (needs: build, coverage); the package
-      # only has to be built. --ignore-scripts skips the prepublishOnly re-run of all suites.
-      - name: Build
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: npm-tarball
+          path: ${{ runner.temp }}/tarball
+      - name: Verify the tarball matches package.json
         if: steps.version.outputs.publish == 'true'
-        run: npm run build
+        env:
+          EXPECTED: ${{ steps.version.outputs.name }}@${{ steps.version.outputs.version }}
+        run: |
+          TARBALL=$(ls "$RUNNER_TEMP"/tarball/*.tgz)
+          ACTUAL=$(tar -xzOf "$TARBALL" package/package.json | node -p "const p=JSON.parse(require('fs').readFileSync(0,'utf8')); p.name + '@' + p.version")
+          echo "tarball: $ACTUAL, expected: $EXPECTED"
+          [ "$ACTUAL" = "$EXPECTED" ]
+          tar -tzf "$TARBALL" | grep -q '^package/modbus/modbus-client.js$'
       # Never set NODE_AUTH_TOKEN here — empty/legacy tokens bypass OIDC → ENEEDAUTH/E404.
       - name: Publish to npm (OIDC)
         if: steps.version.outputs.publish == 'true'
         run: |
           unset NODE_AUTH_TOKEN NPM_TOKEN
-          npm publish --access public --allow-remote=root --ignore-scripts
+          npm publish "$(ls "$RUNNER_TEMP"/tarball/*.tgz)" --access public --allow-remote=root --ignore-scripts
       - name: Create git tag and GitHub release
         if: steps.version.outputs.publish == 'true'
         env:
