@@ -13,6 +13,13 @@ on:
       - beta
       - master
       - main
+      # Work branches get the full CI on every push, no pull request needed.
+      - 'support/**'
+      - 'release/**'
+      - 'hotfix/**'
+      - 'feature/**'
+      - 'fix/**'
+      - 'chore/**'
   # Re-run the release pipeline from master by hand (e.g. after fixing npm Trusted Publishing).
   workflow_dispatch:
 
