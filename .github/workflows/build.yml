@@ -3,6 +3,8 @@ on:
   pull_request:
     types:
       - opened
+      - synchronize
+      - reopened
   push:
     branches:
       - develop
@@ -11,6 +13,14 @@ on:
       - beta
       - master
       - main
+  # Re-run the release pipeline from master by hand (e.g. after fixing npm Trusted Publishing).
+  workflow_dispatch:
+
+# New pushes cancel superseded PR/branch runs; a running master release is never cancelled.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -33,10 +43,29 @@ jobs:
           name: build-artifact-${{ matrix.node }}
           path: distrib-${{ matrix.node }}.tar.gz
 
+  # Coverage gate: nyc.config.js sets check-coverage with the minimum thresholds, so this
+  # job fails when coverage drops. The release below waits for it.
+  coverage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install
+      - run: npm run coverage
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage
+          if-no-files-found: ignore
+
   publish:
     runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/master'
+    needs: [build, coverage]
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
     # OIDC Trusted Publishing — classic NPM_TOKEN was revoked by npm (Dec 2025).
     # REQUIRED once on https://www.npmjs.com/package/node-red-contrib-modbus/access
     # → Trusted Publisher → GitHub Actions:
@@ -46,14 +75,37 @@ jobs:
     #   Allowed actions: npm publish
     permissions:
       id-token: write
-      contents: read
+      # tag + GitHub release after the npm publish
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           # Trusted Publishing: Node >= 22.14, npm >= 11.5.1
           node-version: 24
+      # master is released only when package.json carries a version that is not on npm yet.
+      # Every other push to master ends here successfully instead of failing on E403.
+      - name: Check whether this version is already published
+        id: version
+        run: |
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "$NAME@$VERSION is already on npm — nothing to release"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "$NAME@$VERSION is new — releasing"
+          fi
+          # Release notes come from the committed CHANGELOG section (the build rewrites the file)
+          awk -v v="$VERSION" 'index($0, "## [" v "]") == 1 { found = 1; next } /^## \[/ { found = 0 } found' CHANGELOG.md > "$RUNNER_TEMP/release-notes.md"
+          if [ ! -s "$RUNNER_TEMP/release-notes.md" ]; then
+            echo "Release v$VERSION" > "$RUNNER_TEMP/release-notes.md"
+          fi
       - name: Ensure npm supports OIDC trusted publishing
+        if: steps.version.outputs.publish == 'true'
         run: |
           npm install -g npm@latest
           npm --version
@@ -65,11 +117,29 @@ jobs:
           echo "OIDC token request URL is present"
       # @openp4nr/modbus-serial is a root package.json remote tarball (public Cloudsmith).
       # npm@latest defaults can set allow-remote=none → EALLOWREMOTE without this.
-      - run: npm install --allow-remote=root
-      - run: npm run test:ci
-      - run: npm run build
+      - name: Install
+        if: steps.version.outputs.publish == 'true'
+        run: npm install --allow-remote=root
+      # Tests and coverage already gated this commit (needs: build, coverage); the package
+      # only has to be built. --ignore-scripts skips the prepublishOnly re-run of all suites.
+      - name: Build
+        if: steps.version.outputs.publish == 'true'
+        run: npm run build
       # Never set NODE_AUTH_TOKEN here — empty/legacy tokens bypass OIDC → ENEEDAUTH/E404.
       - name: Publish to npm (OIDC)
+        if: steps.version.outputs.publish == 'true'
         run: |
           unset NODE_AUTH_TOKEN NPM_TOKEN
-          npm publish --access public --allow-remote=root
+          npm publish --access public --allow-remote=root --ignore-scripts
+      - name: Create git tag and GitHub release
+        if: steps.version.outputs.publish == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          TAG="v$VERSION"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists"
+          else
+            gh release create "$TAG" --target "$GITHUB_SHA" --title "$TAG" --notes-file "$RUNNER_TEMP/release-notes.md" --latest
+          fi
