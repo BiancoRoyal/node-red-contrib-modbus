@@ -75,15 +75,21 @@ function hasTimedOutMessage (err) {
  * TransactionTimedOutError only carries `errno: 'ETIMEDOUT'`. A `code` or
  * `syscall` therefore marks a transport error, a lone ETIMEDOUT errno does not.
  */
-function hasTransportNetworkTag (err) {
-  if (!err) {
-    return false
-  }
-  if (err.code || err.syscall) {
-    return true
-  }
+function hasSocketTag (err) {
+  return Boolean(err.code || err.syscall)
+}
+
+function hasForeignNetworkErrno (err) {
   // Missing errno → includes(undefined) is false (not a transport tag)
   return err.errno !== 'ETIMEDOUT' && coreClient.networkErrors.includes(err.errno)
+}
+
+function hasTransportNetworkTag (err) {
+  return hasSocketTag(err) || hasForeignNetworkErrno(err)
+}
+
+function isNamedTransactionTimeout (err) {
+  return err.name === 'TransactionTimedOutError'
 }
 
 /**
@@ -98,8 +104,8 @@ coreClient.isApplicationTimeoutError = function (err) {
   if (!err) {
     return false
   }
-  if (err.name === 'TransactionTimedOutError') {
-    return !err.code && !err.syscall
+  if (isNamedTransactionTimeout(err)) {
+    return !hasSocketTag(err)
   }
   return hasTimedOutMessage(err) && !hasTransportNetworkTag(err)
 }
