@@ -152,15 +152,19 @@ describe('E2E Modbus-Client Timed out semantics on a shared connection (#586/#58
     })
   })
 
-  function loadActiveClient (reconnectOnTimeout, callback) {
+  function loadActiveClient (reconnectOnTimeout, callback, options) {
+    const presentUnits = (options && options.presentUnits) || [PRESENT_UNIT]
     getPort().then(function (port) {
-      startPeer(port, new Set([PRESENT_UNIT]), function (peerErr, startedPeer) {
+      startPeer(port, new Set(presentUnits), function (peerErr, startedPeer) {
         if (peerErr) return callback(peerErr)
         peer = startedPeer
         helper.load([clientNode], clientFlow(port, reconnectOnTimeout), function (loadErr) {
           if (loadErr) return callback(loadErr)
           const client = helper.getNode('clientTo')
           // the FSM starts with the first registered consumer node
+          if (options && options.livenessWindowMs) {
+            client.livenessWindowMs = options.livenessWindowMs
+          }
           client.registerForModbus('timeout-semantics-consumer')
           waitForModbusClientActive(client, function (activeErr) {
             callback(activeErr, client)
@@ -210,35 +214,113 @@ describe('E2E Modbus-Client Timed out semantics on a shared connection (#586/#58
     })
   })
 
-  it('reconnectOnTimeout=false: genuine transport loss still recovers', function (done) {
-    loadActiveClient(false, function (err, client) {
+  function watchCycle (client) {
+    const events = []
+    ;['mbinit', 'mbbroken', 'mbreconnecting', 'mbclosed'].forEach(function (eventName) {
+      client.on(eventName, function () { events.push(eventName) })
+    })
+    return events
+  }
+
+  it('reconnectOnTimeout=true (default): absent Unit ID does not rebuild while another unit answers (#580)', function (done) {
+    loadActiveClient(true, function (err, client) {
       if (err) return done(err)
 
-      const port = parseInt(client.tcpPort, 10)
       const transportBefore = client.client
+      const cycleEvents = watchCycle(client)
 
-      client.once('mbbroken', function () {
-        startPeer(port, new Set([PRESENT_UNIT]), function (peerErr, restartedPeer) {
-          if (peerErr) return done(peerErr)
-          peer = restartedPeer
-          waitForModbusClientActive(client, function (activeErr) {
-            if (activeErr) return done(activeErr)
+      readUnit(client, PRESENT_UNIT, function (firstErr) {
+        if (firstErr) return done(new Error('healthy unit failed before timeout: ' + firstErr.message))
+
+        readUnit(client, ABSENT_UNIT, function (timeoutErr) {
+          try {
+            assert.ok(timeoutErr, 'absent Unit ID must time out')
+          } catch (e) {
+            return done(e)
+          }
+
+          setTimeout(function () {
             try {
-              assert.notStrictEqual(client.client, transportBefore, 'transport must have been rebuilt')
+              assert.deepStrictEqual(cycleEvents, [], 'no FSM recovery cycle expected, saw: ' + cycleEvents.join(','))
+              assert.strictEqual(client.client, transportBefore, 'shared Modbus client instance must not be replaced')
             } catch (e) {
               return done(e)
             }
-            readUnit(client, PRESENT_UNIT, function (readErr) {
-              done(readErr || undefined)
+
+            readUnit(client, PRESENT_UNIT, function (secondErr) {
+              done(secondErr || undefined)
             })
-          }, WAIT_MS)
+          }, OBSERVE_MS)
         })
       })
+    })
+  })
 
-      peer.stop(function () {
-        peer = null
-        // the next command notices the dead socket (no idle close detection yet)
-        readUnit(client, PRESENT_UNIT, function () { /* failure expected */ })
+  it('reconnectOnTimeout=true: rebuilds once nothing answered inside the liveness window', function (done) {
+    loadActiveClient(true, function (err, client) {
+      if (err) return done(err)
+
+      const transportBefore = client.client
+      const cycleEvents = watchCycle(client)
+
+      readUnit(client, ABSENT_UNIT, function (firstTimeout) {
+        try {
+          assert.ok(firstTimeout, 'silent peer must time out')
+          // the connect is still inside the 900 ms window: absent peer, no rebuild
+          assert.deepStrictEqual(cycleEvents, [], 'first timeout must not rebuild, saw: ' + cycleEvents.join(','))
+        } catch (e) {
+          return done(e)
+        }
+
+        setTimeout(function () {
+          // the FSM reacts synchronously to the failing request, before its callback runs
+          client.once('mbreconnecting', function () {
+            waitForModbusClientActive(client, function (activeErr) {
+              if (activeErr) return done(activeErr)
+              try {
+                assert.notStrictEqual(client.client, transportBefore, 'transport must have been rebuilt')
+                done()
+              } catch (e) {
+                done(e)
+              }
+            }, WAIT_MS)
+          })
+          readUnit(client, ABSENT_UNIT, function (secondTimeout) {
+            if (!secondTimeout) done(new Error('silent peer must time out again'))
+          })
+        }, 700)
+      })
+    }, { presentUnits: [], livenessWindowMs: 900 })
+  })
+
+  ;[false, true].forEach(function (reconnectOnTimeout) {
+    it('reconnectOnTimeout=' + reconnectOnTimeout + ': a connection that drops while idle is noticed and recovers without any command', function (done) {
+      loadActiveClient(reconnectOnTimeout, function (err, client) {
+        if (err) return done(err)
+
+        const port = parseInt(client.tcpPort, 10)
+        const transportBefore = client.client
+
+        client.once('mbreconnecting', function () {
+          startPeer(port, new Set([PRESENT_UNIT]), function (peerErr, restartedPeer) {
+            if (peerErr) return done(peerErr)
+            peer = restartedPeer
+            waitForModbusClientActive(client, function (activeErr) {
+              if (activeErr) return done(activeErr)
+              try {
+                assert.notStrictEqual(client.client, transportBefore, 'transport must have been rebuilt')
+              } catch (e) {
+                return done(e)
+              }
+              readUnit(client, PRESENT_UNIT, function (readErr) {
+                done(readErr || undefined)
+              })
+            }, WAIT_MS)
+          })
+        })
+
+        // no command is sent: only the socket close tells the client the peer is gone
+        peer.stop(function () { peer = null })
       })
     })
   })

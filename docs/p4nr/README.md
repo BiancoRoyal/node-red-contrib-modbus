@@ -49,6 +49,7 @@ Feature/Bug → Team 1 → Team 2 → GATE 1 → Team 3 → GATE 2 → PR/commit
 | `client-timeout-reconnect-honesty` | shipped in **5.60.1** — #564/#569 timeout/DNS reconnect honesty |
 | `client-timeout-reconnect-recovery` | GATE 1 APPROVE — #569 post-5.60.1 recovery UX (single delay + post-connect Ready; target **5.60.2**) |
 | `client-timeout-reconnect-semantics` | READY FOR REVIEW — #586/#580 `reconnectOnTimeout=false` still rebuilds connection (P0; target **5.60.3**) |
+| `client-transport-liveness` | IMPLEMENTED — #580/#564 transport liveness evidence, stale client isolation, idle TCP drop detection, reconnect backoff (target **5.61.0**) |
 | `serial-rtu-arm64-node24` | DRAFT follow-up — #577 segfault Serial RTU ARM64 Node 24 |
 
 ## OSS Notes

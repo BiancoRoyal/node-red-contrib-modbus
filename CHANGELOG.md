@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## Unreleased
+
+### Features
+
+* **client:** a request timeout rebuilds the shared connection only when no Unit ID (and not the connect itself) proved the transport alive inside the liveness window (`max(10 s, 4 × timeout)`) — one absent Unit ID no longer disturbs healthy peers with the default **Reconnect on timeout** ([#580](https://github.com/BiancoRoyal/node-red-contrib-modbus/issues/580))
+* **client:** a TCP connection that drops while idle is noticed from the socket close instead of at the next failing command ([#564](https://github.com/BiancoRoyal/node-red-contrib-modbus/issues/564))
+* **client:** reconnect delay stays at the configured value for three attempts, then backs off up to 30 s with ±10 % jitter; the node status shows the actual delay
+
+### Bug Fixes
+
+* **client:** errors, port close and late request failures of a replaced Modbus client no longer drive the FSM of the new connection
+
 ## [5.60.3](https://github.com/BiancoRoyal/node-red-contrib-modbus/compare/v5.60.2...v5.60.3) (2026-10-20)
 
 

@@ -264,12 +264,17 @@ basics.onModbusQueue = function (node) {
   this.setNodeStatusTo('queueing', node)
 }
 
+/** Delay of the running reconnect: the backed-off value, else the configured reconnectTimeout. */
+basics.reconnectDelayOf = function (modbusClient) {
+  return modbusClient.reconnectDelay || modbusClient.reconnectTimeout
+}
+
 basics.onModbusBroken = function (node, modbusClient) {
   this.setNodeStatusTo('broken', node)
   if (modbusClient && modbusClient.reconnectOnTimeout) {
     // Attempt counter is set when entering reconnecting (mbreconnecting)
     this.setNodeStatusTo(
-      'retrying after ' + modbusClient.reconnectTimeout + ' msec.',
+      'retrying after ' + this.reconnectDelayOf(modbusClient) + ' msec.',
       node
     )
   }
@@ -279,7 +284,7 @@ basics.onModbusReconnecting = function (node, modbusClient, attempt) {
   const n = attempt || (modbusClient && modbusClient.reconnectAttempt) || 0
   const attemptSuffix = n > 0 ? ' (attempt ' + n + ')' : ''
   this.setNodeStatusTo(
-    'retrying after ' + modbusClient.reconnectTimeout + ' msec.' + attemptSuffix,
+    'retrying after ' + this.reconnectDelayOf(modbusClient) + ' msec.' + attemptSuffix,
     node
   )
 }

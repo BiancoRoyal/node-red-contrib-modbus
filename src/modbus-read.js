@@ -124,7 +124,7 @@ module.exports = function (RED) {
       setNodeStatusWithTimeTo('broken')
       if (modbusClient.reconnectOnTimeout) {
         setNodeStatusWithTimeTo(
-          'retrying after ' + modbusClient.reconnectTimeout + ' msec.'
+          'retrying after ' + mbBasics.reconnectDelayOf(modbusClient) + ' msec.'
         )
         node.resetAllReadingTimer()
       }
@@ -134,7 +134,7 @@ module.exports = function (RED) {
       const n = attempt || modbusClient.reconnectAttempt || 0
       const attemptSuffix = n > 0 ? ' (attempt ' + n + ')' : ''
       setNodeStatusWithTimeTo(
-        'retrying after ' + modbusClient.reconnectTimeout + ' msec.' + attemptSuffix
+        'retrying after ' + mbBasics.reconnectDelayOf(modbusClient) + ' msec.' + attemptSuffix
       )
       node.resetAllReadingTimer()
     }
