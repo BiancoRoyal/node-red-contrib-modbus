@@ -133,25 +133,35 @@ describe('Server node Testing', function () {
       })
     })
 
-    it('should set node status to active on client connection', function () {
+    it('should set node status to active on client connection', function (done) {
       const flow = Array.from(testFlows.testServerConfig)
 
       getPort().then((port) => {
         flow[0].serverPort = port
 
+        // done() keeps the load inside this test: afterEach unloads the flow, otherwise the
+        // server starts after the unload and keeps mocha alive without --exit
         helper.load(testServerNodes, flow, function () {
-          const modbusServer = helper.getNode('249922d5ac72b8cd')
-          modbusServer.modbusServer.emit('connection', {
-            socket: {
+          try {
+            const modbusServer = helper.getNode('249922d5ac72b8cd')
+            const fakeSocket = Object.assign(new (require('events').EventEmitter)(), {
               address: () => '127.0.0.1',
               remoteAddress: '192.168.1.100',
               remotePort: 1234
-            }
-          })
+            })
+            modbusServer.modbusServer.emit('connection', { socket: fakeSocket })
 
-          sinon.assert.calledWith(modbusServer.status, { fill: 'yellow', shape: 'dot', text: 'initialized' })
+            sinon.assert.calledWith(modbusServer.status, { fill: 'yellow', shape: 'dot', text: 'initialized' })
+            // #581: connected client sockets are tracked until they close
+            expect(modbusServer.clientSockets.has(fakeSocket)).to.equal(true)
+            fakeSocket.emit('close')
+            expect(modbusServer.clientSockets.has(fakeSocket)).to.equal(false)
+            done()
+          } catch (err) {
+            done(err)
+          }
         })
-      })
+      }).catch(done)
     })
 
     it('should set responseDelay, delayUnit, showStatusActivities, and coilsBufferSize correctly', function (done) {
