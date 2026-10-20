@@ -1207,16 +1207,32 @@ describe('Client node Unit Testing', function () {
       })
     })
 
-    it('should send FAILURE for transport-tagged Timed out even when reconnectOnTimeout is false (AC-SEM-03 transport)', function (done) {
+    it('should NOT send FAILURE for the real modbus-serial TransactionTimedOutError when reconnectOnTimeout is false (#586)', function (done) {
       helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
         const node = helper.getNode('3')
         const sendSpy = sinon.spy(node.stateService, 'send')
         node.reconnectOnTimeout = false
-        // transport-tagged: isApplicationTimeoutError → false, isRecoverableModbusError → true (errno match)
-        const transportTimeout = new Error('Timed out')
-        transportTimeout.errno = 'ETIMEDOUT'
-        node.modbusErrorHandling(transportTimeout)
-        // ETIMEDOUT is in networkErrors → isRecoverableModbusError=true → FAILURE sent even when reconnectOnTimeout=false
+        // exact shape of @openp4nr/modbus-serial: name + errno ETIMEDOUT, no code/syscall
+        const realTimeout = new Error('Timed out')
+        realTimeout.name = 'TransactionTimedOutError'
+        realTimeout.errno = 'ETIMEDOUT'
+        node.modbusErrorHandling(realTimeout)
+        assert.strictEqual(sendSpy.calledWith('FAILURE'), false)
+        sendSpy.restore()
+        done()
+      })
+    })
+
+    it('should send FAILURE for a socket-level timeout (code + syscall) even when reconnectOnTimeout is false (AC-SEM-03 transport)', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
+        const node = helper.getNode('3')
+        const sendSpy = sinon.spy(node.stateService, 'send')
+        node.reconnectOnTimeout = false
+        const socketTimeout = new Error('read ETIMEDOUT')
+        socketTimeout.errno = -110
+        socketTimeout.code = 'ETIMEDOUT'
+        socketTimeout.syscall = 'read'
+        node.modbusErrorHandling(socketTimeout)
         sinon.assert.calledWith(sendSpy, 'FAILURE')
         sendSpy.restore()
         done()

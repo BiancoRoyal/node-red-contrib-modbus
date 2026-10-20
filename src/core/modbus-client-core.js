@@ -70,24 +70,38 @@ function hasTimedOutMessage (err) {
   return msg.indexOf('Timed out') !== -1
 }
 
+/**
+ * Socket errors from net carry `code` (and `syscall`); modbus-serial's own
+ * TransactionTimedOutError only carries `errno: 'ETIMEDOUT'`. A `code` or
+ * `syscall` therefore marks a transport error, a lone ETIMEDOUT errno does not.
+ */
 function hasTransportNetworkTag (err) {
   if (!err) {
     return false
   }
-  // Missing errno/code → includes(undefined) is false (not a transport tag)
-  const errnoHit = coreClient.networkErrors.includes(err.errno)
-  const codeHit = coreClient.networkErrors.includes(err.code)
-  return errnoHit || codeHit
+  if (err.code || err.syscall) {
+    return true
+  }
+  // Missing errno → includes(undefined) is false (not a transport tag)
+  return err.errno !== 'ETIMEDOUT' && coreClient.networkErrors.includes(err.errno)
 }
 
 /**
- * Returns true when err is a pure application-level "Timed out" from
- * modbus-serial — no transport errno/code present.
+ * Returns true when err is the application-level transaction timeout of
+ * modbus-serial (TransactionTimedOutError, message "Timed out", errno
+ * ETIMEDOUT) — the peer did not answer a request, the transport is not
+ * proven broken. Socket-level errors are excluded.
  * Used by modbusErrorHandling to honour reconnectOnTimeout=false
- * (FR-SEM-SPLIT — client-timeout-reconnect-semantics).
+ * (FR-SEM-SPLIT — client-timeout-reconnect-semantics, #586).
  */
 coreClient.isApplicationTimeoutError = function (err) {
-  return Boolean(err) && hasTimedOutMessage(err) && !hasTransportNetworkTag(err)
+  if (!err) {
+    return false
+  }
+  if (err.name === 'TransactionTimedOutError') {
+    return !err.code && !err.syscall
+  }
+  return hasTimedOutMessage(err) && !hasTransportNetworkTag(err)
 }
 
 coreClient.canSendActivate = function (node) {

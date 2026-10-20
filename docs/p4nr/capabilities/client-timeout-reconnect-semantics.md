@@ -93,22 +93,24 @@ the shared connection.
 A new function `isApplicationTimeoutError(err)` MUST be added to
 `src/core/modbus-client-core.js`.
 
-It returns `true` when ALL of the following hold:
-- `err` is non-null
-- `err.message` is a string containing `"Timed out"`
-- `err.errno` is absent or NOT in `coreClient.networkErrors`
-- `err.code` is absent or NOT in `coreClient.networkErrors`
+It returns `true` when `err` is non-null and EITHER
+- `err.name === 'TransactionTimedOutError'` and neither `err.code` nor `err.syscall` is set, OR
+- `err.message` contains `"Timed out"` and the error carries no transport tag
+  (no `err.code`, no `err.syscall`, and `err.errno` is absent, `'ETIMEDOUT'`, or not in
+  `coreClient.networkErrors`).
 
-It returns `false` for all transport errno errors (ECONNRESET, ETIMEDOUT,
-ESOCKETTIMEDOUT, EHOSTUNREACH, EAI_AGAIN, etc.) — those remain exclusively under
-`isRecoverableModbusError`.
+It returns `false` for transport errors (ECONNRESET, ESOCKETTIMEDOUT, EHOSTUNREACH,
+EAI_AGAIN, socket-level ETIMEDOUT with `code`/`syscall`, etc.) — those remain
+exclusively under `isRecoverableModbusError`.
 
-**Rationale:** the modbus-serial library issues a plain `Error('Timed out')` at the
-application layer with no `errno` and no `code`. TCP/OS transport errors always
-carry at least `errno` or `code`. The two sets are disjoint in the current library.
-Adding the explicit guard ensures that a future library version that adds errno to
-plain timeouts will NOT silently suppress the error (it would fall through to the
-transport recovery path, which is the safer default).
+**Rationale (corrected after the 5.60.3 pre-release):** `@openp4nr/modbus-serial`
+builds its transaction timeout as `TransactionTimedOutError` with
+`message = 'Timed out'` **and `errno = 'ETIMEDOUT'`** (`index.js`,
+`_startTimeout`). The first revision of this spec assumed "no errno, no code" and
+therefore classified every real application timeout as a transport error, so
+#586 stayed unfixed. Socket errors raised by `net` always carry `code` and
+`syscall`; that pair, not `errno`, is the discriminator. The shape is pinned by a
+test that provokes a real timeout against a silent TCP peer.
 
 ### FR-SEM-SUPPRESS — Suppress FAILURE for application timeouts when checkbox false
 
@@ -247,9 +249,11 @@ All watchpoints from `client-timeout-reconnect-honesty` MUST remain:
 | Input | Expected |
 |-------|----------|
 | `new Error('Timed out')` | `true` |
-| `new Error('Port Timed out after 500ms')` | `true` (contains "Timed out") |
-| `{ message: 'Timed out', errno: 'ETIMEDOUT' }` | `false` (errno in networkErrors) |
-| `{ message: 'Timed out', code: 'ESOCKETTIMEDOUT' }` | `false` (code in networkErrors) |
+| `{ name: 'TransactionTimedOutError', message: 'Timed out', errno: 'ETIMEDOUT' }` | `true` (real modbus-serial shape) |
+| `{ message: 'Timed out', errno: 'ETIMEDOUT' }` | `true` (no `code`/`syscall`) |
+| `{ message: 'read ETIMEDOUT', errno: -110, code: 'ETIMEDOUT', syscall: 'read' }` | `false` (socket error) |
+| `{ message: 'Timed out', code: 'ESOCKETTIMEDOUT' }` | `false` (code set) |
+| real `TransactionTimedOutError` from a silent TCP peer | `true` (pins the library shape) |
 | `{ message: 'error', errno: 'ECONNRESET' }` | `false` |
 | `null` | `false` |
 | `{}` | `false` |
@@ -292,7 +296,7 @@ Use sinon stubs for `stateService` with a spy on `send`. Build node with test he
 
 | Risk | Mitigation |
 |------|------------|
-| Application "Timed out" with undocumented errno/code leaks through suppression | `isApplicationTimeoutError` explicitly gates on `err.errno` / `err.code` not in `networkErrors`; transport errors always recover |
-| modbus-serial future version adds errno to plain timeout | Unit test asserts predicate against known modbus-serial error shapes; team must review on lib upgrade |
+| Socket error mislabelled as application timeout (would suppress recovery) | Discriminator is `err.code` / `err.syscall` (always set by `net`); socket ETIMEDOUT rows in the boundary table |
+| modbus-serial changes its timeout error shape | `test/units/modbus-client-core-test.js` provokes a real timeout against a silent TCP peer; `test/e2e/modbus-client-timeout-semantics-e2e-test.js` asserts no FSM cycle. Both fail on a shape change. |
 | Suppressed timeout leaves a half-open command slot if `cberr` not yet called | modbus-serial guarantees cberr before emitting client `error`; verify order in AC-SEM-01 test setup comment |
 | #580 storm reduced but not fully eliminated if gateway sends TCP RST on unit-ID timeout | FR-SEM-TRANSPORT-ALWAYS ensures TCP RST still triggers FAILURE recovery — correct behavior |
