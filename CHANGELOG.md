@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.61.0](https://github.com/BiancoRoyal/node-red-contrib-modbus/compare/v5.60.3...v5.61.0) (2026-10-20)
+
+### Features
+
+* **client:** a request timeout rebuilds the shared connection only when no Unit ID (and not the connect itself) proved the transport alive inside the liveness window (`max(10 s, 4 × timeout)`) — one absent Unit ID no longer disturbs healthy peers with the default **Reconnect on timeout** ([#580](https://github.com/BiancoRoyal/node-red-contrib-modbus/issues/580))
+* **client:** a TCP connection that drops while idle is noticed from the socket close instead of at the next failing command ([#564](https://github.com/BiancoRoyal/node-red-contrib-modbus/issues/564))
+* **client:** reconnect delay stays at the configured value for three attempts, then backs off to about 30 s (±10 % jitter, never below the configured delay); the node status shows the actual delay. This also applies with **Reconnect on timeout** off
+
+### Bug Fixes
+
+* **client:** errors, port close, late request failures and late connect results of a replaced Modbus client no longer drive the FSM of the new connection; a late successful connect of a replaced client is closed
+* **client:** the liveness window runs on a monotonic clock, so an NTP or RTC clock step cannot suppress or force a connection rebuild
+* **client:** a write to Unit ID 0 whose error is swallowed (broadcast) no longer counts as proof that the connection is alive
+* **client:** a dynamic reconnect to a new target starts with the configured reconnect delay instead of the old target's backoff
+
+### Behaviour changes
+
+* With **Reconnect on timeout** on (default), a device that only stops answering is treated as absent while other Unit IDs (or the connect) proved the connection alive within `max(10 s, 4 × timeout)`. A half-open TCP connection or a hung serial adapter that only produces timeouts is therefore rebuilt up to that window later than in 5.60.3. Socket errors, resets, DNS failures, `Port Not Open` and a closed connection still reconnect immediately.
+* Idle TCP connections that the gateway closes show `closed` / `retrying…` right away instead of at the next poll.
+* Flows saved before **Reconnect on timeout** existed run with the option off, as in 5.60.3.
+
+### Security / Maintenance
+
+* **deps:** `bson` 7.3.1 → 7.3.3 (patch). The production dependency tree has no known advisories (`npm audit --omit=dev`: 0).
+* **deps (dev):** removed unused devDependencies (`jasmine-node`, `codacy-coverage`, `coveralls`, `@babel/cli`, `@babel/register`, `supertest`, `gulp-sequence`, `uglify-js-harmony`, `js-beautify`, `nock`, `when`) and updated `node-red`, `@node-red/nodes`, Babel and `pump` within their major lines. Vulnerable packages in `npm audit`: 107 → 67, critical 11 → 2; `package-lock.json` and `yarn.lock` stay in sync.
+* **ci:** the release job no longer installs dependencies: the tarball is built and tested in the build job and published unchanged; new `audit` job (production audit at high/critical, `yarn.lock` frozen-lockfile check); all GitHub Actions are pinned to commit SHAs; Dependabot also covers development dependencies and GitHub Actions.
+
 ## [5.60.3](https://github.com/BiancoRoyal/node-red-contrib-modbus/compare/v5.60.2...v5.60.3) (2026-10-20)
 
 

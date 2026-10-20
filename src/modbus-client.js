@@ -207,9 +207,10 @@ module.exports = function (RED) {
               node.connectClient()
             }
           } else {
-            verboseWarn('fsm init in ' + node.reconnectTimeout + ' ms')
+            const initDelay = node.nextInitDelay()
+            verboseWarn('fsm init in ' + initDelay + ' ms')
             if (!node.closingModbus) {
-              node.reconnectTimeoutId = setTimeout(node.connectClient, node.reconnectTimeout)
+              node.reconnectTimeoutId = setTimeout(node.connectClient, initDelay)
             }
           }
         } catch (err) {
@@ -224,6 +225,9 @@ module.exports = function (RED) {
         /* istanbul ignore next */
         verboseWarn('fsm connected after state ' + node.actualServiceStateBefore.value + logHintText)
         node.reconnectAttempt = 0
+        node.reconnectDelay = 0
+        // the connect itself proves the transport alive until a request times out later
+        coreModbusClient.markAlive(node)
         coreModbusQueue.queueSerialUnlockCommand(node)
         node.emit('mbconnected')
         // FR-CONN-READY: reach activated without waiting for a command completion
@@ -311,19 +315,91 @@ module.exports = function (RED) {
         verboseWarn('fsm reconnect state after ' + node.actualServiceStateBefore.value + logHintText)
         node.reconnectAttempt = (node.reconnectAttempt || 0) + 1
         coreModbusQueue.queueSerialLockCommand(node)
-        node.emit('mbreconnecting', node.reconnectAttempt)
         if (node.reconnectTimeout <= 0) {
           node.reconnectTimeout = reconnectTimeMS
         }
+        const reconnectDelay = node.nextReconnectDelay()
+        node.emit('mbreconnecting', node.reconnectAttempt)
         clearTimeout(node.reconnectTimeoutId)
         node.reconnectTimeoutId = setTimeout(() => {
           node.reconnectTimeoutId = 0
           if (!node.closingModbus) {
             node.stateService.send('INIT')
           }
-        }, node.reconnectTimeout)
+        }, reconnectDelay)
       }
     })
+
+    /**
+     * Delay before the next reconnect attempt: the configured reconnectTimeout for the
+     * first attempts, then backed off with jitter (see computeReconnectDelay).
+     */
+    node.nextReconnectDelay = function () {
+      node.reconnectDelay = coreModbusClient.computeReconnectDelay(node.reconnectTimeout, node.reconnectAttempt)
+      return node.reconnectDelay
+    }
+
+    /**
+     * Delay of an init that follows a failure: reconnectOnTimeout=false goes
+     * broken → init without a reconnecting state, so it counts its own attempts.
+     */
+    node.nextInitDelay = function () {
+      if (node.actualServiceStateBefore.value !== 'broken') {
+        return node.reconnectTimeout
+      }
+      node.reconnectAttempt = (node.reconnectAttempt || 0) + 1
+      return node.nextReconnectDelay()
+    }
+
+    /**
+     * Only the client that is current may drive the FSM: a replaced client reports its
+     * late errors and its port close after the connection was already rebuilt.
+     */
+    node.handleClientError = function (client, err) {
+      if (client !== node.client) {
+        coreModbusClient.modbusSerialDebug('ignored error of a replaced client: ' + (err && err.message))
+        return
+      }
+      node.modbusErrorHandling(err, client)
+      mbBasics.setNodeStatusTo('error', node)
+    }
+
+    /**
+     * Connect results arrive long after connectClient returned. When the client was
+     * replaced meanwhile (dynamic reconnect, close, re-init), its result must not drive
+     * the FSM of the new connection; a late successful connect is closed again.
+     */
+    node.forCurrentClient = function (client, handler) {
+      return function (result) {
+        if (client === node.client) {
+          return handler(result)
+        }
+        coreModbusClient.modbusSerialDebug('ignored connect result of a replaced client')
+        node.closeReplacedClient(client)
+        return false
+      }
+    }
+
+    node.closeReplacedClient = function (client) {
+      try {
+        client.close(function () {
+          verboseLog('replaced client closed')
+        })
+      } catch (err) {
+        verboseLog(err.message)
+      }
+    }
+
+    node.watchPortClose = function (client) {
+      if (!client || !client._port || typeof client._port.on !== 'function') {
+        return
+      }
+      client._port.on('close', function () {
+        if (client === node.client) {
+          node.onModbusClose()
+        }
+      })
+    }
 
     node.connectClient = function () {
       try {
@@ -338,11 +414,11 @@ module.exports = function (RED) {
           }
         }
         node.client = null
-        node.client = new ModbusRTU()
+        const client = new ModbusRTU()
+        node.client = client
 
-        node.client.on('error', (err) => {
-          node.modbusErrorHandling(err)
-          mbBasics.setNodeStatusTo('error', node)
+        client.on('error', (err) => {
+          node.handleClientError(client, err)
         })
 
         if (!node.clientTimeout) {
@@ -368,23 +444,23 @@ module.exports = function (RED) {
                 node.client.connectC701(node.tcpHost, {
                   port: node.tcpPort,
                   autoOpen: true
-                }).then(node.setTCPConnectionOptions)
+                }).then(node.forCurrentClient(client, node.setTCPConnectionOptions))
                   .then(node.setTCPConnected)
-                  .catch((err) => {
+                  .catch(node.forCurrentClient(client, (err) => {
                     node.modbusTcpErrorHandling(err)
                     return false
-                  })
+                  }))
                 break
               case 'TELNET':
                 verboseLog('Telnet port')
                 node.client.connectTelnet(node.tcpHost, {
                   port: node.tcpPort,
                   autoOpen: true
-                }).then(node.setTCPConnectionOptions)
-                  .catch((err) => {
+                }).then(node.forCurrentClient(client, node.setTCPConnectionOptions))
+                  .catch(node.forCurrentClient(client, (err) => {
                     node.modbusTcpErrorHandling(err)
                     return false
-                  })
+                  }))
                 break
               /* istanbul ignore next */
               case 'TCP-RTU-BUFFERED':
@@ -392,33 +468,33 @@ module.exports = function (RED) {
                 node.client.connectTcpRTUBuffered(node.tcpHost, {
                   port: node.tcpPort,
                   autoOpen: true
-                }).then(node.setTCPConnectionOptions)
-                  .catch((err) => {
+                }).then(node.forCurrentClient(client, node.setTCPConnectionOptions))
+                  .catch(node.forCurrentClient(client, (err) => {
                     node.modbusTcpErrorHandling(err)
                     return false
-                  })
+                  }))
                 break
               case 'UDP':
                 verboseLog('UDP port')
                 node.client.connectUDP(node.tcpHost, {
                   port: node.tcpPort,
                   autoOpen: true
-                }).then(node.setTCPConnectionOptions)
-                  .catch((err) => {
+                }).then(node.forCurrentClient(client, node.setTCPConnectionOptions))
+                  .catch(node.forCurrentClient(client, (err) => {
                     node.modbusTcpErrorHandling(err)
                     return false
-                  })
+                  }))
                 break
               default:
                 verboseLog('TCP port')
                 node.client.connectTCP(node.tcpHost, {
                   port: node.tcpPort,
                   autoOpen: true
-                }).then(node.setTCPConnectionOptions)
-                  .catch((err) => {
+                }).then(node.forCurrentClient(client, node.setTCPConnectionOptions))
+                  .catch(node.forCurrentClient(client, (err) => {
                     node.modbusTcpErrorHandling(err)
                     return false
-                  })
+                  }))
             }
           } /* istanbul ignore next */ catch (e) {
             node.modbusTcpErrorHandling(e)
@@ -462,27 +538,27 @@ module.exports = function (RED) {
                 }
                 verboseLog('Using response delimiter: 0x' + serialPortOptions.startOfSlaveFrameChar.toString(16))
 
-                node.client.connectAsciiSerial(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
-                  .catch((err) => {
+                node.client.connectAsciiSerial(node.serialPort, serialPortOptions).then(node.forCurrentClient(client, node.setSerialConnectionOptions))
+                  .catch(node.forCurrentClient(client, (err) => {
                     node.modbusSerialErrorHandling(err)
                     return false
-                  })
+                  }))
                 break
               case 'RTU':
                 verboseLog('RTU port serial')
-                node.client.connectRTU(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
-                  .catch((err) => {
+                node.client.connectRTU(node.serialPort, serialPortOptions).then(node.forCurrentClient(client, node.setSerialConnectionOptions))
+                  .catch(node.forCurrentClient(client, (err) => {
                     node.modbusSerialErrorHandling(err)
                     return false
-                  })
+                  }))
                 break
               default:
                 verboseLog('RTU buffered port serial')
-                node.client.connectRTUBuffered(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
-                  .catch((err) => {
+                node.client.connectRTUBuffered(node.serialPort, serialPortOptions).then(node.forCurrentClient(client, node.setSerialConnectionOptions))
+                  .catch(node.forCurrentClient(client, (err) => {
                     node.modbusSerialErrorHandling(err)
                     return false
-                  })
+                  }))
                 break
             }
           } /* istanbul ignore next */ catch (e) {
@@ -501,6 +577,9 @@ module.exports = function (RED) {
     node.setTCPConnectionOptions = function () {
       node.client.setID(node.unit_id)
       node.client.setTimeout(node.clientTimeout)
+      // an idle connection that drops (gateway reboot, cable) is noticed here, not only
+      // when the next command fails
+      node.watchPortClose(node.client)
       node.stateService.send('CONNECT')
     }
 
@@ -517,23 +596,54 @@ module.exports = function (RED) {
       }, parseInt(node.serialConnectionDelay))
     }
 
-    node.modbusErrorHandling = function (err) {
-      coreModbusQueue.queueSerialUnlockCommand(node)
-      if (err.message) {
-        coreModbusClient.modbusSerialDebug('modbusErrorHandling:' + err.message)
-      } else {
-        coreModbusClient.modbusSerialDebug('modbusErrorHandling:' + JSON.stringify(err))
-      }
-      // FR-SEM-SUPPRESS: when reconnectOnTimeout is false, application-level timeouts
-      // must fail the command only — do not rebuild the connection.
-      if (!node.reconnectOnTimeout && coreModbusClient.isApplicationTimeoutError(err)) {
-        coreModbusClient.modbusSerialDebug('modbusErrorHandling: application timeout suppressed (reconnectOnTimeout=false)')
+    /**
+     * `sourceClient` is the Modbus client the failing request ran on. A request that
+     * outlives a connection rebuild reports to a client that is no longer current and
+     * must not break the new connection.
+     */
+    node.modbusErrorHandling = function (err, sourceClient) {
+      if (node.isReplacedClient(sourceClient)) {
+        coreModbusClient.modbusSerialDebug('modbusErrorHandling: ignored failure of a replaced client')
         return
       }
-      // FR-TO-01 / FR-TO-02: Timed out, DNS (EAI_AGAIN), and network errno → FAILURE
-      if (coreModbusClient.isRecoverableModbusError(err)) {
+      coreModbusQueue.queueSerialUnlockCommand(node)
+      coreModbusClient.modbusSerialDebug('modbusErrorHandling:' + coreModbusClient.describeError(err))
+      if (coreModbusClient.isDeviceAnswerError(err)) {
+        // the device answered (Modbus exception): the transport is alive
+        coreModbusClient.markAlive(node)
+      }
+      if (node.shouldFailOn(err)) {
         node.stateService.send('FAILURE')
       }
+    }
+
+    node.isReplacedClient = function (sourceClient) {
+      return Boolean(sourceClient) && sourceClient !== node.client
+    }
+
+    // FR-TO-01 / FR-TO-02: Timed out, DNS (EAI_AGAIN), and network errno → FAILURE
+    node.shouldFailOn = function (err) {
+      return coreModbusClient.isRecoverableModbusError(err) && node.shouldRecoverFrom(err)
+    }
+
+    /**
+     * An application-level timeout says the peer did not answer — not that the transport
+     * is broken. It fails the command only (FR-SEM-SUPPRESS) when reconnectOnTimeout is
+     * off, or when another Unit ID answered recently (#580 / #586).
+     */
+    node.shouldRecoverFrom = function (err) {
+      if (!coreModbusClient.isApplicationTimeoutError(err)) {
+        return true
+      }
+      if (!node.reconnectOnTimeout) {
+        coreModbusClient.modbusSerialDebug('modbusErrorHandling: application timeout suppressed (reconnectOnTimeout=false)')
+        return false
+      }
+      if (!coreModbusClient.shouldEscalateTimeout(node)) {
+        coreModbusClient.modbusSerialDebug('modbusErrorHandling: application timeout suppressed (transport answered recently)')
+        return false
+      }
+      return true
     }
 
     node.modbusTcpErrorHandling = function (err) {
@@ -579,7 +689,7 @@ module.exports = function (RED) {
         coreModbusClient.modbusSerialDebug('modbus connection opened')
         node.client.setID(node.unit_id)
         node.client.setTimeout(parseInt(node.clientTimeout))
-        node.client._port.on('close', node.onModbusClose)
+        node.watchPortClose(node.client)
         node.stateService.send('CONNECT')
       } else {
         verboseLog('wrong state on connect serial ' + node.actualServiceState.value)
@@ -710,6 +820,8 @@ module.exports = function (RED) {
           cberr(new Error('Message Or Payload Not Valid'), msg)
         }
         coreModbusClient.internalDebug('Dynamic Reconnect Starts on actual state ' + node.actualServiceState.value)
+        // a new target starts with the configured delay, not with the old target's backoff
+        node.reconnectAttempt = 0
         node.stateService.send('SWITCH')
       } catch (err) {
         cberr(err, msg)

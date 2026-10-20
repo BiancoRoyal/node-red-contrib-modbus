@@ -1,5 +1,6 @@
 'use strict'
 
+const assert = require('assert')
 const coreClient = require('../../src/core/modbus-client-core')
 const sinon = require('sinon')
 const { useFakeTimers } = require('../helper/test-helper-extensions')
@@ -41,6 +42,8 @@ describe('Core Client Coverage Uplift', function () {
     writeFiveImpl(node, msg, cb, sandbox.spy())
     await flushPromises()
     sandbox.assert.calledOnce(cb)
+    // broadcast gets no reply: a swallowed error is no proof of life
+    assert.strictEqual(node.lastAliveAt, undefined)
   })
 
   it('should cb on synthetic FC15 response when writeCoils rejects and getID is 0', async function () {
@@ -50,6 +53,8 @@ describe('Core Client Coverage Uplift', function () {
     writeFifteenImpl(node, msg, cb, sandbox.spy())
     await flushPromises()
     sandbox.assert.calledOnce(cb)
+    // broadcast gets no reply: a swallowed error is no proof of life
+    assert.strictEqual(node.lastAliveAt, undefined)
   })
 
   it('should cb on synthetic FC16 response when writeRegisters rejects and getID is 0', async function () {
@@ -59,6 +64,25 @@ describe('Core Client Coverage Uplift', function () {
     writeSixteenImpl(node, msg, cb, sandbox.spy())
     await flushPromises()
     sandbox.assert.calledOnce(cb)
+    // broadcast gets no reply: a swallowed error is no proof of life
+    assert.strictEqual(node.lastAliveAt, undefined)
+  })
+
+  it('should count a successful write as proof of life', async function () {
+    const node = {
+      client: {
+        writeRegister: sandbox.stub().resolves({ address: 0, value: 42 }),
+        getID: sandbox.stub().returns(1)
+      },
+      activateSending: sandbox.stub().resolves(),
+      modbusErrorHandling: sandbox.stub(),
+      stateService: { send: sandbox.stub() }
+    }
+    const cb = sandbox.spy()
+    coreClient.writeModbusByFunctionCodeSix(node, { payload: { fc: 6, address: 0, value: 42 } }, cb, sandbox.spy())
+    await flushPromises()
+    sandbox.assert.calledOnce(cb)
+    assert.strictEqual(typeof node.lastAliveAt, 'number')
   })
 
   it('should cberr on FC5 when writeCoil rejects and getID is not 0', async function () {
@@ -155,6 +179,8 @@ describe('Core Client Coverage Uplift', function () {
     writeSixImpl(node, msg, cb, sandbox.spy())
     await flushPromises()
     sandbox.assert.calledOnce(cb)
+    // broadcast gets no reply: a swallowed error is no proof of life
+    assert.strictEqual(node.lastAliveAt, undefined)
   })
 
   it('should cberr on FC6 when writeRegister rejects and getID is not 0', async function () {

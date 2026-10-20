@@ -80,6 +80,127 @@ describe('modbus-client-core', function () {
     })
   })
 
+  describe('computeReconnectDelay (backoff with jitter)', function () {
+    const middle = function () { return 0.5 } // jitter factor 1.0
+
+    it('should keep the configured delay for the first three attempts (fast recovery from blips)', function () {
+      ;[1, 2, 3].forEach(function (attempt) {
+        assert.strictEqual(coreClient.computeReconnectDelay(2000, attempt, middle), 2000)
+      })
+    })
+
+    it('should double the delay per attempt after the third', function () {
+      assert.strictEqual(coreClient.computeReconnectDelay(2000, 4, middle), 4000)
+      assert.strictEqual(coreClient.computeReconnectDelay(2000, 5, middle), 8000)
+      assert.strictEqual(coreClient.computeReconnectDelay(2000, 6, middle), 16000)
+    })
+
+    it('should cap the delay at 30 s', function () {
+      assert.strictEqual(coreClient.computeReconnectDelay(2000, 7, middle), 30000)
+      assert.strictEqual(coreClient.computeReconnectDelay(2000, 50, middle), 30000)
+    })
+
+    it('should never cap below the configured delay', function () {
+      assert.strictEqual(coreClient.computeReconnectDelay(60000, 9, middle), 60000)
+    })
+
+    it('should never jitter below the configured delay', function () {
+      assert.strictEqual(coreClient.computeReconnectDelay(29000, 4, function () { return 0 }), 29000)
+      assert.strictEqual(coreClient.computeReconnectDelay(60000, 9, function () { return 0 }), 60000)
+    })
+
+    it('should keep the ±10 % jitter around the 30 s cap', function () {
+      assert.strictEqual(coreClient.computeReconnectDelay(2000, 50, function () { return 0 }), 27000)
+      assert.strictEqual(coreClient.computeReconnectDelay(2000, 50, function () { return 1 }), 33000)
+    })
+
+    it('should spread attempts by ±10 % jitter', function () {
+      assert.strictEqual(coreClient.computeReconnectDelay(2000, 4, function () { return 0 }), 3600)
+      assert.strictEqual(coreClient.computeReconnectDelay(2000, 4, function () { return 1 }), 4400)
+    })
+
+    it('should not apply jitter to the free attempts', function () {
+      assert.strictEqual(coreClient.computeReconnectDelay(2000, 1, function () { return 0 }), 2000)
+    })
+
+    it('should fall back to attempt 1 for missing or invalid attempts', function () {
+      assert.strictEqual(coreClient.computeReconnectDelay(2000, undefined, middle), 2000)
+      assert.strictEqual(coreClient.computeReconnectDelay(2000, 0, middle), 2000)
+    })
+  })
+
+  describe('describeError', function () {
+    it('should use the message and serialise errors without one', function () {
+      assert.strictEqual(coreClient.describeError(new Error('boom')), 'boom')
+      assert.strictEqual(coreClient.describeError({ code: 'X' }), '{"code":"X"}')
+    })
+  })
+
+  describe('transport liveness evidence', function () {
+    it('should derive the window from the client timeout with a 10 s minimum', function () {
+      assert.strictEqual(coreClient.livenessWindow({ clientTimeout: 1000 }), 10000)
+      assert.strictEqual(coreClient.livenessWindow({ clientTimeout: 5000 }), 20000)
+      assert.strictEqual(coreClient.livenessWindow({}), 10000)
+    })
+
+    it('should let a node override the window', function () {
+      assert.strictEqual(coreClient.livenessWindow({ clientTimeout: 1000, livenessWindowMs: 600 }), 600)
+    })
+
+    it('should escalate when nothing ever proved the transport alive', function () {
+      assert.strictEqual(coreClient.shouldEscalateTimeout({ clientTimeout: 1000 }, 50000), true)
+    })
+
+    it('should not escalate while another unit answered inside the window', function () {
+      const node = { clientTimeout: 1000, lastAliveAt: 45000 }
+      assert.strictEqual(coreClient.shouldEscalateTimeout(node, 50000), false)
+    })
+
+    it('should escalate once the last proof of life left the window', function () {
+      const node = { clientTimeout: 1000, lastAliveAt: 39999 }
+      assert.strictEqual(coreClient.shouldEscalateTimeout(node, 50000), true)
+    })
+
+    it('should escalate when lastAliveAt was never set to a time', function () {
+      assert.strictEqual(coreClient.shouldEscalateTimeout({ clientTimeout: 1000, lastAliveAt: undefined }), true)
+      assert.strictEqual(coreClient.shouldEscalateTimeout(null), true)
+    })
+
+    it('should measure the window on a monotonic clock, not on the wall clock', function () {
+      const node = { clientTimeout: 1000 }
+      coreClient.markAlive(node)
+      const realNow = Date.now
+      try {
+        // NTP correction or RTC set at boot: the wall clock jumps by hours
+        Date.now = function () { return realNow() - 3600000 }
+        assert.strictEqual(coreClient.shouldEscalateTimeout(node), false)
+        Date.now = function () { return realNow() + 3600000 }
+        assert.strictEqual(coreClient.shouldEscalateTimeout(node), false)
+      } finally {
+        Date.now = realNow
+      }
+      assert.strictEqual(coreClient.shouldEscalateTimeout(node, node.lastAliveAt + 10000), true)
+    })
+
+    it('should record proof of life with the current time', function () {
+      const node = {}
+      coreClient.markAlive(node, 1234)
+      assert.strictEqual(node.lastAliveAt, 1234)
+    })
+
+    it('should treat a Modbus exception response as the device answering', function () {
+      const err = new Error('Modbus exception 2: Illegal data address')
+      err.modbusCode = 2
+      assert.strictEqual(coreClient.isDeviceAnswerError(err), true)
+    })
+
+    it('should not treat timeouts, transport errors or null as the device answering', function () {
+      assert.strictEqual(coreClient.isDeviceAnswerError({ name: 'TransactionTimedOutError', message: 'Timed out', errno: 'ETIMEDOUT' }), false)
+      assert.strictEqual(coreClient.isDeviceAnswerError({ message: 'x', code: 'ECONNRESET' }), false)
+      assert.strictEqual(coreClient.isDeviceAnswerError(null), false)
+    })
+  })
+
   describe('real modbus-serial timeout (guards the error shape across library upgrades)', function () {
     const net = require('net')
     const ModbusRTU = require('@openp4nr/modbus-serial')
