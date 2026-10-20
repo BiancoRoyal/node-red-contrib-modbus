@@ -72,13 +72,15 @@ coreClient.isRecoverableModbusError = function (err) {
  * (FR-SEM-SPLIT — client-timeout-reconnect-semantics).
  */
 coreClient.isApplicationTimeoutError = function (err) {
-  if (!err) return false
+  if (!err) {
+    return false
+  }
   const msg = (err.message && String(err.message)) || ''
-  if (msg.indexOf('Timed out') === -1) return false
-  // If errno/code is a transport error, treat it as transport (always recover)
-  if (err.errno && coreClient.networkErrors.includes(err.errno)) return false
-  if (err.code && coreClient.networkErrors.includes(err.code)) return false
-  return true
+  const isTimedOut = msg.indexOf('Timed out') !== -1
+  // Transport-tagged timeouts (errno/code in networkErrors) must still recover
+  const hasTransportErrno = Boolean(err.errno) && coreClient.networkErrors.includes(err.errno)
+  const hasTransportCode = Boolean(err.code) && coreClient.networkErrors.includes(err.code)
+  return isTimedOut && !hasTransportErrno && !hasTransportCode
 }
 
 coreClient.canSendActivate = function (node) {
