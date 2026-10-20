@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.60.3](https://github.com/BiancoRoyal/node-red-contrib-modbus/compare/v5.60.2...v5.60.3) (2026-10-20)
+
+
+### Bug Fixes
+
+* **client:** honour `reconnectOnTimeout=false` — application `Timed out` fails the command and unlocks the queue without rebuilding the shared connection; transport errors still recover ([#586](https://github.com/BiancoRoyal/node-red-contrib-modbus/issues/586), [#580](https://github.com/BiancoRoyal/node-red-contrib-modbus/issues/580))
+* **nodes:** preserve original msg properties (`_linkSource`, …) on async error paths when Keep Msg Properties is enabled ([#582](https://github.com/BiancoRoyal/node-red-contrib-modbus/issues/582), [#583](https://github.com/BiancoRoyal/node-red-contrib-modbus/pull/583))
+* **server:** destroy client sockets on close so deploy/shutdown completes without Close timed out ([#581](https://github.com/BiancoRoyal/node-red-contrib-modbus/pull/581))
+
+
+### Notes
+
+* Serial on Node.js **22/24** remains the supported matrix; Node.js **26** serial is a known risk until `@serialport/bindings-cpp` upstream improves ([#585](https://github.com/BiancoRoyal/node-red-contrib-modbus/issues/585)).
+* ARM64 Serial segfault on Node 24 ([#577](https://github.com/BiancoRoyal/node-red-contrib-modbus/issues/577)) remains a separate platform follow-up — not claimed fixed in 5.60.3.
+* Patch on LTS line `support/v5.60`.
+
 ## [5.60.2](https://github.com/BiancoRoyal/node-red-contrib-modbus/compare/v5.60.1...v5.60.2) (2026-08-14)
 
 

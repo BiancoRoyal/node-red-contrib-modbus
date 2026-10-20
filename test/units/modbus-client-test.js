@@ -1165,4 +1165,62 @@ describe('Client node Unit Testing', function () {
       })
     })
   })
+
+  describe('modbusErrorHandling reconnectOnTimeout semantics (client-timeout-reconnect-semantics #586/#580)', function () {
+    it('should NOT send FAILURE for Timed out when reconnectOnTimeout is false (AC-SEM-01)', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
+        const node = helper.getNode('3')
+        const sendSpy = sinon.spy(node.stateService, 'send')
+        node.reconnectOnTimeout = false
+        node.serialSendingAllowed = false
+        node.modbusErrorHandling(new Error('Timed out'))
+        assert.strictEqual(sendSpy.calledWith('FAILURE'), false)
+        assert.strictEqual(node.serialSendingAllowed, true) // queue unlocked by queueSerialUnlockCommand
+        sendSpy.restore()
+        done()
+      })
+    })
+
+    it('should send FAILURE for Timed out when reconnectOnTimeout is true (AC-SEM-02)', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
+        const node = helper.getNode('3')
+        const sendSpy = sinon.spy(node.stateService, 'send')
+        node.reconnectOnTimeout = true
+        node.modbusErrorHandling(new Error('Timed out'))
+        sinon.assert.calledWith(sendSpy, 'FAILURE')
+        sendSpy.restore()
+        done()
+      })
+    })
+
+    it('should send FAILURE for transport ECONNRESET even when reconnectOnTimeout is false (AC-SEM-03)', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
+        const node = helper.getNode('3')
+        const sendSpy = sinon.spy(node.stateService, 'send')
+        node.reconnectOnTimeout = false
+        const transportErr = new Error('socket error')
+        transportErr.errno = 'ECONNRESET'
+        node.modbusErrorHandling(transportErr)
+        sinon.assert.calledWith(sendSpy, 'FAILURE')
+        sendSpy.restore()
+        done()
+      })
+    })
+
+    it('should send FAILURE for transport-tagged Timed out even when reconnectOnTimeout is false (AC-SEM-03 transport)', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
+        const node = helper.getNode('3')
+        const sendSpy = sinon.spy(node.stateService, 'send')
+        node.reconnectOnTimeout = false
+        // transport-tagged: isApplicationTimeoutError → false, isRecoverableModbusError → true (errno match)
+        const transportTimeout = new Error('Timed out')
+        transportTimeout.errno = 'ETIMEDOUT'
+        node.modbusErrorHandling(transportTimeout)
+        // ETIMEDOUT is in networkErrors → isRecoverableModbusError=true → FAILURE sent even when reconnectOnTimeout=false
+        sinon.assert.calledWith(sendSpy, 'FAILURE')
+        sendSpy.restore()
+        done()
+      })
+    })
+  })
 })

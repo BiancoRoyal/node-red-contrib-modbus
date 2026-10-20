@@ -65,6 +65,22 @@ coreClient.isRecoverableModbusError = function (err) {
   return false
 }
 
+/**
+ * Returns true when err is a pure application-level "Timed out" from
+ * modbus-serial — no transport errno/code present.
+ * Used by modbusErrorHandling to honour reconnectOnTimeout=false
+ * (FR-SEM-SPLIT — client-timeout-reconnect-semantics).
+ */
+coreClient.isApplicationTimeoutError = function (err) {
+  if (!err) return false
+  const msg = (err.message && String(err.message)) || ''
+  if (msg.indexOf('Timed out') === -1) return false
+  // If errno/code is a transport error, treat it as transport (always recover)
+  if (err.errno && coreClient.networkErrors.includes(err.errno)) return false
+  if (err.code && coreClient.networkErrors.includes(err.code)) return false
+  return true
+}
+
 coreClient.canSendActivate = function (node) {
   const value = node && node.actualServiceState && node.actualServiceState.value
   return !!value && coreClient.activateAllowedStates.indexOf(value) !== -1
