@@ -524,6 +524,12 @@ module.exports = function (RED) {
       } else {
         coreModbusClient.modbusSerialDebug('modbusErrorHandling:' + JSON.stringify(err))
       }
+      // FR-SEM-SUPPRESS: when reconnectOnTimeout is false, application-level timeouts
+      // must fail the command only — do not rebuild the connection.
+      if (!node.reconnectOnTimeout && coreModbusClient.isApplicationTimeoutError(err)) {
+        coreModbusClient.modbusSerialDebug('modbusErrorHandling: application timeout suppressed (reconnectOnTimeout=false)')
+        return
+      }
       // FR-TO-01 / FR-TO-02: Timed out, DNS (EAI_AGAIN), and network errno → FAILURE
       if (coreModbusClient.isRecoverableModbusError(err)) {
         node.stateService.send('FAILURE')

@@ -36,6 +36,8 @@ If you like this package, please **give us a star on [GitHub][12]**.
 
 Older Node.js / Node-RED combinations: see historical notes in [HISTORY.md](HISTORY.md). Prefer staying on current LTS Node.js with this release line.
 
+**Serial (RTU/ASCII):** supported and tested on Node.js **22** and **24**. Node.js **26** serial is a known risk (intermittent ~1 s delays / Queue full) until `@serialport/bindings-cpp` upstream improves — see [#585](https://github.com/BiancoRoyal/node-red-contrib-modbus/issues/585). TCP is unaffected.
+
 ---
 
 ## What’s in the package (v5)

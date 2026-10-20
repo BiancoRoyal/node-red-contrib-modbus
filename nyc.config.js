@@ -15,10 +15,11 @@ module.exports = {
   ],
   all: true,
   'check-coverage': true,
-  branches: 75,
-  lines: 85,
-  functions: 85,
-  statements: 85,
+  // ratchet: measured 84.8 / 93.1 / 93.0 / 93.0 on 5.60.3 — keep the gate close below it
+  branches: 80,
+  lines: 90,
+  functions: 90,
+  statements: 90,
   watermarks: {
     lines: [60, 85],
     functions: [60, 85],

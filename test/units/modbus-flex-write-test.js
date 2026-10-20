@@ -109,19 +109,29 @@ describe('Flex Write node Testing', function () {
 
     it('should handle Modbus write error', function (done) {
       const err = new Error('Test Modbus write error')
-      const msg = {
-        payload: 'test payload'
+      const origMsg = {
+        messageId: 'request-id',
+        _linkSource: [{ id: 'link-call-id', node: 'link-in-id' }],
+        custom: 'original value',
+        payload: 'original payload'
+      }
+      const requestMsg = {
+        payload: { messageId: 'request-id' }
       }
 
       helper.load(testWriteParametersNodes, testFlows.testModbusFlexWriteFlow, function () {
         const modbusFlexWrite = helper.getNode('dcb6fa4b3549ae4f')
         const emitSpy = sinon.spy(modbusFlexWrite, 'emit')
+        const sendEmptyMsgOnFailStub = sinon.stub(mBasics, 'sendEmptyMsgOnFail')
+        modbusFlexWrite.bufferMessageList.set('request-id', origMsg)
 
-        modbusFlexWrite.onModbusWriteError(err, msg)
+        modbusFlexWrite.onModbusWriteError(err, requestMsg)
         sinon.assert.calledOnce(emitSpy)
         sinon.assert.calledWith(emitSpy, 'modbusFlexWriteNodeError')
+        sinon.assert.calledWithExactly(sendEmptyMsgOnFailStub, modbusFlexWrite, err, origMsg)
 
         emitSpy.restore()
+        sendEmptyMsgOnFailStub.restore()
         done()
       })
     })

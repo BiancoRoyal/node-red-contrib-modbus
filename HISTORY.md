@@ -2,12 +2,14 @@
 
 ## Current (v5.60+)
 
-* **Tip:** `v5.60.2` on `support/v5.60` — reconnect recovery UX after honesty patch (#569; related #564)
+* **Tip:** `v5.60.3` on `support/v5.60` — `reconnectOnTimeout=false` semantics (#586/#580), Keep Msg Properties on error (#582), server close sockets (#581)
 * **Node.js `>= 22`** required (`package.json` engines)
 * **Node-RED `>= 4`** required (`package.json` → `node-red.version`)
+* **Serial matrix:** Node.js **22/24** supported; Node.js **26** serial known-risk until bindings-cpp upstream (#585) — TCP unaffected
 * Runtime client stack: `@openp4nr/modbus-serial` · server: `jsmodbus` · FSM: `@xstate/fsm`
 * Optional serial UI deps: `serialport` / `@serialport/list` **v13**
 * Support branch: `support/v5.60` · See [CHANGELOG.md](CHANGELOG.md) and [docs/LEARNING-PATH.md](docs/LEARNING-PATH.md)
+* Open platform follow-up: ARM64 Serial segfault on Node 24 (#577)
 
 ## Previous LTS tip (v5.50 → v5.51)
 

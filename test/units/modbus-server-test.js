@@ -15,6 +15,7 @@ const globalConfig = require('@node-red/nodes/core/common/91-global-config')
 const injectNode = require('@node-red/nodes/core/common/20-inject.js')
 const serverNode = require('../../src/modbus-server.js')
 const testServerNodes = [injectNode, functionNode, globalConfig, serverNode]
+const net = require('net')
 const chai = require('chai')
 const expect = chai.expect
 const sinon = require('sinon')
@@ -46,6 +47,41 @@ describe('Server node Testing', function () {
   })
 
   describe('Node', function () {
+    it('should complete close while a client is connected', function (done) {
+      this.timeout(6000)
+      const flow = Array.from(testFlows.testServerConfig)
+
+      getPort().then((port) => {
+        flow[0].serverPort = port
+
+        helper.load(testServerNodes, flow, function () {
+          const modbusServer = helper.getNode('249922d5ac72b8cd')
+          const client = net.createConnection({ host: '127.0.0.1', port })
+          client.on('error', function () {})
+
+          client.on('connect', function () {
+            // give the server time to accept the connection, otherwise
+            // net.Server has no established connection to wait for on close
+            setTimeout(function () {
+              let settled = false
+              const finish = (err) => {
+                if (settled) { return }
+                settled = true
+                clearTimeout(timer)
+                client.destroy()
+                done(err)
+              }
+              const timer = setTimeout(() => {
+                finish(new Error('close() did not complete while a client was connected'))
+              }, 3000)
+
+              Promise.resolve(modbusServer.close()).then(() => finish()).catch(finish)
+            }, 300)
+          })
+        })
+      })
+    })
+
     it('should send message when valid message and output not disabled', function (done) {
       const flow = Array.from(testFlows.testServerConfig)
 
@@ -97,25 +133,35 @@ describe('Server node Testing', function () {
       })
     })
 
-    it('should set node status to active on client connection', function () {
+    it('should set node status to active on client connection', function (done) {
       const flow = Array.from(testFlows.testServerConfig)
 
       getPort().then((port) => {
         flow[0].serverPort = port
 
+        // done() keeps the load inside this test: afterEach unloads the flow, otherwise the
+        // server starts after the unload and keeps mocha alive without --exit
         helper.load(testServerNodes, flow, function () {
-          const modbusServer = helper.getNode('249922d5ac72b8cd')
-          modbusServer.modbusServer.emit('connection', {
-            socket: {
+          try {
+            const modbusServer = helper.getNode('249922d5ac72b8cd')
+            const fakeSocket = Object.assign(new (require('events').EventEmitter)(), {
               address: () => '127.0.0.1',
               remoteAddress: '192.168.1.100',
               remotePort: 1234
-            }
-          })
+            })
+            modbusServer.modbusServer.emit('connection', { socket: fakeSocket })
 
-          sinon.assert.calledWith(modbusServer.status, { fill: 'yellow', shape: 'dot', text: 'initialized' })
+            sinon.assert.calledWith(modbusServer.status, { fill: 'yellow', shape: 'dot', text: 'initialized' })
+            // #581: connected client sockets are tracked until they close
+            expect(modbusServer.clientSockets.has(fakeSocket)).to.equal(true)
+            fakeSocket.emit('close')
+            expect(modbusServer.clientSockets.has(fakeSocket)).to.equal(false)
+            done()
+          } catch (err) {
+            done(err)
+          }
         })
-      })
+      }).catch(done)
     })
 
     it('should set responseDelay, delayUnit, showStatusActivities, and coilsBufferSize correctly', function (done) {
