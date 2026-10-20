@@ -110,6 +110,77 @@ coreClient.isApplicationTimeoutError = function (err) {
   return hasTimedOutMessage(err) && !hasTransportNetworkTag(err)
 }
 
+const RECONNECT_FREE_ATTEMPTS = 3
+const RECONNECT_BACKOFF_CAP_MS = 30000
+const RECONNECT_JITTER = 0.1
+const LIVENESS_MIN_WINDOW_MS = 10000
+const LIVENESS_TIMEOUT_FACTOR = 4
+
+/**
+ * Reconnect delay for the given attempt (1-based): the configured delay for the
+ * first attempts so short blips recover fast, then doubling up to 30 s with ±10 %
+ * jitter so many clients do not hit a returning gateway in the same instant.
+ * Never below the configured delay. `random` is injectable for tests.
+ */
+coreClient.computeReconnectDelay = function (baseMs, attempt, random) {
+  const n = normalizedAttempt(attempt)
+  if (n <= RECONNECT_FREE_ATTEMPTS) {
+    return baseMs
+  }
+  const backedOff = baseMs * Math.pow(2, n - RECONNECT_FREE_ATTEMPTS)
+  const capped = Math.max(baseMs, Math.min(backedOff, RECONNECT_BACKOFF_CAP_MS))
+  return Math.round(capped * jitterFactor(random))
+}
+
+function normalizedAttempt (attempt) {
+  return Number.isInteger(attempt) && attempt > 0 ? attempt : 1
+}
+
+function jitterFactor (random) {
+  const rnd = typeof random === 'function' ? random : Math.random
+  return 1 + (rnd() * 2 - 1) * RECONNECT_JITTER
+}
+
+function clientTimeoutMs (node) {
+  return (node && parseInt(node.clientTimeout)) || 0
+}
+
+/**
+ * How long a response from any Unit ID (or the connect itself) counts as proof
+ * that the transport is alive.
+ */
+coreClient.livenessWindow = function (node) {
+  if (node && node.livenessWindowMs > 0) {
+    return node.livenessWindowMs
+  }
+  return Math.max(LIVENESS_MIN_WINDOW_MS, LIVENESS_TIMEOUT_FACTOR * clientTimeoutMs(node))
+}
+
+/** Error text for debug output; errors without a message are serialised. */
+coreClient.describeError = function (err) {
+  return err.message || JSON.stringify(err)
+}
+
+coreClient.markAlive = function (node, now) {
+  node.lastAliveAt = now === undefined ? Date.now() : now
+}
+
+/**
+ * A request timeout only rebuilds the shared connection when nothing — no other
+ * Unit ID, no connect — proved the transport alive inside the liveness window.
+ * Otherwise the peer is simply absent (#580 / #586).
+ */
+coreClient.shouldEscalateTimeout = function (node, now) {
+  const current = now === undefined ? Date.now() : now
+  const lastAlive = (node && node.lastAliveAt) || 0
+  return current - lastAlive >= coreClient.livenessWindow(node)
+}
+
+/** A Modbus exception response means the device answered — the transport is alive. */
+coreClient.isDeviceAnswerError = function (err) {
+  return Boolean(err) && err.modbusCode !== undefined
+}
+
 coreClient.canSendActivate = function (node) {
   const value = node && node.actualServiceState && node.actualServiceState.value
   return !!value && coreClient.activateAllowedStates.indexOf(value) !== -1
@@ -211,6 +282,7 @@ coreClient.getLogFunction = function (node) {
 }
 
 coreClient.activateSendingOnSuccess = function (node, cb, cberr, resp, msg) {
+  coreClient.markAlive(node)
   node.activateSending(msg).then(function () {
     cb(resp, msg)
   }).catch(function (err) {
@@ -231,83 +303,88 @@ coreClient.activateSendingOnFailure = function (node, cberr, err, msg) {
 }
 
 coreClient.readModbusByFunctionCodeOne = function (node, msg, cb, cberr) {
+  const client = node.client
   if (msg.payload.enableDeformedMessages) {
-    node.client.readCoils_deformedReadEnabled(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+    client.readCoils_deformedReadEnabled(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
       coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
     }).catch(function (err) {
       coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
-      node.modbusErrorHandling(err)
+      node.modbusErrorHandling(err, client)
     })
   } else {
-    node.client.readCoils(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+    client.readCoils(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
       coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
     }).catch(function (err) {
       coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
-      node.modbusErrorHandling(err)
+      node.modbusErrorHandling(err, client)
     })
   }
 }
 
 coreClient.readModbusByFunctionCodeTwo = function (node, msg, cb, cberr) {
+  const client = node.client
   if (msg.payload.enableDeformedMessages) {
-    node.client.readDiscreteInputs_deformedReadEnabled(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+    client.readDiscreteInputs_deformedReadEnabled(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
       coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
     }).catch(function (err) {
       coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
-      node.modbusErrorHandling(err)
+      node.modbusErrorHandling(err, client)
     })
   } else {
-    node.client.readDiscreteInputs(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+    client.readDiscreteInputs(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
       coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
     }).catch(function (err) {
       coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
-      node.modbusErrorHandling(err)
+      node.modbusErrorHandling(err, client)
     })
   }
 }
 
 coreClient.readModbusByFunctionCodeThree = function (node, msg, cb, cberr) {
+  const client = node.client
   if (msg.payload.enableDeformedMessages) {
-    node.client.readHoldingRegisters_deformedReadEnabled(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+    client.readHoldingRegisters_deformedReadEnabled(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
       coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
     }).catch(function (err) {
       coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
-      node.modbusErrorHandling(err)
+      node.modbusErrorHandling(err, client)
     })
   } else {
-    node.client.readHoldingRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+    client.readHoldingRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
       coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
     }).catch(function (err) {
       coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
-      node.modbusErrorHandling(err)
+      node.modbusErrorHandling(err, client)
     })
   }
 }
 
 coreClient.readModbusByFunctionCodeFour = function (node, msg, cb, cberr) {
+  const client = node.client
   if (msg.payload.enableDeformedMessages) {
-    node.client.readInputRegisters_deformedReadEnabled(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+    client.readInputRegisters_deformedReadEnabled(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
       coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
     }).catch(function (err) {
       coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
-      node.modbusErrorHandling(err)
+      node.modbusErrorHandling(err, client)
     })
   } else {
-    node.client.readInputRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
+    client.readInputRegisters(parseInt(msg.payload.address), parseInt(msg.payload.quantity)).then(function (resp) {
       coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
     }).catch(function (err) {
       coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
-      node.modbusErrorHandling(err)
+      node.modbusErrorHandling(err, client)
     })
   }
 }
 
 coreClient.sendCustomFunctionCode = function (node, msg, cb, cberr) {
-  node.client.sendCustomFc(msg.payload.unitid, msg.payload.fc, msg.payload.requestCard, msg.payload.responseCard).then(function (resp) {
+  const client = node.client
+  client.sendCustomFc(msg.payload.unitid, msg.payload.fc, msg.payload.requestCard, msg.payload.responseCard).then(function (resp) {
     coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
   }).catch(function (err) {
     coreClient.activateSendingOnFailure(node, cberr, new Error(err.message), msg)
-    node.modbusErrorHandling(err)
+    node.modbusErrorHandling(err, client)
   })
 }
 
@@ -424,16 +501,17 @@ coreClient.readModbus = function (node, msg, cb, cberr) {
 }
 
 coreClient.writeModbusByFunctionCodeFive = function (node, msg, cb, cberr) {
+  const client = node.client
   if (!coreClient.validateAddressAndQuantity(msg, 5, cberr, node)) {
     return
   }
   const rawValue = msg.payload.value
   msg.payload.value = (rawValue !== 0 && rawValue !== '0' && rawValue !== false &&
     rawValue !== null && rawValue !== undefined)
-  node.client.writeCoil(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
+  client.writeCoil(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
     coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
   }).catch(function (err) {
-    if (node.client.getID() === 0) {
+    if (client.getID() === 0) {
       const resp = {
         address: parseInt(msg.payload.address),
         value: parseInt(msg.payload.value)
@@ -441,12 +519,13 @@ coreClient.writeModbusByFunctionCodeFive = function (node, msg, cb, cberr) {
       coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
     } else {
       coreClient.activateSendingOnFailure(node, cberr, err, msg)
-      node.modbusErrorHandling(err)
+      node.modbusErrorHandling(err, client)
     }
   })
 }
 
 coreClient.writeModbusByFunctionCodeFifteen = function (node, msg, cb, cberr) {
+  const client = node.client
   if (!coreClient.validateAddressAndQuantity(msg, 15, cberr, node)) {
     return
   }
@@ -454,10 +533,10 @@ coreClient.writeModbusByFunctionCodeFifteen = function (node, msg, cb, cberr) {
     coreClient.activateSendingOnFailure(node, cberr, new Error('Quantity should be less or equal to coil payload array length: ' +
       msg.payload.value.length + ' Addr: ' + msg.payload.address + ' Q: ' + msg.payload.quantity), msg)
   } else {
-    node.client.writeCoils(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
+    client.writeCoils(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
       coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
     }).catch(function (err) {
-      if (node.client.getID() === 0) {
+      if (client.getID() === 0) {
         const resp = {
           address: parseInt(msg.payload.address),
           value: parseInt(msg.payload.value)
@@ -465,20 +544,21 @@ coreClient.writeModbusByFunctionCodeFifteen = function (node, msg, cb, cberr) {
         coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
       } else {
         coreClient.activateSendingOnFailure(node, cberr, err, msg)
-        node.modbusErrorHandling(err)
+        node.modbusErrorHandling(err, client)
       }
     })
   }
 }
 
 coreClient.writeModbusByFunctionCodeSix = function (node, msg, cb, cberr) {
+  const client = node.client
   if (!coreClient.validateAddressAndQuantity(msg, 6, cberr, node)) {
     return
   }
-  node.client.writeRegister(parseInt(msg.payload.address), parseInt(msg.payload.value)).then(function (resp) {
+  client.writeRegister(parseInt(msg.payload.address), parseInt(msg.payload.value)).then(function (resp) {
     coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
   }).catch(function (err) {
-    if (node.client.getID() === 0) {
+    if (client.getID() === 0) {
       const resp = {
         address: parseInt(msg.payload.address),
         value: parseInt(msg.payload.value)
@@ -486,12 +566,13 @@ coreClient.writeModbusByFunctionCodeSix = function (node, msg, cb, cberr) {
       coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
     } else {
       coreClient.activateSendingOnFailure(node, cberr, err, msg)
-      node.modbusErrorHandling(err)
+      node.modbusErrorHandling(err, client)
     }
   })
 }
 
 coreClient.writeModbusByFunctionCodeSixteen = function (node, msg, cb, cberr) {
+  const client = node.client
   if (!coreClient.validateAddressAndQuantity(msg, 16, cberr, node)) {
     return
   }
@@ -499,10 +580,10 @@ coreClient.writeModbusByFunctionCodeSixteen = function (node, msg, cb, cberr) {
     coreClient.activateSendingOnFailure(node, cberr, new Error('Quantity should be less or equal to register payload array length: ' +
       msg.payload.value.length + ' Addr: ' + msg.payload.address + ' Q: ' + msg.payload.quantity), msg)
   } else {
-    node.client.writeRegisters(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
+    client.writeRegisters(parseInt(msg.payload.address), msg.payload.value).then(function (resp) {
       coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
     }).catch(function (err) {
-      if (node.client.getID() === 0) {
+      if (client.getID() === 0) {
         const resp = {
           address: parseInt(msg.payload.address),
           value: parseInt(msg.payload.value)
@@ -510,7 +591,7 @@ coreClient.writeModbusByFunctionCodeSixteen = function (node, msg, cb, cberr) {
         coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
       } else {
         coreClient.activateSendingOnFailure(node, cberr, err, msg)
-        node.modbusErrorHandling(err)
+        node.modbusErrorHandling(err, client)
       }
     })
   }
