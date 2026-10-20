@@ -103,7 +103,7 @@
     "chai": "~3.5.0",
     "conventional-changelog-cli": "~5.0.0",
     "gulp": "~4.0.2",
-    "gulp-babel": "~8.0.0",
+    "gulp-babel": "~8.1.0",
     "gulp-clean": "~0.4.0",
     "gulp-conventional-changelog": "~5.0.0",
     "gulp-htmlmin": "~5.0.1",
@@ -121,7 +121,7 @@
     "standard": "~17.1.2",
     "standard-version": "~9.5.0",
     "uglify-js": "~3.19.3",
-    "winston": "~3.17.0"
+    "winston": "~3.19.0"
   },
   "directories": {
     "example": "examples",
