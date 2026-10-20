@@ -1260,7 +1260,7 @@ describe('Client node Unit Testing', function () {
     it('should NOT rebuild on an application timeout while another unit answered inside the liveness window (#580)', function (done) {
       withClientNode(function (node, sendSpy) {
         node.reconnectOnTimeout = true
-        node.lastAliveAt = Date.now()
+        node.lastAliveAt = coreModbusClient.monotonicNow()
         node.modbusErrorHandling(realTimeoutError())
         assert.strictEqual(sendSpy.calledWith('FAILURE'), false)
         done()
@@ -1270,7 +1270,7 @@ describe('Client node Unit Testing', function () {
     it('should rebuild on an application timeout when nothing answered inside the liveness window', function (done) {
       withClientNode(function (node, sendSpy) {
         node.reconnectOnTimeout = true
-        node.lastAliveAt = Date.now() - 60000
+        node.lastAliveAt = coreModbusClient.monotonicNow() - 60000
         node.modbusErrorHandling(realTimeoutError())
         sinon.assert.calledWith(sendSpy, 'FAILURE')
         done()
@@ -1280,7 +1280,7 @@ describe('Client node Unit Testing', function () {
     it('should rebuild on a transport error even while units answered recently', function (done) {
       withClientNode(function (node, sendSpy) {
         node.reconnectOnTimeout = true
-        node.lastAliveAt = Date.now()
+        node.lastAliveAt = coreModbusClient.monotonicNow()
         const reset = new Error('read ECONNRESET')
         reset.code = 'ECONNRESET'
         reset.syscall = 'read'
@@ -1299,6 +1299,57 @@ describe('Client node Unit Testing', function () {
         assert.ok(node.lastAliveAt > 0, 'lastAliveAt must be set')
         assert.strictEqual(sendSpy.calledWith('FAILURE'), false)
         done()
+      })
+    })
+
+    it('should pass the connect result of the current client to its handler', function (done) {
+      withClientNode(function (node) {
+        const handler = sinon.stub().returns('handled')
+        const current = node.client
+        assert.strictEqual(node.forCurrentClient(current, handler)('result'), 'handled')
+        sinon.assert.calledWith(handler, 'result')
+        done()
+      })
+    })
+
+    it('should ignore and close the late connect result of a replaced client', function (done) {
+      withClientNode(function (node, sendSpy) {
+        const replaced = { close: sinon.stub().yields() }
+        const handler = sinon.stub()
+        node.client = {}
+        assert.strictEqual(node.forCurrentClient(replaced, handler)(), false)
+        assert.strictEqual(node.forCurrentClient(replaced, handler)(new Error('connect ETIMEDOUT')), false)
+        sinon.assert.notCalled(handler)
+        sinon.assert.calledTwice(replaced.close)
+        assert.strictEqual(sendSpy.called, false)
+        done()
+      })
+    })
+
+    it('should not throw when a replaced client cannot be closed', function (done) {
+      withClientNode(function (node) {
+        node.closeReplacedClient({ close: sinon.stub().throws(new Error('Port Not Open')) })
+        done()
+      })
+    })
+
+    it('should restart the reconnect backoff for a dynamic reconnect target', function (done) {
+      helper.load(testModbusClientNodes, testFlows.testClientWithoutServerFlow, function () {
+        const node = helper.getNode('3')
+        const settingsStub = sinon.stub(coreModbusClient, 'setNewNodeSettings').returns(true)
+        const sendStub = sinon.stub(node.stateService, 'send')
+        try {
+          node.reconnectAttempt = 7
+          node.emit('dynamicReconnect', { payload: {} }, sinon.spy(), sinon.spy())
+          assert.strictEqual(node.reconnectAttempt, 0)
+          sinon.assert.calledWith(sendStub, 'SWITCH')
+          done()
+        } catch (err) {
+          done(err)
+        } finally {
+          settingsStub.restore()
+          sendStub.restore()
+        }
       })
     })
 
@@ -1376,7 +1427,7 @@ describe('Client node Unit Testing', function () {
       })
     })
 
-    it('should back off the reconnect delay after the third attempt and reset it on connect', function (done) {
+    it('should back off the reconnect delay after the third attempt', function (done) {
       withClientNode(function (node) {
         node.reconnectTimeout = 2000
         node.reconnectAttempt = 1

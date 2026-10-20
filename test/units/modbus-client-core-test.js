@@ -104,6 +104,16 @@ describe('modbus-client-core', function () {
       assert.strictEqual(coreClient.computeReconnectDelay(60000, 9, middle), 60000)
     })
 
+    it('should never jitter below the configured delay', function () {
+      assert.strictEqual(coreClient.computeReconnectDelay(29000, 4, function () { return 0 }), 29000)
+      assert.strictEqual(coreClient.computeReconnectDelay(60000, 9, function () { return 0 }), 60000)
+    })
+
+    it('should keep the ±10 % jitter around the 30 s cap', function () {
+      assert.strictEqual(coreClient.computeReconnectDelay(2000, 50, function () { return 0 }), 27000)
+      assert.strictEqual(coreClient.computeReconnectDelay(2000, 50, function () { return 1 }), 33000)
+    })
+
     it('should spread attempts by ±10 % jitter', function () {
       assert.strictEqual(coreClient.computeReconnectDelay(2000, 4, function () { return 0 }), 3600)
       assert.strictEqual(coreClient.computeReconnectDelay(2000, 4, function () { return 1 }), 4400)
@@ -149,6 +159,27 @@ describe('modbus-client-core', function () {
     it('should escalate once the last proof of life left the window', function () {
       const node = { clientTimeout: 1000, lastAliveAt: 39999 }
       assert.strictEqual(coreClient.shouldEscalateTimeout(node, 50000), true)
+    })
+
+    it('should escalate when lastAliveAt was never set to a time', function () {
+      assert.strictEqual(coreClient.shouldEscalateTimeout({ clientTimeout: 1000, lastAliveAt: undefined }), true)
+      assert.strictEqual(coreClient.shouldEscalateTimeout(null), true)
+    })
+
+    it('should measure the window on a monotonic clock, not on the wall clock', function () {
+      const node = { clientTimeout: 1000 }
+      coreClient.markAlive(node)
+      const realNow = Date.now
+      try {
+        // NTP correction or RTC set at boot: the wall clock jumps by hours
+        Date.now = function () { return realNow() - 3600000 }
+        assert.strictEqual(coreClient.shouldEscalateTimeout(node), false)
+        Date.now = function () { return realNow() + 3600000 }
+        assert.strictEqual(coreClient.shouldEscalateTimeout(node), false)
+      } finally {
+        Date.now = realNow
+      }
+      assert.strictEqual(coreClient.shouldEscalateTimeout(node, node.lastAliveAt + 10000), true)
     })
 
     it('should record proof of life with the current time', function () {

@@ -225,6 +225,7 @@ module.exports = function (RED) {
         /* istanbul ignore next */
         verboseWarn('fsm connected after state ' + node.actualServiceStateBefore.value + logHintText)
         node.reconnectAttempt = 0
+        node.reconnectDelay = 0
         // the connect itself proves the transport alive until a request times out later
         coreModbusClient.markAlive(node)
         coreModbusQueue.queueSerialUnlockCommand(node)
@@ -363,6 +364,32 @@ module.exports = function (RED) {
       mbBasics.setNodeStatusTo('error', node)
     }
 
+    /**
+     * Connect results arrive long after connectClient returned. When the client was
+     * replaced meanwhile (dynamic reconnect, close, re-init), its result must not drive
+     * the FSM of the new connection; a late successful connect is closed again.
+     */
+    node.forCurrentClient = function (client, handler) {
+      return function (result) {
+        if (client === node.client) {
+          return handler(result)
+        }
+        coreModbusClient.modbusSerialDebug('ignored connect result of a replaced client')
+        node.closeReplacedClient(client)
+        return false
+      }
+    }
+
+    node.closeReplacedClient = function (client) {
+      try {
+        client.close(function () {
+          verboseLog('replaced client closed')
+        })
+      } catch (err) {
+        verboseLog(err.message)
+      }
+    }
+
     node.watchPortClose = function (client) {
       if (!client || !client._port || typeof client._port.on !== 'function') {
         return
@@ -417,23 +444,23 @@ module.exports = function (RED) {
                 node.client.connectC701(node.tcpHost, {
                   port: node.tcpPort,
                   autoOpen: true
-                }).then(node.setTCPConnectionOptions)
+                }).then(node.forCurrentClient(client, node.setTCPConnectionOptions))
                   .then(node.setTCPConnected)
-                  .catch((err) => {
+                  .catch(node.forCurrentClient(client, (err) => {
                     node.modbusTcpErrorHandling(err)
                     return false
-                  })
+                  }))
                 break
               case 'TELNET':
                 verboseLog('Telnet port')
                 node.client.connectTelnet(node.tcpHost, {
                   port: node.tcpPort,
                   autoOpen: true
-                }).then(node.setTCPConnectionOptions)
-                  .catch((err) => {
+                }).then(node.forCurrentClient(client, node.setTCPConnectionOptions))
+                  .catch(node.forCurrentClient(client, (err) => {
                     node.modbusTcpErrorHandling(err)
                     return false
-                  })
+                  }))
                 break
               /* istanbul ignore next */
               case 'TCP-RTU-BUFFERED':
@@ -441,33 +468,33 @@ module.exports = function (RED) {
                 node.client.connectTcpRTUBuffered(node.tcpHost, {
                   port: node.tcpPort,
                   autoOpen: true
-                }).then(node.setTCPConnectionOptions)
-                  .catch((err) => {
+                }).then(node.forCurrentClient(client, node.setTCPConnectionOptions))
+                  .catch(node.forCurrentClient(client, (err) => {
                     node.modbusTcpErrorHandling(err)
                     return false
-                  })
+                  }))
                 break
               case 'UDP':
                 verboseLog('UDP port')
                 node.client.connectUDP(node.tcpHost, {
                   port: node.tcpPort,
                   autoOpen: true
-                }).then(node.setTCPConnectionOptions)
-                  .catch((err) => {
+                }).then(node.forCurrentClient(client, node.setTCPConnectionOptions))
+                  .catch(node.forCurrentClient(client, (err) => {
                     node.modbusTcpErrorHandling(err)
                     return false
-                  })
+                  }))
                 break
               default:
                 verboseLog('TCP port')
                 node.client.connectTCP(node.tcpHost, {
                   port: node.tcpPort,
                   autoOpen: true
-                }).then(node.setTCPConnectionOptions)
-                  .catch((err) => {
+                }).then(node.forCurrentClient(client, node.setTCPConnectionOptions))
+                  .catch(node.forCurrentClient(client, (err) => {
                     node.modbusTcpErrorHandling(err)
                     return false
-                  })
+                  }))
             }
           } /* istanbul ignore next */ catch (e) {
             node.modbusTcpErrorHandling(e)
@@ -511,27 +538,27 @@ module.exports = function (RED) {
                 }
                 verboseLog('Using response delimiter: 0x' + serialPortOptions.startOfSlaveFrameChar.toString(16))
 
-                node.client.connectAsciiSerial(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
-                  .catch((err) => {
+                node.client.connectAsciiSerial(node.serialPort, serialPortOptions).then(node.forCurrentClient(client, node.setSerialConnectionOptions))
+                  .catch(node.forCurrentClient(client, (err) => {
                     node.modbusSerialErrorHandling(err)
                     return false
-                  })
+                  }))
                 break
               case 'RTU':
                 verboseLog('RTU port serial')
-                node.client.connectRTU(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
-                  .catch((err) => {
+                node.client.connectRTU(node.serialPort, serialPortOptions).then(node.forCurrentClient(client, node.setSerialConnectionOptions))
+                  .catch(node.forCurrentClient(client, (err) => {
                     node.modbusSerialErrorHandling(err)
                     return false
-                  })
+                  }))
                 break
               default:
                 verboseLog('RTU buffered port serial')
-                node.client.connectRTUBuffered(node.serialPort, serialPortOptions).then(node.setSerialConnectionOptions)
-                  .catch((err) => {
+                node.client.connectRTUBuffered(node.serialPort, serialPortOptions).then(node.forCurrentClient(client, node.setSerialConnectionOptions))
+                  .catch(node.forCurrentClient(client, (err) => {
                     node.modbusSerialErrorHandling(err)
                     return false
-                  })
+                  }))
                 break
             }
           } /* istanbul ignore next */ catch (e) {
@@ -793,6 +820,8 @@ module.exports = function (RED) {
           cberr(new Error('Message Or Payload Not Valid'), msg)
         }
         coreModbusClient.internalDebug('Dynamic Reconnect Starts on actual state ' + node.actualServiceState.value)
+        // a new target starts with the configured delay, not with the old target's backoff
+        node.reconnectAttempt = 0
         node.stateService.send('SWITCH')
       } catch (err) {
         cberr(err, msg)

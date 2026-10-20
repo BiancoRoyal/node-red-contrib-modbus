@@ -12,6 +12,7 @@ const internalDebug = require('debug')('contribModbus:core:client')
 const internalDebugFSM = require('debug')('contribModbus:core:client:fsm')
 const modbusSerialDebug = require('debug')('modbus-serial')
 const XStateFSM = require('@xstate/fsm')
+const { performance } = require('perf_hooks')
 
 const READ_FC_DISPATCH = {
   1: 'readModbusByFunctionCodeOne',
@@ -130,7 +131,7 @@ function clientTimeoutMs (node) {
 }
 
 function timestampOrNow (now) {
-  return typeof now === 'number' ? now : Date.now()
+  return typeof now === 'number' ? now : coreClient.monotonicNow()
 }
 
 /**
@@ -145,8 +146,8 @@ coreClient.computeReconnectDelay = function (baseMs, attempt, random) {
     return baseMs
   }
   const backedOff = baseMs * Math.pow(2, n - RECONNECT_FREE_ATTEMPTS)
-  const capped = Math.max(baseMs, Math.min(backedOff, RECONNECT_BACKOFF_CAP_MS))
-  return Math.round(capped * jitterFactor(random))
+  const capped = Math.min(backedOff, RECONNECT_BACKOFF_CAP_MS)
+  return Math.max(baseMs, Math.round(capped * jitterFactor(random)))
 }
 
 /**
@@ -165,6 +166,14 @@ coreClient.describeError = function (err) {
   return err.message || JSON.stringify(err)
 }
 
+/**
+ * Monotonic milliseconds for the liveness window: a wall clock step (NTP correction,
+ * RTC set at boot) must neither suppress nor force a connection rebuild.
+ */
+coreClient.monotonicNow = function () {
+  return performance.now()
+}
+
 coreClient.markAlive = function (node, now) {
   node.lastAliveAt = timestampOrNow(now)
 }
@@ -175,9 +184,11 @@ coreClient.markAlive = function (node, now) {
  * Otherwise the peer is simply absent (#580 / #586).
  */
 coreClient.shouldEscalateTimeout = function (node, now) {
-  const current = timestampOrNow(now)
-  const lastAlive = (node && node.lastAliveAt) || 0
-  return current - lastAlive >= coreClient.livenessWindow(node)
+  const lastAlive = node && node.lastAliveAt
+  if (typeof lastAlive !== 'number') {
+    return true
+  }
+  return timestampOrNow(now) - lastAlive >= coreClient.livenessWindow(node)
 }
 
 /** A Modbus exception response means the device answered — the transport is alive. */
@@ -287,6 +298,14 @@ coreClient.getLogFunction = function (node) {
 
 coreClient.activateSendingOnSuccess = function (node, cb, cberr, resp, msg) {
   coreClient.markAlive(node)
+  coreClient.activateSendingWithResponse(node, cb, cberr, resp, msg)
+}
+
+/**
+ * Completes a command with `resp` without counting it as proof of life: Unit ID 0
+ * (broadcast) never answers, so its swallowed write errors say nothing about the transport.
+ */
+coreClient.activateSendingWithResponse = function (node, cb, cberr, resp, msg) {
   node.activateSending(msg).then(function () {
     cb(resp, msg)
   }).catch(function (err) {
@@ -520,7 +539,7 @@ coreClient.writeModbusByFunctionCodeFive = function (node, msg, cb, cberr) {
         address: parseInt(msg.payload.address),
         value: parseInt(msg.payload.value)
       }
-      coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+      coreClient.activateSendingWithResponse(node, cb, cberr, resp, msg)
     } else {
       coreClient.activateSendingOnFailure(node, cberr, err, msg)
       node.modbusErrorHandling(err, client)
@@ -545,7 +564,7 @@ coreClient.writeModbusByFunctionCodeFifteen = function (node, msg, cb, cberr) {
           address: parseInt(msg.payload.address),
           value: parseInt(msg.payload.value)
         }
-        coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+        coreClient.activateSendingWithResponse(node, cb, cberr, resp, msg)
       } else {
         coreClient.activateSendingOnFailure(node, cberr, err, msg)
         node.modbusErrorHandling(err, client)
@@ -567,7 +586,7 @@ coreClient.writeModbusByFunctionCodeSix = function (node, msg, cb, cberr) {
         address: parseInt(msg.payload.address),
         value: parseInt(msg.payload.value)
       }
-      coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+      coreClient.activateSendingWithResponse(node, cb, cberr, resp, msg)
     } else {
       coreClient.activateSendingOnFailure(node, cberr, err, msg)
       node.modbusErrorHandling(err, client)
@@ -592,7 +611,7 @@ coreClient.writeModbusByFunctionCodeSixteen = function (node, msg, cb, cberr) {
           address: parseInt(msg.payload.address),
           value: parseInt(msg.payload.value)
         }
-        coreClient.activateSendingOnSuccess(node, cb, cberr, resp, msg)
+        coreClient.activateSendingWithResponse(node, cb, cberr, resp, msg)
       } else {
         coreClient.activateSendingOnFailure(node, cberr, err, msg)
         node.modbusErrorHandling(err, client)
