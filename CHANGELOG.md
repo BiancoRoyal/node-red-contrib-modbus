@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file. See [standa
 * Serial on Node.js **22/24** remains the supported matrix; Node.js **26** serial is a known risk until `@serialport/bindings-cpp` upstream improves ([#585](https://github.com/BiancoRoyal/node-red-contrib-modbus/issues/585)).
 * ARM64 Serial segfault on Node 24 ([#577](https://github.com/BiancoRoyal/node-red-contrib-modbus/issues/577)) remains a separate platform follow-up — not claimed fixed in 5.60.3.
 * Patch on LTS line `support/v5.60`.
+* Releases are created by the GitHub Actions workflow: a push to `master` with a new `package.json` version runs the tests on Node.js 22 and 24 plus the coverage gate (`nyc.config.js`), then publishes to npm and creates the tag and GitHub release.
 
 ## [5.60.2](https://github.com/BiancoRoyal/node-red-contrib-modbus/compare/v5.60.1...v5.60.2) (2026-08-14)
 
