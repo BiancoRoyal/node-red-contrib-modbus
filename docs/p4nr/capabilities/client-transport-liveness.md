@@ -2,7 +2,7 @@
 
 **Spec ID:** `client-transport-liveness`
 **Version:** v5 OSS (`node-red-contrib-modbus` 5.x) — intended for **5.61.0**
-**Status:** IMPLEMENTED — awaiting review
+**Status:** RELEASED in 5.61.0
 **Date:** 2026-10-20
 **Related:** #580 (one absent PLC disturbs the healthy peer on a shared gateway), #586, #564 (communication stops without an error),
 #569; builds on `client-timeout-reconnect-semantics` (5.60.3)
@@ -25,13 +25,13 @@ every Unit ID behind it (#580). Three further weaknesses show up in the field:
 
 | ID | Requirement |
 |----|-------------|
-| FR-LIVE-01 | Transport **proof of life** = a successful response from any Unit ID, a Modbus exception response (`err.modbusCode`), or the connect itself (FSM `connected`). It is stored as `node.lastAliveAt`. |
+| FR-LIVE-01 | Transport **proof of life** = a successful response from any Unit ID, a Modbus exception response (`err.modbusCode`), or the connect itself (FSM `connected`). It is stored as `node.lastAliveAt` on a monotonic clock (`performance.now()`), so wall clock steps (NTP, RTC set at boot) do not move the window. A write to Unit ID 0 whose error is swallowed (broadcast, no reply) is **no** proof of life. |
 | FR-LIVE-02 | With `reconnectOnTimeout=true` an **application timeout** (`isApplicationTimeoutError`) sends `FAILURE` only when the last proof of life is older than the **liveness window**: `livenessWindow = max(10 s, 4 × clientTimeout)` (`node.livenessWindowMs` overrides it for tests). Otherwise the command fails alone. |
 | FR-LIVE-03 | Transport errors (`code`/`syscall`, `ECONNRESET`, DNS, `Port Not Open`, …) always recover, regardless of proof of life. |
 | FR-LIVE-04 | `reconnectOnTimeout=false` is unchanged: an application timeout never rebuilds the connection. |
-| FR-ISO-01 | `modbusErrorHandling(err, sourceClient)` ignores failures of a client that is no longer `node.client`; the client `error` handler and the port `close` handler are bound to the instance they were created for. |
+| FR-ISO-01 | `modbusErrorHandling(err, sourceClient)` ignores failures of a client that is no longer `node.client`; the client `error` handler, the port `close` handler and the connect `then`/`catch` (`forCurrentClient`) are bound to the instance they were created for. A late successful connect of a replaced client is closed again. |
 | FR-IDLE-01 | After a TCP connect the node watches the port `close` event (same `watchPortClose` as serial). A drop while idle enters the normal `CLOSE → RECONNECT` path without waiting for a command. |
-| FR-BACKOFF-01 | Reconnect delay: the configured `reconnectTimeout` for attempts 1–3, then doubling (attempt 4: ×2, 5: ×4, …) capped at 30 s, never below the configured value, with ±10 % jitter. `reconnectAttempt` resets on `connected`. The node status shows the actual delay (`node.reconnectDelay`). |
+| FR-BACKOFF-01 | Reconnect delay: the configured `reconnectTimeout` for attempts 1–3, then doubling (attempt 4: ×2, 5: ×4, …) capped at 30 s, with ±10 % jitter around the capped value (27–33 s at the cap), never below the configured value. `reconnectAttempt` resets on `connected` and on a dynamic reconnect to a new target. The node status shows the actual delay (`node.reconnectDelay`). |
 
 ## 3. Behaviour changes users can notice
 
@@ -39,8 +39,9 @@ every Unit ID behind it (#580). Three further weaknesses show up in the field:
 - A single device that stops answering is recognised after the liveness window (≥ 10 s after its last response or
   the connect) instead of at the first timeout. A dead half-open TCP connection therefore heals up to 10 s later
   than before; a closed socket, reset or DNS failure still recovers immediately.
-- A long outage no longer retries every `reconnectTimeout`; from the fourth attempt on the delay grows to at most 30 s.
-  Recovery after a short blip is unchanged (first three attempts at the configured delay).
+- A long outage no longer retries every `reconnectTimeout`; from the fourth attempt on the delay grows to about 30 s
+  (±10 % jitter). Recovery after a short blip is unchanged (first three attempts at the configured delay). This also
+  applies with `reconnectOnTimeout=false` (`broken → init`).
 - TCP connections that drop while idle now show `closed` / `retrying…` right away.
 
 ## 4. Non-goals

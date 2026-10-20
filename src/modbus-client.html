@@ -443,8 +443,11 @@
             <li>Unit-ID (default 1 [serial] or 0 [tcp]) - to set one Unit-ID for all nodes without Unit-ID.
             Set the Unit-ID of the Read/Write/Getter node's to empty for using this ID</li>
             <li>Timeout (default 1000 ms) - ms for the command timeout on ModbusRTU command</li>
-            <li>Reconnect timeout (default 2000 ms) - time to wait on reconnect before next sending</li>
-            <li>Reconnect on timeout - should the client do a reconnect or not on timeouts</li>
+            <li>Reconnect timeout (default 2000 ms) - time to wait on reconnect before next sending.
+            From the fourth attempt of one outage on the delay doubles up to about 30 s (±10 % jitter)</li>
+            <li>Reconnect on timeout - on: a command timeout rebuilds the connection only when no Unit ID
+            answered within max(10 s, 4 × Timeout); off: a timeout only fails the command. Socket errors,
+            resets and a closed connection always reconnect</li>
             <li>Parallel UnitId's allowed - handle commands in parallel per UnitId or not</li>
         </ul>
 
