@@ -1,12 +1,17 @@
 version: 2
 updates:
-  # npm updates both lock files in one pull request (npm keeps yarn.lock in sync), the CI
-  # audit job fails when yarn.lock drifts from package.json.
+  # The pull request has to update package-lock.json and yarn.lock together: npm ci fails on a
+  # stale package-lock.json and the CI audit job fails when yarn.lock drifts from package.json.
+  # If Dependabot only updates yarn.lock, redo the update locally with npm (it updates both).
   - package-ecosystem: 'npm'
     directory: '/'
     target-branch: "master"
     schedule:
       interval: "monthly"
+    # new releases wait before they are proposed (compromised publishes are usually pulled fast)
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
     open-pull-requests-limit: 5
     groups:
       production-dependencies:
@@ -25,6 +30,8 @@ updates:
     target-branch: "master"
     schedule:
       interval: "monthly"
+    cooldown:
+      default-days: 7
     groups:
       github-actions:
         patterns:
