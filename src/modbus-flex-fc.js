@@ -280,6 +280,18 @@ module.exports = function (RED) {
 
   RED.nodes.registerType('modbus-flex-fc', ModbusFlexFc)
 
+  /**
+   * Relative map paths resolve from the working directory first and then from the package,
+   * so the shipped defaults (extras/argumentMaps) are found in an npm installation too.
+   */
+  function resolveMapPath (fs, path, filepath) {
+    const fromCwd = path.resolve(filepath)
+    if (fs.existsSync(fromCwd)) {
+      return fromCwd
+    }
+    return path.resolve(__dirname, '..', filepath)
+  }
+
   RED.httpAdmin.post('/modbus/fc/:id', RED.auth.needsPermission('modbus.read'), function (req, res) {
     const fs = require('fs')
     const path = require('node:path')
@@ -294,7 +306,7 @@ module.exports = function (RED) {
     }
 
     const filepath = mapPath || './extras/argumentMaps/defaults/codes.json'
-    const resolvedPath = path.resolve(filepath)
+    const resolvedPath = resolveMapPath(fs, path, filepath)
 
     fs.readFile(resolvedPath, (error, data) => {
       let response = {}

@@ -444,7 +444,7 @@ Addresses in this package are 0-based (address 0 = first register).""",
             "Dedicated Modbus-Response per reader",
         ],
         config=[
-            "dataType → Coil / DiscreteInput / HoldingRegister / InputRegister (FC1–4)",
+            "dataType → Coil / Input / HoldingRegister / InputRegister (FC1–4)",
             "adr + quantity → start address and count (0-based)",
             "rate + rateUnit → poll interval",
             "delayOnStart → avoid racing the server right after deploy",
@@ -925,7 +925,7 @@ Addresses in this package are 0-based (address 0 = first register).""",
             "requestCard / responseCard define field offsets and types",
         ],
         config=[
-            "mapPath → folder with FC map JSON (defaults shipped in package)",
+            "mapPath → FC map JSON file (relative paths fall back to the package, defaults shipped in extras/)",
             "selectedFc → which map entry to use",
             "requestCard fields → values sent in the PDU",
             "responseCard fields → how the reply buffer is decoded",
@@ -973,7 +973,7 @@ Addresses in this package are 0-based (address 0 = first register).""",
             "server": cid,
             "emptyMsgOnFail": False,
             "keepMsgProperties": False,
-            "mapPath": "./extras/argumentMaps/defaults/",
+            "mapPath": "./extras/argumentMaps/defaults/codes.json",
             "selectedFc": "bdd84caa-4191-11ee-989f-4384dc45e6c3",
             "fc": "0x03",
             "requestCard": [
@@ -1384,9 +1384,11 @@ Do NOT use names without a type prefix (payload will be empty []).
             "z": z,
             "name": "holding seed → named HR",
             "func": (
+                "const registers = [42, 7, 3, 9, 0, 11, 0, 13, 0, 0, 0, 15]\n"
+                "// The server buffer takes UInt8 bytes: two big-endian bytes per 16-bit register\n"
                 "// HR0..11 → iTemperature, iSetpoint, iCounter, … (name prefix = type!)\n"
                 "msg.payload = {\n"
-                "  value: [42, 7, 3, 9, 0, 11, 0, 13, 0, 0, 0, 15],\n"
+                "  value: registers.flatMap((v) => [(v >> 8) & 0xff, v & 0xff]),\n"
                 "  register: 'holding',\n"
                 "  address: 0,\n"
                 "  disableMsgOutput: 1\n"
@@ -1524,7 +1526,7 @@ Do NOT use names without a type prefix (payload will be empty []).
             "type": "function",
             "z": z,
             "name": "holding buf",
-            "func": "msg.payload = { value: [11, 22, 33, 44], register: 'holding', address: 0, disableMsgOutput: 0 };\nreturn msg;",
+            "func": "const registers = [11, 22, 33, 44]\n// The server buffer takes UInt8 bytes: two big-endian bytes per 16-bit register\nmsg.payload = { value: registers.flatMap((v) => [(v >> 8) & 0xff, v & 0xff]), register: 'holding', address: 0, disableMsgOutput: 0 };\nreturn msg;",
             "outputs": 1,
             "noerr": 0,
             "x": 360,
@@ -1788,8 +1790,10 @@ See docs/p4nr/capabilities/modbus-dynamic-server-gateway.md""",
             "z": z,
             "name": "simulate cache",
             "func": (
+                "const registers = [100, 200, 300]\n"
+                "// The server buffer takes UInt8 bytes: two big-endian bytes per 16-bit register\n"
                 "msg.payload = {\n"
-                "  value: [100, 200, 300],\n"
+                "  value: registers.flatMap((v) => [(v >> 8) & 0xff, v & 0xff]),\n"
                 "  register: 'holding',\n"
                 "  address: 0,\n"
                 "  disableMsgOutput: 0\n"

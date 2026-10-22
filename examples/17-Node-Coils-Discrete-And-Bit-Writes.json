@@ -4,14 +4,14 @@
     "type": "tab",
     "label": "17 Coils Discrete Bits",
     "disabled": false,
-    "info": "NODE: Coils, Discrete Inputs, FC5/FC15 writes\n\nFEATURES IN THIS FLOW\n- Modbus-Write Coil (FC5) and multi-coil (FC15 via Flex-Write)\n- Modbus-Read DiscreteInput (FC2) and Coil (FC1)\n- Local modbus-server buffer for bit areas\n\nWHAT THE CONFIG DOES\n- Write dataType Coil + quantity 1 \u2192 FC5\n- Flex-Write fc 15 with boolean array \u2192 FC15\n- Read dataType DiscreteInput \u2192 FC2; Coil \u2192 FC1\n- Flow-scoped client on 127.0.0.1:10518\n\nHOW TO RUN\n1) Deploy\n2) Click Write Coil TRUE (FC5) then Read FC1\n3) Click Flex FC15 then compare FC1 Debug\n4) Watch FC2 Discrete poll (may stay false unless you inject discrete buffer via server tools / example 12)\n\nDemo TCP port: 10518\n\nConfig nodes are flow-scoped: delete this tab to remove client/IO config."
+    "info": "NODE: Coils, Discrete Inputs, FC5/FC15 writes\n\nFEATURES IN THIS FLOW\n- Modbus-Write Coil (FC5) and multi-coil (FC15 via Flex-Write)\n- Modbus-Read Input (discrete inputs, FC2) and Coil (FC1)\n- Local modbus-server buffer for bit areas\n\nWHAT THE CONFIG DOES\n- Write dataType Coil + quantity 1 \u2192 FC5\n- Flex-Write fc 15 with boolean array \u2192 FC15\n- Read dataType Input \u2192 FC2 (discrete inputs); Coil \u2192 FC1\n- Flow-scoped client on 127.0.0.1:10518\n\nHOW TO RUN\n1) Deploy\n2) Click Write Coil TRUE (FC5) then Read FC1\n3) Click Flex FC15 then compare FC1 Debug\n4) Watch FC2 Discrete poll (may stay false unless you inject discrete buffer via server tools / example 12)\n\nDemo TCP port: 10518\n\nConfig nodes are flow-scoped: delete this tab to remove client/IO config."
   },
   {
     "id": "a17cmt0000000001",
     "type": "comment",
     "z": "a17tab0000000001",
     "name": "NODE: Coils / Discrete / Bit writes",
-    "info": "NODE: Coils, Discrete Inputs, FC5/FC15 writes\n\nFEATURES IN THIS FLOW\n- Modbus-Write Coil (FC5) and multi-coil (FC15 via Flex-Write)\n- Modbus-Read DiscreteInput (FC2) and Coil (FC1)\n- Local modbus-server buffer for bit areas\n\nWHAT THE CONFIG DOES\n- Write dataType Coil + quantity 1 \u2192 FC5\n- Flex-Write fc 15 with boolean array \u2192 FC15\n- Read dataType DiscreteInput \u2192 FC2; Coil \u2192 FC1\n- Flow-scoped client on 127.0.0.1:10518\n\nHOW TO RUN\n1) Deploy\n2) Click Write Coil TRUE (FC5) then Read FC1\n3) Click Flex FC15 then compare FC1 Debug\n4) Watch FC2 Discrete poll (may stay false unless you inject discrete buffer via server tools / example 12)\n\nDemo TCP port: 10518\n\nConfig nodes are flow-scoped: delete this tab to remove client/IO config.",
+    "info": "NODE: Coils, Discrete Inputs, FC5/FC15 writes\n\nFEATURES IN THIS FLOW\n- Modbus-Write Coil (FC5) and multi-coil (FC15 via Flex-Write)\n- Modbus-Read Input (discrete inputs, FC2) and Coil (FC1)\n- Local modbus-server buffer for bit areas\n\nWHAT THE CONFIG DOES\n- Write dataType Coil + quantity 1 \u2192 FC5\n- Flex-Write fc 15 with boolean array \u2192 FC15\n- Read dataType Input \u2192 FC2 (discrete inputs); Coil \u2192 FC1\n- Flow-scoped client on 127.0.0.1:10518\n\nHOW TO RUN\n1) Deploy\n2) Click Write Coil TRUE (FC5) then Read FC1\n3) Click Flex FC15 then compare FC1 Debug\n4) Watch FC2 Discrete poll (may stay false unless you inject discrete buffer via server tools / example 12)\n\nDemo TCP port: 10518\n\nConfig nodes are flow-scoped: delete this tab to remove client/IO config.",
     "x": 220,
     "y": 40,
     "wires": []
@@ -297,7 +297,7 @@
     "showErrors": true,
     "showWarnings": true,
     "unitid": "1",
-    "dataType": "DiscreteInput",
+    "dataType": "Input",
     "adr": "0",
     "quantity": "8",
     "rate": "2",

@@ -139,7 +139,7 @@
     "type": "function",
     "z": "f359cca63f4848e1",
     "name": "holding seed \u2192 named HR",
-    "func": "// HR0..11 \u2192 iTemperature, iSetpoint, iCounter, \u2026 (name prefix = type!)\nmsg.payload = {\n  value: [42, 7, 3, 9, 0, 11, 0, 13, 0, 0, 0, 15],\n  register: 'holding',\n  address: 0,\n  disableMsgOutput: 1\n};\nreturn msg;",
+    "func": "const registers = [42, 7, 3, 9, 0, 11, 0, 13, 0, 0, 0, 15]\n// The server buffer takes UInt8 bytes: two big-endian bytes per 16-bit register\n// HR0..11 \u2192 iTemperature, iSetpoint, iCounter, \u2026 (name prefix = type!)\nmsg.payload = {\n  value: registers.flatMap((v) => [(v >> 8) & 0xff, v & 0xff]),\n  register: 'holding',\n  address: 0,\n  disableMsgOutput: 1\n};\nreturn msg;",
     "outputs": 1,
     "noerr": 0,
     "x": 400,

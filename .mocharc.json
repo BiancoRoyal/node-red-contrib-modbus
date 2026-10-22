@@ -1,3 +1,6 @@
 {
-  "timeout": 8000
+  "timeout": 8000,
+  "require": [
+    "./test/helper/mocha-setup.js"
+  ]
 }

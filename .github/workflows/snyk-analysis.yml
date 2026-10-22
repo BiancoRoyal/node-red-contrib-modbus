@@ -1,20 +1,24 @@
 name: "Snyk Vulnerability Analysis"
+# Uploads the dependency snapshot of master to Snyk; pull requests are covered by the Snyk app check.
 on:
   push:
     branches:
-      - 6-additional-github-actions
-      - main
-  pull_request:
-    types:
-      - synchronize
-      - opened
+      - master
+  schedule:
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
 jobs:
   snyk:
-    # Dependabot and fork pull requests get no SNYK_TOKEN; the Snyk app check covers them.
-    if: github.event_name == 'push' || (github.actor != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Run Snyk vulnerability scan
         uses: snyk/actions/node@11b673cfb4b0dc0d860a1323caa199d54950dcce # master as of 2026-10-20
         env:

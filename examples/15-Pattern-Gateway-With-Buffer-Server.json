@@ -46,7 +46,7 @@
     "type": "function",
     "z": "6bda7708cf8a4b48",
     "name": "simulate cache",
-    "func": "msg.payload = {\n  value: [100, 200, 300],\n  register: 'holding',\n  address: 0,\n  disableMsgOutput: 0\n};\nreturn msg;",
+    "func": "const registers = [100, 200, 300]\n// The server buffer takes UInt8 bytes: two big-endian bytes per 16-bit register\nmsg.payload = {\n  value: registers.flatMap((v) => [(v >> 8) & 0xff, v & 0xff]),\n  register: 'holding',\n  address: 0,\n  disableMsgOutput: 0\n};\nreturn msg;",
     "outputs": 1,
     "noerr": 0,
     "x": 400,

@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/BiancoRoyal/node-red-contrib-modbus/security/advisories/new
+    about: Please report vulnerabilities privately, not as public issues.

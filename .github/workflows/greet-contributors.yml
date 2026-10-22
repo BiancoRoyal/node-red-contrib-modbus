@@ -1,0 +1,31 @@
+name: "Greet Contributors"
+# pull_request_target runs in the context of this repository, so fork pull requests get a token
+# that may comment. Safe because nothing from the pull request is checked out or executed.
+on:
+  pull_request_target:
+    types: [opened]
+  issues:
+    types: [opened]
+
+permissions: {}
+
+jobs:
+  greet:
+    if: github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/first-interaction@1c4688942c71f71d4f5502a26ea67c331730fa4d # v3.1.0
+        with:
+          issue_message: >-
+            Thank you for your first issue in node-red-contrib-modbus! Please include the package,
+            Node-RED and Node.js versions, the connection type (TCP/serial) and, if you can, a minimal
+            flow. Security problems please report privately:
+            https://github.com/BiancoRoyal/node-red-contrib-modbus/security/advisories/new
+          pr_message: >-
+            Thank you for your first pull request to node-red-contrib-modbus! Please check the
+            contributing guidelines (https://github.com/BiancoRoyal/node-red-contrib-modbus/blob/master/.github/CONTRIBUTING.md);
+            the CI runs the tests on Node.js 22 and 24 with Node-RED 4 and 5.

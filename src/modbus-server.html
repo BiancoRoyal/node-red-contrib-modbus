@@ -123,7 +123,10 @@
             return msg;
         </code>
     </p>
-    <p>The value could also be a list of UInt8 numbers and they will be written to the buffer.</p>
+    <p>The value could also be a list of UInt8 numbers and they will be written to the buffer.
+        Holding and input registers take two big-endian bytes per 16-bit register, e.g. registers
+        <code>[11, 300]</code> as <code>[0, 11, 1, 44]</code>:
+        <code>registers.flatMap((v) => [(v >> 8) &amp; 0xff, v &amp; 0xff])</code>.</p>
     <p>
         Valid registers are:
         <ul>

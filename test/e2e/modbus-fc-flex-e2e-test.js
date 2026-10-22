@@ -323,6 +323,24 @@ describe('Modbus E2E Flex FC-Functionality tests', function () {
       })
     })
 
+    it('should find the shipped default map when the working directory is not the package', function (done) {
+      const cwd = process.cwd()
+      helper.load(nodeList, testFcFlexFlows.testFlexFCFunctionality, function () {
+        process.chdir(require('os').tmpdir())
+        helper.request()
+          .post('/modbus/fc/4f80ae4fa5b8af80')
+          .send({ mapPath: './extras/argumentMaps/defaults/codes.json' })
+          .expect(200)
+          .end(function (err, res) {
+            process.chdir(cwd)
+            if (err) {
+              return done(err)
+            }
+            done(res.body.argumentMaps ? undefined : new Error('no argumentMaps in ' + JSON.stringify(res.body)))
+          })
+      })
+    })
+
     it('should return 400 for invalid file extension', function (done) {
       helper.load(nodeList, testFcFlexFlows.testFlexFCFunctionality, function () {
         helper.request()

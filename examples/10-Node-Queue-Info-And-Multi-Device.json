@@ -196,7 +196,7 @@
     "tosidebar": true,
     "console": false,
     "tostatus": false,
-    "complete": "payload",
+    "complete": "true",
     "x": 840,
     "y": 449,
     "wires": []
