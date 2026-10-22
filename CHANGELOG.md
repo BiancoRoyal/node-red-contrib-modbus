@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.62.0](https://github.com/BiancoRoyal/node-red-contrib-modbus/compare/v5.61.0...v5.62.0) (2026-10-22)
+
+### Bug Fixes
+
+* **examples:** all 18 learning examples verified in headless Chrome on Node-RED 4.1 and 5.0 against an external Modbus master. Server buffer seeds in 11, 12 and 15 now send two big-endian bytes per register (the values are read back as written), 17 reads discrete inputs with dataType `Input` (FC2 failed with "Function Code Unknown"), 08 points to the shipped argument map file, 10 shows the complete queue message
+* **flex-fc:** argument maps with relative paths load in npm installations (fallback to the package directory), and the editor shows load errors instead of throwing
+
+### Build
+
+* the shipped code is compiled with Babel 8 for Node.js 22 (`engines`) instead of ES5
+* the npm package contains only runtime files (no internal specs and generated JSDoc): 255 → 118 files, 4.0 → 0.4 MB
+* tested on Node.js 22 and 24 with Node-RED 4 and 5; development dependencies updated (Node-RED 5, Babel 8, mocha 12, nyc 18, chai 6, gulp 5, sinon 22)
+
+### Security / Maintenance
+
+* **release:** the publish job only holds the npm OIDC credential in the `npm-publish` environment (no checkout, no npm self-update); tag and GitHub release run in a separate job; a new version needs its CHANGELOG section; stricter tarball checks before publishing
+* **ci:** least-privilege permissions in all workflows, dependency review on pull requests, `npm audit signatures`, pinned runner image, Snyk monitors master, greeting works for fork pull requests
+* **policy:** vulnerabilities are reported privately (SECURITY.md, issue chooser); Dependabot waits 7 days (majors 30) before proposing new releases
+
 ## [5.61.0](https://github.com/BiancoRoyal/node-red-contrib-modbus/compare/v5.60.3...v5.61.0) (2026-10-20)
 
 ### Features
