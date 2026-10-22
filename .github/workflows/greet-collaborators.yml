@@ -5,6 +5,8 @@ on:
 
 jobs:
   GreetCommitter:
+    # Dependabot pull requests get a read-only token and need no greeting.
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: "Greet Contributor"
