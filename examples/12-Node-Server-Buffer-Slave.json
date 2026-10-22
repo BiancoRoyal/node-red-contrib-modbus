@@ -45,7 +45,7 @@
     "type": "function",
     "z": "fa077f7c86b94b15",
     "name": "holding buf",
-    "func": "msg.payload = { value: [11, 22, 33, 44], register: 'holding', address: 0, disableMsgOutput: 0 };\nreturn msg;",
+    "func": "const registers = [11, 22, 33, 44]\n// The server buffer takes UInt8 bytes: two big-endian bytes per 16-bit register\nmsg.payload = { value: registers.flatMap((v) => [(v >> 8) & 0xff, v & 0xff]), register: 'holding', address: 0, disableMsgOutput: 0 };\nreturn msg;",
     "outputs": 1,
     "noerr": 0,
     "x": 360,

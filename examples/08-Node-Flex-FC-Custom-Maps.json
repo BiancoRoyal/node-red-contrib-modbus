@@ -4,14 +4,14 @@
     "type": "tab",
     "label": "08 Flex-FC",
     "disabled": false,
-    "info": "NODE: Modbus-Flex-FC (custom / mapped function codes)\n\nFEATURES IN THIS FLOW\n- Build non-default or vendor FC request/response layouts\n- Argument maps loaded from extras/argumentMaps/\n- requestCard / responseCard define field offsets and types\n\nWHAT THE CONFIG DOES\n- mapPath \u2192 folder with FC map JSON (defaults shipped in package)\n- selectedFc \u2192 which map entry to use\n- requestCard fields \u2192 values sent in the PDU\n- responseCard fields \u2192 how the reply buffer is decoded\n- If relative mapPath fails, set absolute path under node_modules/\u2026/extras/argumentMaps/\n\nHOW TO RUN\n1) Deploy (ensure mapPath resolves \u2014 see ArgumentMaps.md)\n2) Click Trigger FC map\n3) Inspect Modbus-Response / msg for decoded fields\n4) Open extras/argumentMaps/ArgumentMaps.md to add your own map\n\nDemo TCP port: 10509\n\nDocs: extras/argumentMaps/ArgumentMaps.md\n\nConfig nodes are flow-scoped: delete this tab to remove client/IO config."
+    "info": "NODE: Modbus-Flex-FC (custom / mapped function codes)\n\nFEATURES IN THIS FLOW\n- Build non-default or vendor FC request/response layouts\n- Argument maps loaded from extras/argumentMaps/\n- requestCard / responseCard define field offsets and types\n\nWHAT THE CONFIG DOES\n- mapPath \u2192 FC map JSON file (relative paths fall back to the package, defaults shipped in extras/)\n- selectedFc \u2192 which map entry to use\n- requestCard fields \u2192 values sent in the PDU\n- responseCard fields \u2192 how the reply buffer is decoded\n- If relative mapPath fails, set absolute path under node_modules/\u2026/extras/argumentMaps/\n\nHOW TO RUN\n1) Deploy (ensure mapPath resolves \u2014 see ArgumentMaps.md)\n2) Click Trigger FC map\n3) Inspect Modbus-Response / msg for decoded fields\n4) Open extras/argumentMaps/ArgumentMaps.md to add your own map\n\nDemo TCP port: 10509\n\nDocs: extras/argumentMaps/ArgumentMaps.md\n\nConfig nodes are flow-scoped: delete this tab to remove client/IO config."
   },
   {
     "id": "e3f96d88af4942f1",
     "type": "comment",
     "z": "42b4b17f06604c17",
     "name": "NODE: Modbus-Flex-FC (custom / mapped function codes)",
-    "info": "NODE: Modbus-Flex-FC (custom / mapped function codes)\n\nFEATURES IN THIS FLOW\n- Build non-default or vendor FC request/response layouts\n- Argument maps loaded from extras/argumentMaps/\n- requestCard / responseCard define field offsets and types\n\nWHAT THE CONFIG DOES\n- mapPath \u2192 folder with FC map JSON (defaults shipped in package)\n- selectedFc \u2192 which map entry to use\n- requestCard fields \u2192 values sent in the PDU\n- responseCard fields \u2192 how the reply buffer is decoded\n- If relative mapPath fails, set absolute path under node_modules/\u2026/extras/argumentMaps/\n\nHOW TO RUN\n1) Deploy (ensure mapPath resolves \u2014 see ArgumentMaps.md)\n2) Click Trigger FC map\n3) Inspect Modbus-Response / msg for decoded fields\n4) Open extras/argumentMaps/ArgumentMaps.md to add your own map\n\nDemo TCP port: 10509\n\nDocs: extras/argumentMaps/ArgumentMaps.md\n\nConfig nodes are flow-scoped: delete this tab to remove client/IO config.",
+    "info": "NODE: Modbus-Flex-FC (custom / mapped function codes)\n\nFEATURES IN THIS FLOW\n- Build non-default or vendor FC request/response layouts\n- Argument maps loaded from extras/argumentMaps/\n- requestCard / responseCard define field offsets and types\n\nWHAT THE CONFIG DOES\n- mapPath \u2192 FC map JSON file (relative paths fall back to the package, defaults shipped in extras/)\n- selectedFc \u2192 which map entry to use\n- requestCard fields \u2192 values sent in the PDU\n- responseCard fields \u2192 how the reply buffer is decoded\n- If relative mapPath fails, set absolute path under node_modules/\u2026/extras/argumentMaps/\n\nHOW TO RUN\n1) Deploy (ensure mapPath resolves \u2014 see ArgumentMaps.md)\n2) Click Trigger FC map\n3) Inspect Modbus-Response / msg for decoded fields\n4) Open extras/argumentMaps/ArgumentMaps.md to add your own map\n\nDemo TCP port: 10509\n\nDocs: extras/argumentMaps/ArgumentMaps.md\n\nConfig nodes are flow-scoped: delete this tab to remove client/IO config.",
     "x": 200,
     "y": 40,
     "wires": []
@@ -106,7 +106,7 @@
     "server": "5d02074a01f146b6",
     "emptyMsgOnFail": false,
     "keepMsgProperties": false,
-    "mapPath": "./extras/argumentMaps/defaults/",
+    "mapPath": "./extras/argumentMaps/defaults/codes.json",
     "selectedFc": "bdd84caa-4191-11ee-989f-4384dc45e6c3",
     "fc": "0x03",
     "requestCard": [
