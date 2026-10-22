@@ -17,6 +17,9 @@ const replace = require('gulp-replace')
 const changelog = require('gulp-conventional-changelog')
 const htmlmin = require('gulp-htmlmin')
 
+// Compile for the Node.js versions in package.json engines, not for a Babel default target
+const babelOptions = { presets: [['@babel/preset-env', { targets: { node: '22' } }]] }
+
 function releaseIcons () {
   return src('src/icons/**/*').pipe(dest('modbus/icons'))
 }
@@ -80,7 +83,7 @@ function releaseJSContent (cb) {
     src('src/**/*.js')
       .pipe(sourcemaps.init({ loadMaps: true }))
       .pipe(replace(anchor, 'require(\'source-map-support\').install()'))
-      .pipe(babel({ presets: ['@babel/env'] }))
+      .pipe(babel(babelOptions))
       .pipe(uglify())
       .pipe(sourcemaps.write('maps')), dest('modbus')],
   cb)
@@ -93,7 +96,7 @@ function codeJSContent (cb) {
     src('src/**/*.js')
       .pipe(sourcemaps.init({ loadMaps: true }))
       .pipe(replace(anchor, 'require(\'source-map-support\').install()'))
-      .pipe(babel({ presets: ['@babel/env'] }))
+      .pipe(babel(babelOptions))
       .pipe(sourcemaps.write('maps')), dest('code')],
   cb)
 }
