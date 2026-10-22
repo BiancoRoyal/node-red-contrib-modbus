@@ -112,7 +112,7 @@
     "gulp-sourcemaps": "~3.0.0",
     "gulp-uglify": "~3.0.2",
     "mocha": "~10.8.2",
-    "node-red": "~4.1.16",
+    "node-red": "~5.0.8",
     "node-red-node-test-helper": "~0.3.6",
     "nyc": "~15.1.0",
     "pump": "~3.0.4",
