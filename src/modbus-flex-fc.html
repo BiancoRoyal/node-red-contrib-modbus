@@ -92,7 +92,7 @@
               $("#node-input-selected-fc").val(node.lastSelectedFc);
             }
           },
-        error: function (error) {
+        error: function (xhr) {
           switch(xhr.status) {
             case 404:
               const errMessageNotFound = "File " + node.mapPath + " not found!";
