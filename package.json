@@ -97,7 +97,7 @@
   },
   "devDependencies": {
     "@babel/core": "~7.29.7",
-    "@babel/preset-env": "~7.29.7",
+    "@babel/preset-env": "~8.0.7",
     "@node-red/nodes": "~4.1.16",
     "address": "~2.0.3",
     "chai": "~3.5.0",
