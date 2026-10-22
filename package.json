@@ -96,7 +96,7 @@
     "dev:link-local": "npm run build && npm link"
   },
   "devDependencies": {
-    "@babel/core": "~7.29.7",
+    "@babel/core": "~8.0.7",
     "@babel/preset-env": "~7.29.7",
     "@node-red/nodes": "~4.1.16",
     "address": "~2.0.3",
