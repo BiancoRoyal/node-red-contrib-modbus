@@ -20,7 +20,7 @@ on:
       - 'feature/**'
       - 'fix/**'
       - 'chore/**'
-  # Re-run the release pipeline from master by hand (e.g. after fixing npm Trusted Publishing).
+  # Re-run the release pipeline from master by hand (e.g. to create a missing GitHub release).
   workflow_dispatch:
 
 # Least privilege: jobs get read-only access unless they list more below.
@@ -33,15 +33,19 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 # Third-party actions are pinned to commit SHAs (the comment names the tag they resolve to);
-# Dependabot (github-actions ecosystem) keeps them current.
+# Dependabot (github-actions ecosystem) keeps them current. The runner image is pinned so the
+# native serialport build and the release jobs do not change underneath a release.
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # Chaos + FSM + load suites need room; hang must fail the job, not burn the runner.
     timeout-minutes: 45
     strategy:
+      fail-fast: false
       matrix:
         node: [22, 24]
+        # package.json supports Node-RED >= 4; the dev dependency is Node-RED 5
+        node-red: [4, 5]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -49,17 +53,25 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: ${{ matrix.node }}
+          package-manager-cache: false
       # npm ci installs exactly what package-lock.json pins (fails when it is out of sync)
       - run: npm ci
+      - name: Test against Node-RED 4
+        if: matrix.node-red == 4
+        run: npm install --no-save --ignore-scripts --no-audit --no-fund node-red@~4.1.17 @node-red/nodes@~4.1.17
+      # Registry signatures and provenance attestations of the installed packages
+      - name: npm audit signatures
+        if: matrix.node == 24 && matrix.node-red == 5
+        run: npm audit signatures
       - run: npm run test:ci
       - run: npm run build
       # The release tarball is built here, in a job without publish rights, and published
       # unchanged by the publish job. Scripts are skipped: build already ran.
       - name: Pack the npm tarball
-        if: matrix.node == 24
+        if: matrix.node == 24 && matrix.node-red == 5
         run: npm pack --ignore-scripts
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        if: matrix.node == 24
+        if: matrix.node == 24 && matrix.node-red == 5
         with:
           name: npm-tarball
           path: node-red-contrib-modbus-*.tgz
@@ -69,7 +81,7 @@ jobs:
   # Coverage gate: nyc.config.js sets check-coverage with the minimum thresholds, so this
   # job fails when coverage drops. The release below waits for it.
   coverage:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -78,6 +90,7 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
+          package-manager-cache: false
       - run: npm ci
       - run: npm run coverage
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -91,7 +104,7 @@ jobs:
   # high/critical advisories, and yarn.lock must match package.json so npm and Yarn users
   # get the same installation as package-lock.json.
   audit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -100,100 +113,147 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
+          package-manager-cache: false
       - name: npm audit (production dependencies)
         run: npm audit --omit=dev --audit-level=high
       - name: yarn.lock is in sync with package.json
         run: yarn install --frozen-lockfile --ignore-scripts --ignore-engines --non-interactive
 
-  publish:
-    runs-on: ubuntu-latest
+  # Decides what master releases, without any write rights: a package.json version that is
+  # not on npm yet is published; its CHANGELOG section is required and becomes the notes.
+  release-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
     needs: [build, coverage, audit]
     if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
-    # OIDC Trusted Publishing — classic NPM_TOKEN was revoked by npm (Dec 2025).
-    # REQUIRED once on https://www.npmjs.com/package/node-red-contrib-modbus/access
-    # → Trusted Publisher → GitHub Actions:
-    #   Organization or user: BiancoRoyal
-    #   Repository: node-red-contrib-modbus
-    #   Workflow filename: build.yml
-    #   Allowed actions: npm publish
-    permissions:
-      id-token: write
-      # tag + GitHub release after the npm publish
-      contents: write
+    outputs:
+      name: ${{ steps.version.outputs.name }}
+      version: ${{ steps.version.outputs.version }}
+      publish: ${{ steps.version.outputs.publish }}
+      release: ${{ steps.version.outputs.release }}
     steps:
-      # Checkout only to read package.json and CHANGELOG.md. No dependency is installed and
-      # no repository code runs in this job: it holds the publish rights.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          # Trusted Publishing: Node >= 22.14, npm >= 11.5.1
           node-version: 24
-      # master is released only when package.json carries a version that is not on npm yet.
-      # Every other push to master ends here successfully instead of failing on E403.
-      - name: Check whether this version is already published
+          package-manager-cache: false
+      - name: Check npm, GitHub release and CHANGELOG
         id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           NAME=$(node -p "require('./package.json').name")
           VERSION=$(node -p "require('./package.json').version")
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
-            echo "publish=false" >> "$GITHUB_OUTPUT"
-            echo "$NAME@$VERSION is already on npm — nothing to release"
+            PUBLISH=false
+            echo "$NAME@$VERSION is already on npm — nothing to publish"
           else
-            echo "publish=true" >> "$GITHUB_OUTPUT"
-            echo "$NAME@$VERSION is new — releasing"
+            PUBLISH=true
+            echo "$NAME@$VERSION is new — publishing"
           fi
-          # Release notes come from the committed CHANGELOG section
-          awk -v v="$VERSION" 'index($0, "## [" v "]") == 1 { found = 1; next } /^## \[/ { found = 0 } found' CHANGELOG.md > "$RUNNER_TEMP/release-notes.md"
-          if [ ! -s "$RUNNER_TEMP/release-notes.md" ]; then
-            echo "Release v$VERSION" > "$RUNNER_TEMP/release-notes.md"
+          echo "publish=$PUBLISH" >> "$GITHUB_OUTPUT"
+          if gh release view "v$VERSION" >/dev/null 2>&1; then
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "release=true" >> "$GITHUB_OUTPUT"
           fi
-      - name: Ensure npm supports OIDC trusted publishing
-        if: steps.version.outputs.publish == 'true'
-        run: |
-          npm install -g npm@latest
-          npm --version
-          node --version
-          if [ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]; then
-            echo "ACTIONS_ID_TOKEN_REQUEST_URL missing — id-token: write did not take effect"
+          if [ "$PUBLISH" = true ] && ! grep -qF "## [$VERSION]" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no section '## [$VERSION]' — add the release notes before releasing"
             exit 1
           fi
-          echo "OIDC token request URL is present"
+
+  # Holds the npm publish credential only: OIDC Trusted Publishing, no repository write, no
+  # checkout, no dependency install. The environment can carry a branch policy, reviewers and
+  # the npm trusted publisher binding.
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    needs: [release-check]
+    if: needs.release-check.outputs.publish == 'true'
+    environment: npm-publish
+    # OIDC Trusted Publishing — classic NPM_TOKEN was revoked by npm (Dec 2025).
+    # Configured on https://www.npmjs.com/package/node-red-contrib-modbus/access
+    # → Trusted Publisher → GitHub Actions:
+    #   Organization or user: BiancoRoyal
+    #   Repository: node-red-contrib-modbus
+    #   Workflow filename: build.yml
+    #   Environment: npm-publish (optional binding, see the environment's settings)
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          # Trusted Publishing: Node >= 22.14, npm >= 11.5.1 (Node 24 ships a newer npm)
+          node-version: 24
+          package-manager-cache: false
+      - name: Ensure npm supports OIDC trusted publishing
+        run: |
+          node --version
+          npm --version
+          node -e 'const [a, b, c] = process.argv[1].split(".").map(Number); process.exit(a > 11 || (a === 11 && (b > 5 || (b === 5 && c >= 1))) ? 0 : 1)' "$(npm --version)" \
+            || { echo "::error::npm $(npm --version) is too old for trusted publishing (>= 11.5.1)"; exit 1; }
+          if [ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]; then
+            echo "::error::ACTIONS_ID_TOKEN_REQUEST_URL missing — id-token: write did not take effect"
+            exit 1
+          fi
       # The tarball was built and tested on this commit in the build job.
       - name: Download the tarball built from this commit
-        if: steps.version.outputs.publish == 'true'
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: npm-tarball
           path: ${{ runner.temp }}/tarball
-      - name: Verify the tarball matches package.json
-        if: steps.version.outputs.publish == 'true'
+      - name: Verify the tarball before the irreversible publish
         env:
-          EXPECTED: ${{ steps.version.outputs.name }}@${{ steps.version.outputs.version }}
+          EXPECTED: ${{ needs.release-check.outputs.name }}@${{ needs.release-check.outputs.version }}
         run: |
           TARBALL=$(ls "$RUNNER_TEMP"/tarball/*.tgz)
           ACTUAL=$(tar -xzOf "$TARBALL" package/package.json | node -p "const p=JSON.parse(require('fs').readFileSync(0,'utf8')); p.name + '@' + p.version")
           echo "tarball: $ACTUAL, expected: $EXPECTED"
           [ "$ACTUAL" = "$EXPECTED" ]
-          tar -tzf "$TARBALL" | grep -q '^package/modbus/modbus-client.js$'
+          tar -tzf "$TARBALL" > "$RUNNER_TEMP/files.txt"
+          echo "$(wc -l < "$RUNNER_TEMP/files.txt") files"
+          grep -qx 'package/modbus/modbus-client.js' "$RUNNER_TEMP/files.txt"
+          grep -qx 'package/examples/01-Modbus-Basics-Registers-And-FCs.json' "$RUNNER_TEMP/files.txt"
+          if grep -E '^package/(src|test|code|coverage|docs/p4nr|\.github|\.cursor|node_modules)/' "$RUNNER_TEMP/files.txt"; then
+            echo "::error::the tarball contains sources, tests or internal files"
+            exit 1
+          fi
+          [ "$(wc -l < "$RUNNER_TEMP/files.txt")" -lt 400 ]
       # Never set NODE_AUTH_TOKEN here — empty/legacy tokens bypass OIDC → ENEEDAUTH/E404.
       - name: Publish to npm (OIDC)
-        if: steps.version.outputs.publish == 'true'
         run: |
           unset NODE_AUTH_TOKEN NPM_TOKEN
-          npm publish "$(ls "$RUNNER_TEMP"/tarball/*.tgz)" --access public --allow-remote=root --ignore-scripts
+          npm publish "$(ls "$RUNNER_TEMP"/tarball/*.tgz)" --access public --ignore-scripts
+
+  # Tag + GitHub release after the npm publish. A manual run (workflow_dispatch) on master
+  # creates a release that is missing for a version already on npm.
+  github-release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    needs: [release-check, publish]
+    if: >-
+      always() && needs.release-check.result == 'success' && needs.release-check.outputs.release == 'true' &&
+      (needs.publish.result == 'success' ||
+       (github.event_name == 'workflow_dispatch' && needs.release-check.outputs.publish == 'false'))
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Create git tag and GitHub release
-        if: steps.version.outputs.publish == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ steps.version.outputs.version }}
+          VERSION: ${{ needs.release-check.outputs.version }}
         run: |
-          TAG="v$VERSION"
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "Release $TAG already exists"
-          else
-            gh release create "$TAG" --target "$GITHUB_SHA" --title "$TAG" --notes-file "$RUNNER_TEMP/release-notes.md" --latest
+          # Release notes come from the committed CHANGELOG section
+          awk -v v="$VERSION" 'index($0, "## [" v "]") == 1 { found = 1; next } /^## \[/ { found = 0 } found' CHANGELOG.md > "$RUNNER_TEMP/release-notes.md"
+          if [ ! -s "$RUNNER_TEMP/release-notes.md" ]; then
+            echo "Release v$VERSION" > "$RUNNER_TEMP/release-notes.md"
           fi
+          gh release create "v$VERSION" --target "$GITHUB_SHA" --title "v$VERSION" --notes-file "$RUNNER_TEMP/release-notes.md" --latest
