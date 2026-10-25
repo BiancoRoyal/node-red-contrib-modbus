@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.62.1](https://github.com/BiancoRoyal/node-red-contrib-modbus/compare/v5.62.0...v5.62.1) (2026-10-25)
+
+### Bug Fixes
+
+* **icons:** copy palette icons and documentation images as raw bytes under Gulp 5, so `modbus.png` is a valid PNG again and the nodes show the package icon
+
 ## [5.62.0](https://github.com/BiancoRoyal/node-red-contrib-modbus/compare/v5.61.0...v5.62.0) (2026-10-22)
 
 ### Bug Fixes

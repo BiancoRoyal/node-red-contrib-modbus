@@ -20,16 +20,19 @@ const htmlmin = require('gulp-htmlmin')
 // Compile for the Node.js versions in package.json engines, not for a Babel default target
 const babelOptions = { presets: [['@babel/preset-env', { targets: { node: '22' } }]] }
 
+// Gulp 5 reads and writes as UTF-8 by default, which corrupts PNG and ICO bytes.
+const binaryFile = { encoding: false }
+
 function releaseIcons () {
-  return src('src/icons/**/*').pipe(dest('modbus/icons'))
+  return src('src/icons/**/*', binaryFile).pipe(dest('modbus/icons', binaryFile))
 }
 
 function docIcons () {
-  return src('src/icons/**/*').pipe(dest('docs/gen/icons'))
+  return src('src/icons/**/*', binaryFile).pipe(dest('docs/gen/icons', binaryFile))
 }
 
 function docImages () {
-  return src('images/**/*').pipe(dest('docs/gen/images'))
+  return src('images/**/*', binaryFile).pipe(dest('docs/gen/images', binaryFile))
 }
 
 function releaseLocal () {
