@@ -499,6 +499,36 @@ describe('Core IO Testing', function () {
         expect(result.value).to.equal(256)
       })
 
+      it('should decode 32-bit value for mapping returned by buildInputAddressMapping', () => {
+        const mapping = coreIOUnderTest.buildInputAddressMapping(
+          'MB-INPUTS', { name: 'iValue', valueAddress: '%ID32768' }, 0, 0, false)
+        const buffer = Buffer.from([0x00, 0xF3, 0x33, 0x33])
+        const result = coreIOUnderTest.getValueFromBufferByDataType(Object.assign({}, mapping), 0, buffer, false)
+        expect(result.value).to.equal(0x00F33333)
+      })
+
+      it('should give bits 32 for an unsigned mapping with %ID', () => {
+        const mapping = coreIOUnderTest.buildInputAddressMapping(
+          'MB-INPUTS', { name: 'uValue', valueAddress: '%ID32768' }, 0, 0, false)
+        expect(mapping.bits).to.equal(32)
+        expect(mapping.addressOffset).to.equal(2)
+      })
+
+      it('should decode unsigned 32-bit value for mapping with u prefix and %ID', () => {
+        const mapping = coreIOUnderTest.buildInputAddressMapping(
+          'MB-INPUTS', { name: 'uValue', valueAddress: '%ID32768' }, 0, 0, false)
+        const buffer = Buffer.from([0xFF, 0xFF, 0xFF, 0xFF])
+        const result = coreIOUnderTest.getValueFromBufferByDataType(Object.assign({}, mapping), 0, buffer, false)
+        expect(result.value).to.equal(0xFFFFFFFF)
+      })
+
+      it('should keep 16-bit mapping at one register when using %IW', () => {
+        const mapping = coreIOUnderTest.buildInputAddressMapping(
+          'MB-INPUTS', { name: 'uValue', valueAddress: '%IW32768' }, 0, 0, false)
+        expect(mapping.bits).to.equal(16)
+        expect(mapping.addressOffset).to.equal(1)
+      })
+
       it('should correctly set item.value for bits equal to 80', () => {
         const valueNames = [
           { registerAddress: 0, bits: 80 }

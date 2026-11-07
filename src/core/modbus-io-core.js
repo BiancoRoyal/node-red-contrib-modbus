@@ -93,8 +93,14 @@ ioCore.buildInputAddressMapping = function (registerName, mapping, offset, readi
     case 'w': // word
     case 'u': // unsigned integer
       addressStart = Number(mapping.valueAddress.split(addressType)[1])
-      addressOffset = 1
-      bits = 16
+
+      if (registerType === 'D') {
+        addressOffset = 2
+        bits = 32
+      } else {
+        addressOffset = 1
+        bits = 16
+      }
       break
     case 'i': // integer
       addressStart = Number(mapping.valueAddress.split(addressType)[1])
@@ -177,8 +183,14 @@ ioCore.buildOutputAddressMapping = function (registerName, mapping, offset, read
     case 'w': // word
     case 'u': // unsigned integer
       addressStart = Number(mapping.valueAddress.split(addressType)[1])
-      addressOffset = 1
-      bits = 16
+
+      if (registerType === 'D') {
+        addressOffset = 2
+        bits = 32
+      } else {
+        addressOffset = 1
+        bits = 16
+      }
       break
     case 'i': // integer
       addressStart = Number(mapping.valueAddress.split(addressType)[1])
@@ -320,8 +332,8 @@ ioCore.getValueFromBufferByDataType = function (item, bufferOffset, responseBuff
       item.value = !!(responseBuffer.readUInt16BE(bufferOffset) & Math.pow(item.bitAddress[1], 2))
       break
     case 'Word':
-      switch (item.bits) {
-        case '8':
+      switch (Number(item.bits)) {
+        case 8:
           item.value = responseBuffer.readInt8(bufferOffset)
           break
         default:
@@ -330,14 +342,14 @@ ioCore.getValueFromBufferByDataType = function (item, bufferOffset, responseBuff
       }
       break
     case 'Integer':
-      switch (item.bits) {
-        case '8':
+      switch (Number(item.bits)) {
+        case 8:
           item.value = responseBuffer.readInt8(bufferOffset)
           break
-        case '32':
+        case 32:
           item.value = responseBuffer.readInt32BE(bufferOffset)
           break
-        case '64':
+        case 64:
           highBits = responseBuffer.readUInt32BE(bufferOffset)
           lowBits = responseBuffer.readUInt32BE(bufferOffset + 4)
           item.value = highBits * 2 ** 32 + lowBits
@@ -357,14 +369,14 @@ ioCore.getValueFromBufferByDataType = function (item, bufferOffset, responseBuff
       item.value = responseBuffer.readDoubleBE(bufferOffset)
       break
     default:
-      switch (item.bits) {
-        case '8':
+      switch (Number(item.bits)) {
+        case 8:
           item.value = responseBuffer.readUInt8(bufferOffset)
           break
-        case '32':
+        case 32:
           item.value = responseBuffer.readUInt32BE(bufferOffset)
           break
-        case '64':
+        case 64:
           item.value = responseBuffer.readUIntBE(bufferOffset, 8)
           break
         default:
