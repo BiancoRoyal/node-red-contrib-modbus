@@ -1,13 +1,13 @@
-##
-# node-red-contrib-modbus
-#
-# Copyright (c) since the year 2016 Klaus Landsdorf (http://plus4nodered.com/)
-# All rights reserved.
-# node-red-contrib-modbus - The BSD 3-Clause License
-#
-##
+/**
+ Copyright (c) since the year 2016 Klaus Landsdorf (http://plus4nodered.com/)
+ All rights reserved.
+ node-red-contrib-modbus
+ node-red-contrib-modbusio
 
+ @author <a href="mailto:klaus.landsdorf@bianco-royal.de">Klaus Landsdorf</a> (Bianco Royal)
+ */
 'use strict'
+// SOURCE-MAP-REQUIRED
 
 const internalDebug = require('debug')('contribModbus:io:core')
 const LineByLineReader = require('line-by-line')
@@ -19,37 +19,37 @@ ioCore.internalDebug = internalDebug
 ioCore.LineByLineReader = LineByLineReader
 ioCore.core = coreModule
 
-ioCore.nameValuesFromIOFile = function (node, msg, register, bufferMessage, readingOffset) {
+ioCore.nameValuesFromIOFile = function (node, msg, values, response, readingOffset) {
   let valueNames = []
 
   if (node.ioFile && node.ioFile.configData) {
-    node.ioFile.configData.forEach(function (item) {
-      if (item.valueAddress && item.valueAddress.startsWith('%I')) {
-        valueNames.push(ioCore.buildInputAddressMapping('MB-INPUTS', item, Number(node.ioFile.addressOffset), Number(readingOffset), node.logIOActivities))
+    node.ioFile.configData.forEach(function (mapping) {
+      if (mapping.valueAddress && mapping.valueAddress.startsWith('%I')) {
+        valueNames.push(ioCore.buildInputAddressMapping('MB-INPUTS', mapping, Number(node.ioFile.addressOffset), Number(readingOffset), node.logIOActivities))
       }
 
-      if (item.valueAddress && item.valueAddress.startsWith('%Q')) {
-        valueNames.push(ioCore.buildOutputAddressMapping('MB-OUTPUTS', item, Number(node.ioFile.addressOffset), Number(readingOffset), node.logIOActivities))
+      if (mapping.valueAddress && mapping.valueAddress.startsWith('%Q')) {
+        valueNames.push(ioCore.buildOutputAddressMapping('MB-OUTPUTS', mapping, Number(node.ioFile.addressOffset), Number(readingOffset), node.logIOActivities))
       }
     })
   }
 
-  valueNames = ioCore.insertValues(valueNames, register, node.logIOActivities)
+  valueNames = ioCore.insertValues(valueNames, values, node.logIOActivities)
 
-  return ioCore.convertValuesByType(valueNames, bufferMessage, node.logIOActivities)
+  return ioCore.convertValuesByType(valueNames, values, response, node.logIOActivities)
 }
 
-ioCore.allValueNamesFromIOFile = function (node) {
+ioCore.allValueNamesFromIOFile = function (ioNode) {
   const valueNames = []
 
-  if (node && node.configData) {
-    node.configData.forEach(function (item) {
-      if (item.valueAddress && item.valueAddress.startsWith('%I')) {
-        valueNames.push(ioCore.buildInputAddressMapping('MB-INPUTS', item, Number(node.addressOffset), 0))
+  if (ioNode && ioNode.configData) {
+    ioNode.configData.forEach(function (mapping) {
+      if (mapping.valueAddress && mapping.valueAddress.startsWith('%I')) {
+        valueNames.push(ioCore.buildInputAddressMapping('MB-INPUTS', mapping, Number(ioNode.addressOffset), 0))
       }
 
-      if (item.valueAddress && item.valueAddress.startsWith('%Q')) {
-        valueNames.push(ioCore.buildOutputAddressMapping('MB-OUTPUTS', item, Number(node.addressOffset), 0))
+      if (mapping.valueAddress && mapping.valueAddress.startsWith('%Q')) {
+        valueNames.push(ioCore.buildOutputAddressMapping('MB-OUTPUTS', mapping, Number(ioNode.addressOffset), 0))
       }
     })
   }
@@ -151,26 +151,21 @@ ioCore.buildInputAddressMapping = function (registerName, mapping, offset, readi
     return {
       register: registerName,
       name: mapping.name,
-      addressStart: addressStart,
-      addressOffset: addressOffset,
+      addressStart,
+      addressOffset,
       addressOffsetIO: Number(offset) || 0,
-      addressStartIO: addressStartIO,
+      addressStartIO,
       registerAddress: addressStartIO - Number(readingOffset),
-      coilStart: coilStart,
-      bitAddress: bitAddress,
-      Bit: bitAddress ? Number(bitAddress[0]) * 8 + Number(bitAddress[1]) : 0,
-      bits: bits,
+      coilStart,
+      bitAddress,
+      Bit: (bitAddress) ? (Number(bitAddress[0]) * 8) + Number(bitAddress[1]) : 0,
+      bits,
       dataType: ioCore.getDataTypeFromFirstCharType(type),
       type: 'input'
     }
   }
 
-  return {
-    name: mapping.name,
-    type: type,
-    mapping: mapping,
-    error: 'variable name does not match input mapping'
-  }
+  return { name: mapping.name, type, mapping, error: 'variable name does not match input mapping' }
 }
 
 ioCore.buildOutputAddressMapping = function (registerName, mapping, offset, readingOffset, logging) {
@@ -246,26 +241,21 @@ ioCore.buildOutputAddressMapping = function (registerName, mapping, offset, read
     return {
       register: registerName,
       name: mapping.name,
-      addressStart: addressStart,
-      addressOffset: addressOffset,
+      addressStart,
+      addressOffset,
       addressOffsetIO: Number(offset) || 0,
-      addressStartIO: addressStartIO,
+      addressStartIO,
       registerAddress: addressStartIO - Number(readingOffset),
-      coilStart: coilStart,
-      bitAddress: bitAddress,
-      Bit: bitAddress ? Number(bitAddress[0]) * 8 + Number(bitAddress[1]) : 0,
-      bits: bits,
+      coilStart,
+      bitAddress,
+      Bit: (bitAddress) ? (Number(bitAddress[0]) * 8) + Number(bitAddress[1]) : 0,
+      bits,
       dataType: ioCore.getDataTypeFromFirstCharType(type),
       type: 'output'
     }
   }
 
-  return {
-    name: mapping.name,
-    type: type,
-    mapping: mapping,
-    error: 'variable name does not match output mapping'
-  }
+  return { name: mapping.name, type, mapping, error: 'variable name does not match output mapping' }
 }
 
 ioCore.insertValues = function (valueNames, register, logging) {
@@ -295,19 +285,25 @@ ioCore.insertValues = function (valueNames, register, logging) {
         item.value = register[item.registerAddress]
         break
       case 32:
-        item.value = (register[item.registerAddress + 1] << 16) | register[item.registerAddress]
+        item.value = register[item.registerAddress + 1] << 16 |
+          register[item.registerAddress]
         break
       case 64:
-        item.value = (register[item.registerAddress + 3] << 48) | (register[item.registerAddress + 2] << 32) |
-          (register[item.registerAddress + 1] << 16) | register[item.registerAddress]
+        item.value = register[item.registerAddress + 3] << 48 |
+          register[item.registerAddress + 2] << 32 |
+          register[item.registerAddress + 1] << 16 |
+          register[item.registerAddress]
         break
       case 80:
-        item.value = (register[item.registerAddress + 4] << 64) | (register[item.registerAddress + 3] << 48) |
-          (register[item.registerAddress + 2] << 32) | (register[item.registerAddress + 1] << 16) |
+        item.value = register[item.registerAddress + 4] << 64 |
+          register[item.registerAddress + 3] << 48 |
+          register[item.registerAddress + 2] << 32 |
+          register[item.registerAddress + 1] << 16 |
           register[item.registerAddress]
         break
       default:
         item.value = null
+        break
     }
   }
 
@@ -393,109 +389,116 @@ ioCore.getValueFromBufferByDataType = function (item, bufferOffset, responseBuff
   return item
 }
 
-ioCore.convertValuesByType = function (valueNames, bufferMessage, logging) {
+ioCore.convertValuesByType = function (valueNames, register, responseBuffer, logging) {
+  let bufferOffset = 0
+  const sixteenBitBufferLength = 2
+
   let index = 0
   for (index in valueNames) {
-    const item = valueNames[index]
+    let item = valueNames[index]
 
-    if (!item || !Object.prototype.hasOwnProperty.call(item, 'dataType') ||
-      !Object.prototype.hasOwnProperty.call(item, 'registerAddress') || item.registerAddress < 0) {
+    if (!item || !Object.prototype.hasOwnProperty.call(item, 'dataType') || !Object.prototype.hasOwnProperty.call(item, 'registerAddress') || item.registerAddress < 0) {
       if (logging) {
         ioCore.internalDebug('Item Not Valid To Convert ' + JSON.stringify(item))
       }
       continue
     }
 
-    if (ioCore.isRegisterSizeWrong(bufferMessage, item.registerAddress, Number(item.bits))) {
+    if (ioCore.isRegisterSizeWrong(register, item.registerAddress, Number(item.bits))) {
       if (logging) {
         ioCore.internalDebug('Insert Value Register Reached At Address-Start-IO:' + item.registerAddress + ' Bits:' + Number(item.bits))
       }
       break
     }
 
-    if (!(bufferMessage.buffer instanceof Buffer)) {
+    if (responseBuffer.buffer instanceof Buffer) {
+      bufferOffset = Number(item.registerAddress) * sixteenBitBufferLength
+      try {
+        item = ioCore.getValueFromBufferByDataType(item, bufferOffset, responseBuffer.buffer, logging)
+      } catch (err) {
+        ioCore.internalDebug(err.message)
+      }
+    } else {
       if (logging) {
         ioCore.internalDebug('Response Buffer Is Not A Buffer')
       }
       break
-    }
-
-    const bufferOffset = 2 * Number(item.registerAddress)
-
-    try {
-      ioCore.getValueFromBufferByDataType(item, bufferOffset, bufferMessage.buffer, logging)
-    } catch (err) {
-      ioCore.internalDebug(err.message)
     }
   }
 
   return valueNames
 }
 
-ioCore.filterValueNames = function (node, valueNames, fc, address, quantity) {
+ioCore.filterValueNames = function (node, valueNames, fc, adr, quantity) {
   if (!valueNames.length || !valueNames.filter) {
     return valueNames
   }
 
-  let filterType = 'input'
+  let functionType = 'input'
+
   if (fc === 2 || fc === 4) {
-    filterType = 'output'
+    functionType = 'output'
   }
 
-  const first = address
-  const last = Number(address) + Number(quantity) - 1
+  const startRegister = adr
+  const endRegister = Number(adr) + Number(quantity) - 1
 
   if (node.logIOActivities) {
-    ioCore.internalDebug('adr:' + address + ' quantity:' + quantity + ' startRegister:' + filterType + ' endRegister:' + last + ' functionType:' + filterType)
+    ioCore.internalDebug('adr:' + adr + ' quantity:' + quantity + ' startRegister:' + startRegister + ' endRegister:' + endRegister + ' functionType:' + functionType)
   }
 
-  return valueNames.filter((item) =>
-    item.registerAddress >= 0 &&
-    item.addressStartIO >= first &&
-    item.addressStartIO <= last &&
-    item.type === filterType)
+  return valueNames.filter((valueName) => {
+    return (valueName.registerAddress >= 0 &&
+      valueName.addressStartIO >= startRegister &&
+      valueName.addressStartIO <= endRegister &&
+      valueName.type === functionType)
+  })
 }
 
-ioCore.isRegisterSizeWrong = function (register, address, bits) {
-  const requestedBits = Number(bits) || 16
-  const startAddress = Number(address)
+ioCore.isRegisterSizeWrong = function (register, start, bits) {
+  const sizeDivisor = Number(bits) || 16
+  const startRegister = Number(start)
+  let endRegister = startRegister
 
-  const lastAddress = requestedBits > 16
-    ? startAddress + (requestedBits / 16) - 1
-    : startAddress
+  if (sizeDivisor > 16) {
+    endRegister = startRegister + (sizeDivisor / 16) - 1
+  }
 
-  return startAddress < 0 || register.length < startAddress || lastAddress > register.length
+  return (startRegister < 0 || register.length < startRegister || endRegister > register.length)
 }
 
-ioCore.buildMessageWithIO = function (node, valueNames, responseBuffer, msg) {
-  const message = this.core.getOriginalMessage(node.bufferMessageList, msg)
-  message.modbusRequest = Object.assign({}, msg.payload)
-  message.payload = valueNames
-  message.topic = msg.topic
-  message.responseBuffer = responseBuffer
+ioCore.buildMessageWithIO = function (node, values, response, msg) {
+  const origMsg = this.core.getOriginalMessage(node.bufferMessageList, msg)
+  origMsg.modbusRequest = Object.assign({}, msg.payload)
+  origMsg.payload = values
+  origMsg.topic = msg.topic
+  origMsg.responseBuffer = response
 
-  const result = Object.assign({}, message)
-  result.payload = responseBuffer
-  result.values = valueNames
-  delete result.responseBuffer
+  const rawMsg = Object.assign({}, origMsg)
+  rawMsg.payload = response
+  rawMsg.values = values
+  delete rawMsg.responseBuffer
 
   if (node.useIOFile && node.ioFile.lastUpdatedAt) {
-    let filteredValueNames = this.nameValuesFromIOFile(node, msg, responseBuffer, parseInt(msg.payload.address) || 0)
-    filteredValueNames = this.filterValueNames(node, filteredValueNames, parseInt(msg.payload.fc) || 3,
-      parseInt(msg.payload.address) || 0, parseInt(msg.payload.quantity) || 1, node.logIOActivities)
+    const allValueNames = this.nameValuesFromIOFile(node, msg, values, response, parseInt(msg.payload.address) || 0)
+    const valueNames = this.filterValueNames(node, allValueNames, parseInt(msg.payload.fc) || 3,
+      parseInt(msg.payload.address) || 0,
+      parseInt(msg.payload.quantity) || 1,
+      node.logIOActivities)
 
     if (node.useIOForPayload) {
-      message.payload = filteredValueNames
-      message.values = valueNames
+      origMsg.payload = valueNames
+      origMsg.values = values
     } else {
-      message.payload = valueNames
-      message.valueNames = filteredValueNames
+      origMsg.payload = values
+      origMsg.valueNames = valueNames
     }
 
-    result.valueNames = filteredValueNames
+    rawMsg.valueNames = valueNames
+    return [origMsg, rawMsg]
+  } else {
+    return [origMsg, rawMsg]
   }
-
-  return [message, result]
 }
 
 module.exports = ioCore
